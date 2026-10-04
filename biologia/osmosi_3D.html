@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Osmosi 3D — Scienze 2A</title>
+<style>
+:root{--bg:#F7F5F0;--panel:#fff;--ink:#26282B;--sub:#5B5E63;--line:#D8D4CA;--acc:#B5530F;--stage:#FDFCF9;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1D2023;--panel:#262A2E;--ink:#ECECEC;--sub:#B7BBC0;--line:#3A3E42;--acc:#F4A261;--stage:#15171A}}
+:root[data-theme="dark"]{--bg:#1D2023;--panel:#262A2E;--ink:#ECECEC;--sub:#B7BBC0;--line:#3A3E42;--acc:#F4A261;--stage:#15171A}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Calibri,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 18px 28px}
+h1{font-family:Cambria,Georgia,serif;font-size:clamp(20px,3vw,28px);margin:4px 0 2px;color:var(--acc)}
+.sub{color:var(--sub);font-size:14px;margin-bottom:14px}
+button{font-family:inherit;cursor:pointer}
+.rowbtns{display:flex;gap:8px;flex-wrap:wrap}
+.pill{padding:8px 14px;border-radius:999px;border:2px solid transparent;font-weight:bold;font-size:14px;color:#2a2a2a;background:#fff}
+.pill:focus-visible,.tool:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+.tool{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:14px;font-weight:bold}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.ctrl{margin:0 0 16px}
+.zonebox{font-weight:bold;font-size:15px;color:var(--acc);margin:0}
+.bar{position:relative;height:14px;border-radius:7px;border:1px solid var(--line);background:linear-gradient(to right,#E8A9A9 0 18%,#D6E4F5 18% 44%,#EDEDED 44% 56%,#F5DCCB 56% 90%,#E8A9A9 90% 100%)}
+.bar input{position:absolute;left:0;top:-6px;width:100%;height:26px;margin:0;background:transparent;-webkit-appearance:none;appearance:none;cursor:pointer}
+.bar input::-webkit-slider-runnable-track{background:transparent;height:26px}
+.bar input::-moz-range-track{background:transparent;height:26px}
+.bar input::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:2px;border-radius:50%;background:var(--acc);border:3px solid #fff;box-shadow:0 0 0 1px var(--acc)}
+.bar input::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--acc);border:3px solid #fff}
+.zl{position:relative;height:18px;font-size:12px;color:var(--sub);margin-top:8px}
+.zl span{position:absolute;white-space:nowrap;transform:translateX(-50%)}
+@media (max-width:520px){.zl .end{display:none}}
+.legendrow{display:flex;align-items:flex-start;gap:6px 24px;font-size:13px;color:var(--sub);margin-top:10px;flex-wrap:wrap}
+.lg{display:inline-flex;align-items:flex-start;gap:8px}
+.lg .sym{flex:none;display:inline-block;width:12px;height:12px;margin-top:3px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.duo{grid-template-columns:1fr}}
+.duo h3{margin:0 0 8px;color:var(--acc);font-size:18px}
+.view{position:relative;height:clamp(260px,42vh,430px);background:var(--stage);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.tint{position:absolute;inset:0;background:#8E44AD;opacity:0;pointer-events:none}
+.view canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.status{margin-top:10px;font-size:14px;line-height:1.4;min-height:64px}
+.status b{color:var(--acc)}
+.warn{color:#B00020;font-weight:bold}
+:root[data-theme="dark"] .warn{color:#FF8A80}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn{color:#FF8A80}}
+.anchor{background:#FFF6D9;border-left:4px solid #BF9000;padding:8px 12px;margin-top:16px;border-radius:6px;font-style:italic;color:#26282B}
+.small{font-size:13px;color:var(--sub);margin-top:8px}
+.pill.on{outline:3px solid var(--acc);outline-offset:1px}
+.seg{display:none;gap:8px;margin-bottom:12px}
+@media (max-width:760px){.seg{display:flex}.duo h3{display:none}.duo[data-show="A"] #cardP,.duo[data-show="P"] #cardA{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Osmosi 3D</h1>
+  <div class="sub">Scienze 2A — ripasso vita e cellula</div>
+
+  <div class="card ctrl">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div class="zonebox" id="zoneLbl">Soluzione isotonica</div>
+      <div class="rowbtns">
+        <button class="pill" data-c="10" style="background:#D6E4F5">Ipotonica</button>
+        <button class="pill" data-c="50" style="background:#EDEDED">Isotonica</button>
+        <button class="pill" data-c="85" style="background:#F5D6D6">Ipertonica</button>
+        <button class="pill" id="resetBtn" style="border-color:var(--line)">Reset</button>
+        <button class="tool" id="viewBtn">Reset vista</button>
+      </div>
+    </div>
+    <div class="bar"><input type="range" id="conc" min="0" max="100" value="50" aria-label="Concentrazione di soluto nella soluzione esterna"></div>
+    <div class="zl"><span class="end" style="left:0;transform:none">poco soluto</span><span style="left:31%">ipotonica</span><span style="left:50%">isotonica</span><span style="left:73%">ipertonica</span><span class="end" style="right:0;left:auto;transform:none">molto soluto</span></div>
+    <div class="legendrow">
+      <span class="lg"><i class="sym" style="background:#8E44AD;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)"></i><span>cristalli viola = soluto; più cristalli e sfondo più viola = più soluto</span></span>
+      <span class="lg"><i class="sym" style="border-radius:50%;background:#5BC8F0"></i><span>gocce azzurre = acqua: se attraversano il contorno più in un verso che nell'altro, l'acqua si sposta in quel verso</span></span>
+      <span class="lg"><i class="sym" style="border-radius:2px;background:#C46060"></i><span>zone rosse: oltre questi valori la cellula animale subisce danni irreversibili (lisi a sinistra, crenatura a destra)</span></span>
+    </div>
+  </div>
+
+  <div class="seg" id="seg">
+    <button class="pill on" data-v="A" style="background:#FCE4D6">Animali</button>
+    <button class="pill" data-v="P" style="background:#E2F0D9">Piante</button>
+  </div>
+  <div class="duo" id="duo" data-show="A">
+    <div class="card" id="cardA"><h3>Animali</h3><div class="view" id="vA"><div class="tint"></div></div><div class="status" id="stA"></div></div>
+    <div class="card" id="cardP"><h3>Piante</h3><div class="view" id="vP"><div class="tint"></div></div><div class="status" id="stP"></div></div>
+  </div>
+  <div class="small">Trascina sulla vasca per ruotarla (animale e pianta ruotano insieme); pizzica o usa la rotella per ingrandire.</div>
+  <div class="anchor">L'acqua si muove dove c'è meno acqua libera, cioè dove c'è più soluto.</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s), PI=Math.PI, clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const PX=0.0118, SOLH=0x8E44AD, WATERH=0x5BC8F0;   // PX: unità 3D per pixel del 2D (cellula animale a riposo = 85 px)
+const V3=(x,y,z)=>new THREE.Vector3(x,y,z), UP=V3(0,1,0), D2=THREE.DoubleSide;
+const M=(c,o=1,x={})=>new THREE.MeshPhongMaterial(Object.assign({color:c,shininess:40,transparent:o<1,opacity:o},x));
+
+// ---------- testi (identici al 2D rev3) ----------
+const TEXT={
+ animale:{
+  ipo:"L'acqua <b>entra</b> nella cellula (fuori c'è meno soluto): si gonfia e, senza parete, può <span class='warn'>scoppiare (lisi)</span>.",
+  iso:"L'acqua entra ed esce in ugual misura: la cellula mantiene la sua forma.",
+  iper:"L'acqua <b>esce</b> dalla cellula (fuori c'è più soluto): si <b>raggrinzisce</b> (crenatura). Se è moderata, tornando in isotonica si riprende."},
+ vegetale:{
+  ipo:"L'acqua <b>entra</b>, ma la <b>parete</b> impedisce lo scoppio: la cellula diventa <b>turgida</b>.",
+  iso:"L'acqua entra ed esce in ugual misura: la cellula mantiene la sua forma.",
+  iper:"L'acqua <b>esce</b> e il citoplasma si stacca dalla parete (<b>plasmolisi</b>), restando attaccato in pochi punti. Tornando in isotonica la cellula recupera."}
+};
+const ZN={ipo:'Soluzione ipotonica',iso:'Soluzione isotonica',iper:'Soluzione ipertonica'};
+const zoneOf=c=>c<44?'ipo':(c<=56?'iso':'iper');
+const arrowT=x=>{const m=Math.abs(x);return m<0.1?0:Math.min(1,(m-0.1)/0.7);};
+
+// ---------- geometrie ----------
+function makeSphere(w,h){const g=new THREE.SphereGeometry(1,w,h),p=g.attributes.position,d=new Float32Array(p.count*3);
+ for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),l=Math.hypot(x,y,z)||1;d[3*i]=x/l;d[3*i+1]=y/l;d[3*i+2]=z/l;}
+ g.userData={w,h,dirs:d};return g;}
+// unisce le normali sulla cucitura e ai poli della sfera dopo una deformazione
+function fixNormals(g){const {w,h}=g.userData,n=g.attributes.normal;
+ for(let iy=0;iy<=h;iy++){const r=iy*(w+1);
+  if(iy==0||iy==h){let x=0,y=0,z=0;for(let i=0;i<=w;i++){x+=n.getX(r+i);y+=n.getY(r+i);z+=n.getZ(r+i);}
+   const l=Math.hypot(x,y,z)||1;for(let i=0;i<=w;i++)n.setXYZ(r+i,x/l,y/l,z/l);}
+  else{const x=n.getX(r)+n.getX(r+w),y=n.getY(r)+n.getY(r+w),z=n.getZ(r)+n.getZ(r+w),l=Math.hypot(x,y,z)||1;
+   n.setXYZ(r,x/l,y/l,z/l);n.setXYZ(r+w,x/l,y/l,z/l);}}
+ n.needsUpdate=true;}
+const AV=[[.83,.3,.47],[-.45,.88,.15],[.2,-.4,.89],[-.7,-.5,-.5]].map(v=>{const l=Math.hypot(...v);return v.map(c=>c/l);});
+const crenPat=(x,y,z)=>{let s=0;for(const a of AV)s+=Math.sin(9*(a[0]*x+a[1]*y+a[2]*z));return clamp(s*.5,-1,1);};
+function setEllipsoid(g,rx,ry,rz,a){const p=g.attributes.position,d=g.userData.dirs;
+ for(let i=0;i<p.count;i++){const x=d[3*i],y=d[3*i+1],z=d[3*i+2],f=a>.001?1+a*.14*crenPat(x,y,z):1;p.setXYZ(i,x*rx*f,y*ry*f,z*rz*f);}
+ p.needsUpdate=true;g.computeVertexNormals();fixNormals(g);}
+const sgnpow=(w,m)=>Math.sign(w)*Math.pow(Math.abs(w),m);
+function superPoint(u,v,a,b,c,n,out){const m=2/n,cv=sgnpow(Math.cos(v),m);return out.set(a*cv*sgnpow(Math.cos(u),m),b*sgnpow(Math.sin(v),m),c*cv*sgnpow(Math.sin(u),m));}
+function setSuper(g,a,b,c,n){const p=g.attributes.position,d=g.userData.dirs,o=V3(0,0,0);
+ for(let i=0;i<p.count;i++){superPoint(Math.atan2(d[3*i+2],d[3*i]),Math.asin(clamp(d[3*i+1],-1,1)),a,b,c,n,o);p.setXYZ(i,o.x,o.y,o.z);}
+ p.needsUpdate=true;g.computeVertexNormals();fixNormals(g);}
+// parallelepipedo a spigoli arrotondati (parete della cellula vegetale)
+function rbox(hx,hy,hz,r,seg){const g=new THREE.BoxGeometry(hx*2,hy*2,hz*2,seg,seg,seg),p=g.attributes.position,n=g.attributes.normal,v=V3(0,0,0),q=V3(0,0,0);
+ for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);q.set(clamp(v.x,-(hx-r),hx-r),clamp(v.y,-(hy-r),hy-r),clamp(v.z,-(hz-r),hz-r));
+  v.sub(q).normalize();n.setXYZ(i,v.x,v.y,v.z);p.setXYZ(i,q.x+v.x*r,q.y+v.y*r,q.z+v.z*r);}
+ return g;}
+
+// ---------- punti: soluto dentro e fuori ----------
+let seed=11;const rnd=()=>(seed=seed*16807%2147483647)/2147483647;
+const IN_PTS=(()=>{const o=[];let tries=0;while(o.length<12&&tries++<5000){const p=V3(rnd()*2-1,rnd()*2-1,rnd()*2-1).multiplyScalar(.62);
+ if(p.length()>.62)continue;if(o.every(q=>q.distanceTo(p)>.4))o.push(p);}return o;})();
+const OUT_PTS=(()=>{const o=[];let tries=0;while(o.length<20&&tries++<20000){const p=V3((rnd()*2-1)*2.25,(rnd()*2-1)*1.65,(rnd()*2-1)*1.65);
+ if((p.x/1.75)**2+(p.y/1.45)**2+(p.z/1.45)**2<1)continue;
+ if([p.x,p.y,p.z].filter(c=>Math.abs(c)<.55).length>=2)continue;
+ if(o.every(q=>q.distanceTo(p)>.55))o.push(p);}return o;})();
+
+// ---------- camera condivisa tra le due vasche ----------
+const CAM={th:-.65,ph:1.2,rad:10.5};
+let dirty=1;
+
+class View{
+ constructor(el){
+  this.el=el;this.tint=el.querySelector('.tint');
+  this.R=new THREE.WebGLRenderer({antialias:true,alpha:true});this.R.setPixelRatio(Math.min(devicePixelRatio,2));this.R.localClippingEnabled=true;
+  el.appendChild(this.R.domElement);this.cv=this.R.domElement;
+  this.scene=new THREE.Scene();this.cam=new THREE.PerspectiveCamera(30,1,.1,80);this.fit=1;
+  this.scene.add(new THREE.AmbientLight(0xffffff,.8));
+  const L1=new THREE.DirectionalLight(0xffffff,.6);L1.position.set(3,4,5);const L2=new THREE.DirectionalLight(0xffffff,.25);L2.position.set(-3,-2,-4);this.scene.add(L1,L2);
+  // vasca
+  const tank=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(5,3.8,3.8)),new THREE.LineBasicMaterial({color:0x8a9099,transparent:true,opacity:.55}));
+  this.scene.add(tank);
+  // soluto: cristalli (ottaedri) viola, con un leggero movimento
+  const og=new THREE.OctahedronGeometry(1,0),om=M(SOLH,1,{flatShading:true,shininess:80});
+  this.out=OUT_PTS.map((p,i)=>{const m=new THREE.Mesh(og,om);m.scale.setScalar(.095);m.userData={base:p.clone(),k:i};this.scene.add(m);return m;});
+  this.inn=IN_PTS.map((p,i)=>{const m=new THREE.Mesh(og,om);m.scale.setScalar(.07);m.userData={base:p.clone(),k:i+30};this.scene.add(m);return m;});
+  // acqua: gocce azzurre che attraversano il contorno della cellula, in entrata o in uscita
+  const wg=new THREE.SphereGeometry(1,12,9),wm=M(WATERH,.92,{shininess:90,emissive:0x1B6E94});
+  this.nDrops=30;this.drops=[];
+  for(let k=0;k<this.nDrops;k++){const y=1-2*(k+.5)/this.nDrops,r=Math.sqrt(1-y*y),a=k*2.39996,m=new THREE.Mesh(wg,wm);
+   m.userData={d:V3(r*Math.cos(a),y,r*Math.sin(a)),ph:(k*0.754877)%1,inn:(k*0.618034)%1,sp:.85+((k*0.37)%1)*.3};m.visible=false;this.scene.add(m);this.drops.push(m);}
+  this.flow={show:false,nIn:15,rOut:()=>2,rIn:()=>.5};
+  new ResizeObserver(()=>{const w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;this.R.setSize(w,h,false);this.cam.aspect=w/h;this.cam.updateProjectionMatrix();this.fit=Math.max(1,1.25/this.cam.aspect);dirty=1;}).observe(el);
+  attachControls(this.cv);
+ }
+ common(S){
+  const outN=Math.round(S.c/5);this.out.forEach((m,i)=>m.visible=i<outN);
+  this.tint.style.opacity=(S.c*0.002).toFixed(3);
+  // 30 gocce: in isotonica 15 entrano e 15 escono; lo squilibrio ne sposta fino a 13 (massimo 28 contro 2)
+  const sh=Math.round(13*arrowT(S.xt));this.flow.nIn=15+(S.xt<0?sh:-sh);
+ }
+ animate(t){
+  this.out.forEach(m=>{const k=m.userData.k,b=m.userData.base;m.position.set(b.x+.035*Math.sin(t*.9+k*1.7),b.y+.035*Math.sin(t*1.1+k*2.3),b.z+.035*Math.sin(t*.7+k*3.1));m.rotation.set(t*.4+k,t*.3+k*2,0);});
+  this.inn.forEach(m=>{const k=m.userData.k,b=m.userData.base;m.position.set(b.x+.02*Math.sin(t*1.3+k*1.7),b.y+.02*Math.sin(t*1.5+k*2.3),b.z+.02*Math.sin(t*1.1+k*3.1));m.rotation.set(t*.5+k,t*.4+k*2,0);});
+  const F=this.flow;
+  this.drops.forEach(m=>{const u=m.userData;if(!F.show){m.visible=false;return;}
+   const s=(t/2.6*u.sp+u.ph)%1,isIn=u.inn<F.nIn/this.nDrops,ro=F.rOut(u.d)+.7,ri=F.rIn(u.d),k=isIn?ro+(ri-ro)*s:ri+(ro-ri)*s;
+   m.position.copy(u.d).multiplyScalar(k);m.scale.setScalar(.065*Math.sqrt(Math.sin(PI*s))+.001);m.visible=true;});
+ }
+ render(){const d=CAM.rad*this.fit,s=Math.sin(CAM.ph);
+  this.cam.position.set(d*s*Math.sin(CAM.th),d*Math.cos(CAM.ph),d*s*Math.cos(CAM.th));this.cam.lookAt(0,0,0);this.R.render(this.scene,this.cam);}
+}
+
+// ---------- cellula animale ----------
+class AnimalView extends View{
+ constructor(el){super(el);
+  this.geo=makeSphere(48,32);this.mat=M(0xFCE4D6,.66,{side:D2,depthWrite:false,shininess:60});
+  this.mesh=new THREE.Mesh(this.geo,this.mat);this.mesh.frustumCulled=false;this.mesh.renderOrder=1;this.scene.add(this.mesh);
+  this.plane=new THREE.Plane(V3(1,0,0),0);
+  this.u=V3(.35,.7,.62).normalize();
+  this.ves=[0,1,2,3].map(()=>{const m=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),M(0xFCE4D6,.8,{depthWrite:false}));m.visible=false;m.renderOrder=1;this.scene.add(m);return m;});
+  this.ring=new THREE.Mesh(new THREE.TorusGeometry(1,.025,8,56),M(0x843C0C));this.ring.visible=false;this.ring.renderOrder=2;this.scene.add(this.ring);
+  this.c1=new THREE.Color(0xFCE4D6);this.c2=new THREE.Color(0xF4CDB4);
+ }
+ setClip(pl){if(!!pl!==!!this.mat.clippingPlanes)this.mat.needsUpdate=true;this.mat.clippingPlanes=pl;}
+ update(S){
+  const st=S.A,xd=S.xa;let rx,ry,rz,a=0,dead=false,drift=0,lt=0;
+  if(st==='lysis'){lt=S.lt;const p=.45+.55*lt,d=Math.min(1,(p-.45)/.55);rx=(108-10*d)*PX;ry=rz=rx*.8;dead=true;drift=d;}
+  else{let k=1;if(xd<0){k=1+.27*Math.min(1,-xd/.64);}else{a=Math.min(1,xd/.8);k=1-.32*a;}rx=k;ry=rz=.8*k;dead=st==='cren';}
+  if(a<.04)a=0;
+  setEllipsoid(this.geo,rx,ry,rz,a);
+  this.mat.color.copy(this.c1).lerp(this.c2,a);
+  // rottura della membrana (lisi): apertura che si allarga e contenuto che esce
+  const u=this.u;
+  if(st==='lysis'){
+   const q=Math.min(1,(.55*lt)/.3),ang=(8+42*q)*PI/180,t1=V3(0,1,0).cross(u).normalize(),t2=u.clone().cross(t1);
+   const rd=d=>1/Math.sqrt((d.x/rx)**2+(d.y/ry)**2+(d.z/rz)**2);
+   const dA=u.clone().multiplyScalar(Math.cos(ang)).addScaledVector(t1,Math.sin(ang)),dB=u.clone().multiplyScalar(Math.cos(ang)).addScaledVector(t2,Math.sin(ang));
+   const rm=(rd(dA)+rd(dB))/2,c=rm*Math.cos(ang);
+   this.plane.normal.copy(u).negate();this.plane.constant=c;this.setClip([this.plane]);
+   this.ring.visible=true;this.ring.position.copy(u).multiplyScalar(c);this.ring.quaternion.setFromUnitVectors(V3(0,0,1),u);this.ring.scale.setScalar(rm*Math.sin(ang));
+   this.ves.forEach((v,k)=>{const an=(k-1.5)*10*PI/180*1.6,dr=u.clone().multiplyScalar(Math.cos(an)).addScaledVector(t1,Math.sin(an)*Math.cos(k)).addScaledVector(t2,Math.sin(an)*Math.sin(k)).normalize();
+    const m=(14+14*k)*drift*PX;
+    v.position.copy(dr).multiplyScalar(rd(dr)).addScaledVector(u,m);v.scale.setScalar((13-2.5*k)*(.3+.7*q)*PX*1.6);v.visible=true;});
+  }else{this.setClip(null);this.ring.visible=false;this.ves.forEach(v=>v.visible=false);}
+  // soluto dentro: sempre 12 sfere, in scala con la cellula
+  this.inn.forEach((m,i)=>{m.userData.base.set(IN_PTS[i].x*rx,IN_PTS[i].y*ry,IN_PTS[i].z*rz);
+   if(st==='lysis'&&[2,3,4,7,8,9].includes(i))m.userData.base.addScaledVector(u,drift*(35+(i%5)*18)*PX);});
+  this.common(S);
+  const rd0=d=>1/Math.sqrt((d.x/rx)**2+(d.y/ry)**2+(d.z/rz)**2);
+  this.flow.show=!dead;this.flow.rOut=rd0;this.flow.rIn=d=>rd0(d)*.55;
+ }
+}
+
+// ---------- cellula vegetale ----------
+class PlantView extends View{
+ constructor(el){super(el);
+  this.geo=makeSphere(64,48);this.mat=M(0xE2F0D9,.7,{side:D2,depthWrite:false,shininess:60});
+  this.proto=new THREE.Mesh(this.geo,this.mat);this.proto.frustumCulled=false;this.proto.renderOrder=1;this.scene.add(this.proto);
+  const wm=M(0x6B8F47,.3,{side:D2,depthWrite:false});
+  this.wallO=new THREE.Mesh(rbox(1.3,1.05,1.05,.4,28),wm);this.wallI=new THREE.Mesh(rbox(1.2,.95,.95,.33,28),wm);
+  this.wallO.renderOrder=2;this.wallI.renderOrder=2;this.scene.add(this.wallO,this.wallI);
+  // soluzione esterna che riempie lo spazio tra parete e protoplasto quando questo si ritira (plasmolisi)
+  this.gap=new THREE.Mesh(rbox(1.19,.94,.94,.32,24),M(SOLH,.55,{side:D2,depthWrite:false}));this.gap.visible=false;this.scene.add(this.gap);
+  this.c1=new THREE.Color(0xE2F0D9);this.c2=new THREE.Color(0x7FBF4D);
+  const sm=M(0x2F5A1E);this.strands=[[.6,.3],[2.5,-.3],[3.7,.4],[5.4,-.2],[1.6,.9],[4.6,-.9]].map(([u,v])=>{
+   const c=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,8),sm),e=new THREE.Mesh(new THREE.SphereGeometry(.05,8,6),sm);
+   c.visible=e.visible=false;this.scene.add(c,e);return {u,v,c,e};});
+ }
+ update(S){
+  const xd=S.xp;let n=6,a=89,b=68,wp=0,p=0;
+  if(xd<=0){const s=Math.min(1,-xd/.5);n=6+2*s;a=89+10*s;b=68+10*s;wp=s;}
+  else{p=Math.min(1,xd/.9);n=6-4*Math.min(1,p/.6);a=89-33*Math.pow(p,.85);b=68-32*Math.pow(p,.85);}
+  a*=PX;b*=PX;setSuper(this.geo,a,b,b,n);
+  const sc=1+.012*wp;this.wallO.scale.setScalar(sc);this.wallI.scale.setScalar(sc);this.gap.scale.setScalar(sc);
+  const gp=Math.min(1,p*2.5);this.gap.visible=gp>.01;this.gap.material.opacity=.55*gp;
+  this.mat.color.copy(this.c1).lerp(this.c2,Math.min(1,p));
+  // filamenti che trattengono il protoplasto alla parete (plasmolisi)
+  const show=p>.3,op=Math.min(1,(p-.3)/.3),P=V3(0,0,0),W=V3(0,0,0);
+  this.strands.forEach((s,k)=>{s.c.visible=s.e.visible=show;if(!show)return;
+   superPoint(s.u,s.v,a,b,b,n,P);const dv=P.clone().normalize(),t=.97*Math.min(1.2/Math.abs(dv.x||1e-6),.95/Math.abs(dv.y||1e-6),.95/Math.abs(dv.z||1e-6));
+   W.copy(dv).multiplyScalar(t);
+   // filo sinuoso: ancorato alle due estremità, con ondulazioni che si smorzano verso i punti di attacco
+   const Dv=W.clone().sub(P),L=Dv.length(),ax=Dv.clone().normalize(),n1=ax.clone().cross(Math.abs(ax.y)<.9?UP:V3(1,0,0)).normalize(),n2=ax.clone().cross(n1),pts=[];
+   for(let i=0;i<=14;i++){const f=i/14,env=Math.pow(Math.sin(PI*f),.7),w=2*PI*(1.5+.25*(k%3))*f+k*1.7,A=.09*env*Math.min(1,L/.6);
+    pts.push(P.clone().addScaledVector(Dv,f).addScaledVector(n1,A*Math.sin(w)).addScaledVector(n2,A*.6*Math.cos(w)));}
+   if(s.c.geometry)s.c.geometry.dispose();
+   s.c.geometry=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),28,.012+.009*op,6,false);
+   s.c.position.set(0,0,0);s.c.quaternion.identity();s.c.scale.set(1,1,1);
+   s.e.position.copy(W);s.e.scale.setScalar(.6+op*.4);});
+  this.inn.forEach((m,i)=>m.userData.base.set(IN_PTS[i].x*a*.95,IN_PTS[i].y*b*.95,IN_PTS[i].z*b*.95));
+  this.common(S);
+  const wr=d=>Math.min(1.28/(Math.abs(d.x)||1e-6),1.03/(Math.abs(d.y)||1e-6),1.03/(Math.abs(d.z)||1e-6));
+  this.flow.show=true;this.flow.rOut=wr;this.flow.rIn=d=>wr(d)*.4;
+ }
+}
+
+// ---------- comandi: rotazione e zoom condivisi ----------
+const ptr=new Map();let pd=0;
+const pinch=()=>{if(ptr.size!=2)return 0;const [a,b]=[...ptr.values()];return Math.hypot(a[0]-b[0],a[1]-b[1]);};
+function attachControls(cv){
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);pd=pinch();});
+ cv.addEventListener('pointermove',e=>{const o=ptr.get(e.pointerId);if(!o)return;const n=[e.clientX,e.clientY];
+  if(ptr.size==1){CAM.th-=(n[0]-o[0])*.008;CAM.ph=clamp(CAM.ph-(n[1]-o[1])*.008,.15,PI-.15);}
+  ptr.set(e.pointerId,n);
+  if(ptr.size==2){const d=pinch();if(pd)CAM.rad=clamp(CAM.rad*pd/d,6.5,15);pd=d;}
+  dirty=1;});
+ const up=e=>{ptr.delete(e.pointerId);pd=0;};
+ cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();CAM.rad=clamp(CAM.rad*(1+e.deltaY*.001),6.5,15);dirty=1;},{passive:false});
+}
+$('#viewBtn').onclick=()=>{CAM.th=-.65;CAM.ph=1.2;CAM.rad=10.5;dirty=1;};
+
+// ---------- stato e animazione (le cellule inseguono la barra con un po' di ritardo) ----------
+let vA,vP;
+try{vA=new AnimalView($('#vA'));vP=new PlantView($('#vP'));}
+catch(e){document.querySelectorAll('.view').forEach(v=>v.innerHTML='<p style="padding:16px;color:var(--sub)">Questo browser non supporta WebGL: apri la pagina con Chrome, Edge o Safari aggiornati.</p>');throw e;}
+const S={c:50,xt:0,xa:0,xp:0,A:'ok',lt:0,last:0,run:false};
+const stA=$('#stA'),stP=$('#stP'),conc=$('#conc'),zoneLbl=$('#zoneLbl');
+function refresh(){
+ const z=zoneOf(S.c);vA.update(S);vP.update(S);
+ let ta=TEXT.animale[z];
+ if(S.A==='lysis')ta="<span class='warn'>Lisi: la membrana si è rotta e la cellula non è recuperabile.</span> Premi Reset per una nuova cellula.";
+ if(S.A==='cren')ta="<span class='warn'>Crenatura irreversibile:</span> la disidratazione è stata troppo forte e la cellula non si riprende. Premi Reset per una nuova cellula.";
+ if(stA.dataset.t!==ta){stA.innerHTML=ta;stA.dataset.t=ta;}
+ const tp=TEXT.vegetale[z];if(stP.dataset.t!==tp){stP.innerHTML=tp;stP.dataset.t=tp;}
+ zoneLbl.textContent=ZN[z];dirty=1;}
+function step(now){
+ const dt=Math.min(.05,(now-S.last)/1000||.016),f=1-Math.exp(-dt/.35);S.last=now;S.xp+=(S.xt-S.xp)*f;
+ if(S.A==='ok'){S.xa+=(S.xt-S.xa)*f;
+  if(S.xa<=-.63){S.A='lysis';S.lt=0;}else if(S.xa>=.78){S.A='cren';S.xa=.8;}}
+ else if(S.A==='lysis')S.lt=Math.min(1,S.lt+dt/2);
+ refresh();
+ const busy=Math.abs(S.xt-S.xp)>.002||(S.A==='ok'&&Math.abs(S.xt-S.xa)>.002)||(S.A==='lysis'&&S.lt<1);
+ if(!busy)S.run=false;}
+function kick(){if(!S.run){S.run=true;S.last=performance.now();}}
+function setC(c){S.c=c;S.xt=(c-50)/50;conc.value=c;kick();refresh();}
+conc.addEventListener('input',()=>setC(+conc.value));
+document.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>setC(+b.dataset.c)));
+$('#resetBtn').addEventListener('click',()=>{S.A='ok';S.lt=0;S.xa=0;S.xp=0;setC(50);});
+function loop(now){requestAnimationFrame(loop);if(S.run)step(now);const t=now/1000;
+ [vA,vP].forEach(v=>{if(!v.el.clientWidth)return;v.animate(t);v.render();});}
+// su schermi stretti si vede una cellula alla volta: i pulsanti scelgono quale
+document.querySelectorAll('#seg [data-v]').forEach(b=>b.addEventListener('click',()=>{
+ $('#duo').dataset.show=b.dataset.v;document.querySelectorAll('#seg .pill').forEach(x=>x.classList.toggle('on',x===b));}));
+setC(50);loop(performance.now());
+</script>
+</body>
+</html>

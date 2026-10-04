@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cellula 3D — Scienze 2A</title>
+<style>
+:root{--bg:#F7F5F0;--panel:#fff;--ink:#26282B;--sub:#5B5E63;--line:#D8D4CA;--acc:#B5530F;--stage:#FDFCF9;
+--ani-cell:#FCE4D6;--ani-text:#843C0C;--veg-cell:#E2F0D9;--veg-text:#375623;--fun-cell:#EAE1F4;--fun-text:#3F2A63;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1D2023;--panel:#262A2E;--ink:#ECECEC;--sub:#B7BBC0;--line:#3A3E42;--acc:#F4A261;--stage:#15171A;
+--ani-cell:#5A3A2A;--ani-text:#F4B183;--veg-cell:#2E4230;--veg-text:#A9D18E;--fun-cell:#3A2E4E;--fun-text:#C9B8E0}}
+:root[data-theme="dark"]{--bg:#1D2023;--panel:#262A2E;--ink:#ECECEC;--sub:#B7BBC0;--line:#3A3E42;--acc:#F4A261;--stage:#15171A;
+--ani-cell:#5A3A2A;--ani-text:#F4B183;--veg-cell:#2E4230;--veg-text:#A9D18E;--fun-cell:#3A2E4E;--fun-text:#C9B8E0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Calibri,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 18px 28px}
+h1{font-family:Cambria,Georgia,serif;font-size:clamp(20px,3vw,28px);margin:4px 0 2px;color:var(--acc)}
+.sub{color:var(--sub);font-size:14px;margin-bottom:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+button{font-family:inherit;cursor:pointer}
+.pill{padding:8px 16px;border-radius:999px;border:2px solid transparent;font-weight:bold;font-size:14px}
+.pill.ani{background:var(--ani-cell);color:var(--ani-text)}
+.pill.veg{background:var(--veg-cell);color:var(--veg-text)}
+.pill.fun{background:var(--fun-cell);color:var(--fun-text)}
+.pill.on{outline:3px solid var(--acc);outline-offset:1px}
+.main{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:12px}
+@media (max-width:760px){.main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+#stage{height:clamp(340px,64vh,640px);background:var(--stage);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.tool{padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:14px;font-weight:bold}
+.tool.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.info{min-height:130px;margin-bottom:12px}
+.info h3{margin:0 0 6px;color:var(--acc);font-size:18px}
+.info p{margin:0;font-size:15px;line-height:1.4}
+.hint{color:var(--sub)}
+.grp+.grp{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.gl{font-size:13px;font-weight:bold;color:var(--sub);margin:0 0 6px}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:6px 11px 6px 8px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:13px;font-weight:bold}
+.chip .dot{flex:none;width:12px;height:12px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.28)}
+.chip.on{outline:3px solid var(--acc);outline-offset:1px}
+.small{font-size:13px;color:var(--sub);margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Cellula 3D</h1>
+  <div class="sub" id="sub">Scienze 2A</div>
+  <div class="row" id="types">
+    <button class="pill ani on" data-type="animale">Animali</button>
+    <button class="pill veg" data-type="vegetale">Piante</button>
+    <button class="pill fun" data-type="fungina">Funghi</button>
+  </div>
+  <div class="main">
+    <div>
+      <div id="stage"></div>
+      <div class="row" style="margin-top:10px">
+        <button class="tool on" id="bOpen">Vista aperta</button>
+        <button class="tool" id="bRot">Rotazione automatica</button>
+        <button class="tool" id="bReset">Reset vista</button>
+      </div>
+    </div>
+    <div>
+      <div class="card info"><h3 id="t">Tocca una struttura</h3><p id="d" class="hint"></p></div>
+      <div class="card"><div id="groups"></div>
+        <div class="small">Trascina per ruotare, pizzica o usa la rotella per ingrandire. Tocca di nuovo la stessa struttura per deselezionarla.</div></div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s), stage=$('#stage'), PI=Math.PI, clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const MEMB_O=.4;   // opacità della membrana a riposo (0 = invisibile, 1 = opaca)
+const WALL_O=.42;  // opacità della parete cellulare a riposo
+const HINT="Scegli una struttura dall'elenco o toccala nel modello: il resto si attenua e vedi nome e funzione.";
+
+// ---------- testi (identici al 2D rev3) ----------
+const D={
+ cito:"Sostanza gelatinosa (citosol) che riempie la cellula tra membrana e organuli: contiene acqua, sali e molecole ed è sede di molte reazioni chimiche. Gli organuli ci sono immersi.",
+ nucleo:"Contiene il DNA: controlla le attività della cellula.",
+ nucleolo:"Struttura interna al nucleo, produce i ribosomi.",
+ mito:"Doppia membrana, quella interna ripiegata (creste): qui avviene la respirazione cellulare.",
+ golgi:"Pila di sacchi appiattiti: impacchetta e smista le sostanze in vescicole.",
+ rer:"Cisterne di membrane con ribosomi attaccati, vicine al nucleo: sintetizza proteine da esportare.",
+ rel:"Cisterne di membrane senza ribosomi: produce lipidi e smaltisce sostanze tossiche.",
+ rib:"Piccoli granuli, liberi nel citoplasma o attaccati al RER: costruiscono le proteine.",
+ memb2:"Confine selettivo appena dentro la parete: controlla ciò che entra ed esce."
+};
+// l = etichetta del pulsante, n = nome nel pannello, d = descrizione, c = colore del pallino
+const B={
+ parete:{l:'Parete cellulare',n:'Parete cellulare',d:'',c:'#888'},
+ membrana:{l:'Membrana',n:'Membrana cellulare',d:"Confine sottile e selettivo: lascia passare alcune sostanze e non altre.",c:'#E0A070'},
+ citoplasma:{l:'Citoplasma',n:'Citoplasma',d:D.cito,c:'#ddd'},
+ nucleo:{l:'Nucleo',n:'Nucleo',d:D.nucleo,c:'#8A78C9'},
+ nucleolo:{l:'Nucleolo',n:'Nucleolo',d:D.nucleolo,c:'#5A47A0'},
+ ribosomi:{l:'Ribosomi',n:'Ribosomi',d:D.rib,c:'#843C0C'},
+ rer:{l:'Reticolo rugoso (RER)',n:'Reticolo endoplasmatico rugoso (RER)',d:D.rer,c:'#5578A8'},
+ rel:{l:'Reticolo liscio (REL)',n:'Reticolo endoplasmatico liscio (REL)',d:D.rel,c:'#7FA6C9'},
+ golgi:{l:'Apparato di Golgi',n:'Apparato di Golgi',d:D.golgi,c:'#B8860B'},
+ mito:{l:'Mitocondri',n:'Mitocondri',d:D.mito,c:'#E08A4F'},
+ cloro:{l:'Cloroplasti',n:'Cloroplasti',d:"Contengono la clorofilla: qui avviene la fotosintesi. All'interno si distinguono i grani, pile di sacchetti dove viene catturata la luce.",c:'#4C8C3C'},
+ glicogeno:{l:'Glicogeno',n:'Glicogeno',d:"Granuli di riserva di glucosio, sparsi nel citoplasma: come nella cellula animale, non amido come nelle piante.",c:'#6A4C9C'},
+ lisosomi:{l:'Lisosomi',n:'Lisosomi',d:"Digeriscono i rifiuti e le sostanze di scarto della cellula.",c:'#B25E2A'},
+ vacuolo:{l:'Vacuolo',n:'Vacuolo',d:'',c:'#6FA8C9'}
+};
+// gruppi dei pulsanti: stesso ordine in tutti i tipi di cellula
+const GROUPS=[
+ ['Struttura',['parete','membrana','citoplasma']],
+ ['Controllo',['nucleo','nucleolo']],
+ ['Produzione e trasporto',['ribosomi','rer','rel','golgi']],
+ ['Energia e riserve',['mito','cloro','glicogeno']],
+ ['Digestione e acqua',['lisosomi','vacuolo']]];
+
+// ---------- scena ----------
+let R;
+try{R=new THREE.WebGLRenderer({antialias:true,alpha:true});}
+catch(e){stage.innerHTML='<p class="hint" style="padding:16px">Questo browser non supporta WebGL: apri la pagina con Chrome, Edge o Safari aggiornati.</p>';throw e;}
+R.setPixelRatio(Math.min(devicePixelRatio,2));R.localClippingEnabled=true;stage.appendChild(R.domElement);
+const cv=R.domElement, scene=new THREE.Scene(), cam=new THREE.PerspectiveCamera(40,1,.1,50), cell=new THREE.Group();
+scene.add(cell,new THREE.AmbientLight(0xffffff,.75));
+const L1=new THREE.DirectionalLight(0xffffff,.6);L1.position.set(3,4,5);
+const L2=new THREE.DirectionalLight(0xffffff,.25);L2.position.set(-3,-2,-4);scene.add(L1,L2);
+
+const D2=THREE.DoubleSide, shellMats=[];
+const M=(c,o=1,x={})=>{const m=new THREE.MeshPhongMaterial(Object.assign({color:c,shininess:40,transparent:o<1,opacity:o},x));m.userData={o,t:o<1};return m;};
+const sp=(r,s=24)=>new THREE.SphereGeometry(r,s,Math.round(s*.75));
+const S=(g,m,p,sc,ro)=>{const o=new THREE.Mesh(g,m);if(p)o.position.set(...p);if(sc)o.scale.set(...sc);if(ro)o.renderOrder=ro;return o;};
+const G=(k,p,r)=>{const g=new THREE.Group();g.userData.key=k;if(p)g.position.set(...p);if(r)g.rotation.set(...r);cell.add(g);return g;};
+// involucri semitrasparenti, tagliabili per la "vista aperta"
+const shell=(geo,col,o,ro,sc,x)=>{const m=M(col,o,Object.assign({side:D2,depthWrite:false},x||{}));shellMats.push(m);return S(geo,m,null,sc,ro);};
+// parallelepipedo a spigoli arrotondati (per la cellula vegetale)
+function rbox(hx,hy,hz,r,seg){seg=seg||36;
+ const g=new THREE.BoxGeometry(hx*2,hy*2,hz*2,seg,seg,seg),p=g.attributes.position,n=g.attributes.normal,v=new THREE.Vector3(),q=new THREE.Vector3();
+ for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);
+  q.set(clamp(v.x,-(hx-r),hx-r),clamp(v.y,-(hy-r),hy-r),clamp(v.z,-(hz-r),hz-r));
+  v.sub(q).normalize();n.setXYZ(i,v.x,v.y,v.z);p.setXYZ(i,q.x+v.x*r,q.y+v.y*r,q.z+v.z*r);}
+ return g;}
+
+// ---------- organuli ----------
+function nucleus(p,Rn){G('nucleo',p).add(S(sp(Rn,32),M(0x8A78C9,.5,{side:D2,depthWrite:false}),null,null,1));
+ const k=Rn/.5;G('nucleolo',[p[0]+.12*k,p[1]+.1*k,p[2]+.15*k]).add(S(sp(.16*k,20),M(0x5A47A0)));}
+function rer(p,r,k){const g=G('rer',p,r),m=M(0x5578A8),rb=M(0x2C4870);g.scale.setScalar(k);
+ for(let i=0;i<4;i++){const y=(i-1.5)*.11;g.add(S(new THREE.CylinderGeometry(.42,.42,.04,28),m,[0,y,0],[1,1,.6]));
+  for(let j=0;j<7;j++){const a=j*.9+i;g.add(S(sp(.03,8),rb,[Math.cos(a)*.3,y+.03,Math.sin(a)*.18]));}}}
+function rel(p,r,k){const g=G('rel',p,r),m=M(0x7FA6C9),v=M(0xA9C6DF);g.scale.setScalar(k);
+ for(let i=0;i<4;i++){const y=(i-1.5)*.1;g.add(S(new THREE.CylinderGeometry(.28,.28,.035,24),m,[0,y,0],[1,1,.6]));
+  g.add(S(sp(.04,10),v,[i%2?.3:-.3,y,0]));}}
+function golgi(p,r,k){const g=G('golgi',p,r),m=M(0xB8860B,1,{side:D2});g.scale.setScalar(k);
+ for(let i=0;i<5;i++){const s=.9-i*.06;g.add(S(new THREE.SphereGeometry(1,20,6,0,PI*2,0,.45),m,[0,(i-2)*.1,0],[s,s*.6,s]));}
+ [[-.42,-.2,0],[.4,.25,.1],[.38,-.15,-.1]].forEach(q=>g.add(S(sp(.05,10),M(0xE0B356),q)));}
+function mito(p,r,k){const g=G('mito',p,r);g.scale.setScalar(k||1);
+ g.add(S(sp(1,24),M(0xF7B27A,.5,{depthWrite:false}),null,[.4,.2,.2],1));
+ const c=M(0xE08A4F);for(let i=-3;i<=3;i++){const o=S(new THREE.CylinderGeometry(.13,.13,.025,14),c,[i*.1,0,0],[1,1,i%2?.6:1]);o.rotation.z=PI/2;g.add(o);}}
+function ribos(list,col){const g=G('ribosomi'),m=M(col);list.forEach(q=>g.add(S(sp(.05,8),m,q)));}
+function vacuole(p,rad,col){G('vacuolo',p).add(S(sp(1,32),M(col,.72,{side:D2,depthWrite:false,shininess:80}),null,rad,1));}
+function chloros(list){const g=G('cloro'),gm=M(0x2F6B24);
+ list.forEach(([p,r])=>{const o=new THREE.Group();o.position.set(...p);o.rotation.set(...r);o.scale.setScalar(1.3);
+  o.add(S(sp(1,20),M(0x4C8C3C,.6,{depthWrite:false}),null,[.3,.17,.17],1));
+  [-.45,0,.45].forEach(f=>{for(let j=0;j<3;j++)o.add(S(new THREE.CylinderGeometry(.05,.05,.025,10),gm,[f*.3,(j-1)*.05,0]));});
+  g.add(o);});}
+function glyco(p,rad){const g=G('glicogeno',p),m=M(0x6A4C9C),N=16;
+ for(let i=0;i<N;i++){const y=1-2*(i+.5)/N,r=Math.sqrt(1-y*y),a=i*2.4,k=rad*(.45+.55*((i*7)%5)/4);
+  g.add(S(sp(.045,8),m,[k*r*Math.cos(a),k*y,k*r*Math.sin(a)]));}}
+
+// ---------- i tre tipi di cellula ----------
+function buildAnimal(){
+ G('citoplasma').add(shell(sp(1.55,48),0xFCE4D6,.4,0));
+ G('membrana').add(shell(sp(1.6,48),0xE0A070,MEMB_O,2,null,{shininess:90}));
+ nucleus([-.4,.3,-.1],.5);
+ rer([-.1,-.25,-.85],[0,0,0],1);
+ rel([.75,-.5,-.55],[0,.5,.2],1);
+ golgi([.8,.5,.2],[.3,0,-.5],1);
+ mito([.5,-.2,.7],[0,0,.4]);mito([-.9,-.5,.6],[0,.6,-.2]);
+ {const g=G('lisosomi'),m=M(0xB25E2A);g.add(S(sp(.11,14),m,[-1,.1,-.7]),S(sp(.08,14),m,[-.9,.6,.3]));}
+ {let s=7;const rnd=()=>(s=s*16807%2147483647)/2147483647,l=[];
+  for(let i=0;i<12;i++){const a=rnd()*PI*2,b=Math.acos(rnd()*2-1),r=.5+rnd()*.8;l.push([r*Math.sin(b)*Math.cos(a),r*Math.cos(b),r*Math.sin(b)*Math.sin(a)]);}
+  ribos(l,0x843C0C);}
+}
+function buildPlant(){
+ G('citoplasma').add(shell(rbox(1.68,1.28,1.28,.3),0xE2F0D9,.4,0));
+ G('membrana').add(shell(rbox(1.72,1.32,1.32,.32),0x5B8A3E,MEMB_O,2,null,{shininess:90}));
+ G('parete').add(shell(rbox(1.86,1.46,1.46,.42),0x6B8F47,WALL_O,3));
+ vacuole([.45,-.2,-.1],[.95,.62,.68],0x9CCDE8);
+ nucleus([-1,.4,.3],.36);
+ rer([-1.05,-.05,-.55],[0,.4,0],.8);
+ rel([-.2,.7,-.85],[0,0,0],.75);
+ golgi([1,.65,-.55],[.2,0,-.3],.85);
+ mito([1.3,.35,.75],[0,.3,.5],1);mito([-.9,-.75,-.4],[0,.6,-.2],1);
+ chloros([[[-.1,.95,.5],[0,.3,.2]],[[.9,.9,.35],[0,-.4,-.2]],[[1.35,-.35,.8],[0,.5,.6]],[[-.5,-.9,.7],[0,.2,-.2]],[[.45,-1,.65],[0,-.3,.1]]]);
+ ribos([[-.55,.8,.6],[-.4,.95,.4],[-.7,.65,.8],[1,.2,-.8]],0x375623);
+}
+function buildFungus(){
+ G('citoplasma').add(shell(sp(1,48),0xEAE1F4,.4,0,[1.5,1.12,1.12]));
+ G('membrana').add(shell(sp(1,48),0x9B7FC6,MEMB_O,2,[1.54,1.16,1.16],{shininess:90}));
+ G('parete').add(shell(sp(1,48),0x5B4688,WALL_O,3,[1.67,1.29,1.29]));
+ vacuole([.5,-.2,-.15],[.52,.42,.44],0xC2AEE6);
+ nucleus([-.65,.3,.1],.4);
+ rer([-.5,-.45,-.45],[0,.3,0],.8);
+ rel([.35,.62,-.5],[0,0,0],.75);
+ golgi([.85,.25,.4],[.2,0,-.3],.85);
+ mito([-.1,-.5,.65],[0,.2,.3],1);mito([.15,.6,.55],[0,-.3,-.2],1);
+ glyco([-.9,-.3,.45],.18);glyco([.9,-.45,.3],.18);
+ ribos([[-.15,.15,.85],[.05,.3,.75],[-.3,.3,.85],[.3,-.7,.4],[.45,-.55,.55]],0x3F2A63);
+}
+const TYPES={
+ animale:{sub:'la cellula animale',cyto:'#FCE4D6',rad:5.2,build:buildAnimal,ov:{},
+  keys:['membrana','citoplasma','nucleo','nucleolo','ribosomi','rer','rel','golgi','mito','lisosomi']},
+ vegetale:{sub:'la cellula vegetale',cyto:'#E2F0D9',rad:6.2,build:buildPlant,
+  keys:['parete','membrana','citoplasma','nucleo','nucleolo','ribosomi','rer','rel','golgi','mito','cloro','vacuolo'],
+  ov:{parete:{d:"Involucro rigido di cellulosa: dà forma e sostegno, protegge dagli shock osmotici.",c:'#6B8F47'},
+   membrana:{d:D.memb2,c:'#5B8A3E'},
+   nucleo:{d:D.nucleo+" Nelle cellule mature può essere spinto verso il bordo dal vacuolo."},
+   ribosomi:{c:'#375623'},
+   mito:{d:D.mito+" Presenti anche nelle piante."},
+   vacuolo:{l:'Vacuolo centrale',n:'Vacuolo centrale',d:"Grande sacca piena d'acqua: regola la pressione interna (turgore) e accumula sostanze. Svolge anche funzioni digestive, come i lisosomi nella cellula animale.",c:'#6FA8C9'}}},
+ fungina:{sub:'la cellula fungina',cyto:'#EAE1F4',rad:5.6,build:buildFungus,
+  keys:['parete','membrana','citoplasma','nucleo','nucleolo','ribosomi','rer','rel','golgi','mito','glicogeno','vacuolo'],
+  ov:{parete:{l:'Parete (chitina)',n:'Parete cellulare (chitina)',d:"Involucro rigido come nelle piante, ma fatto di chitina, non di cellulosa.",c:'#5B4688'},
+   membrana:{d:D.memb2,c:'#7B5FA8'},
+   ribosomi:{c:'#3F2A63'},
+   vacuolo:{d:"Presente anche nel fungo, in genere più piccolo che nelle piante: accumula sostanze e svolge anche funzioni digestive.",c:'#8E76C2'}}}
+};
+let type='animale',cur=null,dirty=1,open=true,shells=[],orgs=[],chips=[];
+const inf=k=>Object.assign({},B[k],TYPES[type].ov[k]);
+
+// ---------- taglio ("vista aperta") ----------
+const planes=[new THREE.Plane(new THREE.Vector3(1,0,0),0),new THREE.Plane(new THREE.Vector3(0,0,-1),0)];
+function setOpen(b){open=b;shellMats.forEach(m=>{m.clippingPlanes=b?planes:null;m.clipIntersection=true;m.needsUpdate=true;});
+ $('#bOpen').classList.toggle('on',b);$('#bOpen').textContent=b?'Vista aperta':'Vista intera';dirty=1;}
+
+// ---------- selezione ----------
+function buildChips(){const box=$('#groups');box.innerHTML='';chips=[];
+ GROUPS.forEach(([name,ks])=>{const list=ks.filter(k=>TYPES[type].keys.includes(k));if(!list.length)return;
+  const gd=document.createElement('div');gd.className='grp';gd.innerHTML='<div class="gl"></div><div class="row"></div>';gd.firstChild.textContent=name;
+  list.forEach(k=>{const o=inf(k),b=document.createElement('button'),d=document.createElement('i');
+   b.className='chip';b.dataset.k=k;b.setAttribute('aria-pressed','false');d.className='dot';
+   d.style.background=k=='citoplasma'?TYPES[type].cyto:o.c;b.append(d,o.l);
+   b.onclick=()=>sel(cur==k?null:k);gd.lastChild.appendChild(b);chips.push(b);});
+  box.appendChild(gd);});}
+function sel(k){cur=k;const o=k&&inf(k);
+ $('#t').textContent=o?o.n:'Tocca una struttura';$('#d').textContent=o?o.d:HINT;$('#d').className=o?'':'hint';
+ chips.forEach(c=>{const on=c.dataset.k==k;c.classList.toggle('on',on);c.setAttribute('aria-pressed',on);});
+ cell.children.forEach(g=>{const on=g.userData.key==k;g.traverse(m=>{if(!m.isMesh)return;const mt=m.material,u=mt.userData,fade=k&&!on;
+  mt.transparent=fade?true:u.t;mt.opacity=fade?u.o*.18:u.o;if(on)mt.emissive.copy(mt.color).multiplyScalar(.38);else mt.emissive.setHex(0);mt.needsUpdate=true;});});
+ dirty=1;}
+const rc=new THREE.Raycaster(), keyOf=o=>{while(o&&!o.userData.key)o=o.parent;return o&&o.userData.key;};
+function pick(e){const r=cv.getBoundingClientRect();
+ rc.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),cam);
+ let k=null;const h=rc.intersectObjects(orgs,true);
+ if(h.length){k=keyOf(h[0].object);if(k=='nucleo'&&h.some(x=>keyOf(x.object)=='nucleolo'))k='nucleolo';}
+ else{const s=rc.intersectObjects(shells,true).filter(x=>!(open&&x.point.x<0&&x.point.z>0));
+  if(s.length)k=keyOf(s[0].object);}
+ sel(k&&k!=cur?k:null);}
+
+// ---------- cambio tipo ----------
+function clear(){while(cell.children.length){const c=cell.children[0];cell.remove(c);
+ c.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});}shellMats.length=0;}
+function setType(t){type=t;clear();TYPES[t].build();
+ shells=cell.children.filter(g=>['citoplasma','membrana','parete'].includes(g.userData.key));
+ orgs=cell.children.filter(g=>!shells.includes(g));
+ buildChips();
+ document.querySelectorAll('.pill').forEach(p=>{const on=p.dataset.type==t;p.classList.toggle('on',on);p.setAttribute('aria-pressed',on);});
+ $('#sub').textContent='Scienze 2A — '+TYPES[t].sub;
+ rad=TYPES[t].rad;setOpen(open);sel(null);}
+document.querySelectorAll('.pill').forEach(p=>p.onclick=()=>setType(p.dataset.type));
+
+// ---------- camera e comandi ----------
+let th=-.7,ph=1.25,rad=5.2,fit=1,auto=false;
+function reset(){th=-.7;ph=1.25;rad=TYPES[type].rad;dirty=1;}
+const ptr=new Map();let moved=0,t0=0,pd=0;
+const pinch=()=>{if(ptr.size!=2)return 0;const [a,b]=[...ptr.values()];return Math.hypot(a[0]-b[0],a[1]-b[1]);};
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);if(ptr.size==1){moved=0;t0=performance.now();}pd=pinch();});
+cv.addEventListener('pointermove',e=>{const o=ptr.get(e.pointerId);if(!o)return;const n=[e.clientX,e.clientY];
+ if(ptr.size==1){const dx=n[0]-o[0],dy=n[1]-o[1];moved+=Math.abs(dx)+Math.abs(dy);th-=dx*.008;ph=clamp(ph-dy*.008,.15,PI-.15);}
+ ptr.set(e.pointerId,n);
+ if(ptr.size==2){const d=pinch();if(pd)rad=clamp(rad*pd/d,3,9);pd=d;moved+=10;}
+ dirty=1;});
+const up=e=>{ptr.delete(e.pointerId);pd=0;if(e.type=='pointerup'&&ptr.size==0&&moved<6&&performance.now()-t0<500)pick(e);};
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+cv.addEventListener('wheel',e=>{e.preventDefault();rad=clamp(rad*(1+e.deltaY*.001),3,9);dirty=1;},{passive:false});
+$('#bOpen').onclick=()=>setOpen(!open);
+$('#bReset').onclick=reset;
+$('#bRot').onclick=e=>{auto=!auto;e.currentTarget.classList.toggle('on',auto);};
+new ResizeObserver(()=>{const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();
+ fit=Math.max(1,1.15/cam.aspect);dirty=1;}).observe(stage);
+
+function loop(){requestAnimationFrame(loop);if(auto){th+=.004;dirty=1;}if(!dirty)return;dirty=0;
+ const d=rad*fit;cam.position.set(d*Math.sin(ph)*Math.sin(th),d*Math.cos(ph),d*Math.sin(ph)*Math.cos(th));cam.lookAt(0,0,0);R.render(scene,cam);}
+setType('animale');loop();
+</script>
+</body>
+</html>
