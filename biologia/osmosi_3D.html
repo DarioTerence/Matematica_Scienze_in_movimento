@@ -5,13 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Osmosi 3D — Scienze 2A</title>
 <style>
-:root{--bg:#F7F5F0;--panel:#fff;--ink:#26282B;--sub:#5B5E63;--line:#D8D4CA;--acc:#B5530F;--stage:#FDFCF9;
+:root{--bg:#0a0f1a;--panel:#111a2b;--ink:#e6ecf5;--sub:#8fa0b8;--line:#22304a;--acc:#8ee0a6;--stage:#FDFCF9;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1D2023;--panel:#262A2E;--ink:#ECECEC;--sub:#B7BBC0;--line:#3A3E42;--acc:#F4A261;--stage:#15171A}}
-:root[data-theme="dark"]{--bg:#1D2023;--panel:#262A2E;--ink:#ECECEC;--sub:#B7BBC0;--line:#3A3E42;--acc:#F4A261;--stage:#15171A}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Calibri,"Segoe UI",Arial,sans-serif}
+body{margin:0;background-color:var(--bg);background-image:radial-gradient(ellipse at 50% 0%,rgba(74,134,240,.16),transparent 60%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px);background-size:100% 520px,36px 36px,36px 36px;background-repeat:no-repeat,repeat,repeat;background-position:top center,0 0,0 0;color:var(--ink);font-family:Calibri,"Segoe UI",Arial,sans-serif}
 .wrap{max-width:1100px;margin:0 auto;padding:18px 18px 28px}
 h1{font-family:Cambria,Georgia,serif;font-size:clamp(20px,3vw,28px);margin:4px 0 2px;color:var(--acc)}
 .sub{color:var(--sub);font-size:14px;margin-bottom:14px}
@@ -43,10 +41,8 @@ button{font-family:inherit;cursor:pointer}
 .view canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
 .status{margin-top:10px;font-size:14px;line-height:1.4;min-height:64px}
 .status b{color:var(--acc)}
-.warn{color:#B00020;font-weight:bold}
-:root[data-theme="dark"] .warn{color:#FF8A80}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn{color:#FF8A80}}
-.anchor{background:#FFF6D9;border-left:4px solid #BF9000;padding:8px 12px;margin-top:16px;border-radius:6px;font-style:italic;color:#26282B}
+.warn{color:#FF8A80;font-weight:bold}
+.anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:8px 12px;margin-top:16px;border-radius:6px;font-style:italic;color:var(--ink)}
 .small{font-size:13px;color:var(--sub);margin-top:8px}
 .pill.on{outline:3px solid var(--acc);outline-offset:1px}
 .seg{display:none;gap:8px;margin-bottom:12px}
@@ -328,7 +324,7 @@ document.querySelectorAll('#seg [data-v]').forEach(b=>b.addEventListener('click'
  $('#duo').dataset.show=b.dataset.v;document.querySelectorAll('#seg .pill').forEach(x=>x.classList.toggle('on',x===b));}));
 setC(50);loop(performance.now());
 </script>
-<a href="../index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(10,15,26,.92);color:#e6ecf5;border:1px solid #22304a;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Torna a Scienza in Movimento
+<a href="../index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Torna a Scienza in Movimento
 </a>
 </body>
 </html>

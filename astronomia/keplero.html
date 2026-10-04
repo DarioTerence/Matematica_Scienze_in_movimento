@@ -6,24 +6,20 @@
 <title>Le leggi di Keplero e la gravitazione</title>
 <style>
 :root{
-  --bg:#F7F5F0; --panel:#FFFFFF; --text:#26282B; --line:#D8D4CA; --stage:#FDFCF9;
-  --accent:#B5530F; --sun:#F2B705; --planet:#2F6F9F; --focus:#7A5BA6; --muted:#6B6A66;
-  --st-bg:#05060A; --st-border:#1B1F2B; --st-orbit:#8A93A6; --st-axis:#4B5263; --st-text:#ECEAE4; --st-muted:#A9B0BF;
+  --bg:#0a0f1a; --panel:#111a2b; --text:#e6ecf5; --line:#22304a; --stage:#0d1422;
+  --accent:#c9aaff; --sun:#F7C948; --planet:#6FB1E0; --focus:#B79BE0; --muted:#8fa0b8;
+  --st-bg:#05060A; --st-border:#22304a; --st-orbit:#8A93A6; --st-axis:#4B5263; --st-text:#ECEAE4; --st-muted:#A9B0BF;
   --st-sun:#FFC93C; --st-planet:#5CC8FF; --st-d1:#FF9A4D; --st-focus:#C3A6FF;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#1E1F22; --panel:#2A2B2F; --text:#ECEAE4; --line:#44464B; --stage:#26272B;
-    --accent:#F4A261; --sun:#F7C948; --planet:#6FB1E0; --focus:#B79BE0; --muted:#A5A39C;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#1E1F22; --panel:#2A2B2F; --text:#ECEAE4; --line:#44464B; --stage:#26272B;
-  --accent:#F4A261; --sun:#F7C948; --planet:#6FB1E0; --focus:#B79BE0; --muted:#A5A39C;
+:root[data-theme="light"]{
+  --bg:#F7F5F0; --panel:#FFFFFF; --text:#26282B; --line:#D8D4CA; --stage:#FDFCF9;
+  --accent:#B5530F; --sun:#F2B705; --planet:#2F6F9F; --focus:#7A5BA6; --muted:#6B6A66;
+  --st-border:#1B1F2B;
 }
 *{box-sizing:border-box}
+:root[data-theme="light"] body{background-image:none}
 [hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Calibri,Carlito,"Segoe UI",sans-serif;font-size:16px;line-height:1.4}
+body{margin:0;background-color:var(--bg);background-image:radial-gradient(ellipse at 50% 0%,rgba(74,134,240,.16),transparent 60%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px);background-size:100% 520px,36px 36px,36px 36px;background-repeat:no-repeat,repeat,repeat;background-position:top center,0 0,0 0;color:var(--text);font-family:Calibri,Carlito,"Segoe UI",sans-serif;font-size:16px;line-height:1.4}
 h1,h2,h3{font-family:Cambria,"Noto Serif",Georgia,serif;margin:0;font-weight:700}
 .app{max-width:1200px;margin:0 auto;padding:12px 14px 20px}
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
@@ -36,9 +32,8 @@ button{font:inherit;color:var(--text);cursor:pointer}
 .dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
 .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
 .tab{min-height:44px;padding:8px 4px;border:1.5px solid var(--line);border-radius:12px;background:var(--panel);font-weight:600;font-size:.95rem}
-.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
-:root[data-theme="dark"] .tab[aria-selected="true"]{color:#1E1F22}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tab[aria-selected="true"]{color:#1E1F22}}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#0a0f1a}
+:root[data-theme="light"] .tab[aria-selected="true"]{color:#fff}
 .view{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;align-items:start}
 .stage{background:var(--st-bg);border:1px solid var(--st-border);border-radius:14px;padding:6px}
 .stage svg{display:block;width:100%;height:auto;touch-action:manipulation}
@@ -70,7 +65,8 @@ button{font:inherit;color:var(--text);cursor:pointer}
 .tbl td,.tbl th{padding:3px 4px;text-align:right;font-variant-numeric:tabular-nums}
 .tbl td:first-child,.tbl th:first-child{text-align:left}
 .tbl tr[data-i]{cursor:pointer}
-.tbl tr.on{background:rgba(181,83,15,.16)}
+.tbl tr.on{background:rgba(201,170,255,.18)}
+:root[data-theme="light"] .tbl tr.on{background:rgba(181,83,15,.16)}
 .tbl tr.on td:first-child{font-weight:700}
 /* SVG */
 svg text{fill:var(--st-text);font-family:Calibri,Carlito,"Segoe UI",sans-serif;font-size:18px}
@@ -1038,7 +1034,7 @@ svg .muted{fill:var(--st-muted)}
 
   $('themeBtn').addEventListener('click',()=>{
     const r=document.documentElement;
-    const dark=r.dataset.theme?r.dataset.theme==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const dark=r.dataset.theme?r.dataset.theme==='dark':true;
     r.dataset.theme=dark?'light':'dark';
   });
 
@@ -1064,7 +1060,7 @@ svg .muted{fill:var(--st-muted)}
   requestAnimationFrame(frame);
 })();
 </script>
-<a href="../index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(10,15,26,.92);color:#e6ecf5;border:1px solid #22304a;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Torna a Scienza in Movimento
+<a href="../index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Torna a Scienza in Movimento
 </a>
 </body>
 </html>
