@@ -3,14 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Prof. T - Animazioni di matematica e scienze</title>
+  <title>La Matematica e le Scienze in Movimento - Prof. T</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="hero">
-  <h1 class="firma">Prof. T</h1>
-  <p class="sottotitolo">Matematica e scienze, in movimento</p>
+<header class="hero contenitore">
+  <p class="etichetta">Archivio di animazioni didattiche</p>
+  <h1 class="titolo-sito">La Matematica e le Scienze<br>in Movimento</h1>
+  <p class="riga-firma"><span class="firma">Prof. T</span><span class="sottotitolo">Studiare guardando</span></p>
   <div class="filo"></div>
 </header>
 
@@ -19,49 +20,52 @@
   <!--
     PER ATTIVARE UNA DISCIPLINA:
     1. crea la cartella (es. fisica/) con dentro il suo index.html (copia quello di biologia)
-    2. qui sotto sostituisci <div class="card in-arrivo ..."> con <a class="card ..." href="fisica/">
+    2. qui sotto sostituisci <div class="card fisica in-arrivo"> con <a class="card fisica" href="fisica/">
        e chiudi con </a> invece di </div>; togli la riga "In arrivo" o scrivi una descrizione.
+    Il colore dipende dalla classe della disciplina (aritmetica, algebra, geometria, statistica,
+    fisica, chimica, biologia, anatomia, ecologia, terra, astronomia) e dall'area (numeri, materia,
+    viventi, cosmo) scritta sulla section.
   -->
 
-  <section class="blocco">
-    <h2>Matematica</h2>
+  <section class="blocco numeri">
+    <h2>Numeri e forme</h2>
     <div class="griglia">
-      <div class="card blu in-arrivo"><h3>Aritmetica</h3><p>In arrivo</p></div>
-      <div class="card blu in-arrivo"><h3>Algebra</h3><p>In arrivo</p></div>
-      <div class="card teal in-arrivo"><h3>Geometria</h3><p>In arrivo</p></div>
-      <div class="card blu in-arrivo"><h3>Statistica</h3><p>In arrivo</p></div>
+      <div class="card aritmetica in-arrivo"><h3>Aritmetica</h3><p>In arrivo</p></div>
+      <div class="card algebra in-arrivo"><h3>Algebra</h3><p>In arrivo</p></div>
+      <div class="card geometria in-arrivo"><h3>Geometria</h3><p>In arrivo</p></div>
+      <div class="card statistica in-arrivo"><h3>Statistica</h3><p>In arrivo</p></div>
     </div>
   </section>
 
-  <section class="blocco">
-    <h2>Fisica e chimica</h2>
+  <section class="blocco materia">
+    <h2>Materia ed energia</h2>
     <div class="griglia">
-      <div class="card arancio in-arrivo"><h3>Fisica</h3><p>In arrivo</p></div>
-      <div class="card arancio in-arrivo"><h3>Chimica</h3><p>In arrivo</p></div>
+      <div class="card fisica in-arrivo"><h3>Fisica</h3><p>In arrivo</p></div>
+      <div class="card chimica in-arrivo"><h3>Chimica</h3><p>In arrivo</p></div>
     </div>
   </section>
 
-  <section class="blocco">
-    <h2>Biologia</h2>
+  <section class="blocco viventi">
+    <h2>Viventi</h2>
     <div class="griglia">
-      <a class="card arancio" href="biologia/"><h3>Biologia</h3><p>Cellula, osmosi</p></a>
-      <div class="card arancio in-arrivo"><h3>Anatomia</h3><p>In arrivo</p></div>
-      <div class="card arancio in-arrivo"><h3>Ecologia</h3><p>In arrivo</p></div>
+      <a class="card biologia" href="biologia/"><h3>Biologia</h3><p>Cellula, osmosi</p></a>
+      <div class="card anatomia in-arrivo"><h3>Anatomia</h3><p>In arrivo</p></div>
+      <div class="card ecologia in-arrivo"><h3>Ecologia</h3><p>In arrivo</p></div>
     </div>
   </section>
 
-  <section class="blocco">
-    <h2>Terra e spazio</h2>
+  <section class="blocco cosmo">
+    <h2>Terra e cosmo</h2>
     <div class="griglia">
-      <div class="card arancio in-arrivo"><h3>Scienze della Terra</h3><p>In arrivo</p></div>
-      <a class="card arancio" href="astronomia/"><h3>Astronomia</h3><p>Leggi di Keplero, vita delle stelle</p></a>
+      <div class="card terra in-arrivo"><h3>Scienze della Terra</h3><p>In arrivo</p></div>
+      <a class="card astronomia" href="astronomia/"><h3>Astronomia</h3><p>Leggi di Keplero, vita delle stelle</p></a>
     </div>
   </section>
 
 </main>
 
 <footer>
-  <span class="firma">Prof. T</span> &middot; animazioni didattiche per studiare e ripassare
+  <span class="firma">Prof. T</span> &middot; Animazioni didattiche per studiare e ripassare
 </footer>
 
 </body>

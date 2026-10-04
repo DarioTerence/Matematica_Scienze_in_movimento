@@ -1,23 +1,60 @@
-/* Stile condiviso del sito di Prof. T */
+/* Stile condiviso del sito "La Matematica e le Scienze in Movimento" (Prof. T)
+   Tema scuro, ispirato alla strumentazione scientifica. Solo CSS, nessun JavaScript. */
+
 :root {
-  --sfondo: #faf6ec;
-  --testo: #23272e;
-  --testo-soft: #5b6270;
-  --blu: #2f5d9e;
-  --teal: #1f8a8a;
-  --arancio: #d9772b;
-  --bordo: #e6dfcd;
+  /* Base */
+  --sfondo: #0a0f1a;
+  --pannello: #111a2b;
+  --pannello-off: #0d1422;
+  --linea: #22304a;
+  --linea-off: #1b2840;
+  --testo: #e6ecf5;
+  --testo-soft: #8fa0b8;
+  --testo-card: #c3cfe0;
+  --testo-dim: #6f819c;
+
+  /* Colore delle quattro aree (titolo di blocco) */
+  --area-numeri: #6aa5ff;
+  --area-materia: #ffb454;
+  --area-viventi: #6fd08c;
+  --area-cosmo: #b38cff;
+
+  /* Sfumature per disciplina: dentro ogni area, dal più chiaro al più scuro */
+  --aritmetica: #9cc5ff;
+  --algebra: #6aa5ff;
+  --geometria: #4a86f0;
+  --statistica: #3470d8;
+
+  --fisica: #ffd08a;
+  --chimica: #e0902a;
+
+  --biologia: #8ee0a6;
+  --anatomia: #5cc47f;
+  --ecologia: #3fa862;
+
+  --astronomia: #c9aaff;
+  --terra: #9a6fe8;
+
+  --mono: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: var(--sfondo);
   color: var(--testo);
   font-family: Calibri, Carlito, "Segoe UI", Roboto, sans-serif;
   font-size: 1.05rem;
   line-height: 1.5;
+  /* alone in alto e griglia sottile, solo con gradienti CSS */
+  background-color: var(--sfondo);
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(74, 134, 240, 0.18), transparent 60%),
+    linear-gradient(rgba(143, 160, 184, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(143, 160, 184, 0.06) 1px, transparent 1px);
+  background-size: 100% 560px, 36px 36px, 36px 36px;
+  background-repeat: no-repeat, repeat, repeat;
+  background-position: top center, 0 0, 0 0;
 }
 
 h1, h2, h3, .firma {
@@ -30,35 +67,65 @@ a { color: inherit; text-decoration: none; }
   max-width: 960px;
   margin: 0 auto;
   padding: 0 20px;
+  counter-reset: sezione;
+}
+
+/* Etichetta piccola in monospazio */
+.etichetta {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--testo-soft);
 }
 
 /* ---------- Intestazione home ---------- */
 .hero {
-  text-align: center;
-  padding: 56px 20px 36px;
+  padding: 56px 20px 8px;
+}
+.hero .titolo-sito {
+  margin: 12px 0 14px;
+  font-size: clamp(2rem, 6.5vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.12;
+  color: var(--testo);
+}
+.hero .riga-firma {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 .hero .firma {
-  font-size: clamp(3.2rem, 12vw, 5.5rem);
+  font-size: 1.5rem;
   font-style: italic;
   font-weight: 700;
-  margin: 0;
-  line-height: 1;
-  background: linear-gradient(100deg, var(--blu), var(--teal) 55%, var(--arancio));
+  background: linear-gradient(100deg, #9cc5ff, #c9aaff);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 .hero .sottotitolo {
-  margin: 14px 0 0;
   color: var(--testo-soft);
-  font-size: 1.15rem;
+  font-size: 1.1rem;
 }
 .hero .filo {
+  width: 100%;
+  height: 1px;
+  margin: 26px 0 0;
+  background: var(--linea);
+  position: relative;
+}
+.hero .filo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -1px;
   width: 120px;
-  height: 4px;
-  border-radius: 2px;
-  margin: 22px auto 0;
-  background: linear-gradient(90deg, var(--blu), var(--teal), var(--arancio));
+  height: 3px;
+  background: linear-gradient(90deg, var(--area-numeri), var(--area-viventi), var(--area-materia), var(--area-cosmo));
 }
 
 /* ---------- Intestazione pagine interne ---------- */
@@ -69,79 +136,159 @@ a { color: inherit; text-decoration: none; }
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+  border-bottom: 1px solid var(--linea);
 }
 .testata .firma {
   font-style: italic;
   font-weight: 700;
-  font-size: 1.6rem;
-  color: var(--testo);
+  font-size: 1.3rem;
+  color: #9cc5ff;
 }
 .testata .indietro {
   color: var(--testo-soft);
   font-size: 0.95rem;
 }
-.testata .indietro:hover { text-decoration: underline; }
+.testata .indietro:hover { color: var(--testo); text-decoration: underline; }
 
 .titolo-pagina {
-  margin: 18px 0 6px;
+  margin: 26px 0 6px;
   font-size: 2.2rem;
+  color: var(--colore, var(--testo));
 }
 .intro-pagina {
   margin: 0 0 24px;
   color: var(--testo-soft);
 }
 
-/* ---------- Blocchi e card ---------- */
-.blocco { margin: 0 0 34px; }
+/* ---------- Blocchi (aree) ---------- */
+.blocco { margin: 30px 0 0; }
 .blocco h2 {
   font-size: 1.35rem;
-  margin: 0 0 12px;
-  padding-bottom: 6px;
-  border-bottom: 2px solid var(--bordo);
+  font-weight: 500;
+  margin: 0 0 14px;
+  padding: 2px 0 2px 12px;
+  border-left: 3px solid var(--area);
+  color: var(--testo);
+}
+/* numerazione automatica "Sezione 01", "Sezione 02", ... */
+.blocco h2::before {
+  counter-increment: sezione;
+  content: "Sezione " counter(sezione, decimal-leading-zero);
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--testo-dim);
 }
 
+.numeri  { --area: var(--area-numeri); }
+.materia { --area: var(--area-materia); }
+.viventi { --area: var(--area-viventi); }
+.cosmo   { --area: var(--area-cosmo); }
+
+/* ---------- Card ---------- */
 .griglia {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 14px;
+  gap: 12px;
+  counter-reset: scheda;
 }
 
 .card {
+  position: relative;
   display: block;
-  background: #fffdf7;
-  border: 1px solid var(--bordo);
-  border-left: 6px solid var(--colore, var(--blu));
-  border-radius: 10px;
-  padding: 14px 16px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background: var(--pannello);
+  border: 1px solid var(--linea);
+  border-radius: 2px;
+  padding: 12px 16px 14px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
-.card h3 { margin: 0 0 4px; font-size: 1.15rem; color: var(--colore, var(--blu)); }
+.card h3 {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--colore, var(--testo));
+}
+/* numerazione automatica delle schede: 01, 02, ... */
+.card h3::before {
+  counter-increment: scheda;
+  content: counter(scheda, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--testo-dim);
+}
 .card p { margin: 0; font-size: 0.95rem; color: var(--testo-soft); }
 
-a.card:hover {
+/* angoli segnati, come un mirino */
+.card::before,
+.card::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 0 solid var(--colore, var(--linea));
+}
+.card::before { top: -1px; left: -1px; border-top-width: 2px; border-left-width: 2px; }
+.card::after  { bottom: -1px; right: -1px; border-bottom-width: 2px; border-right-width: 2px; }
+
+/* Schede attive (con link): bordo acceso e leggero bagliore */
+a.card {
+  border-color: var(--colore);
+  box-shadow: 0 0 16px -6px var(--colore);
+}
+a.card p { color: var(--testo-card); }
+a.card:hover,
+a.card:focus-visible {
   transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(35, 39, 46, 0.12);
+  box-shadow: 0 0 22px -2px var(--colore);
+  outline: none;
 }
 
-.blu    { --colore: var(--blu); }
-.teal   { --colore: var(--teal); }
-.arancio { --colore: var(--arancio); }
+/* Colore di ogni disciplina */
+.aritmetica { --colore: var(--aritmetica); }
+.algebra    { --colore: var(--algebra); }
+.geometria  { --colore: var(--geometria); }
+.statistica { --colore: var(--statistica); }
+.fisica     { --colore: var(--fisica); }
+.chimica    { --colore: var(--chimica); }
+.biologia   { --colore: var(--biologia); }
+.anatomia   { --colore: var(--anatomia); }
+.ecologia   { --colore: var(--ecologia); }
+.terra      { --colore: var(--terra); }
+.astronomia { --colore: var(--astronomia); }
 
-/* Discipline senza animazioni */
+/* Discipline senza animazioni: spente, bordo tratteggiato */
 .card.in-arrivo {
-  opacity: 0.55;
-  border-left-color: var(--bordo);
+  background: var(--pannello-off);
+  border: 1px dashed var(--linea-off);
   cursor: default;
 }
-.card.in-arrivo h3 { color: var(--testo-soft); }
+.card.in-arrivo h3 { opacity: 0.6; }
+.card.in-arrivo p { color: var(--testo-dim); }
 
 /* ---------- Piè di pagina ---------- */
 footer {
-  margin-top: 40px;
+  margin-top: 48px;
   padding: 22px 20px 36px;
   text-align: center;
   color: var(--testo-soft);
   font-size: 0.9rem;
-  border-top: 1px solid var(--bordo);
+  border-top: 1px solid var(--linea);
 }
-footer .firma { font-style: italic; font-weight: 700; }
+footer .firma { font-style: italic; font-weight: 700; color: #9cc5ff; }
+
+/* Su schermi stretti il titolo va a capo da solo */
+@media (max-width: 560px) {
+  .hero .titolo-sito br { display: none; }
+}
+
+/* Chi preferisce meno movimento non vede lo spostamento delle schede */
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+  a.card:hover, a.card:focus-visible { transform: none; }
+}
