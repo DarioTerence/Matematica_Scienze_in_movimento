@@ -17,5 +17,8 @@ Il sito è statico: solo HTML e CSS scritti a mano, nessun framework e nessuna b
 2. Incollare una card nella pagina `index.html` di quella disciplina.
 3. Inserire nell'animazione il bottone "Torna a Scienza in Movimento" prima di `</body>`.
 
+## Crediti
+La firma "Prof. T" (`firma.svg`) è ricavata dal font Nothing You Could Do di Kimberly Geswein, licenza SIL Open Font License 1.1.
+
 ## Licenza
 Da definire.

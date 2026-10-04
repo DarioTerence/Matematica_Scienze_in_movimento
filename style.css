@@ -1,12 +1,3 @@
-/* Font della firma: Nothing You Could Do (Kimberly Geswein), licenza SIL OFL, ospitato qui (vedi fonts/LICENSE-OFL.txt) */
-@font-face {
-  font-family: "Nothing You Could Do";
-  src: url("fonts/nothing-you-could-do-latin-400-normal.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* Stile condiviso del sito "La Matematica e le Scienze in Movimento" (Prof. T)
    Tema scuro, ispirato alla strumentazione scientifica. Solo CSS, nessun JavaScript. */
 
@@ -44,7 +35,6 @@
   --astronomia: #c9aaff;
   --terra: #9a6fe8;
 
-  --penna: "Nothing You Could Do", "Segoe Script", "Bradley Hand", "Snell Roundhand", cursive;
   --mono: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
 }
 
@@ -114,16 +104,12 @@ a { color: inherit; text-decoration: none; }
   align-self: center;
   border-radius: 10px;
 }
-.hero .firma {
-  font-family: var(--penna);
-  font-size: 2.6rem;
-  font-weight: 400;
-  font-style: normal;
-  line-height: 1;
-  color: var(--testo);
-  text-shadow: 0 0 14px rgba(106, 165, 255, 0.75), 0 0 2px rgba(255, 255, 255, 0.5);
-  transform: rotate(-3deg);
-  display: inline-block;
+/* La firma "Prof. T" e' un'immagine SVG (firma.svg), ricavata dal font Nothing You Could Do, licenza SIL OFL */
+.hero .firma-img {
+  height: 3.3rem;
+  width: auto;
+  align-self: center;
+  margin: -0.5rem 0;
 }
 .hero .sottotitolo {
   color: var(--testo-soft);
@@ -289,17 +275,11 @@ footer {
   font-size: 0.9rem;
   border-top: 1px solid var(--linea);
 }
-footer .firma {
-  display: inline-block;
-  font-family: var(--penna);
-  font-size: 2.4rem;
-  font-weight: 400;
-  font-style: normal;
-  line-height: 1.2;
-  color: var(--testo);
-  text-shadow: 0 0 14px rgba(106, 165, 255, 0.75), 0 0 2px rgba(255, 255, 255, 0.5);
-  transform: rotate(-3deg);
-  margin-bottom: 4px;
+footer .firma-img {
+  display: block;
+  height: 3rem;
+  width: auto;
+  margin: -0.4rem auto 0;
 }
 footer .motto { display: block; }
 
