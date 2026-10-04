@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le leggi di Keplero e la gravitazione</title>
+<style>
+:root{
+  --bg:#F7F5F0; --panel:#FFFFFF; --text:#26282B; --line:#D8D4CA; --stage:#FDFCF9;
+  --accent:#B5530F; --sun:#F2B705; --planet:#2F6F9F; --focus:#7A5BA6; --muted:#6B6A66;
+  --st-bg:#05060A; --st-border:#1B1F2B; --st-orbit:#8A93A6; --st-axis:#4B5263; --st-text:#ECEAE4; --st-muted:#A9B0BF;
+  --st-sun:#FFC93C; --st-planet:#5CC8FF; --st-d1:#FF9A4D; --st-focus:#C3A6FF;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1E1F22; --panel:#2A2B2F; --text:#ECEAE4; --line:#44464B; --stage:#26272B;
+    --accent:#F4A261; --sun:#F7C948; --planet:#6FB1E0; --focus:#B79BE0; --muted:#A5A39C;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1E1F22; --panel:#2A2B2F; --text:#ECEAE4; --line:#44464B; --stage:#26272B;
+  --accent:#F4A261; --sun:#F7C948; --planet:#6FB1E0; --focus:#B79BE0; --muted:#A5A39C;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Calibri,Carlito,"Segoe UI",sans-serif;font-size:16px;line-height:1.4}
+h1,h2,h3{font-family:Cambria,"Noto Serif",Georgia,serif;margin:0;font-weight:700}
+.app{max-width:1200px;margin:0 auto;padding:12px 14px 20px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+h1{font-size:1.45rem}
+button{font:inherit;color:var(--text);cursor:pointer}
+.pill{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:6px 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--panel)}
+.pill[aria-pressed="true"]{outline:3px solid var(--accent);outline-offset:1px}
+.pill:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.pill.small{min-height:34px;padding:4px 12px;font-size:.9rem}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.tab{min-height:44px;padding:8px 4px;border:1.5px solid var(--line);border-radius:12px;background:var(--panel);font-weight:600;font-size:.95rem}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .tab[aria-selected="true"]{color:#1E1F22}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tab[aria-selected="true"]{color:#1E1F22}}
+.view{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;align-items:start}
+.stage{background:var(--st-bg);border:1px solid var(--st-border);border-radius:14px;padding:6px}
+.stage svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.caption{margin:6px 6px 2px;font-size:.85rem;color:var(--muted)}
+.formula{text-align:center;color:var(--st-text);font-family:Cambria,"Noto Serif",Georgia,serif;font-size:clamp(1.3rem,5vw,1.9rem);padding:6px 4px 2px}
+.formula .fm{padding:0 5px;border-radius:7px;font-weight:700}
+.formula .fm1{color:var(--st-d1)} .formula .fm2{color:var(--st-planet)} .formula .fmd{color:var(--st-focus)}
+.formula .fm.on{background:rgba(255,255,255,.18)}
+.formula.dim .fm:not(.on){opacity:.4}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.panel h2{font-size:1.15rem;margin-bottom:4px}
+.panel p{margin:0 0 10px}
+.group{margin-top:12px}
+.group h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;font-family:Calibri,Carlito,"Segoe UI",sans-serif}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.readout{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 0;margin:8px 0 0}
+.readout .note{font-size:.85rem;color:var(--muted);margin-bottom:4px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0}
+.row .lab{display:flex;align-items:center;gap:7px}
+.row b{font-variant-numeric:tabular-nums;text-align:right}
+.bar{height:8px;background:var(--line);border-radius:4px;margin:4px 0 6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0}
+.slider{display:flex;align-items:center;gap:10px;margin-top:8px}
+.slider label{min-width:4.5em}
+.slider input{flex:1;accent-color:var(--accent);min-height:32px}
+.slider output{min-width:4em;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.tbl{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:6px}
+.tbl th{font-weight:600;color:var(--muted);font-size:.8rem}
+.tbl td,.tbl th{padding:3px 4px;text-align:right;font-variant-numeric:tabular-nums}
+.tbl td:first-child,.tbl th:first-child{text-align:left}
+.tbl tr[data-i]{cursor:pointer}
+.tbl tr.on{background:rgba(181,83,15,.16)}
+.tbl tr.on td:first-child{font-weight:700}
+/* SVG */
+svg text{fill:var(--st-text);font-family:Calibri,Carlito,"Segoe UI",sans-serif;font-size:18px}
+svg text.small{font-size:15px}
+svg text.big{font-size:24px;font-weight:700}
+#labelC,#clockC{paint-order:stroke;stroke:#05060A;stroke-width:4px;stroke-linejoin:round}
+svg .muted{fill:var(--st-muted)}
+.ring{display:none;fill:none;stroke:#FFFFFF;stroke-width:3}
+.sel .ring{display:block}
+.hit{fill:transparent;cursor:pointer}
+@media (max-width:760px){
+  .view{display:block}
+  .view>*+*{margin-top:14px}
+  .stickycol{position:sticky;top:0;z-index:5;background:var(--bg);padding-bottom:4px}
+  h1{font-size:1.2rem}
+  .tab{font-size:.85rem;padding:8px 2px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Le leggi di Keplero e la gravitazione</h1>
+    <button class="pill small" id="themeBtn" type="button">Tema chiaro/scuro</button>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Schede">
+    <button class="tab" role="tab" data-tab="0" aria-selected="true" type="button">I legge</button>
+    <button class="tab" role="tab" data-tab="1" aria-selected="false" type="button">II legge</button>
+    <button class="tab" role="tab" data-tab="2" aria-selected="false" type="button">III legge</button>
+    <button class="tab" role="tab" data-tab="3" aria-selected="false" type="button">Gravitazione</button>
+  </nav>
+
+  <!-- ============ Scheda 1: prima legge ============ -->
+  <section class="view" id="view0">
+    <div class="stickycol">
+      <div class="stage">
+        <svg id="svg0" viewBox="0 0 600 480" role="img" aria-label="Orbita ellittica di un pianeta con il Sole in un fuoco">
+          <g id="stars"></g>
+          <ellipse id="orbit" fill="none" stroke="var(--st-orbit)" stroke-width="2.5"/>
+          <line id="axis" stroke="var(--st-axis)" stroke-width="1.5" stroke-dasharray="5 5"/>
+          <line id="d2" stroke="var(--st-focus)" stroke-width="2.5" stroke-dasharray="7 5"/>
+          <line id="d1" stroke="var(--st-d1)" stroke-width="2.5"/>
+          <g id="gPeri">
+            <circle class="ring" r="12"/>
+            <circle r="4" fill="var(--st-muted)"/>
+            <text class="muted" x="11" y="6">perielio</text>
+            <circle class="hit" r="18"/>
+          </g>
+          <g id="gAfe">
+            <circle class="ring" r="12"/>
+            <circle r="4" fill="var(--st-muted)"/>
+            <text class="muted" x="-11" y="6" text-anchor="end">afelio</text>
+            <circle class="hit" r="18"/>
+          </g>
+          <g id="gF2">
+            <circle class="ring" r="12"/>
+            <line x1="-6" y1="-6" x2="6" y2="6" stroke="var(--st-focus)" stroke-width="3"/>
+            <line x1="-6" y1="6" x2="6" y2="-6" stroke="var(--st-focus)" stroke-width="3"/>
+            <text id="f2Label" class="muted" y="28" text-anchor="middle">fuoco vuoto</text>
+            <circle class="hit" r="18"/>
+          </g>
+          <g id="gSun">
+            <circle class="ring"/>
+            <circle id="sunC" fill="var(--st-sun)" stroke="var(--st-d1)" stroke-width="1.5"/>
+            <text id="sunLabel" text-anchor="middle">Sole</text>
+            <circle class="hit" r="18"/>
+          </g>
+          <g id="gPlanet">
+            <circle class="ring"/>
+            <circle id="planC" fill="var(--st-planet)"/>
+            <circle class="hit" r="18"/>
+          </g>
+        </svg>
+      </div>
+      <p class="caption">Scala non realistica: Sole e pianeta sono ingranditi. Le eccentricità dei pulsanti sono quelle reali.</p>
+    </div>
+
+    <aside class="panel">
+      <h2 id="infoTitle"></h2>
+      <p id="infoText"></p>
+
+      <div class="readout">
+        <div class="note">Distanze in unità del semiasse maggiore a</div>
+        <div class="row"><span>Eccentricità e</span><b id="rE"></b></div>
+        <div class="row"><span>Perielio, 1 − e</span><b id="rPeri"></b></div>
+        <div class="row"><span>Afelio, 1 + e</span><b id="rAfe"></b></div>
+        <div id="distRows">
+          <div class="row"><span class="lab"><i class="dot" style="background:var(--st-d1)"></i><span>d<sub>1</sub> dal Sole</span></span><b id="rD1"></b></div>
+          <div class="row"><span class="lab"><i class="dot" style="background:var(--st-focus)"></i><span>d<sub>2</sub> dal fuoco vuoto</span></span><b id="rD2"></b></div>
+          <div class="row"><span>d<sub>1</sub> + d<sub>2</sub></span><b id="rSum"></b></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Orbita</h3>
+        <div class="btns" id="presets">
+          <button class="pill" type="button" data-e="0.017">Terra</button>
+          <button class="pill" type="button" data-e="0.093">Marte</button>
+          <button class="pill" type="button" data-e="0.206">Mercurio</button>
+          <button class="pill" type="button" data-e="0.967">Cometa di Halley</button>
+        </div>
+        <div class="slider">
+          <label for="eSlider">Eccentricità</label>
+          <input id="eSlider" type="range" min="0" max="0.97" step="0.001" value="0.5">
+          <output id="eOut" for="eSlider"></output>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Mostra</h3>
+        <div class="btns">
+          <button class="pill" type="button" id="distBtn" aria-pressed="true">Distanze dai fuochi</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Selezione</h3>
+        <div class="btns" id="selBtns">
+          <button class="pill" type="button" data-sel="sun" aria-pressed="false"><i class="dot" style="background:var(--st-sun)"></i>Sole</button>
+          <button class="pill" type="button" data-sel="f2" aria-pressed="false"><i class="dot" style="background:var(--st-focus)"></i>Secondo fuoco</button>
+          <button class="pill" type="button" data-sel="planet" aria-pressed="false"><i class="dot" style="background:var(--st-planet)"></i>Pianeta</button>
+          <button class="pill" type="button" data-sel="peri" aria-pressed="false"><i class="dot" style="background:var(--muted)"></i>Perielio</button>
+          <button class="pill" type="button" data-sel="afe" aria-pressed="false"><i class="dot" style="background:var(--muted)"></i>Afelio</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Moto</h3>
+        <div class="btns">
+          <button class="pill" type="button" id="playBtn">Pausa</button>
+          <button class="pill" type="button" id="resetBtn">Riavvia</button>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ============ Scheda 2: seconda legge ============ -->
+  <section class="view" id="view1" hidden>
+    <div class="stickycol">
+      <div class="stage">
+        <svg id="svgB" viewBox="0 0 600 480" role="img" aria-label="Orbita con settori di area uguale percorsi in tempi uguali">
+          <g id="starsB"></g>
+          <g id="secB"></g>
+          <ellipse id="orbitB" fill="none" stroke="var(--st-orbit)" stroke-width="2.5"/>
+          <g id="mkB"></g>
+          <line id="rvB" stroke="var(--st-d1)" stroke-width="2"/>
+          <g id="gPeriB">
+            <circle r="4" fill="var(--st-muted)"/>
+            <text class="muted" x="11" y="6">perielio</text>
+          </g>
+          <g id="gAfeB">
+            <circle r="4" fill="var(--st-muted)"/>
+            <text class="muted" x="-11" y="6" text-anchor="end">afelio</text>
+          </g>
+          <g id="gSunB">
+            <circle id="sunB" fill="var(--st-sun)" stroke="var(--st-d1)" stroke-width="1.5"/>
+            <text id="sunLabelB" text-anchor="middle">Sole</text>
+          </g>
+          <line id="velB" stroke="#FFFFFF" stroke-width="3"/>
+          <polygon id="velHeadB" fill="#FFFFFF"/>
+          <circle id="planB" fill="var(--st-planet)"/>
+        </svg>
+      </div>
+      <p class="caption">Scala non realistica. La freccia bianca è la velocità: la sua lunghezza è relativa al valore massimo di questa orbita.</p>
+    </div>
+
+    <aside class="panel">
+      <h2 id="infoTitleB"></h2>
+      <p id="infoTextB"></p>
+
+      <div class="readout">
+        <div class="note">Distanze e archi in unità del semiasse maggiore a</div>
+        <div class="row"><span>Eccentricità e</span><b id="rEB"></b></div>
+        <div class="row"><span>Distanza dal Sole</span><b id="rDB"></b></div>
+        <div class="row"><span>Velocità, in volte la media</span><b id="rVB"></b></div>
+        <div class="bar"><i id="vBarB"></i></div>
+        <div id="rowsLiveB">
+          <div class="row"><span class="lab"><i class="dot" style="background:var(--st-planet)"></i><span>Arco percorso</span></span><b id="rArcB"></b></div>
+          <div class="row"><span class="lab"><i class="dot" style="background:var(--st-planet)"></i><span>Area spazzata, % dell'ellisse</span></span><b id="rAreaB"></b></div>
+        </div>
+        <div id="rowsAllB" hidden>
+          <div class="row"><span>Settore più piccolo, % dell'ellisse</span><b id="rMinB"></b></div>
+          <div class="row"><span>Settore più grande, % dell'ellisse</span><b id="rMaxB"></b></div>
+        </div>
+        <div id="rowsCmpB" hidden>
+          <div class="row"><span class="lab"><i class="dot" style="background:var(--st-d1)"></i><span>Arco al perielio</span></span><b id="rArcPB"></b></div>
+          <div class="row"><span class="lab"><i class="dot" style="background:var(--st-d1)"></i><span>Area al perielio, %</span></span><b id="rAreaPB"></b></div>
+          <div class="row"><span class="lab"><i class="dot" style="background:var(--st-focus)"></i><span>Arco all'afelio</span></span><b id="rArcAB"></b></div>
+          <div class="row"><span class="lab"><i class="dot" style="background:var(--st-focus)"></i><span>Area all'afelio, %</span></span><b id="rAreaAB"></b></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Mostra</h3>
+        <div class="btns" id="modeBtnsB">
+          <button class="pill" type="button" data-mode="live" aria-pressed="true">Settore che segue il pianeta</button>
+          <button class="pill" type="button" data-mode="all" aria-pressed="false">Tutti i settori</button>
+          <button class="pill" type="button" data-mode="cmp" aria-pressed="false">Perielio e afelio a confronto</button>
+          <button class="pill" type="button" id="vecBtnB" aria-pressed="true">Freccia della velocità</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Intervallo di tempo, in frazione del periodo</h3>
+        <div class="btns" id="nBtnsB">
+          <button class="pill" type="button" data-n="12" aria-pressed="true">1/12</button>
+          <button class="pill" type="button" data-n="8" aria-pressed="false">1/8</button>
+          <button class="pill" type="button" data-n="6" aria-pressed="false">1/6</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Orbita</h3>
+        <div class="btns" id="presetsB">
+          <button class="pill" type="button" data-e="0.017">Terra</button>
+          <button class="pill" type="button" data-e="0.206">Mercurio</button>
+          <button class="pill" type="button" data-e="0.967">Cometa di Halley</button>
+        </div>
+        <div class="slider">
+          <label for="eSliderB">Eccentricità</label>
+          <input id="eSliderB" type="range" min="0" max="0.97" step="0.001" value="0.6">
+          <output id="eOutB" for="eSliderB"></output>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Moto</h3>
+        <div class="btns">
+          <button class="pill" type="button" id="playBtnB">Pausa</button>
+          <button class="pill" type="button" id="resetBtnB">Riavvia</button>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ============ Scheda 3: terza legge ============ -->
+  <section class="view" id="view2" hidden>
+    <div class="stickycol">
+      <div class="stage">
+        <svg id="svgC" viewBox="0 0 600 480" role="img" aria-label="Orbite dei pianeti in tempo accelerato">
+          <g id="starsC"></g>
+          <g id="orbC"></g>
+          <circle cx="300" cy="240" r="8" fill="var(--st-sun)" stroke="var(--st-d1)" stroke-width="1.5"/>
+          <g id="plC"></g>
+          <circle id="ringC" class="ring" r="10" style="display:block"/>
+          <text id="labelC" class="small" x="0" y="0"></text>
+          <text id="clockC" x="16" y="466"></text>
+        </svg>
+        <svg id="svgCg" viewBox="0 0 600 480" role="img" aria-label="Grafico di T al quadrato contro a al cubo" style="display:none"></svg>
+      </div>
+      <p class="caption" id="capC">Scala non realistica: i raggi delle orbite sono proporzionali alla radice quadrata di a, le orbite sono disegnate circolari e il tempo è accelerato.</p>
+    </div>
+
+    <aside class="panel">
+      <h2 id="infoTitleC">Terza legge di Keplero</h2>
+      <p id="infoTextC"></p>
+
+      <div class="readout">
+        <div class="note" id="noteC">1 UA (unità astronomica) è la distanza media Terra–Sole, circa 150 milioni di km</div>
+        <div class="row"><span>Pianeta</span><b id="rNomeC"></b></div>
+        <div class="row"><span>Semiasse a, in UA</span><b id="rAC"></b></div>
+        <div class="row"><span>Periodo T, in anni</span><b id="rTC"></b></div>
+        <div class="row"><span>a³</span><b id="rA3C"></b></div>
+        <div class="row"><span>T²</span><b id="rT2C"></b></div>
+        <div class="row"><span>T² / a³</span><b id="rRC"></b></div>
+      </div>
+
+      <div class="group">
+        <h3>Pianeta</h3>
+        <div class="btns" id="plBtnsC"></div>
+        <div class="slider">
+          <label for="xSliderC">Pianeta X</label>
+          <input id="xSliderC" type="range" min="0.3" max="31" step="0.1" value="4">
+          <output id="xOutC" for="xSliderC"></output>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Vista</h3>
+        <div class="btns" id="viewBtnsC">
+          <button class="pill" type="button" data-view="orbit" aria-pressed="true">Orbite</button>
+          <button class="pill" type="button" data-view="graph" aria-pressed="false">Grafico T² e a³</button>
+        </div>
+      </div>
+
+      <div class="group" id="scaleGrpC" hidden>
+        <h3>Scala del grafico</h3>
+        <div class="btns" id="scaleBtnsC">
+          <button class="pill" type="button" data-scale="lin" aria-pressed="true">Lineare</button>
+          <button class="pill" type="button" data-scale="log" aria-pressed="false">Logaritmica</button>
+        </div>
+      </div>
+
+      <div class="group" id="timeGrpC">
+        <h3>Tempo accelerato</h3>
+        <div class="btns" id="spyBtnsC">
+          <button class="pill" type="button" data-spy="12" aria-pressed="false">Lento</button>
+          <button class="pill" type="button" data-spy="6" aria-pressed="true">Medio</button>
+          <button class="pill" type="button" data-spy="3" aria-pressed="false">Veloce</button>
+        </div>
+        <div class="btns" style="margin-top:8px">
+          <button class="pill" type="button" id="playBtnC">Pausa</button>
+          <button class="pill" type="button" id="resetBtnC">Riavvia</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Tabella</h3>
+        <table class="tbl" id="tblC">
+          <thead><tr><th>Pianeta</th><th>a (UA)</th><th>T (anni)</th><th>T²/a³</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ============ Scheda 4: gravitazione universale ============ -->
+  <section class="view" id="view3" hidden>
+    <div class="stickycol">
+      <div class="stage">
+        <div class="formula" id="formulaD">F = G · <span class="fm fm1" id="fm1">m<sub>1</sub></span> · <span class="fm fm2" id="fm2">m<sub>2</sub></span> / <span class="fm fmd" id="fmd">d<sup>2</sup></span></div>
+        <svg id="svgD" viewBox="0 0 600 480" role="img" aria-label="Forza di gravità tra due corpi">
+          <g id="sceneD">
+            <g id="starsD"></g>
+            <line id="dimD" stroke="var(--st-focus)" stroke-width="2.5"/>
+            <line id="dimLD" stroke="var(--st-focus)" stroke-width="2.5"/>
+            <line id="dimRD" stroke="var(--st-focus)" stroke-width="2.5"/>
+            <text id="dimTD" text-anchor="middle" style="fill:var(--st-focus)"></text>
+            <circle id="bd1" fill="var(--st-d1)" fill-opacity=".9"/>
+            <circle id="bd2" fill="var(--st-planet)" fill-opacity=".9"/>
+            <text id="lb1" class="small" text-anchor="middle" style="fill:var(--st-d1)"></text>
+            <text id="lb2" class="small" text-anchor="middle" style="fill:var(--st-planet)"></text>
+            <text class="small muted" x="300" y="318" text-anchor="middle">riferimento (F = 1)</text>
+            <line id="rl1" stroke="var(--st-muted)" stroke-width="4" stroke-dasharray="6 5"/>
+            <polygon id="rh1" fill="var(--st-muted)"/>
+            <line id="rl2" stroke="var(--st-muted)" stroke-width="4" stroke-dasharray="6 5"/>
+            <polygon id="rh2" fill="var(--st-muted)"/>
+            <text class="small" x="40" y="362">forza su m<tspan dy="3" font-size="11">1</tspan></text>
+            <text class="small" x="560" y="362" text-anchor="end">forza su m<tspan dy="3" font-size="11">2</tspan></text>
+            <text class="small" x="300" y="372" text-anchor="middle">forza attuale</text>
+            <line id="cl1" stroke="var(--st-sun)" stroke-width="6"/>
+            <polygon id="ch1" fill="var(--st-sun)"/>
+            <line id="cl2" stroke="var(--st-sun)" stroke-width="6"/>
+            <polygon id="ch2" fill="var(--st-sun)"/>
+            <text id="facD" class="big" x="300" y="402" text-anchor="middle"></text>
+          </g>
+          <g id="graphD" style="display:none"></g>
+          <g id="whyD" style="display:none"></g>
+        </svg>
+      </div>
+      <p class="caption" id="capD">Unità relative: il riferimento è m<sub>1</sub> = m<sub>2</sub> = 1 e d = 2. La lunghezza delle frecce si adatta, ma il rapporto tra attuale e riferimento è esatto.</p>
+    </div>
+
+    <aside class="panel">
+      <h2 id="infoTitleD"></h2>
+      <p id="infoTextD"></p>
+
+      <div class="readout">
+        <div class="note">Riferimento: m<sub>1</sub> = 1, m<sub>2</sub> = 1, d = 2</div>
+        <div class="row"><span>m<sub>1</sub></span><b id="rM1D"></b></div>
+        <div class="row"><span>m<sub>2</sub></span><b id="rM2D"></b></div>
+        <div class="row"><span>d</span><b id="rDD"></b></div>
+        <div class="row"><span>Forza rispetto al riferimento</span><b id="rFD"></b></div>
+      </div>
+
+      <div class="group">
+        <h3>Prove rapide</h3>
+        <div class="btns" id="quickD">
+          <button class="pill" type="button" data-q="base">Stato iniziale</button>
+          <button class="pill" type="button" data-q="m1x2"><span>Raddoppia m<sub>1</sub></span></button>
+          <button class="pill" type="button" data-q="mbx2"><span>Raddoppia m<sub>1</sub> e m<sub>2</sub></span></button>
+          <button class="pill" type="button" data-q="dh">Dimezza d</button>
+          <button class="pill" type="button" data-q="dx2">Raddoppia d</button>
+          <button class="pill" type="button" data-q="dx3">Triplica d</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Valori</h3>
+        <div class="slider"><label for="sM1D">m<sub>1</sub></label><input id="sM1D" type="range" min="1" max="4" step="1" value="1"><output id="oM1D"></output></div>
+        <div class="slider"><label for="sM2D">m<sub>2</sub></label><input id="sM2D" type="range" min="1" max="4" step="1" value="1"><output id="oM2D"></output></div>
+        <div class="slider"><label for="sDD">d</label><input id="sDD" type="range" min="1" max="6" step="0.5" value="2"><output id="oDD"></output></div>
+      </div>
+
+      <div class="group">
+        <h3>Vista</h3>
+        <div class="btns" id="viewBtnsD">
+          <button class="pill" type="button" data-view="scene" aria-pressed="true">Scena</button>
+          <button class="pill" type="button" data-view="graph" aria-pressed="false">Grafici</button>
+          <button class="pill" type="button" data-view="why" aria-pressed="false">Perché il quadrato</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Collegamento con Keplero</h3>
+        <p>Al perielio il pianeta è più vicino al Sole, quindi la forza è maggiore e il pianeta è più veloce.</p>
+        <div class="btns"><button class="pill" type="button" id="toKeplerD">Vai alla II legge, perielio e afelio</button></div>
+      </div>
+    </aside>
+  </section>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  const A=225, CX=300, CY=240, TAU=2*Math.PI, PERIOD=14;
+  const NS='http://www.w3.org/2000/svg';
+  const $=id=>document.getElementById(id);
+  const fmt=(x,mn=2,mx=2)=>x.toLocaleString('it-IT',{minimumFractionDigits:mn,maximumFractionDigits:mx});
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let cur=0;
+
+  function set(el,o){for(const k in o)el.setAttribute(k,o[k]);return el;}
+  function mk(tag,attrs,parent,text){
+    const el=document.createElementNS(NS,tag);set(el,attrs||{});
+    if(text!==undefined)el.textContent=text;
+    if(parent)parent.appendChild(el);
+    return el;
+  }
+  function stars(id,n,seed,w,h){
+    let s=seed;
+    const rnd=()=>{s=(s*1664525+1013904223)%4294967296;return s/4294967296;};
+    let out='';
+    for(let i=0;i<n;i++){
+      out+='<circle cx="'+(rnd()*w).toFixed(1)+'" cy="'+(rnd()*h).toFixed(1)+'" r="'+(0.6+rnd()).toFixed(2)+'" fill="#FFFFFF" opacity="'+(0.25+rnd()*0.55).toFixed(2)+'"/>';
+    }
+    $(id).innerHTML=out;
+  }
+
+  // ---------- Geometria orbitale condivisa (schede 1 e 2) ----------
+  function geo(e){return{e:e,c:A*e,b:A*Math.sqrt(1-e*e)};}
+  // Equazione di Keplero M = E - e sin E, risolta con il metodo di Newton
+  function solveE(M,e){
+    M=((M%TAU)+TAU)%TAU;
+    let E=e<0.8?M:Math.PI;
+    for(let i=0;i<50;i++){E-=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));}
+    return E;
+  }
+  function ptAt(M,e){
+    const E=solveE(M,e);
+    return [CX+A*Math.cos(E),CY-geo(e).b*Math.sin(E)];
+  }
+  function perim(e){
+    const b=geo(e).b,h=Math.pow((A-b)/(A+b),2);
+    return Math.PI*(A+b)*(1+3*h/(10+Math.sqrt(4-3*h)));
+  }
+  // velocità relativa alla media sull'orbita (1 = velocità media)
+  function vrel(E,e){
+    const b=geo(e).b;
+    return Math.hypot(A*Math.sin(E),b*Math.cos(E))*TAU/((1-e*Math.cos(E))*perim(e));
+  }
+  // settore con vertice nel Sole tra le anomalie medie M0 e M1
+  function sectorOf(M0,M1,e,N){
+    const g=geo(e);
+    const pts=[[CX+g.c,CY]];
+    let arc=0,prev=null;
+    // punti equispaziati nell'anomalia eccentrica E (non in M): così l'arco è ben campionato anche con e molto alta
+    const E0=solveE(M0,e);
+    const dE=((solveE(M1,e)-E0)%TAU+TAU)%TAU;
+    for(let i=0;i<=N;i++){
+      const E=E0+dE*i/N;
+      const p=[CX+A*Math.cos(E),CY-g.b*Math.sin(E)];
+      if(prev)arc+=Math.hypot(p[0]-prev[0],p[1]-prev[1]);
+      prev=p;pts.push(p);
+    }
+    const d='M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L')+' Z';
+    let a2=0;
+    for(let i=0;i<pts.length;i++){
+      const p=pts[i],q=pts[(i+1)%pts.length];
+      a2+=p[0]*q[1]-q[0]*p[1];
+    }
+    return{d:d,area:Math.abs(a2)/2,arc:arc};
+  }
+  const pct=(area,e)=>area/(Math.PI*A*geo(e).b)*100;
+
+  // ======================================================
+  // Scheda 1: prima legge
+  // ======================================================
+  const S1={e:0.5,M:0,playing:!reduced,dist:true,sel:null,preset:null};
+  const GROUPS1={sun:'gSun',f2:'gF2',planet:'gPlanet',peri:'gPeri',afe:'gAfe'};
+
+  function layout1(){
+    const g=geo(S1.e);
+    const rs=Math.max(5,Math.min(10,(A-g.c)*0.55));
+    const rp=Math.min(6,rs*0.7);
+    set($('orbit'),{cx:CX,cy:CY,rx:A,ry:g.b});
+    set($('axis'),{x1:CX-A,x2:CX+A,y1:CY,y2:CY});
+    $('gPeri').setAttribute('transform','translate('+(CX+A)+','+CY+')');
+    $('gAfe').setAttribute('transform','translate('+(CX-A)+','+CY+')');
+    $('gF2').setAttribute('transform','translate('+(CX-g.c)+','+CY+')');
+    $('gSun').setAttribute('transform','translate('+(CX+g.c)+','+CY+')');
+    $('f2Label').style.display=g.c<35?'none':'';
+    set($('sunC'),{r:rs});
+    set($('gSun').querySelector('.ring'),{r:rs+6});
+    set($('sunLabel'),{y:rs+22});
+    set($('planC'),{r:rp});
+    set($('gPlanet').querySelector('.ring'),{r:rp+6});
+    $('rE').textContent=fmt(g.e,2,3);
+    $('eOut').textContent=fmt(g.e,2,3);
+    $('rPeri').textContent=fmt(1-g.e);
+    $('rAfe').textContent=fmt(1+g.e);
+    $('eSlider').value=g.e;
+    updateInfo1();updateButtons1();drawPlanet1();
+  }
+  function drawPlanet1(){
+    const g=geo(S1.e);
+    const p=ptAt(S1.M,S1.e);
+    $('gPlanet').setAttribute('transform','translate('+p[0]+','+p[1]+')');
+    const sx=CX+g.c,fx=CX-g.c;
+    set($('d1'),{x1:p[0],y1:p[1],x2:sx,y2:CY});
+    set($('d2'),{x1:p[0],y1:p[1],x2:fx,y2:CY});
+    const d1=Math.hypot(p[0]-sx,p[1]-CY)/A,d2=Math.hypot(p[0]-fx,p[1]-CY)/A;
+    $('rD1').textContent=fmt(d1);$('rD2').textContent=fmt(d2);$('rSum').textContent=fmt(d1+d2);
+  }
+  function infoFor1(id){
+    const e=S1.e;
+    switch(id){
+      case 'sun': return ['Sole','Occupa uno dei due fuochi dell\'ellisse, non il centro: per questo il pianeta è ora più vicino, ora più lontano.'];
+      case 'f2': return ['Secondo fuoco','È solo un punto geometrico, non c\'è nessun corpo. Con e = 0 i due fuochi coincidono al centro e l\'orbita è una circonferenza.'];
+      case 'planet': return ['Pianeta','Si muove più veloce vicino al Sole e più lento lontano: lo vedremo nella seconda legge.'];
+      case 'peri': return ['Perielio','Punto dell\'orbita più vicino al Sole. Distanza dal Sole: 1 − e = '+fmt(1-e)+' (in unità del semiasse a).'];
+      case 'afe': return ['Afelio','Punto dell\'orbita più lontano dal Sole. Distanza dal Sole: 1 + e = '+fmt(1+e)+' (in unità del semiasse a).'];
+      default: return ['Prima legge di Keplero','L\'orbita di ogni pianeta è un\'ellisse e il Sole occupa uno dei due fuochi. Cambia l\'eccentricità o scegli un pianeta; attiva le distanze dai fuochi per vedere che la loro somma resta costante.'];
+    }
+  }
+  function updateInfo1(){const i=infoFor1(S1.sel);$('infoTitle').textContent=i[0];$('infoText').textContent=i[1];}
+  function updateButtons1(){
+    document.querySelectorAll('#presets .pill').forEach(b=>{
+      b.setAttribute('aria-pressed',S1.preset!==null&&Math.abs(parseFloat(b.dataset.e)-S1.e)<1e-9?'true':'false');
+    });
+    document.querySelectorAll('#selBtns .pill').forEach(b=>{
+      b.setAttribute('aria-pressed',S1.sel===b.dataset.sel?'true':'false');
+    });
+    for(const k in GROUPS1){$(GROUPS1[k]).classList.toggle('sel',S1.sel===k);}
+    $('distBtn').setAttribute('aria-pressed',S1.dist?'true':'false');
+    $('d1').style.display=S1.dist?'':'none';
+    $('d2').style.display=S1.dist?'':'none';
+    $('distRows').style.display=S1.dist?'':'none';
+    $('playBtn').textContent=S1.playing?'Pausa':'Avvia';
+  }
+  function toggleSel1(id){S1.sel=(S1.sel===id)?null:id;updateInfo1();updateButtons1();}
+
+  document.querySelectorAll('#presets .pill').forEach(b=>b.addEventListener('click',()=>{S1.e=parseFloat(b.dataset.e);S1.preset=S1.e;layout1();}));
+  $('eSlider').addEventListener('input',ev=>{S1.e=parseFloat(ev.target.value);S1.preset=null;layout1();});
+  $('distBtn').addEventListener('click',()=>{S1.dist=!S1.dist;updateButtons1();});
+  document.querySelectorAll('#selBtns .pill').forEach(b=>b.addEventListener('click',()=>toggleSel1(b.dataset.sel)));
+  for(const k in GROUPS1){$(GROUPS1[k]).addEventListener('click',()=>toggleSel1(k));}
+  $('playBtn').addEventListener('click',()=>{S1.playing=!S1.playing;updateButtons1();});
+  $('resetBtn').addEventListener('click',()=>{S1.M=0;drawPlanet1();});
+
+  // ======================================================
+  // Scheda 2: seconda legge
+  // ======================================================
+  const S2={e:0.6,M:0,playing:!reduced,mode:'live',n:12,vec:true,preset:null,vmax:1};
+
+  function layout2(){
+    const g=geo(S2.e);
+    const rs=Math.max(5,Math.min(10,(A-g.c)*0.55));
+    const rp=Math.min(6,rs*0.7);
+    set($('orbitB'),{cx:CX,cy:CY,rx:A,ry:g.b});
+    $('gPeriB').setAttribute('transform','translate('+(CX+A)+','+CY+')');
+    $('gAfeB').setAttribute('transform','translate('+(CX-A)+','+CY+')');
+    $('gSunB').setAttribute('transform','translate('+(CX+g.c)+','+CY+')');
+    set($('sunB'),{r:rs});set($('sunLabelB'),{y:rs+22});set($('planB'),{r:rp});
+    let vm=0;
+    for(let i=0;i<360;i++){vm=Math.max(vm,vrel(TAU*i/360,S2.e));}
+    S2.vmax=vm;
+    $('rEB').textContent=fmt(S2.e,2,3);
+    $('eOutB').textContent=fmt(S2.e,2,3);
+    $('eSliderB').value=S2.e;
+    drawStatic2();updateInfo2();updateButtons2();drawPlanet2();
+  }
+  function drawStatic2(){
+    const e=S2.e,D=TAU/S2.n;
+    let s='',m='';
+    $('rowsLiveB').hidden=S2.mode!=='live';
+    $('rowsAllB').hidden=S2.mode!=='all';
+    $('rowsCmpB').hidden=S2.mode!=='cmp';
+    if(S2.mode==='live'){
+      s='<path id="liveB" fill="var(--st-planet)" fill-opacity=".38" stroke="var(--st-planet)" stroke-width="1.5"/>';
+    }else if(S2.mode==='all'){
+      let mn=1e9,mx=0;
+      for(let i=0;i<S2.n;i++){
+        const sc=sectorOf(i*D,(i+1)*D,e,240);
+        const p=pct(sc.area,e);mn=Math.min(mn,p);mx=Math.max(mx,p);
+        s+='<path d="'+sc.d+'" fill="'+(i%2?'var(--st-d1)':'var(--st-planet)')+'" fill-opacity=".32" stroke="#FFFFFF" stroke-opacity=".5" stroke-width="1"/>';
+        const q=ptAt(i*D,e);
+        m+='<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="3.5" fill="#FFFFFF"/>';
+      }
+      $('rMinB').textContent=fmt(mn);$('rMaxB').textContent=fmt(mx);
+    }else{
+      const sp=sectorOf(-D/2,D/2,e,240),sa=sectorOf(Math.PI-D/2,Math.PI+D/2,e,240);
+      s='<path d="'+sp.d+'" fill="var(--st-d1)" fill-opacity=".45" stroke="var(--st-d1)" stroke-width="1.5"/>'+
+        '<path d="'+sa.d+'" fill="var(--st-focus)" fill-opacity=".45" stroke="var(--st-focus)" stroke-width="1.5"/>';
+      $('rArcPB').textContent=fmt(sp.arc/A);$('rAreaPB').textContent=fmt(pct(sp.area,e));
+      $('rArcAB').textContent=fmt(sa.arc/A);$('rAreaAB').textContent=fmt(pct(sa.area,e));
+    }
+    $('secB').innerHTML=s;$('mkB').innerHTML=m;
+  }
+  function drawPlanet2(){
+    const e=S2.e,g=geo(e),D=TAU/S2.n;
+    const E=solveE(S2.M,e);
+    const px=CX+A*Math.cos(E),py=CY-g.b*Math.sin(E);
+    const sx=CX+g.c;
+    set($('planB'),{cx:px,cy:py});
+    set($('rvB'),{x1:sx,y1:CY,x2:px,y2:py});
+    $('rDB').textContent=fmt(Math.hypot(px-sx,py-CY)/A);
+    const v=vrel(E,e);
+    $('rVB').textContent='× '+fmt(v);
+    $('vBarB').style.width=Math.min(100,v/S2.vmax*100)+'%';
+    // freccia della velocità lungo la tangente
+    if(S2.vec){
+      let tx=-A*Math.sin(E),ty=-g.b*Math.cos(E);
+      const tn=Math.hypot(tx,ty);tx/=tn;ty/=tn;
+      const L=90*v/S2.vmax,hs=Math.min(14,L*0.7);
+      const ex=px+tx*L,ey=py+ty*L;
+      set($('velB'),{x1:px,y1:py,x2:ex-tx*hs*0.6,y2:ey-ty*hs*0.6});
+      set($('velHeadB'),{points:ex+','+ey+' '+(ex-tx*hs-ty*hs*0.5)+','+(ey-ty*hs+tx*hs*0.5)+' '+(ex-tx*hs+ty*hs*0.5)+','+(ey-ty*hs-tx*hs*0.5)});
+    }
+    if(S2.mode==='live'){
+      const sc=sectorOf(S2.M-D,S2.M,e,240);
+      const el=$('liveB');
+      if(el){el.setAttribute('d',sc.d);}
+      $('rArcB').textContent=fmt(sc.arc/A);
+      $('rAreaB').textContent=fmt(pct(sc.area,e));
+    }
+  }
+  function infoFor2(){
+    const f='1/'+S2.n;
+    if(S2.mode==='all')return['Settori di tempo uguale','L\'orbita è divisa in intervalli di tempo uguali ('+f+' del periodo). I punti sono vicini all\'afelio, dove il pianeta è lento, e distanti al perielio, dove è veloce. I settori hanno forme diverse ma la stessa area: guarda le percentuali.'];
+    if(S2.mode==='cmp')return['Perielio e afelio a confronto','Nello stesso intervallo di tempo ('+f+' del periodo) il segmento Sole–pianeta spazza la stessa area. Vicino al Sole il settore è largo e corto, lontano è stretto e lungo: per questo al perielio l\'arco percorso è più lungo e il pianeta è più veloce.'];
+    return['Seconda legge di Keplero','Il segmento che unisce il Sole al pianeta spazza aree uguali in tempi uguali. Il settore azzurro è quello spazzato nell\'ultimo intervallo ('+f+' del periodo): la forma cambia durante il giro, ma l\'area resta la stessa.'];
+  }
+  function updateInfo2(){const i=infoFor2();$('infoTitleB').textContent=i[0];$('infoTextB').textContent=i[1];}
+  function updateButtons2(){
+    document.querySelectorAll('#presetsB .pill').forEach(b=>{
+      b.setAttribute('aria-pressed',S2.preset!==null&&Math.abs(parseFloat(b.dataset.e)-S2.e)<1e-9?'true':'false');
+    });
+    document.querySelectorAll('#modeBtnsB [data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===S2.mode?'true':'false'));
+    document.querySelectorAll('#nBtnsB .pill').forEach(b=>b.setAttribute('aria-pressed',parseInt(b.dataset.n,10)===S2.n?'true':'false'));
+    $('vecBtnB').setAttribute('aria-pressed',S2.vec?'true':'false');
+    $('velB').style.display=S2.vec?'':'none';
+    $('velHeadB').style.display=S2.vec?'':'none';
+    $('playBtnB').textContent=S2.playing?'Pausa':'Avvia';
+  }
+  function setMode2(m){S2.mode=m;drawStatic2();updateInfo2();updateButtons2();drawPlanet2();}
+
+  document.querySelectorAll('#presetsB .pill').forEach(b=>b.addEventListener('click',()=>{S2.e=parseFloat(b.dataset.e);S2.preset=S2.e;layout2();}));
+  $('eSliderB').addEventListener('input',ev=>{S2.e=parseFloat(ev.target.value);S2.preset=null;layout2();});
+  document.querySelectorAll('#modeBtnsB [data-mode]').forEach(b=>b.addEventListener('click',()=>setMode2(b.dataset.mode)));
+  document.querySelectorAll('#nBtnsB .pill').forEach(b=>b.addEventListener('click',()=>{S2.n=parseInt(b.dataset.n,10);drawStatic2();updateInfo2();updateButtons2();drawPlanet2();}));
+  $('vecBtnB').addEventListener('click',()=>{S2.vec=!S2.vec;updateButtons2();drawPlanet2();});
+  $('playBtnB').addEventListener('click',()=>{S2.playing=!S2.playing;updateButtons2();});
+  $('resetBtnB').addEventListener('click',()=>{S2.M=0;drawPlanet2();});
+
+  // ======================================================
+  // Scheda 3: terza legge
+  // ======================================================
+  const PL=[
+    {nome:'Mercurio',a:0.387,T:0.241,col:'#B8B8B8',r0:3.5},
+    {nome:'Venere',a:0.723,T:0.615,col:'#E8C170',r0:4.5},
+    {nome:'Terra',a:1.000,T:1.000,col:'#5CC8FF',r0:4.5},
+    {nome:'Marte',a:1.524,T:1.881,col:'#FF7A59',r0:4},
+    {nome:'Giove',a:5.203,T:11.86,col:'#E0A96D',r0:7},
+    {nome:'Saturno',a:9.537,T:29.46,col:'#F2D98B',r0:6.5},
+    {nome:'Urano',a:19.19,T:84.01,col:'#8EE3E3',r0:5.5},
+    {nome:'Nettuno',a:30.07,T:164.8,col:'#7C9CFF',r0:5.5},
+    {nome:'Pianeta X',a:4,T:null,col:'#FF7ACF',r0:5,custom:true}
+  ];
+  const C={sel:4,t:0,playing:!reduced,spy:6,view:'orbit',scale:'lin',xa:4};
+  const radiusPx=a=>40*Math.sqrt(a);
+  function plData(i){
+    const p=PL[i];
+    const a=p.custom?C.xa:p.a;
+    const T=p.custom?Math.pow(C.xa,1.5):p.T;
+    return{a:a,T:T,a3:a*a*a,T2:T*T,r:(T*T)/(a*a*a)};
+  }
+
+  PL.forEach((p,i)=>{
+    p.orb=mk('circle',{cx:CX,cy:CY,fill:'none','stroke-width':1.5},$('orbC'));
+    if(p.custom)p.orb.setAttribute('stroke-dasharray','5 5');
+    p.dot=mk('circle',{r:p.r0,fill:p.col},$('plC'));
+    p.hit=mk('circle',{r:14,class:'hit'},$('plC'));
+    p.hit.addEventListener('click',()=>selC(i));
+  });
+  // pulsanti pianeta e tabella
+  (function(){
+    let h='',t='';
+    PL.forEach((p,i)=>{
+      h+='<button class="pill" type="button" data-i="'+i+'" aria-pressed="false"><i class="dot" style="background:'+p.col+'"></i>'+p.nome+'</button>';
+      t+='<tr data-i="'+i+'"><td>'+p.nome+'</td><td></td><td></td><td></td></tr>';
+    });
+    $('plBtnsC').innerHTML=h;
+    $('tblC').querySelector('tbody').innerHTML=t;
+    document.querySelectorAll('#plBtnsC .pill').forEach(b=>b.addEventListener('click',()=>selC(parseInt(b.dataset.i,10))));
+    document.querySelectorAll('#tblC tr[data-i]').forEach(r=>r.addEventListener('click',()=>selC(parseInt(r.dataset.i,10))));
+  })();
+
+  function fmtA(x){return fmt(x,0,3);}
+  function updateTableC(){
+    document.querySelectorAll('#tblC tr[data-i]').forEach(r=>{
+      const i=parseInt(r.dataset.i,10),d=plData(i),c=r.children;
+      c[1].textContent=fmtA(d.a);c[2].textContent=fmt(d.T,0,2);c[3].textContent=fmt(d.r,3,3);
+      r.classList.toggle('on',i===C.sel);
+    });
+  }
+  function updateReadC(){
+    const p=PL[C.sel],d=plData(C.sel);
+    $('rNomeC').textContent=p.nome;
+    $('rAC').textContent=fmtA(d.a);
+    $('rTC').textContent=fmt(d.T,0,2);
+    $('rA3C').textContent=fmt(d.a3,2,2);
+    $('rT2C').textContent=fmt(d.T2,2,2);
+    $('rRC').textContent=fmt(d.r,3,3);
+    $('xOutC').textContent=fmt(C.xa,1,1)+' UA';
+    document.querySelectorAll('#plBtnsC .pill').forEach(b=>b.setAttribute('aria-pressed',parseInt(b.dataset.i,10)===C.sel?'true':'false'));
+  }
+  function infoC(){
+    if(C.view==='graph')return C.scale==='lin'
+      ?'Ogni punto è un pianeta. Se T² = a³ i punti stanno sulla retta che parte dall\'origine. Con la scala lineare i pianeti vicini al Sole si sovrappongono nell\'angolo in basso a sinistra: prova la scala logaritmica, dove ogni tacca vale 10 volte la precedente.'
+      :'Con la scala logaritmica ogni tacca vale 10 volte la precedente, così si vedono insieme Mercurio e Nettuno. I punti restano su una retta: T² e a³ sono proporzionali, con rapporto circa 1.';
+    return 'Più un pianeta è lontano dal Sole, più impiega a fare un giro, e non in modo proporzionale: il quadrato del periodo T è proporzionale al cubo del semiasse a. Misurando T in anni e a in UA il rapporto T² / a³ vale circa 1 per tutti i pianeti. Prova a muovere il Pianeta X.';
+  }
+  function updateInfoC(){$('infoTextC').textContent=infoC();}
+
+  function drawC(){
+    PL.forEach((p,i)=>{
+      const d=plData(i),r=radiusPx(d.a),th=TAU*C.t/d.T;
+      const x=CX+r*Math.cos(th),y=CY-r*Math.sin(th);
+      set(p.orb,{r:r,stroke:i===C.sel?'#C9D1E0':'var(--st-axis)'});
+      set(p.dot,{cx:x,cy:y});set(p.hit,{cx:x,cy:y});
+      if(i===C.sel){
+        set($('ringC'),{cx:x,cy:y,r:p.r0+6});
+        const lx=Math.min(x+10,540);
+        set($('labelC'),{x:lx,y:y-10});$('labelC').textContent=p.nome;
+      }
+    });
+    $('clockC').textContent='Tempo trascorso: '+fmt(C.t,1,1)+' anni terrestri';
+  }
+  function selC(i){
+    C.sel=i;updateReadC();updateTableC();drawC();
+    if(C.view==='graph')drawChart();
+  }
+
+  function drawChart(){
+    const X0=110,Y0=405,W=380,lin=C.scale==='lin';
+    const pos=v=>lin?v/30000:(Math.log10(Math.max(v,1e-9))+2)/7;
+    const px=v=>X0+pos(v)*W,py=v=>Y0-pos(v)*W;
+    let s='';
+    const ticks=[];
+    if(lin){for(let k=0;k<=3;k++)ticks.push([k*10000,true]);}
+    else{for(let k=-2;k<=5;k++)ticks.push([Math.pow(10,k),k%2===0]);}
+    ticks.forEach(t=>{
+      const v=t[0],x=lin?px(v):px(v),y=py(v);
+      const xx=lin?X0+v/30000*W:x, yy=lin?Y0-v/30000*W:y;
+      s+='<line x1="'+xx+'" y1="'+Y0+'" x2="'+xx+'" y2="'+(Y0-W)+'" stroke="var(--st-axis)" stroke-width="1" opacity=".5"/>';
+      s+='<line x1="'+X0+'" y1="'+yy+'" x2="'+(X0+W)+'" y2="'+yy+'" stroke="var(--st-axis)" stroke-width="1" opacity=".5"/>';
+      if(t[1]){
+        s+='<text class="small muted" x="'+xx+'" y="'+(Y0+20)+'" text-anchor="middle">'+fmt(v,0,2)+'</text>';
+        s+='<text class="small muted" x="'+(X0-8)+'" y="'+(yy+5)+'" text-anchor="end">'+fmt(v,0,2)+'</text>';
+      }
+    });
+    s+='<line x1="'+X0+'" y1="'+Y0+'" x2="'+(X0+W)+'" y2="'+Y0+'" stroke="var(--st-orbit)" stroke-width="2"/>';
+    s+='<line x1="'+X0+'" y1="'+Y0+'" x2="'+X0+'" y2="'+(Y0-W)+'" stroke="var(--st-orbit)" stroke-width="2"/>';
+    s+='<line x1="'+X0+'" y1="'+Y0+'" x2="'+(X0+W)+'" y2="'+(Y0-W)+'" stroke="var(--st-d1)" stroke-width="2" stroke-dasharray="7 5"/>';
+    s+='<line x1="122" y1="42" x2="152" y2="42" stroke="var(--st-d1)" stroke-width="2" stroke-dasharray="7 5"/><text class="small" x="158" y="47">retta T² = a³</text>';
+    s+='<text x="300" y="448" text-anchor="middle">a³  (UA al cubo)</text>';
+    s+='<text x="22" y="215" text-anchor="middle" transform="rotate(-90 22 215)">T²  (anni al quadrato)</text>';
+    PL.forEach((p,i)=>{
+      const d=plData(i),x=px(d.a3),y=py(d.T2);
+      if(i===C.sel)s+='<circle cx="'+x+'" cy="'+y+'" r="11" fill="none" stroke="#FFFFFF" stroke-width="3"/>';
+      s+='<circle cx="'+x+'" cy="'+y+'" r="6" fill="'+p.col+'"/>';
+      if(!lin||i>=6||i===C.sel)s+='<text class="small" x="'+(x+10)+'" y="'+(y+16)+'">'+(p.custom?'X':p.nome)+'</text>';
+      s+='<circle data-i="'+i+'" class="hit" cx="'+x+'" cy="'+y+'" r="13"/>';
+    });
+    $('svgCg').innerHTML=s;
+  }
+  $('svgCg').addEventListener('click',ev=>{
+    const t=ev.target.closest('[data-i]');
+    if(t)selC(parseInt(t.dataset.i,10));
+  });
+
+  function updateButtonsC(){
+    document.querySelectorAll('#viewBtnsC .pill').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===C.view?'true':'false'));
+    document.querySelectorAll('#scaleBtnsC .pill').forEach(b=>b.setAttribute('aria-pressed',b.dataset.scale===C.scale?'true':'false'));
+    document.querySelectorAll('#spyBtnsC .pill').forEach(b=>b.setAttribute('aria-pressed',parseInt(b.dataset.spy,10)===C.spy?'true':'false'));
+    $('playBtnC').textContent=C.playing?'Pausa':'Avvia';
+    $('scaleGrpC').hidden=C.view!=='graph';
+    $('timeGrpC').hidden=C.view!=='orbit';
+    $('svgC').style.display=C.view==='orbit'?'':'none';
+    $('svgCg').style.display=C.view==='graph'?'':'none';
+    $('capC').textContent=C.view==='orbit'
+      ?'Scala non realistica: i raggi delle orbite sono proporzionali alla radice quadrata di a, le orbite sono disegnate circolari e il tempo è accelerato.'
+      :'Valori arrotondati: per questo il rapporto T² / a³ è circa 1 e non esattamente 1.';
+  }
+  document.querySelectorAll('#viewBtnsC .pill').forEach(b=>b.addEventListener('click',()=>{
+    C.view=b.dataset.view;updateButtonsC();updateInfoC();
+    if(C.view==='graph')drawChart();
+  }));
+  document.querySelectorAll('#scaleBtnsC .pill').forEach(b=>b.addEventListener('click',()=>{
+    C.scale=b.dataset.scale;updateButtonsC();updateInfoC();drawChart();
+  }));
+  document.querySelectorAll('#spyBtnsC .pill').forEach(b=>b.addEventListener('click',()=>{C.spy=parseInt(b.dataset.spy,10);updateButtonsC();}));
+  $('playBtnC').addEventListener('click',()=>{C.playing=!C.playing;updateButtonsC();});
+  $('resetBtnC').addEventListener('click',()=>{C.t=0;drawC();});
+  $('xSliderC').addEventListener('input',ev=>{
+    C.xa=parseFloat(ev.target.value);C.sel=8;
+    updateReadC();updateTableC();drawC();
+    if(C.view==='graph')drawChart();
+  });
+
+  // ======================================================
+  // Scheda 4: gravitazione universale
+  // ======================================================
+  const D={m1:1,m2:1,d:2,view:'scene'};
+  const REF={m1:1,m2:1,d:2};
+  const Fr=()=>(D.m1*D.m2/(D.d*D.d))/(REF.m1*REF.m2/(REF.d*REF.d));
+
+  function arrow(ln,hd,xt,y,dir,L){
+    L=Math.max(L,0.5);
+    const xe=xt+dir*L,hs=Math.min(14,L*0.7);
+    set(ln,{x1:xt,y1:y,x2:xe-dir*hs*0.6,y2:y});
+    set(hd,{points:xe+','+y+' '+(xe-dir*hs)+','+(y-hs*0.5)+' '+(xe-dir*hs)+','+(y+hs*0.5)});
+  }
+  function drawScene(){
+    const r1=10*Math.sqrt(D.m1),r2=10*Math.sqrt(D.m2);
+    const x1=CX-30*D.d,x2=CX+30*D.d,yb=170;
+    set($('bd1'),{cx:x1,cy:yb,r:r1});set($('bd2'),{cx:x2,cy:yb,r:r2});
+    set($('lb1'),{x:x1,y:yb+r1+22});$('lb1').textContent='m₁ = '+D.m1;
+    set($('lb2'),{x:x2,y:yb+r2+22});$('lb2').textContent='m₂ = '+D.m2;
+    set($('dimD'),{x1:x1,y1:112,x2:x2,y2:112});
+    set($('dimLD'),{x1:x1,y1:104,x2:x1,y2:120});
+    set($('dimRD'),{x1:x2,y1:104,x2:x2,y2:120});
+    set($('dimTD'),{x:CX,y:96});$('dimTD').textContent='d = '+fmt(D.d,1,1);
+    const F=Fr(),M=150/Math.max(F,1);
+    arrow($('rl1'),$('rh1'),40,312,1,M);
+    arrow($('rl2'),$('rh2'),560,312,-1,M);
+    arrow($('cl1'),$('ch1'),40,380,1,M*F);
+    arrow($('cl2'),$('ch2'),560,380,-1,M*F);
+    $('facD').textContent='× '+fmt(F)+(F<0.995?'  (÷ '+fmt(1/F,0,2)+')':'');
+  }
+  function updateD(){
+    $('sM1D').value=D.m1;$('sM2D').value=D.m2;$('sDD').value=D.d;
+    $('oM1D').textContent=fmt(D.m1,0,0);$('oM2D').textContent=fmt(D.m2,0,0);$('oDD').textContent=fmt(D.d,1,1);
+    $('rM1D').textContent=fmt(D.m1,0,0);$('rM2D').textContent=fmt(D.m2,0,0);$('rDD').textContent=fmt(D.d,1,1);
+    const F=Fr();
+    $('rFD').textContent='× '+fmt(F)+(F<0.995?' (÷ '+fmt(1/F,0,2)+')':'');
+    drawScene();
+  }
+  let hlTimer=null;
+  function hl(keys){
+    const f=$('formulaD');
+    f.classList.add('dim');
+    ['fm1','fm2','fmd'].forEach(k=>$(k).classList.toggle('on',keys.indexOf(k)>=0));
+    clearTimeout(hlTimer);
+    hlTimer=setTimeout(()=>{f.classList.remove('dim');['fm1','fm2','fmd'].forEach(k=>$(k).classList.remove('on'));},1800);
+  }
+  const QUICK={
+    base:[1,1,2,[]],
+    m1x2:[2,1,2,['fm1']],
+    mbx2:[2,2,2,['fm1','fm2']],
+    dh:[1,1,1,['fmd']],
+    dx2:[1,1,4,['fmd']],
+    dx3:[1,1,6,['fmd']]
+  };
+  document.querySelectorAll('#quickD .pill').forEach(b=>b.addEventListener('click',()=>{
+    const q=QUICK[b.dataset.q];
+    D.m1=q[0];D.m2=q[1];D.d=q[2];updateD();
+    if(q[3].length)hl(q[3]);
+  }));
+  $('sM1D').addEventListener('input',ev=>{D.m1=parseFloat(ev.target.value);updateD();hl(['fm1']);});
+  $('sM2D').addEventListener('input',ev=>{D.m2=parseFloat(ev.target.value);updateD();hl(['fm2']);});
+  $('sDD').addEventListener('input',ev=>{D.d=parseFloat(ev.target.value);updateD();hl(['fmd']);});
+
+  function infoD(){
+    if(D.view==='graph')return['Massa e distanza a confronto','A sinistra la forza cresce in linea retta con la massa; a destra crolla con il quadrato della distanza. Moltiplicare la massa per 2 raddoppia F; moltiplicare la distanza per 2 la divide per 4, per 3 la divide per 9.'];
+    if(D.view==='why')return['Perché il quadrato','Immagina l\'attrazione come una quantità che si diffonde dal corpo in tutte le direzioni, come la luce di una lampadina. A distanza doppia si distribuisce su una superficie 4 volte più grande, a distanza tripla su una 9 volte più grande: ogni quadretto ne riceve 1/4, poi 1/9. È un\'analogia, non una misura.'];
+    return['Gravitazione universale','Due corpi si attraggono con una forza che cresce con le masse e diminuisce con il quadrato della distanza. Le masse compaiono una volta sola, la distanza compare al quadrato: a parità di variazione, la distanza pesa di più. G è una costante, sempre uguale.'];
+  }
+  function updateViewD(){
+    const i=infoD();$('infoTitleD').textContent=i[0];$('infoTextD').textContent=i[1];
+    $('sceneD').style.display=D.view==='scene'?'':'none';
+    $('graphD').style.display=D.view==='graph'?'':'none';
+    $('whyD').style.display=D.view==='why'?'':'none';
+    document.querySelectorAll('#viewBtnsD .pill').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===D.view?'true':'false'));
+  }
+  document.querySelectorAll('#viewBtnsD .pill').forEach(b=>b.addEventListener('click',()=>{D.view=b.dataset.view;updateViewD();}));
+
+  function buildGraphD(){
+    const plots=[
+      {x0:60,title:'Se moltiplico la massa',xl:'fattore sulla massa',fmin:0,f:f=>f,col:'var(--st-d1)',cap:'massa ×2 → forza ×2',
+        pts:[[1,'×1',8,18],[2,'×2',8,18],[3,'×3',8,18]]},
+      {x0:340,title:'Se moltiplico la distanza',xl:'fattore sulla distanza',fmin:0.5,f:f=>1/(f*f),col:'var(--st-focus)',cap:'distanza ×2 → forza ÷4',
+        pts:[[0.5,'×4',10,6],[1,'×1',8,-10],[2,'÷4',8,-12],[3,'÷9',0,-14]]}
+    ];
+    const W=220,H=280,Y0=380;
+    let s='';
+    plots.forEach(pl=>{
+      const xs=f=>pl.x0+f/4*W,ys=v=>Y0-v/4*H;
+      for(let k=1;k<=4;k++){
+        s+='<line x1="'+xs(k)+'" y1="'+Y0+'" x2="'+xs(k)+'" y2="'+(Y0-H)+'" stroke="var(--st-axis)" stroke-width="1" opacity=".5"/>';
+        s+='<line x1="'+pl.x0+'" y1="'+ys(k)+'" x2="'+(pl.x0+W)+'" y2="'+ys(k)+'" stroke="var(--st-axis)" stroke-width="1" opacity=".5"/>';
+      }
+      s+='<line x1="'+pl.x0+'" y1="'+Y0+'" x2="'+(pl.x0+W)+'" y2="'+Y0+'" stroke="var(--st-orbit)" stroke-width="2"/>';
+      s+='<line x1="'+pl.x0+'" y1="'+Y0+'" x2="'+pl.x0+'" y2="'+(Y0-H)+'" stroke="var(--st-orbit)" stroke-width="2"/>';
+      for(let k=0;k<=4;k++){
+        s+='<text class="small muted" x="'+xs(k)+'" y="'+(Y0+20)+'" text-anchor="middle">'+k+'</text>';
+        s+='<text class="small muted" x="'+(pl.x0-8)+'" y="'+(ys(k)+5)+'" text-anchor="end">'+k+'</text>';
+      }
+      let d='';
+      for(let i=0;i<=80;i++){
+        const f=pl.fmin+(4-pl.fmin)*i/80;
+        d+=(i?'L':'M')+xs(f).toFixed(1)+' '+ys(pl.f(f)).toFixed(1)+' ';
+      }
+      s+='<path d="'+d+'" fill="none" stroke="'+pl.col+'" stroke-width="3.5"/>';
+      pl.pts.forEach(p=>{
+        const x=xs(p[0]),y=ys(pl.f(p[0]));
+        s+='<circle cx="'+x+'" cy="'+y+'" r="5.5" fill="'+pl.col+'"/>';
+        s+='<text class="small" x="'+(x+p[2])+'" y="'+(y+p[3])+'">'+p[1]+'</text>';
+      });
+      s+='<text x="'+(pl.x0+W/2)+'" y="70" text-anchor="middle">'+pl.title+'</text>';
+      s+='<text class="small muted" x="'+(pl.x0+W/2)+'" y="'+(Y0+44)+'" text-anchor="middle">'+pl.xl+'</text>';
+      s+='<text class="small" x="'+(pl.x0+W/2)+'" y="'+(Y0+72)+'" text-anchor="middle" style="fill:'+pl.col+'">'+pl.cap+'</text>';
+      const yl=pl.x0-38;
+      s+='<text class="small muted" x="'+yl+'" y="240" text-anchor="middle" transform="rotate(-90 '+yl+' 240)">fattore sulla forza</text>';
+    });
+    $('graphD').innerHTML=s;
+  }
+  function buildWhyD(){
+    let s='';
+    s+='<text class="small" x="300" y="36" text-anchor="middle">La stessa attrazione si diffonde su una superficie sempre più grande</text>';
+    s+='<line x1="70" y1="150" x2="400" y2="84" stroke="var(--st-axis)" stroke-width="2" stroke-dasharray="6 5"/>';
+    s+='<line x1="70" y1="150" x2="400" y2="216" stroke="var(--st-axis)" stroke-width="2" stroke-dasharray="6 5"/>';
+    s+='<circle cx="70" cy="150" r="11" fill="var(--st-sun)" stroke="var(--st-d1)" stroke-width="1.5"/>';
+    [1,2,3].forEach(k=>{
+      const x=70+110*k,h=22*k;
+      s+='<line x1="'+x+'" y1="'+(150-h)+'" x2="'+x+'" y2="'+(150+h)+'" stroke="var(--st-text)" stroke-width="4"/>';
+      s+='<text class="small" x="'+x+'" y="244" text-anchor="middle">'+(k===1?'d':k+'d')+'</text>';
+    });
+    s+='<text class="small muted" x="418" y="156">superficie: ×1, ×4, ×9</text>';
+    [1,2,3].forEach(k=>{
+      const cx=[130,300,470][k-1],size=34*k,x0=cx-size/2,y0=410-size;
+      for(let r=0;r<k;r++)for(let c=0;c<k;c++){
+        s+='<rect x="'+(x0+c*34)+'" y="'+(y0+r*34)+'" width="34" height="34" fill="var(--st-d1)" fill-opacity="'+[0.95,0.45,0.25][k-1]+'" stroke="var(--st-orbit)" stroke-width="1.5"/>';
+      }
+      s+='<text class="small" x="'+cx+'" y="434" text-anchor="middle">'+(k===1?'d':k+'d')+' → '+(k*k)+' '+(k===1?'quadretto':'quadretti')+'</text>';
+      s+='<text class="small" x="'+cx+'" y="458" text-anchor="middle" style="fill:var(--st-d1)">forza: '+(k===1?'1':'1/'+(k*k))+'</text>';
+    });
+    $('whyD').innerHTML=s;
+  }
+
+  $('toKeplerD').addEventListener('click',()=>{goTab(1);setMode2('cmp');});
+
+  // ======================================================
+  // Schede e ciclo di animazione
+  // ======================================================
+  function goTab(n){
+    cur=n;
+    document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',parseInt(t.dataset.tab,10)===n?'true':'false'));
+    for(let i=0;i<4;i++)$('view'+i).hidden=(i!==n);
+    window.scrollTo(0,0);
+  }
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>goTab(parseInt(t.dataset.tab,10))));
+
+  $('themeBtn').addEventListener('click',()=>{
+    const r=document.documentElement;
+    const dark=r.dataset.theme?r.dataset.theme==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;
+    r.dataset.theme=dark?'light':'dark';
+  });
+
+  let last=null;
+  function frame(t){
+    if(last===null)last=t;
+    const dt=Math.min(0.05,(t-last)/1000);
+    last=t;
+    if(cur===0&&S1.playing){S1.M=(S1.M+TAU*dt/PERIOD)%TAU;drawPlanet1();}
+    else if(cur===1&&S2.playing){S2.M=(S2.M+TAU*dt/PERIOD)%TAU;drawPlanet2();}
+    else if(cur===2&&C.playing&&C.view==='orbit'){C.t+=dt/C.spy;drawC();}
+    requestAnimationFrame(frame);
+  }
+
+  stars('stars',80,12345,600,480);
+  stars('starsB',80,777,600,480);
+  stars('starsC',80,4242,600,480);
+  stars('starsD',60,99,600,480);
+  buildGraphD();buildWhyD();
+  layout1();layout2();
+  updateButtonsC();updateInfoC();updateReadC();updateTableC();drawC();
+  updateViewD();updateD();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
