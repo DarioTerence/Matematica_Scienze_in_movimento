@@ -5,10 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Vita delle stelle</title>
 <style>
-:root{--acc:#B5530F;--bg:#F7F5F0;--panel:#FFFFFF;--txt:#26282B;--line:#D8D4CA;--muted:#5D6066;--grav:#2F6DA8;--press:#C2410C;--ok:#3F7D4E;--onacc:#FFFFFF}
-@media (prefers-color-scheme:dark){:root{--acc:#F4A261;--bg:#1E1F22;--panel:#2A2B2F;--txt:#ECE8DF;--line:#44464B;--muted:#B0ACA3;--grav:#6FA8DC;--press:#F4A261;--ok:#7FBF8F;--onacc:#1E1F22}}
+:root{--acc:#c9aaff;--bg:#0a0f1a;--panel:#111a2b;--txt:#e6ecf5;--line:#22304a;--muted:#8fa0b8;--grav:#6FA8DC;--press:#F4A261;--ok:#7FBF8F;--onacc:#0a0f1a}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--txt);font-family:Calibri,Carlito,"Segoe UI",Arial,sans-serif}
+body{margin:0;background-color:var(--bg);background-image:radial-gradient(ellipse at 50% 0%,rgba(74,134,240,.16),transparent 60%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px);background-size:100% 520px,36px 36px,36px 36px;background-repeat:no-repeat,repeat,repeat;background-position:top center,0 0,0 0;color:var(--txt);font-family:Calibri,Carlito,"Segoe UI",Arial,sans-serif}
 .app{max-width:1280px;margin:0 auto;padding:12px 16px 20px}
 header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
 h1{font-family:Cambria,Caladea,Georgia,serif;font-size:24px;margin:0;color:var(--acc)}
@@ -739,7 +738,8 @@ function selectTab(n){
 tabs.forEach(function(b,k){b.addEventListener('click',function(){selectTab(k);});});
 })();
 </script>
-<a href="../index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(10,15,26,.92);color:#e6ecf5;border:1px solid #22304a;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Torna a Scienza in Movimento
+<style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6aa5ff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(106,165,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}</style>
+<a class="torna-sito" href="../index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Torna a Scienza in Movimento
 </a>
 </body>
 </html>
