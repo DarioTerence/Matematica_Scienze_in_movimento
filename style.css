@@ -81,12 +81,21 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ---------- Intestazione home ---------- */
+/* Testo a sinistra, caricatura a destra, linea luminosa sotto a tutto */
 .hero {
   padding: 56px 20px 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "testo mascotte"
+    "filo filo";
+  column-gap: 28px;
 }
+.hero .hero-testo { grid-area: testo; align-self: center; }
+.hero .filo { grid-area: filo; }
 .hero .titolo-sito {
   margin: 12px 0 14px;
-  font-size: clamp(2rem, 6.5vw, 3.2rem);
+  font-size: clamp(1.9rem, 5vw, 3rem);
   font-weight: 700;
   line-height: 1.12;
   color: var(--testo);
@@ -121,6 +130,44 @@ a { color: inherit; text-decoration: none; }
   margin: 26px 0 0;
   background: linear-gradient(90deg, #e6ecf5, rgba(106, 165, 255, 0.55) 40%, rgba(106, 165, 255, 0));
   box-shadow: 0 0 10px rgba(106, 165, 255, 0.7);
+}
+
+/* Caricatura di Prof. T: occhi aperti, poi ogni tanto un occhiolino e un bagliore sulla lente.
+   Le immagini hanno sfondo trasparente; il busto sfuma in basso verso la linea. */
+.mascotte {
+  grid-area: mascotte;
+  position: relative;
+  width: clamp(170px, 25vw, 260px);
+  aspect-ratio: 700 / 769;
+  -webkit-mask-image: linear-gradient(#000 86%, transparent);
+  mask-image: linear-gradient(#000 86%, transparent);
+}
+.mascotte img { display: block; width: 100%; height: auto; }
+.mascotte .occhiolino {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: ammicca 9s infinite;
+}
+.mascotte .bagliore {
+  position: absolute;
+  left: 31.06%;
+  top: 37.88%;
+  width: 12%;
+  height: auto;
+  opacity: 0;
+  pointer-events: none;
+  animation: bagliore 9s infinite;
+}
+@keyframes ammicca {
+  0%, 90% { opacity: 0; }
+  90.5%, 95% { opacity: 1; }
+  95.5%, 100% { opacity: 0; }
+}
+@keyframes bagliore {
+  0%, 72% { opacity: 0; transform: translate(-50%, -50%) scale(0.2) rotate(0deg); }
+  79% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(30deg); }
+  86%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.3) rotate(70deg); }
 }
 
 /* ---------- Intestazione pagine interne ---------- */
@@ -288,8 +335,21 @@ footer .motto { display: block; }
   .hero .titolo-sito br { display: none; }
 }
 
-/* Chi preferisce meno movimento non vede lo spostamento delle schede */
+/* Su schermi stretti la caricatura passa sotto il titolo */
+@media (max-width: 720px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "testo"
+      "mascotte"
+      "filo";
+  }
+  .mascotte { justify-self: center; width: min(62vw, 240px); margin-top: 16px; }
+}
+
+/* Chi preferisce meno movimento non vede lo spostamento delle schede ne' l'animazione della caricatura */
 @media (prefers-reduced-motion: reduce) {
   .card { transition: none; }
   a.card:hover, a.card:focus-visible { transform: none; }
+  .mascotte .occhiolino, .mascotte .bagliore { animation: none; }
 }

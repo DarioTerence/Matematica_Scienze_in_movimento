@@ -8,6 +8,7 @@ Sito: https://darioterence.github.io/Matematica_Scienze_in_movimento/
 - `index.html`: home con le quattro aree (Numeri e forme, Materia ed energia, Viventi, Terra e cosmo)
 - `style.css`: stile condiviso, tema scuro
 - `favicon.svg`: icona del sito
+- `prof_t.webp`, `prof_t_occhiolino.webp`, `bagliore.svg`: caricatura di Prof. T nella home (occhi aperti, occhiolino, bagliore sulla lente), animata solo con CSS
 - `biologia/`, `astronomia/`: una cartella per disciplina, con `index.html` (elenco) e un file HTML autonomo per ogni animazione
 
 Il sito è statico: solo HTML e CSS scritti a mano, nessun framework e nessuna build. Le animazioni hanno il loro JavaScript.
