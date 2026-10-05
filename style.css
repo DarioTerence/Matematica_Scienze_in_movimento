@@ -81,17 +81,23 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ---------- Intestazione home ---------- */
-/* Testo a sinistra, caricatura a destra, linea luminosa sotto a tutto */
+/* Testo a sinistra, caricatura con la firma accanto a destra, linea luminosa sotto a tutto */
 .hero {
   padding: 56px 20px 8px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas:
-    "testo mascotte"
+    "testo persona"
     "filo filo";
   column-gap: 28px;
 }
 .hero .hero-testo { grid-area: testo; align-self: center; }
+.hero .persona {
+  grid-area: persona;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
 .hero .filo { grid-area: filo; }
 .hero .titolo-sito {
   margin: 12px 0 14px;
@@ -113,12 +119,16 @@ a { color: inherit; text-decoration: none; }
   align-self: center;
   border-radius: 10px;
 }
-/* La firma "Prof. T" e' un'immagine SVG (firma.svg), ricavata dal font Nothing You Could Do, licenza SIL OFL */
+/* La firma "Prof. T" e' un'immagine SVG (firma.svg), ricavata dal font Nothing You Could Do, licenza SIL OFL.
+   In home sta accanto alla caricatura, all'altezza delle spalle, cosi' si capisce chi e' Prof. T.
+   E' fuori dal flusso (assoluta) per non restringere la colonna del titolo. */
 .hero .firma-img {
+  position: absolute;
+  right: 100%;
+  bottom: 2.6rem;
   height: 3.3rem;
   width: auto;
-  align-self: center;
-  margin: -0.5rem 0;
+  margin: 0 4px 0 0;
 }
 .hero .sottotitolo {
   color: var(--testo-soft);
@@ -135,8 +145,8 @@ a { color: inherit; text-decoration: none; }
 /* Caricatura di Prof. T: occhi aperti, poi ogni tanto un occhiolino e un bagliore sulla lente.
    Le immagini hanno sfondo trasparente; il busto sfuma in basso verso la linea. */
 .mascotte {
-  grid-area: mascotte;
   position: relative;
+  flex-shrink: 0;
   width: clamp(170px, 25vw, 260px);
   aspect-ratio: 700 / 769;
   -webkit-mask-image: linear-gradient(#000 86%, transparent);
@@ -335,16 +345,18 @@ footer .motto { display: block; }
   .hero .titolo-sito br { display: none; }
 }
 
-/* Su schermi stretti la caricatura passa sotto il titolo */
+/* Su schermi stretti la caricatura (con la firma accanto) passa sotto il titolo */
 @media (max-width: 720px) {
   .hero {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       "testo"
-      "mascotte"
+      "persona"
       "filo";
   }
-  .mascotte { justify-self: center; width: min(62vw, 240px); margin-top: 16px; }
+  .hero .persona { justify-self: center; margin-top: 16px; }
+  .mascotte { width: min(46vw, 200px); }
+  .hero .firma-img { position: static; height: 2.6rem; margin: 0 4px 2rem 0; }
 }
 
 /* Chi preferisce meno movimento non vede lo spostamento delle schede ne' l'animazione della caricatura */
