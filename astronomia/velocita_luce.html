@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La velocità della luce</title>
+<style>
+:root{--bg:#0a0f1a;--panel:#111a2b;--line:#22304a;--text:#e6ecf5;--muted:#8fa0b8;--accent:#c9aaff;--ink:#0a0f1a;--sun:#ffd08a}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{
+  background-color:#0a0f1a;
+  background-image:
+    radial-gradient(ellipse at 50% -10%, rgba(106,165,255,.10), transparent 60%),
+    linear-gradient(rgba(143,160,184,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(143,160,184,.05) 1px, transparent 1px);
+  background-size:auto,36px 36px,36px 36px;
+  color:var(--text);
+  font-family:Calibri,Carlito,"Segoe UI",Arial,sans-serif;
+  font-size:17px;line-height:1.45;min-height:100vh;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}
+h1,h2{font-family:Cambria,Georgia,serif;margin:0}
+h1{color:var(--accent);font-size:30px;line-height:1.15}
+.sub{margin:4px 0 14px;color:var(--muted);font-size:18px}
+h2{color:var(--accent);font-size:20px;margin-bottom:10px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.tab{font:inherit;font-size:16px;border-radius:999px;border:1px solid #3a4d70;background:var(--panel);color:var(--text);padding:7px 16px;cursor:pointer}
+.tab:hover{border-color:var(--accent)}
+.tab.sel{outline:3px solid var(--accent);outline-offset:1px;border-color:var(--accent);font-weight:700}
+.tab:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.panel h2:not(:first-child){margin-top:20px}
+.chrono{display:grid;grid-template-columns:auto 1fr;gap:8px 28px;align-items:end;margin-bottom:10px}
+.lab{color:var(--muted);font-size:14px;letter-spacing:.02em}
+.big{font-family:Calibri,Carlito,sans-serif;font-variant-numeric:tabular-nums;font-size:44px;font-weight:700;line-height:1;color:var(--sun)}
+.mid{font-variant-numeric:tabular-nums;font-size:24px;font-weight:700;line-height:1.1;color:var(--text)}
+.stage{background:#05060A;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto}
+.small{margin:8px 2px 0;color:var(--muted);font-size:14px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 10px}
+.btn,.pill{font:inherit;font-size:16px;border-radius:999px;border:1px solid #3a4d70;background:var(--panel);color:var(--text);padding:8px 18px;cursor:pointer}
+.btn:hover,.pill:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--ink);font-weight:700;min-width:104px}
+.btn:focus-visible,.pill:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.speedrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{padding:6px 14px;font-variant-numeric:tabular-nums}
+.pill.sel{outline:3px solid var(--accent);outline-offset:1px;border-color:var(--accent);font-weight:700}
+.wait{margin:8px 2px 12px;color:var(--muted);font-size:15px;min-height:1.4em}
+.anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;border-radius:6px;padding:10px 14px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th{color:var(--muted);font-weight:400;font-size:13px;text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
+td{padding:8px 6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+td.t{text-align:right;font-weight:700;color:var(--muted)}
+th.t{text-align:right}
+tr.ok td.t{color:var(--sun)}
+tr.ok td:first-child{color:var(--text)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+details{margin-top:10px}
+summary{cursor:pointer;color:var(--accent);font-weight:700}
+details p{margin:8px 0 0}
+.q{margin:0}
+.cmp{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.cmp .row{display:grid;grid-template-columns:104px 1fr 78px;gap:10px;align-items:center;padding:4px 0;font-size:15px}
+.cmp .track{height:12px;background:#0d1524;border-radius:6px;overflow:hidden}
+.cmp .bar{height:100%;background:#ffe27a;border-radius:6px}
+.cmp b{text-align:right;color:var(--sun);font-variant-numeric:tabular-nums}
+.cmp .small{margin:6px 0 0}
+.nav{display:flex;gap:10px;margin:14px 0 10px}
+.steptxt{margin:12px 0;min-height:3.4em}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:12px 0 14px}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;opacity:.42;transition:opacity .2s,border-color .2s}
+.chip.on{opacity:1;border-color:#ffb454}
+.chip .tm{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.chip.on .tm{color:var(--sun);font-weight:700}
+@media (max-width:760px){
+  .grid{grid-template-columns:1fr}
+  h1{font-size:25px}
+  .big{font-size:36px}
+  .mid{font-size:20px}
+  .chrono{gap:6px 18px}
+  .cmp .row{grid-template-columns:92px 1fr 70px;gap:8px}
+}
+.ring{transform-box:fill-box;transform-origin:center;opacity:0}
+.ring.pulse{animation:pulse .9s ease-out}
+@keyframes pulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(4.2);opacity:0}}
+@media (prefers-reduced-motion:reduce){.ring.pulse{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>La velocità della luce</h1>
+  <p class="sub" id="sub"></p>
+  <div class="tabs" id="tabs" role="group" aria-label="Schede"></div>
+
+  <div class="grid">
+    <section>
+      <div id="animBox">
+        <div class="chrono">
+          <div><div class="lab" id="clockLab">Tempo luce trascorso</div><div id="cron" class="big">00:00.0</div></div>
+          <div><div class="lab">Strada fatta dalla luce</div><div id="dist" class="mid">0 km</div></div>
+        </div>
+        <div class="stage"><svg id="svg" viewBox="0 0 1000 290" role="img" aria-label="La luce parte da una sorgente e viaggia lungo una linea verso i corpi del Sistema Solare"></svg></div>
+        <p class="small" id="note"></p>
+        <div class="cmp" id="cmp" hidden>
+          <div class="row"><span>Sole → Terra</span><div class="track"><div class="bar" style="width:100%"></div></div><b>8 min 19 s</b></div>
+          <div class="row"><span>Terra → Luna</span><div class="track"><div class="bar" style="width:.26%;min-width:3px"></div></div><b>1,28 s</b></div>
+          <p class="small">Le due barre sono nella stessa scala: quella Terra-Luna è lunga circa 1/390 di quella Sole-Terra.</p>
+        </div>
+        <div class="controls">
+          <button id="go" class="btn primary" type="button">Avvia</button>
+          <button id="rs" class="btn" type="button">Riavvia</button>
+        </div>
+        <div class="speedrow">
+          <span class="lab">Velocità dell'animazione</span>
+          <div id="speeds" class="pills" role="group" aria-label="Velocità dell'animazione"></div>
+        </div>
+        <p id="wait" class="wait"></p>
+      </div>
+
+      <div id="sintBox" hidden>
+        <div class="stage"><svg id="svg2" viewBox="0 0 1000 150" role="img" aria-label="Scala dei tempi della luce, da 1 secondo a 5 anni"></svg></div>
+        <p class="small">Scala a gradini: le distanze tra un gradino e l'altro non sono proporzionali al tempo.</p>
+        <div class="nav">
+          <button id="prev" class="btn" type="button">Indietro</button>
+          <button id="next" class="btn primary" type="button">Avanti</button>
+        </div>
+        <div id="steps" class="pills" role="group" aria-label="Tempo trascorso"></div>
+        <div id="steptxt" class="steptxt"></div>
+        <div id="chips" class="chips"></div>
+      </div>
+
+      <div class="anchor" id="anchor"></div>
+    </section>
+
+    <aside class="panel">
+      <div id="tblWrap">
+        <h2>Quando arriva la luce</h2>
+        <table>
+          <thead><tr><th>Corpo</th><th id="distHead">Distanza</th><th class="t">Tempo luce</th></tr></thead>
+          <tbody id="tb"></tbody>
+        </table>
+      </div>
+      <h2>Domanda</h2>
+      <p class="q" id="q"></p>
+      <details id="det">
+        <summary>Mostra la risposta</summary>
+        <p id="ans"></p>
+      </details>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ---------- costanti fisiche ---------- */
+  var C_KMS = 299792.458;                 // velocità della luce, km/s
+  var AU_KM = 149597870.7;                // 1 UA in km
+  var AU_S  = AU_KM / C_KMS;              // secondi luce per 1 UA (circa 499 s)
+  var YEAR_S = 31557600;                  // anno luce: 365,25 giorni
+  var X0 = 80, X1 = 940, Y = 150;         // inizio e fine della linea nel disegno
+
+  /* ---------- formattazione ---------- */
+  function fmtNum(x, dec){
+    var p = x.toFixed(dec || 0).split('.');
+    p[0] = p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return p.join(',');
+  }
+  function fmtDur(s){
+    s = Math.round(s);
+    if (s < 60) return s + ' s';
+    if (s < 3600){
+      var m = Math.floor(s/60), r = s - 60*m;
+      return r ? m + ' min ' + r + ' s' : m + ' min';
+    }
+    var h = Math.floor(s/3600), mm = Math.round((s - 3600*h)/60);
+    if (mm === 60){ h++; mm = 0; }
+    return mm ? h + ' h ' + mm + ' min' : h + ' h';
+  }
+  function fmtSec2(s){ return s.toFixed(2).replace('.', ',') + ' s'; }
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function fmtClock(t, mode){
+    var h = Math.floor(t/3600), m = Math.floor((t - 3600*h)/60), s = t - 3600*h - 60*m;
+    if (mode === 'hms') return pad(h) + ':' + pad(m) + ':' + pad(Math.floor(s));
+    m = Math.floor(t/60); s = t - 60*m;
+    var out = pad(m) + ':' + pad(Math.floor(s));
+    if (mode === 'cs') out += '.' + pad(Math.floor((s % 1) * 100));
+    else if (speed <= 10) out += '.' + Math.floor((s % 1) * 10);
+    return out;
+  }
+  function fmtKm(km){
+    if (km < 1e6) return fmtNum(km, 0) + ' km';
+    if (km < 1e9) return fmtNum(km/1e6, 1) + ' milioni di km';
+    return fmtNum(km/1e9, 2) + ' miliardi di km';
+  }
+  function waitTxt(real){
+    if (real < 1) return 'meno di 1 secondo';
+    if (real < 10) return real.toFixed(1).replace('.', ',') + ' secondi';
+    return fmtDur(real);
+  }
+
+  /* ---------- dati delle schede ---------- */
+  function planet(name, au, col, r){
+    return {name:name, t:au*AU_S, col:col, r:r, dist:fmtNum(au*AU_KM/1e6, 1)};
+  }
+  var ANCHOR_C = 'La luce viaggia sempre a circa 300 000 km al secondo. Con l\'animazione a 1× un secondo reale è un secondo di viaggio della luce; con le altre velocità scorre più in fretta (o più piano) il tempo mostrato, non la luce.';
+
+  var CARDS = [
+    { tab:'1 · Pianeti interni', sub:'Scheda 1 · Dal Sole ai pianeti interni', kind:'anim',
+      src:{name:'Sole', type:'sun'},
+      span:1.6*AU_S,
+      ticks:[{t:0,l:'0'},{t:0.5*AU_S,l:'0,5 UA'},{t:AU_S,l:'1 UA'},{t:1.5*AU_S,l:'1,5 UA'}],
+      bodies:[planet('Mercurio',0.387098,'#b9b9bf',9), planet('Venere',0.723332,'#ecc98a',12), planet('Terra',1.0,'#4a9bff',12), planet('Marte',1.523679,'#e0653f',10)],
+      distHead:'Distanza (milioni di km)', fmtT:fmtDur, clock:'ms', clockLab:'Tempo luce trascorso (min : s)',
+      target:3, phr:'su Marte',
+      note:'Le distanze tra i corpi sono in scala; le dimensioni di Sole e pianeti no.',
+      anchor:ANCHOR_C,
+      q:'Se il Sole si spegnesse adesso, quando se ne accorgerebbe Marte?',
+      a:'Dopo circa 12 minuti e 40 secondi, lo stesso tempo che la luce impiega ad arrivarci. Fino ad allora Marte continuerebbe a ricevere la luce già partita. Per la Terra lo stesso ragionamento vale con circa 8 minuti e 20 secondi.' },
+
+    { tab:'2 · Pianeti esterni', sub:'Scheda 2 · Dal Sole ai pianeti esterni', kind:'anim',
+      src:{name:'Sole', type:'sun'},
+      span:31*AU_S,
+      ticks:[0,5,10,15,20,25,30].map(function(u){ return {t:u*AU_S, l:u === 0 ? '0' : u + ' UA'}; }),
+      bodies:[planet('Giove',5.2044,'#d9b38c',13), planet('Saturno',9.5826,'#e8d29a',12), planet('Urano',19.2184,'#8fd8dc',10), planet('Nettuno',30.1104,'#4f6fe0',10)],
+      distHead:'Distanza (milioni di km)', fmtT:fmtDur, clock:'hms', clockLab:'Tempo luce trascorso (h : min : s)',
+      target:3, phr:'su Nettuno',
+      note:'Le distanze tra i corpi sono in scala; le dimensioni no. Attenzione: la scala è diversa dalla scheda 1, qui la linea arriva a 31 UA.',
+      anchor:ANCHOR_C,
+      q:'A quale velocità conviene guardare l\'arrivo su Nettuno, e perché a 1× non basta una lezione?',
+      a:'A 1× servono 4 ore e 10 minuti di tempo reale, più di una lezione. A 1 000× bastano circa 15 secondi, a 10 000× circa un secondo e mezzo: il tempo mostrato dal cronometro resta comunque quello vero della luce.' },
+
+    { tab:'3 · Terra-Luna', sub:'Scheda 3 · Dalla Terra alla Luna', kind:'anim',
+      src:{name:'Terra', type:'earth'},
+      span:400000/C_KMS,
+      ticks:[0,100000,200000,300000,400000].map(function(k){ return {t:k/C_KMS, l:k === 0 ? '0' : fmtNum(k,0) + ' km'}; }),
+      bodies:[{name:'Luna', t:384400/C_KMS, col:'#cfd0d4', r:8, dist:'384 400'}],
+      distHead:'Distanza (km)', fmtT:fmtSec2, clock:'cs', clockLab:'Tempo luce trascorso (min : s)',
+      target:0, phr:'sulla Luna',
+      note:'Le distanze sono in scala; le dimensioni di Terra e Luna no. La scala è in km, diversa dalle schede 1 e 2.',
+      anchor:ANCHOR_C + ' Prova lo 0,1× per vedere il viaggio al rallentatore.',
+      q:'Nelle registrazioni delle missioni Apollo c\'è una pausa di circa 2,6 secondi tra una domanda da Terra e la risposta: da dove viene?',
+      a:'Dal tempo di viaggio dei segnali radio, che vanno alla velocità della luce: circa 1,3 secondi per arrivare alla Luna e altrettanti per tornare, in tutto 2,6 secondi, prima ancora che l\'astronauta risponda.',
+      cmp:true },
+
+    { tab:'4 · Sintesi', sub:'Scheda 4 · Dai secondi agli anni', kind:'sint',
+      steps:[{t:1,l:'1 s'},{t:2,l:'2 s'},{t:600,l:'10 min'},{t:900,l:'15 min'},{t:3600,l:'1 ora'},{t:18000,l:'5 ore'},{t:86400,l:'1 giorno'},{t:YEAR_S,l:'1 anno'},{t:5*YEAR_S,l:'5 anni'}],
+      stepTxt:[
+        'In 1 secondo la luce percorre circa 300 000 km: quasi 7 giri e mezzo della Terra. Non ha ancora raggiunto nessun corpo.',
+        'Dopo 2 secondi la luce ha già superato la Luna, che raggiunge in 1,3 secondi.',
+        'Dopo 10 minuti la luce del Sole ha raggiunto Mercurio, Venere e la Terra. Marte aspetta ancora.',
+        'Dopo 15 minuti è arrivata anche su Marte (12 min 40 s).',
+        'Dopo 1 ora la luce ha raggiunto Giove (43 min).',
+        'Dopo 5 ore la luce ha raggiunto Saturno, Urano e Nettuno (4 h 10 min): ha attraversato tutta la zona dei pianeti.',
+        'Dopo 1 giorno la luce ha percorso circa 26 miliardi di km, ben oltre Nettuno: è più o meno dove si trova la sonda Voyager 1, l\'oggetto costruito dall\'uomo più lontano dalla Terra. Pianeti non ce ne sono più.',
+        'Dopo 1 anno la luce ha percorso 1 anno luce, circa 9 460 miliardi di km. Non ha ancora incontrato nessuna stella.',
+        'Dopo 5 anni la luce ha superato Proxima Centauri, la stella più vicina al Sole, che raggiunge in 4,2 anni.'
+      ],
+      sb:[
+        {name:'Luna (dalla Terra)', t:384400/C_KMS, lab:'1,3 s', col:'#cfd0d4'},
+        {name:'Mercurio', t:0.387098*AU_S, lab:'3 min 13 s', col:'#b9b9bf'},
+        {name:'Venere', t:0.723332*AU_S, lab:'6 min 1 s', col:'#ecc98a'},
+        {name:'Terra', t:AU_S, lab:'8 min 19 s', col:'#4a9bff'},
+        {name:'Marte', t:1.523679*AU_S, lab:'12 min 40 s', col:'#e0653f'},
+        {name:'Giove', t:5.2044*AU_S, lab:'43 min', col:'#d9b38c'},
+        {name:'Saturno', t:9.5826*AU_S, lab:'1 h 20 min', col:'#e8d29a'},
+        {name:'Urano', t:19.2184*AU_S, lab:'2 h 40 min', col:'#8fd8dc'},
+        {name:'Nettuno', t:30.1104*AU_S, lab:'4 h 10 min', col:'#4f6fe0'},
+        {name:'Voyager 1 (sonda)', t:86400, lab:'circa 1 giorno', col:'#c9aaff'},
+        {name:'Proxima Centauri', t:4.2465*YEAR_S, lab:'4,2 anni', col:'#ff9a8a'}
+      ],
+      anchor:'Dentro il Sistema Solare i viaggi della luce si contano in minuti e ore; per raggiungere la stella più vicina servono anni. Tutti i tempi, tranne la Luna, sono misurati dal Sole; per Voyager 1 il valore è approssimato.',
+      q:'La stella più vicina è a 4,2 anni luce: che cosa significa che di Proxima Centauri vediamo la luce «com\'era più di 4 anni fa»?',
+      a:'La luce che oggi riceviamo da Proxima è partita da lì più di 4 anni fa, perché il viaggio dura tanto. Quando guardiamo una stella, vediamo il suo passato.' }
+  ];
+
+  /* ---------- riferimenti alla pagina ---------- */
+  var NS = 'http://www.w3.org/2000/svg';
+  var svg = document.getElementById('svg');
+  var svg2 = document.getElementById('svg2');
+  var cron = document.getElementById('cron');
+  var dist = document.getElementById('dist');
+  var go = document.getElementById('go');
+  var rs = document.getElementById('rs');
+  var wait = document.getElementById('wait');
+  var speedsBox = document.getElementById('speeds');
+  var tb = document.getElementById('tb');
+
+  function el(parent, tag, attrs){
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    parent.appendChild(e);
+    return e;
+  }
+
+  /* definizioni grafiche (filtri e sfumature); ogni svg ha id propri con prefisso */
+  function defs(p){
+    return '<defs>' +
+      '<filter id="' + p + 'glow" filterUnits="userSpaceOnUse" x="0" y="0" width="1000" height="300">' +
+        '<feGaussianBlur stdDeviation="3" result="b"/>' +
+        '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+      '</filter>' +
+      '<radialGradient id="' + p + 'head" cx="50%" cy="50%" r="50%">' +
+        '<stop offset="0" stop-color="#ffffff" stop-opacity="1"/>' +
+        '<stop offset=".3" stop-color="#fffbd6" stop-opacity="1"/>' +
+        '<stop offset=".6" stop-color="#ffec8a" stop-opacity=".7"/>' +
+        '<stop offset="1" stop-color="#ffd54a" stop-opacity="0"/>' +
+      '</radialGradient>' +
+      '<radialGradient id="' + p + 'sun" cx="50%" cy="50%" r="50%">' +
+        '<stop offset="0" stop-color="#fff6c8"/><stop offset=".55" stop-color="#ffc247"/><stop offset="1" stop-color="#ff8c1a"/>' +
+      '</radialGradient>' +
+      '<radialGradient id="' + p + 'earth" cx="38%" cy="35%" r="70%">' +
+        '<stop offset="0" stop-color="#9fd0ff"/><stop offset=".5" stop-color="#3f86e6"/><stop offset="1" stop-color="#1a4a9c"/>' +
+      '</radialGradient>' +
+      '</defs>';
+  }
+
+  function stars(parent, w, h, n){
+    var seed = 7;
+    function rnd(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    el(parent, 'rect', {x:0, y:0, width:w, height:h, fill:'#05060A'});
+    for (var i = 0; i < n; i++){
+      el(parent, 'circle', {cx:(rnd()*w).toFixed(1), cy:(rnd()*h).toFixed(1), r:(0.6 + rnd()*0.9).toFixed(2), fill:'#e6ecf5', opacity:(0.25 + rnd()*0.5).toFixed(2)});
+    }
+  }
+
+  /* fascio di luce: alone sottile + linea gialla + anima chiara, più la testa schiacciata sulla retta */
+  function beam(parent, p){
+    var b = {};
+    b.gl   = el(parent, 'line', {x1:X0, y1:Y, x2:X0, y2:Y, stroke:'#ffd54a', 'stroke-width':6, opacity:.25, 'stroke-linecap':'round', filter:'url(#' + p + 'glow)'});
+    b.lit  = el(parent, 'line', {x1:X0, y1:Y, x2:X0, y2:Y, stroke:'#ffe27a', 'stroke-width':4, 'stroke-linecap':'round'});
+    b.core = el(parent, 'line', {x1:X0, y1:Y, x2:X0, y2:Y, stroke:'#fffbe0', 'stroke-width':1.8, 'stroke-linecap':'round'});
+    b.head = el(parent, 'ellipse', {cx:X0, cy:Y, rx:46, ry:7, fill:'url(#' + p + 'head)', filter:'url(#' + p + 'glow)'});
+    b.head2 = el(parent, 'ellipse', {cx:X0, cy:Y, rx:16, ry:2.8, fill:'#ffffff', filter:'url(#' + p + 'glow)'});
+    return b;
+  }
+  function beamTo(b, x){
+    b.gl.setAttribute('x2', x); b.lit.setAttribute('x2', x); b.core.setAttribute('x2', x);
+    b.head.setAttribute('cx', x); b.head2.setAttribute('cx', x);
+  }
+
+  /* ---------- stato ---------- */
+  var cardIdx = 0, card = CARDS[0];
+  var t = 0, speed = 1, running = false, last = null;
+  var cur = null;              // elementi grafici della scheda animata corrente
+  var stepIdx = 0, sintBuilt = false;
+
+  var SPEEDS = [
+    {v:0.1, lab:'0,1×'}, {v:1, lab:'1×'}, {v:10, lab:'10×'},
+    {v:100, lab:'100×'}, {v:1000, lab:'1 000×'}, {v:10000, lab:'10 000×'}
+  ];
+
+  function xOf(tt){ return X0 + Math.min(1, tt / card.span) * (X1 - X0); }
+
+  /* ---------- schede animate (1, 2, 3) ---------- */
+  function buildAnim(){
+    svg.innerHTML = defs('a-');
+    stars(svg, 1000, 290, 80);
+    el(svg, 'line', {x1:X0, y1:Y, x2:X1, y2:Y, stroke:'#3a4d70', 'stroke-width':2});
+    card.ticks.forEach(function(tk){
+      var x = xOf(tk.t);
+      el(svg, 'line', {x1:x, y1:Y, x2:x, y2:Y+12, stroke:'#5a6f94', 'stroke-width':2});
+      var tx = el(svg, 'text', {x:x, y:262, 'text-anchor':(x > 900 ? 'end' : 'middle'), fill:'#8fa0b8', 'font-size':22, 'font-family':'Calibri,Carlito,sans-serif'});
+      tx.textContent = tk.l;
+    });
+
+    cur = {beam: beam(svg, 'a-')};
+
+    // sorgente della luce
+    if (card.src.type === 'sun'){
+      el(svg, 'circle', {cx:X0, cy:Y, r:46, fill:'#ffb347', opacity:.16});
+      el(svg, 'circle', {cx:X0, cy:Y, r:26, fill:'url(#a-sun)', filter:'url(#a-glow)'});
+    } else {
+      el(svg, 'circle', {cx:X0, cy:Y, r:34, fill:'#4a9bff', opacity:.15});
+      el(svg, 'circle', {cx:X0, cy:Y, r:22, fill:'url(#a-earth)'});
+    }
+    var st = el(svg, 'text', {x:X0, y:206, 'text-anchor':'middle', fill:'#e6ecf5', 'font-size':26, 'font-family':'Calibri,Carlito,sans-serif'});
+    st.textContent = card.src.name;
+
+    // corpi raggiunti dalla luce
+    var prevX = -1e9, prevY = 0;
+    card.bodies.forEach(function(b){
+      var x = xOf(b.t);
+      b.reached = false;
+      // se due etichette dei tempi sono troppo vicine, la seconda sale un po' più in alto
+      var labY = (x - prevX < 170 && prevY === 112) ? 82 : 112;
+      prevX = x; prevY = labY;
+      b.ring = el(svg, 'circle', {cx:x, cy:Y, r:b.r, fill:'none', stroke:'#ffd08a', 'stroke-width':3, 'class':'ring'});
+      b.body = el(svg, 'circle', {cx:x, cy:Y, r:b.r, fill:b.col, opacity:.45});
+      var nm = el(svg, 'text', {x:x, y:206, 'text-anchor':'middle', fill:'#e6ecf5', 'font-size':26, 'font-family':'Calibri,Carlito,sans-serif'});
+      nm.textContent = b.name;
+      b.lab = el(svg, 'text', {x:x, y:labY, 'text-anchor':'middle', fill:'#ffd08a', 'font-size':26, 'font-weight':700, 'font-family':'Calibri,Carlito,sans-serif', opacity:0});
+      b.lab.textContent = card.fmtT(b.t);
+    });
+
+    // tabella
+    tb.innerHTML = '';
+    card.bodies.forEach(function(b){
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td><span class="dot" style="background:' + b.col + '"></span>' + b.name + '</td>' +
+                     '<td>' + b.dist + '</td><td class="t">—</td>';
+      tb.appendChild(tr);
+      b.row = tr;
+    });
+    document.getElementById('distHead').textContent = card.distHead;
+    document.getElementById('clockLab').textContent = card.clockLab;
+    document.getElementById('note').textContent = card.note;
+    document.getElementById('cmp').hidden = !card.cmp;
+  }
+
+  function applyBody(b, animate){
+    if (b.reached){
+      b.body.setAttribute('opacity', 1);
+      b.body.setAttribute('filter', 'url(#a-glow)');
+      b.lab.setAttribute('opacity', 1);
+      b.row.classList.add('ok');
+      b.row.lastChild.textContent = card.fmtT(b.t);
+      if (animate){
+        b.ring.classList.remove('pulse');
+        void b.ring.getBoundingClientRect();   // forza il ricalcolo per far ripartire l'animazione
+        b.ring.classList.add('pulse');
+      }
+    } else {
+      b.body.setAttribute('opacity', .45);
+      b.body.removeAttribute('filter');
+      b.lab.setAttribute('opacity', 0);
+      b.row.classList.remove('ok');
+      b.row.lastChild.textContent = '—';
+      b.ring.classList.remove('pulse');
+    }
+  }
+
+  function update(){
+    beamTo(cur.beam, xOf(t));
+    cron.textContent = fmtClock(t, card.clock);
+    dist.textContent = fmtKm(t * C_KMS);
+    card.bodies.forEach(function(b){
+      var hit = t >= b.t;
+      if (hit !== b.reached){ b.reached = hit; applyBody(b, hit); }
+    });
+  }
+
+  function updateBtn(){
+    go.textContent = running ? 'Pausa' : (t > 0 && t < card.span ? 'Riprendi' : 'Avvia');
+  }
+
+  function updateWait(){
+    var target = card.bodies[card.target];
+    wait.textContent = 'A questa velocità la luce arriva ' + card.phr + ' in ' + waitTxt(target.t / speed) + ' di tempo reale.';
+  }
+
+  function reset(){
+    t = 0; running = false;
+    card.bodies.forEach(function(b){ b.reached = false; applyBody(b, false); });
+    update(); updateBtn();
+  }
+
+  function setSpeed(v){
+    speed = v;
+    Array.prototype.forEach.call(speedsBox.children, function(c){
+      var on = Number(c.getAttribute('data-v')) === v;
+      c.classList.toggle('sel', on);
+      c.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    if (cur && card.kind === 'anim'){ update(); updateWait(); }
+  }
+
+  SPEEDS.forEach(function(s){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'pill'; b.setAttribute('data-v', s.v);
+    b.textContent = s.lab;
+    b.addEventListener('click', function(){ setSpeed(s.v); });
+    speedsBox.appendChild(b);
+  });
+
+  go.addEventListener('click', function(){
+    if (t >= card.span) reset();
+    running = !running; updateBtn();
+  });
+  rs.addEventListener('click', reset);
+
+  function frame(ts){
+    if (last === null) last = ts;
+    var dt = Math.min(0.1, (ts - last) / 1000); last = ts;
+    if (running && card.kind === 'anim'){
+      t = Math.min(card.span, t + dt * speed);
+      if (t >= card.span){ running = false; updateBtn(); }
+      update();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- scheda di sintesi (4) ---------- */
+  var chipEls = [], pillEls = [], ladder = null;
+  var LX0 = 60, LX1 = 940, LY = 56;
+  function lx(i){ return LX0 + i * (LX1 - LX0) / (card.steps.length - 1); }
+
+  function buildSint(){
+    svg2.innerHTML = defs('b-');
+    stars(svg2, 1000, 150, 40);
+    var n = card.steps.length;
+    el(svg2, 'line', {x1:LX0, y1:LY, x2:LX1, y2:LY, stroke:'#3a4d70', 'stroke-width':2});
+    ladder = {beam: beam(svg2, 'b-'), nodes:[]};
+    ladder.beam.gl.setAttribute('y1', LY); ladder.beam.gl.setAttribute('y2', LY);
+    [ladder.beam.lit, ladder.beam.core].forEach(function(l){ l.setAttribute('y1', LY); l.setAttribute('y2', LY); });
+    ladder.beam.head.setAttribute('cy', LY); ladder.beam.head2.setAttribute('cy', LY);
+    card.steps.forEach(function(s, i){
+      var c = el(svg2, 'circle', {cx:lx(i), cy:LY, r:9, fill:'#1b2740', stroke:'#5a6f94', 'stroke-width':2});
+      var tx = el(svg2, 'text', {x:lx(i), y:112, 'text-anchor':'middle', fill:'#8fa0b8', 'font-size':25, 'font-family':'Calibri,Carlito,sans-serif'});
+      tx.textContent = s.l;
+      ladder.nodes.push({c:c, tx:tx});
+    });
+
+    var pills = document.getElementById('steps'); pills.innerHTML = ''; pillEls = [];
+    card.steps.forEach(function(s, i){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'pill'; b.textContent = s.l;
+      b.addEventListener('click', function(){ stepIdx = i; updateSint(); });
+      pills.appendChild(b); pillEls.push(b);
+    });
+
+    var chips = document.getElementById('chips'); chips.innerHTML = ''; chipEls = [];
+    card.sb.forEach(function(b){
+      var d = document.createElement('div'); d.className = 'chip';
+      d.innerHTML = '<div><span class="dot" style="background:' + b.col + '"></span>' + b.name + '</div><div class="tm">' + b.lab + '</div>';
+      chips.appendChild(d); chipEls.push(d);
+    });
+    sintBuilt = true;
+  }
+
+  function updateSint(){
+    var cutoff = card.steps[stepIdx].t;
+    beamTo(ladder.beam, lx(stepIdx));
+    ladder.nodes.forEach(function(n, i){
+      var on = i <= stepIdx;
+      n.c.setAttribute('fill', on ? '#ffe27a' : '#1b2740');
+      n.c.setAttribute('stroke', on ? '#fff4b8' : '#5a6f94');
+      n.tx.setAttribute('fill', i === stepIdx ? '#ffd08a' : '#8fa0b8');
+      n.tx.setAttribute('font-weight', i === stepIdx ? '700' : '400');
+    });
+    pillEls.forEach(function(b, i){
+      b.classList.toggle('sel', i === stepIdx);
+      b.setAttribute('aria-pressed', i === stepIdx ? 'true' : 'false');
+    });
+    document.getElementById('steptxt').textContent = card.stepTxt[stepIdx];
+    card.sb.forEach(function(b, i){ chipEls[i].classList.toggle('on', b.t <= cutoff); });
+    document.getElementById('prev').disabled = stepIdx === 0;
+    document.getElementById('next').disabled = stepIdx === card.steps.length - 1;
+  }
+  document.getElementById('prev').addEventListener('click', function(){ if (stepIdx > 0){ stepIdx--; updateSint(); } });
+  document.getElementById('next').addEventListener('click', function(){ if (stepIdx < card.steps.length - 1){ stepIdx++; updateSint(); } });
+
+  /* ---------- cambio scheda ---------- */
+  var tabsBox = document.getElementById('tabs');
+  var tabEls = [];
+  CARDS.forEach(function(c, i){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'tab'; b.textContent = c.tab;
+    b.addEventListener('click', function(){ selectCard(i); });
+    tabsBox.appendChild(b); tabEls.push(b);
+  });
+
+  function selectCard(i){
+    cardIdx = i; card = CARDS[i];
+    running = false; t = 0; last = null;
+    tabEls.forEach(function(b, j){ b.classList.toggle('sel', j === i); b.setAttribute('aria-pressed', j === i ? 'true' : 'false'); });
+    document.getElementById('sub').textContent = card.sub;
+    document.getElementById('anchor').textContent = card.anchor;
+    document.getElementById('q').textContent = card.q;
+    document.getElementById('ans').textContent = card.a;
+    document.getElementById('det').open = false;
+    var anim = card.kind === 'anim';
+    document.getElementById('animBox').hidden = !anim;
+    document.getElementById('sintBox').hidden = anim;
+    document.getElementById('tblWrap').hidden = !anim;
+    if (anim){
+      buildAnim();
+      setSpeed(1);
+      update(); updateWait(); updateBtn();
+    } else {
+      if (!sintBuilt) buildSint();
+      stepIdx = 0; updateSint();
+    }
+  }
+
+  selectCard(0);
+  requestAnimationFrame(frame);
+})();
+</script>
+
+<div style="text-align:center;padding:4px 0 56px"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0zNDUgLTExMzAgNDM2NyAxNDg0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlByb2YuIFQiPjxkZWZzPjxmaWx0ZXIgaWQ9ImciIHg9Ii0yMCUiIHk9Ii02MCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjIyMCUiPjxmZUdhdXNzaWFuQmx1ciBpbj0iU291cmNlR3JhcGhpYyIgc3RkRGV2aWF0aW9uPSI1NC43IiByZXN1bHQ9ImIiLz48ZmVDb2xvck1hdHJpeCBpbj0iYiIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgLjQxNiAwIDAgMCAwIC42NDcgMCAwIDAgMCAxIDAgMCAwIDEuMSAwIiByZXN1bHQ9ImMiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImMiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+PC9kZWZzPjxwYXRoIHRyYW5zZm9ybT0icm90YXRlKC0zIDE4MzggLTM4OCkiIGZpbGw9IiNlNmVjZjUiIGZpbHRlcj0idXJsKCNnKSIgZD0iTTIzIC0yM1ExNSAtMzkgMjIgLTY3UTI5IC05NSA0Mi41IC0xMjVRNTYgLTE1NSA3MSAtMTgzUTg2IC0yMTEgOTQgLTIyOVE5NyAtMjM1IDk4LjUgLTIzOVExMDAgLTI0MyAxMDEuNSAtMjQ4UTEwMyAtMjUzIDEwNSAtMjU5UTEwNyAtMjY1IDExMiAtMjc2UTExOCAtMjg5IDEzMS41IC0zMTYuNVExNDUgLTM0NCAxNjIgLTM3OC41UTE3OSAtNDEzIDE5Ny41IC00NTFRMjE2IC00ODkgMjMyLjUgLTUyMy41UTI0OSAtNTU4IDI2Mi41IC01ODUuNVEyNzYgLTYxMyAyODIgLTYyNlYtNjQ5UTI2NCAtNjUyIDI0NyAtNjQ3UTIzMCAtNjQyIDIxNC41IC02MzNRMTk5IC02MjQgMTg0LjUgLTYxMi41UTE3MCAtNjAxIDE1OCAtNTkyUTE0NCAtNTk1IDE0MiAtNjA1UTE0MCAtNjE1IDE0NCAtNjI2UTE0OCAtNjM3IDE1NS41IC02NDYuNVExNjMgLTY1NiAxNjkgLTY2MFEyNzMgLTcyNSAzOTIgLTc0Ni41UTUxMSAtNzY4IDYzMyAtNzUwUTcwNyAtNzEzIDczNCAtNjcxLjVRNzYxIC02MzAgNzUzLjUgLTU4N1E3NDYgLTU0NCA3MDkuNSAtNTAyUTY3MyAtNDYwIDYxOS41IC00MjEuNVE1NjYgLTM4MyA1MDEuNSAtMzUwUTQzNyAtMzE3IDM3My41IC0yOTNRMzEwIC0yNjkgMjUzIC0yNTUuNVExOTYgLTI0MiAxNTggLTI0MlExMzkgLTIxMiAxMjcgLTE5Mi41UTExNSAtMTczIDEwOCAtMTU4LjVRMTAxIC0xNDQgOTYuNSAtMTMxLjVROTIgLTExOSA4Ny41IC0xMDMuNVE4MyAtODggNzYgLTY2UTY5IC00NCA1NyAtMTFMNDYgMFE0MiAtMiAzMy41IC0xMC41UTI1IC0xOSAyMyAtMjNaTTE5MiAtMjk5UTIzNCAtMjkyIDI4MSAtMzAxLjVRMzI4IC0zMTEgMzc0LjUgLTMyOVE0MjEgLTM0NyA0NjQgLTM2OS41UTUwNyAtMzkyIDU0MiAtNDExUTYyNiAtNDU4IDY2Ny41IC01MDIuNVE3MDkgLTU0NyA3MTggLTU4NS41UTcyNyAtNjI0IDcwOS41IC02NTRRNjkyIC02ODQgNjU3LjUgLTcwMi41UTYyMyAtNzIxIDU3Ny41IC03MjZRNTMyIC03MzEgNDg1LjUgLTcxOVE0MzkgLTcwNyAzOTcgLTY3NlEzNTUgLTY0NSAzMjcgLTU5MlEzMTcgLTU3MyAzMDMgLTU0NS41UTI4OSAtNTE4IDI3NCAtNDg4UTI1OSAtNDU4IDI0NCAtNDI4LjVRMjI5IC0zOTkgMjE3LjUgLTM3NS41UTIwNiAtMzUyIDE5OSAtMzM3UTE5MiAtMzIyIDE5MiAtMzIxWk02MzcgLTExUTYzNSAtMTIgNjM3LjUgLTM0LjVRNjQwIC01NyA2NDUgLTkxUTY1MCAtMTI1IDY1OCAtMTY2UTY2NiAtMjA3IDY3NSAtMjQ0LjVRNjg0IC0yODIgNjk0LjUgLTMxMC41UTcwNSAtMzM5IDcxNSAtMzUwUTcyMiAtMzU3IDcyOSAtMzUwLjVRNzM2IC0zNDQgNzQzIC0zMzQuNVE3NTAgLTMyNSA3NTcgLTMxNy41UTc2NCAtMzEwIDc3MiAtMzE2UTgwMCAtMzU1IDgzMy41IC0zOTAuNVE4NjcgLTQyNiA5MDggLTQ1MlE5MTIgLTQ1NSA5MzAgLTQ2MS41UTk0OCAtNDY4IDk3MSAtNDc0LjVROTk0IC00ODEgMTAxOC41IC00ODUuNVExMDQzIC00OTAgMTA2MC41IC00ODkuNVExMDc4IC00ODkgMTA4NC41IC00ODAuNVExMDkxIC00NzIgMTA3OCAtNDUyUTEwMTggLTQ1MSA5NjYgLTQxN1E5MTQgLTM4MyA4NzAgLTMzM1E4MjYgLTI4MyA3OTAgLTIyNC41UTc1NCAtMTY2IDcyNy41IC0xMTZRNzAxIC02NiA2ODMuNSAtMzNRNjY2IDAgNjU4IDBRNjU3IDAgNjQ5IC00LjVRNjQxIC05IDYzNyAtMTFaTTExNzMgLTExUTExMzEgLTI4IDExMjAuNSAtNjJRMTExMCAtOTYgMTEyMSAtMTM3LjVRMTEzMiAtMTc5IDExNTkgLTIyMy41UTExODYgLTI2OCAxMjE5IC0zMDVRMTI1MiAtMzQyIDEyODUuNSAtMzY3LjVRMTMxOSAtMzkzIDEzNDMgLTM5NlExNDA1IC00MDQgMTQ0MC41IC0zODcuNVExNDc2IC0zNzEgMTQ4OSAtMzQwUTE1MDIgLTMwOSAxNDk2IC0yNjcuNVExNDkwIC0yMjYgMTQ2OS41IC0xODRRMTQ0OSAtMTQyIDE0MTYuNSAtMTAzUTEzODQgLTY0IDEzNDQuNSAtMzcuNVExMzA1IC0xMSAxMjYxIC0yLjVRMTIxNyA2IDExNzMgLTExWk0xMTYyIC02OFExMTcwIC0zNiAxMTk2IC0zMi41UTEyMjIgLTI5IDEyNTYuNSAtNDUuNVExMjkxIC02MiAxMzI5IC05My41UTEzNjcgLTEyNSAxMzk4LjUgLTE2MlExNDMwIC0xOTkgMTQ1MC41IC0yMzYuNVExNDcxIC0yNzQgMTQ3MC41IC0zMDJRMTQ3MCAtMzMwIDE0NDMuNSAtMzQ0LjVRMTQxNyAtMzU5IDEzNTUgLTM1MFExMzQxIC0zMzcgMTMxOSAtMzE4LjVRMTI5NyAtMzAwIDEyNzMuNSAtMjc4UTEyNTAgLTI1NiAxMjI3IC0yMzAuNVExMjA0IC0yMDUgMTE4NyAtMTc4UTExNzAgLTE1MSAxMTYyLjUgLTEyM1ExMTU1IC05NSAxMTYyIC02OFpNMTU2NCAtMjNRMTU2MiAtMjUgMTU2MiAtMzRRMTU2MiAtNDMgMTU2NCAtNDVMMTY0OCAtMjM4SDE1NTNRMTU1MCAtMjM4IDE1NDcuNSAtMjQyUTE1NDUgLTI0NiAxNTQzLjUgLTI1MS41UTE1NDIgLTI1NyAxNTQxIC0yNjIuNVExNTQwIC0yNjggMTU0MiAtMjcxUTE1NDUgLTI3MiAxNTUzIC0yNzVRMTU2MSAtMjc4IDE1NzAgLTI4MlExNTc5IC0yODYgMTU4NyAtMjg5UTE1OTUgLTI5MiAxNTk4IC0yOTRRMTYwMSAtMjk1IDE2MTQuNSAtMzAwUTE2MjggLTMwNSAxNjQzLjUgLTMxMC41UTE2NTkgLTMxNiAxNjcyIC0zMjFRMTY4NSAtMzI2IDE2ODggLTMyOFExNzAwIC0zMzYgMTcxNi41IC0zNjcuNVExNzMzIC0zOTkgMTc1NCAtNDQzUTE3NzUgLTQ4NyAxODAwIC01MzcuNVExODI1IC01ODggMTg1NCAtNjM0LjVRMTg4MyAtNjgxIDE5MTUgLTcxNy41UTE5NDcgLTc1NCAxOTgxLjUgLTc2OS41UTIwMTYgLTc4NSAyMDUzIC03NzRRMjA5MCAtNzYzIDIxMjkgLTcxNVEyMTM2IC03MDUgMjEzOSAtNjkzLjVRMjE0MiAtNjgyIDIxNDAgLTY3MFEyMTMxIC02NjUgMjEyMiAtNjY4UTIxMTMgLTY3MSAyMTA1LjUgLTY3OFEyMDk4IC02ODUgMjA5MiAtNjkyLjVRMjA4NiAtNzAwIDIwODQgLTcwNFEyMDE3IC03MTUgMTk3Ny41IC02OTguNVExOTM4IC02ODIgMTkxMi41IC02NDguNVExODg3IC02MTUgMTg2OCAtNTY5UTE4NDkgLTUyMyAxODI0IC00NzRRMTgxNyAtNDYyIDE4MDcuNSAtNDQzUTE3OTggLTQyNCAxNzg5IC00MDZRMTc4MCAtMzg4IDE3NzMuNSAtMzc1UTE3NjcgLTM2MiAxNzY3IC0zNjJWLTM1MFExNzY3IC0zNDYgMTc5MiAtMzQ0UTE4MTcgLTM0MiAxODQ4LjUgLTMzOFExODgwIC0zMzQgMTkwOS41IC0zMjYuNVExOTM5IC0zMTkgMTk0OCAtMzA1TDE5MzcgLTI5NFExODgwIC0yOTcgMTg0MSAtMjk2UTE4MDIgLTI5NSAxNzczIC0yODNRMTc0NCAtMjcxIDE3MjIgLTI0NC41UTE3MDAgLTIxOCAxNjc3IC0xNzBRMTY2OSAtMTUzIDE2NTYgLTEyNi41UTE2NDMgLTEwMCAxNjMwIC03NC41UTE2MTcgLTQ5IDE2MDggLTMwLjVRMTU5OSAtMTIgMTU5OCAtMTFMMTU4NiAwUTE1ODMgLTIgMTU3NC41IC0xMC41UTE1NjYgLTE5IDE1NjQgLTIzWk0yMDI4IC0xMVEyMDE0IC0zMiAyMDIwLjUgLTUzLjVRMjAyNyAtNzUgMjA0MyAtODYuNVEyMDU5IC05OCAyMDc4IC05NS41UTIwOTcgLTkzIDIxMDcgLTY4UTIxMTMgLTUzIDIxMDUuNSAtMzYuNVEyMDk4IC0yMCAyMDg0IC05LjVRMjA3MCAxIDIwNTQgMi41UTIwMzggNCAyMDI4IC0xMVpNMjg1MyAtMTFRMjg0NyAtMzYgMjg1My41IC02OC41UTI4NjAgLTEwMSAyODcyIC0xMzRRMjg4NCAtMTY3IDI4OTggLTE5Ny41UTI5MTIgLTIyOCAyOTIxIC0yNDhRMjkyNiAtMjYwIDI5MzYuNSAtMjgzUTI5NDcgLTMwNiAyOTYwLjUgLTMzNVEyOTc0IC0zNjQgMjk4OC41IC0zOTZRMzAwMyAtNDI4IDMwMTYuNSAtNDU3UTMwMzAgLTQ4NiAzMDQwLjUgLTUwOC41UTMwNTEgLTUzMSAzMDU2IC01NDJRMzAzOSAtNTQ1IDMwMDcuNSAtNTM5UTI5NzYgLTUzMyAyOTM4IC01MjMuNVEyOTAwIC01MTQgMjg2MCAtNTA0UTI4MjAgLTQ5NCAyNzg1LjUgLTQ4OS41UTI3NTEgLTQ4NSAyNzI2LjUgLTQ4OC41UTI3MDIgLTQ5MiAyNjk2IC01MDlRMjcwMyAtNTIyIDI3NDcgLTUzOVEyNzkxIC01NTYgMjg1OS41IC01NzQuNVEyOTI4IC01OTMgMzAxMi41IC02MTJRMzA5NyAtNjMxIDMxODUgLTY0OFEzMjczIC02NjUgMzM1NyAtNjc5UTM0NDEgLTY5MyAzNTA3IC03MDJRMzU3MyAtNzExIDM2MTMuNSAtNzE0UTM2NTQgLTcxNyAzNjU2IC03MTJRMzY1OSAtNzA0IDM2NTcgLTY5Mi41UTM2NTUgLTY4MSAzNjQ0IC02NzhRMzU5NSAtNjcwIDM1MzggLTY2MC41UTM0ODEgLTY1MSAzNDIyLjUgLTY0MC41UTMzNjQgLTYzMCAzMzA4IC02MTkuNVEzMjUyIC02MDkgMzIwNCAtNTk5UTMxNzMgLTU5MyAzMTQ0IC01NjNRMzExNSAtNTMzIDMwODggLTQ4OC41UTMwNjEgLTQ0NCAzMDM2IC0zODkuNVEzMDExIC0zMzUgMjk4OC41IC0yNzlRMjk2NiAtMjIzIDI5NDcgLTE3MVEyOTI4IC0xMTkgMjkxMiAtNzkuNVEyODk2IC00MCAyODg0IC0xOFEyODcyIDQgMjg2NCAwUTI4NjIgLTIgMjg1OCAtNlEyODU0IC0xMCAyODUzIC0xMVoiLz48L3N2Zz4=" alt="Prof. T" style="height:3rem;width:auto"></div>
+
+<style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6aa5ff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(106,165,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}</style>
+<a class="torna-sito" href="../index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Torna a Scienza in Movimento</a>
+</body>
+</html>
