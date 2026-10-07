@@ -1,5 +1,5 @@
 /* Stile condiviso del sito "La Matematica e le Scienze in Movimento" (Prof. T)
-   Tema scuro, ispirato alla strumentazione scientifica. Solo CSS, nessun JavaScript. */
+   Tema scuro, ispirato alla strumentazione scientifica. Solo CSS; l'unico script del sito e' frasi.js (frasi della home). */
 
 :root {
   /* Base */
@@ -88,6 +88,7 @@ a { color: inherit; text-decoration: none; }
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas:
     "testo persona"
+    "frase frase"
     "filo filo";
   column-gap: 28px;
 }
@@ -179,6 +180,66 @@ a { color: inherit; text-decoration: none; }
   79% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(30deg); }
   86%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.3) rotate(70deg); }
 }
+
+/* Fumetto di Prof. T: sotto titolo e caricatura, con la codina rivolta verso di lui.
+   Le frasi sono sovrapposte nella stessa cella della griglia: il fumetto ha l'altezza della frase piu' lunga
+   e la pagina non "salta" quando la frase cambia. Le gestisce frasi.js (senza JavaScript resta la frase .attiva). */
+.fumetto {
+  grid-area: frase;
+  position: relative;
+  margin-top: 18px;
+  padding: 14px 20px 13px;
+  background: var(--pannello);
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+}
+.fumetto::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  right: calc(clamp(170px, 25vw, 260px) / 2 - 6px);   /* al centro della colonna della caricatura */
+  width: 12px;
+  height: 12px;
+  background: var(--pannello);
+  border: solid var(--linea);
+  border-width: 1px 0 0 1px;
+  transform: rotate(45deg);
+}
+.frasi {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+.frasi li {
+  grid-area: 1 / 1;
+  align-self: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 1s ease, transform 1s ease, visibility 0s linear 1s;
+}
+.frasi li.attiva {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 1s ease, transform 1s ease, visibility 0s;
+}
+.frasi.senza-transizione li { transition: none; }
+.frasi .frase {
+  margin: 0 0 6px;
+  font: italic 1.12rem/1.45 Cambria, Georgia, "Times New Roman", serif;
+  color: var(--testo);
+}
+.frasi .fonte {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--testo-dim);
+}
+.frasi .disc { color: var(--colore, var(--testo-soft)); }   /* colore della disciplina, dalla classe del <li> */
 
 /* ---------- Intestazione pagine interne ---------- */
 .testata {
@@ -399,9 +460,12 @@ footer .firma-home:focus-visible .firma-img {
     grid-template-areas:
       "testo"
       "persona"
+      "frase"
       "filo";
   }
   .hero .persona { justify-self: center; margin-top: 16px; }
+  .fumetto::before { right: auto; left: 50%; margin-left: -6px; }
+  .frasi .frase { font-size: 1.05rem; }
   .mascotte { width: min(46vw, 200px); }
   .hero .firma-img { position: static; height: 2.6rem; margin: 0 4px 2rem 0; }
 }
@@ -411,4 +475,6 @@ footer .firma-home:focus-visible .firma-img {
   .card { transition: none; }
   a.card:hover, a.card:focus-visible { transform: none; }
   .mascotte .occhiolino, .mascotte .bagliore { animation: none; }
+  /* le frasi cambiano con una semplice dissolvenza, senza il leggero spostamento */
+  .frasi li, .frasi li.attiva { transform: none; }
 }

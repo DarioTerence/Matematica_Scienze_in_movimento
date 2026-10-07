@@ -6,6 +6,7 @@
   <title>La Matematica e le Scienze in Movimento - Prof. T</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
+  <script src="frasi.js" defer></script>
 </head>
 <body>
 
@@ -22,6 +23,40 @@
       <img class="occhiolino" src="prof_t_occhiolino.webp" width="700" height="769" alt="" aria-hidden="true">
       <img class="bagliore" src="bagliore.svg" width="100" height="100" alt="" aria-hidden="true">
     </div>
+  </div>
+  <!--
+    FRASI: il fumetto di Prof. T mostra una frase alla volta, in ordine casuale (le gestisce frasi.js).
+    PER AGGIUNGERNE UNA: copia un <li> qui sotto e cambia il testo, la fonte e la classe della disciplina
+    (aritmetica, algebra, geometria, statistica, fisica, chimica, biologia, anatomia, ecologia, terra, astronomia):
+    la classe colora il nome della disciplina. Lunghezza massima consigliata: 150 caratteri.
+    Il <li> con class="attiva" e' quello che si vede se JavaScript e' disattivato: ne deve restare uno solo.
+  -->
+  <div class="fumetto">
+    <ul class="frasi">
+      <li class="geometria attiva"><p class="frase">L'universo è un grande libro scritto in lingua matematica.</p><p class="fonte"><span class="disc">Geometria</span> · parafrasi da Galileo, Il Saggiatore (1623)</p></li>
+      <li class="aritmetica"><p class="frase">Ogni numero naturale maggiore di 1 si scrive come prodotto di numeri primi, in un solo modo a meno dell'ordine.</p><p class="fonte"><span class="disc">Aritmetica</span> · Teorema fondamentale dell'aritmetica</p></li>
+      <li class="algebra"><p class="frase">Un'equazione è una bilancia in equilibrio: se aggiungi o togli lo stesso peso a entrambi i piatti, resta in equilibrio.</p><p class="fonte"><span class="disc">Algebra</span> · Primo principio di equivalenza</p></li>
+      <li class="geometria"><p class="frase">In un triangolo rettangolo, il quadrato costruito sull'ipotenusa è equivalente alla somma dei quadrati costruiti sui cateti.</p><p class="fonte"><span class="disc">Geometria</span> · Teorema di Pitagora</p></li>
+      <li class="statistica"><p class="frase">Più volte si ripete una prova, più la frequenza osservata si avvicina alla probabilità teorica.</p><p class="fonte"><span class="disc">Statistica</span> · Legge dei grandi numeri</p></li>
+      <li class="fisica"><p class="frase">L'energia non si crea e non si distrugge: si trasforma da una forma all'altra.</p><p class="fonte"><span class="disc">Fisica</span> · Conservazione dell'energia</p></li>
+      <li class="fisica"><p class="frase">A ogni azione corrisponde una reazione uguale e contraria.</p><p class="fonte"><span class="disc">Fisica</span> · Terzo principio della dinamica (Newton)</p></li>
+      <li class="fisica"><p class="frase">Un intervallo di 1 kelvin è uguale a un intervallo di 1 grado Celsius: cambia solo il punto da cui si comincia a contare.</p><p class="fonte"><span class="disc">Fisica</span> · Scale di temperatura</p></li>
+      <li class="fisica"><p class="frase">Lo zero assoluto, 0 K (−273,15 °C), è il limite inferiore della temperatura: più in basso non si può scendere.</p><p class="fonte"><span class="disc">Fisica</span> · Scala Kelvin</p></li>
+      <li class="chimica"><p class="frase">In una reazione chimica la massa dei reagenti è uguale alla massa dei prodotti.</p><p class="fonte"><span class="disc">Chimica</span> · Conservazione della massa (Lavoisier)</p></li>
+      <li class="biologia"><p class="frase">Tutti gli esseri viventi sono formati da una o più cellule, unità fondamentale della vita.</p><p class="fonte"><span class="disc">Biologia</span> · Teoria cellulare</p></li>
+      <li class="biologia"><p class="frase">Ogni cellula deriva da un'altra cellula preesistente.</p><p class="fonte"><span class="disc">Biologia</span> · Teoria cellulare</p></li>
+      <li class="biologia"><p class="frase">Nell'osmosi l'acqua attraversa la membrana semipermeabile dalla soluzione meno concentrata verso quella più concentrata.</p><p class="fonte"><span class="disc">Biologia</span> · Osmosi</p></li>
+      <li class="anatomia"><p class="frase">Nel corpo umano la forma di ogni organo è adatta al lavoro che svolge.</p><p class="fonte"><span class="disc">Anatomia</span> · Struttura e funzione</p></li>
+      <li class="ecologia"><p class="frase">Ogni cosa è connessa a ogni altra.</p><p class="fonte"><span class="disc">Ecologia</span> · Prima legge dell'ecologia (Barry Commoner, 1971)</p></li>
+      <li class="terra"><p class="frase">In una successione di strati non sconvolta, gli strati più bassi sono i più antichi.</p><p class="fonte"><span class="disc">Scienze della Terra</span> · Principio di sovrapposizione (Stenone, 1669)</p></li>
+      <li class="terra"><p class="frase">La litosfera è divisa in placche che si muovono molto lentamente, di pochi centimetri all'anno.</p><p class="fonte"><span class="disc">Scienze della Terra</span> · Tettonica a placche</p></li>
+      <li class="astronomia"><p class="frase">I pianeti percorrono orbite ellittiche, con il Sole in uno dei due fuochi.</p><p class="fonte"><span class="disc">Astronomia</span> · Prima legge di Keplero (1609)</p></li>
+      <li class="astronomia"><p class="frase">Il segmento che unisce il Sole a un pianeta descrive aree uguali in tempi uguali.</p><p class="fonte"><span class="disc">Astronomia</span> · Seconda legge di Keplero (1609)</p></li>
+      <li class="astronomia"><p class="frase">Una stella brilla perché nel suo nucleo l'idrogeno si fonde in elio e libera energia.</p><p class="fonte"><span class="disc">Astronomia</span> · La vita delle stelle</p></li>
+      <li class="astronomia"><p class="frase">Il cosmo è dentro di noi: siamo fatti di materia stellare.</p><p class="fonte"><span class="disc">Astronomia</span> · Carl Sagan, Cosmos (1980), traduzione libera</p></li>
+      <li class="astronomia"><p class="frase">La velocità della luce nel vuoto è la stessa per tutti gli osservatori: circa 300.000 km al secondo.</p><p class="fonte"><span class="disc">Astronomia</span> · Relatività ristretta (Einstein, 1905)</p></li>
+      <li class="astronomia"><p class="frase">La luce impiega poco più di un secondo per andare dalla Luna alla Terra e circa otto minuti per arrivare dal Sole.</p><p class="fonte"><span class="disc">Astronomia</span> · La velocità della luce</p></li>
+    </ul>
   </div>
   <div class="filo"></div>
 </header>
