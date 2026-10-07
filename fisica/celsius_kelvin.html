@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Celsius e Kelvin: due scale, stesso passo</title>
+<style>
+:root{--bg:#0a0f1a;--pan:#111a2b;--line:#22304a;--ink:#e6ecf5;--mut:#8fa0b8;--acc:#ffd08a;--err:#FF8A80;--stagebg:#FDFCF9}
+*{box-sizing:border-box}
+html{background:#0a0f1a}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:Calibri,Carlito,"Segoe UI",sans-serif;font-size:17px;line-height:1.45;
+background:radial-gradient(ellipse 80% 45% at 50% 0%,rgba(106,165,255,.10),transparent 70%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px) 0 0/36px 36px,linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px) 0 0/36px 36px,#0a0f1a}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 16px 0}
+h1,h2{font-family:Cambria,Georgia,serif;color:var(--acc);margin:0}
+h1{font-size:28px;margin-bottom:4px}
+h2{font-size:20px;margin-bottom:10px}
+.sub{color:var(--mut);margin:0 0 12px}
+.stage{background:var(--stagebg);border:1px solid var(--line);border-radius:12px;padding:6px}
+svg{display:block;width:100%;height:auto;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:ew-resize}
+svg:focus-visible{outline:3px solid var(--acc);outline-offset:2px;border-radius:8px}
+svg text{font-family:Calibri,Carlito,"Segoe UI",sans-serif}
+.ttl{font-family:Cambria,Georgia,serif;font-size:24px;font-weight:700}
+.lab{font-size:20px;fill:#3b3830}
+.labs{font-size:21px;font-weight:700}
+.nm{font-size:19px;fill:#4a463d;paint-order:stroke;stroke:#FDFCF9;stroke-width:5px;stroke-linejoin:round}
+.br{font-size:20px;font-weight:700}
+.tag{font-size:21px;font-weight:700;fill:#fff}
+.anchor{margin:12px 0;padding:10px 14px;background:rgba(255,180,84,.12);border-left:4px solid #ffb454;border-radius:0 8px 8px 0;color:var(--ink)}
+.grid{display:grid;grid-template-columns:1fr 1.5fr;gap:14px;align-items:start}
+.card{background:var(--pan);border:1px solid var(--line);border-radius:12px;padding:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-weight:700;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:#0a0f1a;color:var(--ink);cursor:pointer}
+.chip small{font-weight:400;color:var(--mut);margin-left:6px}
+.chip[aria-pressed=true]{outline:3px solid var(--acc);outline-offset:1px;border-color:var(--acc);background:rgba(255,208,138,.14)}
+.chip:focus-visible{outline:3px solid #6aa5ff;outline-offset:1px}
+.hint{color:var(--mut);font-size:15px;margin:10px 0 0}
+.calcgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.blk{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:rgba(10,15,26,.55)}
+.blk.a{border-top:4px solid #E0902A}
+.blk.b{border-top:4px solid #6aa5ff}
+.blk label{font-weight:700;display:block;margin-bottom:6px}
+.inrow{display:flex;align-items:center;gap:8px}
+input{font:inherit;font-size:22px;width:100%;min-width:0;padding:6px 10px;border:1.5px solid #3a4d70;border-radius:8px;background:#0a0f1a;color:var(--ink)}
+input:focus{outline:3px solid rgba(255,208,138,.35);border-color:var(--acc)}
+input::placeholder{color:#5d6d87}
+.u{font-weight:700;font-size:20px}
+.formula{color:var(--mut);margin:8px 0 2px;font-size:15px}
+.res{font-size:20px;font-weight:700;min-height:2.6em;word-break:break-word}
+.note{margin-top:10px;min-height:1.4em;font-size:15px;color:var(--mut)}
+.note.err{color:var(--err);font-weight:700}
+@media (max-width:760px){.grid,.calcgrid{grid-template-columns:1fr}h1{font-size:23px}
+.ttl{font-size:30px}.lab{font-size:28px}.labs{font-size:29px}.nm{font-size:23px}.br{font-size:27px}.tag{font-size:28px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Celsius e Kelvin: due scale, stesso passo</h1>
+<p class="sub">Trascina il cursore sulle due semirette (o usa le frecce della tastiera): leggi lo stesso punto sulle due scale.</p>
+
+<div class="stage">
+<svg id="sc" viewBox="0 0 1000 400" role="slider" tabindex="0" aria-label="Temperatura sulle scale Celsius e Kelvin" aria-valuemin="-273.15" aria-valuemax="110" aria-valuenow="20"></svg>
+</div>
+
+<div class="anchor">Entrambe centigrade: 100 parti tra il ghiaccio che fonde e l'acqua che bolle.<br>Stesso passo: un grado Celsius vale un kelvin. Cambia solo lo zero, spostato di 273,15.</div>
+
+<div class="grid">
+<section class="card">
+<h2>Scorciatoie</h2>
+<div class="chips" id="chips"></div>
+<p class="hint">Il cursore si sposta sul valore scelto e la calcolatrice si aggiorna.</p>
+</section>
+
+<section class="card">
+<h2>Calcolatrice di equivalenza</h2>
+<div class="calcgrid">
+<div class="blk a">
+<label for="inC">Da Celsius a Kelvin</label>
+<div class="inrow"><input id="inC" type="text" inputmode="decimal" autocomplete="off" maxlength="14" placeholder="es. 25"><span class="u">°C</span></div>
+<div class="formula">K = °C + 273,15</div>
+<div class="res" id="resA" aria-live="polite"></div>
+</div>
+<div class="blk b">
+<label for="inK">Da Kelvin a Celsius</label>
+<div class="inrow"><input id="inK" type="text" inputmode="decimal" autocomplete="off" maxlength="14" placeholder="es. 310"><span class="u">K</span></div>
+<div class="formula">°C = K − 273,15</div>
+<div class="res" id="resB" aria-live="polite"></div>
+</div>
+</div>
+<div class="note" id="note" role="status"></div>
+</section>
+</div>
+
+</div>
+<script>
+(function(){
+var NS='http://www.w3.org/2000/svg';
+var X0=60, W=880, SPAN=383.15, S=W/SPAN, TMIN=-273.15, TMAX=110, OFF=273.15;
+var YC=130, YK=270;
+var CC='#D9730D', KC='#2F5D8A', GR='#8A8478';
+var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function xC(c){return X0+(c-TMIN)*S;}
+function cX(x){return (x-X0)/S+TMIN;}
+function fmtIn(n){return Number(n.toFixed(6)).toString().replace('.',',');}
+function fmtF(n){return fmtIn(n).replace('-','−');}
+
+/* ---------- parte fissa del disegno ---------- */
+var svg=document.getElementById('sc');
+var xi=xC(0), xb=xC(100), xe=X0+W;
+var s='<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="#6B655A"/></marker></defs>';
+s+='<text x="'+X0+'" y="32" class="ttl" fill="#A84F00">Scala Celsius (°C)</text>';
+s+='<text x="'+X0+'" y="392" class="ttl" fill="'+KC+'">Scala Kelvin (K)</text>';
+
+// semirette: base, tratto 0-100 evidenziato, punto iniziale, punta
+[[YC,CC],[YK,KC]].forEach(function(p){
+  var y=p[0],col=p[1];
+  s+='<line x1="'+X0+'" y1="'+y+'" x2="'+xe+'" y2="'+y+'" stroke="'+GR+'" stroke-width="3"/>';
+  s+='<line x1="'+xi+'" y1="'+y+'" x2="'+xb+'" y2="'+y+'" stroke="'+col+'" stroke-width="9"/>';
+  s+='<circle cx="'+X0+'" cy="'+y+'" r="6" fill="'+GR+'"/>';
+  s+='<polygon points="'+xe+','+(y-8)+' '+(xe+18)+','+y+' '+xe+','+(y+8)+'" fill="'+GR+'"/>';
+});
+
+// guide dei punti fissi
+[X0,xi,xb].forEach(function(x){
+  s+='<line x1="'+x+'" y1="'+YC+'" x2="'+x+'" y2="'+YK+'" stroke="#A39B8A" stroke-width="2" stroke-dasharray="5 5"/>';
+});
+
+// tacche e numeri Celsius (sopra)
+var c;
+for(c=-270;c<=110;c+=10){
+  var xx=xC(c), maj=(c%50===0);
+  s+='<line x1="'+xx+'" y1="'+YC+'" x2="'+xx+'" y2="'+(YC-(maj?15:9))+'" stroke="'+GR+'" stroke-width="'+(maj?2.5:1.5)+'"/>';
+}
+[[-273.15,'−273,15',1],[-200,'−200',0],[-150,'−150',0],[-100,'−100',0],[-50,'−50',0],[0,'0',1],[50,'50',0],[100,'100',1]].forEach(function(l){
+  s+='<text x="'+xC(l[0])+'" y="'+(YC-24)+'" text-anchor="middle" class="lab'+(l[2]?' labs':'')+'" fill="'+(l[2]?'#A84F00':'#3b3830')+'">'+l[1]+'</text>';
+});
+
+// tacche e numeri Kelvin (sotto)
+var k;
+for(k=0;k<=380;k+=10){
+  var xk=X0+k*S, majk=(k%50===0);
+  s+='<line x1="'+xk+'" y1="'+YK+'" x2="'+xk+'" y2="'+(YK+(majk?15:9))+'" stroke="'+GR+'" stroke-width="'+(majk?2.5:1.5)+'"/>';
+}
+[[0,'0',1],[50,'50',0],[100,'100',0],[150,'150',0],[200,'200',0],[273.15,'273,15',1],[373.15,'373,15',1]].forEach(function(l){
+  s+='<text x="'+(X0+l[0]*S)+'" y="'+(YK+36)+'" text-anchor="middle" class="lab'+(l[2]?' labs':'')+'" fill="'+(l[2]?KC:'#3b3830')+'">'+l[1]+'</text>';
+});
+
+// nomi dei punti fissi e sfasamento
+s+='<text x="'+(X0+8)+'" y="198" class="nm">zero assoluto</text>';
+s+='<text x="'+xi+'" y="198" text-anchor="middle" class="nm">il ghiaccio fonde</text>';
+s+='<text x="'+xb+'" y="198" text-anchor="end" class="nm" id="nmb">l’acqua bolle</text>';
+s+='<line x1="'+(X0+3)+'" y1="226" x2="'+(xi-3)+'" y2="226" stroke="#6B655A" stroke-width="2.5" marker-start="url(#ar)" marker-end="url(#ar)"/>';
+s+='<text x="'+((X0+xi)/2)+'" y="216" text-anchor="middle" class="nm" style="font-weight:700">sfasamento: 273,15</text>';
+
+// parentesi dei 100 gradi
+s+='<path d="M'+xi+',78 V70 H'+xb+' V78" fill="none" stroke="'+CC+'" stroke-width="3.5"/>';
+s+='<text x="'+((xi+xb)/2)+'" y="56" text-anchor="middle" class="br" fill="#A84F00">100 gradi</text>';
+s+='<path d="M'+xi+',326 V334 H'+xb+' V326" fill="none" stroke="'+KC+'" stroke-width="3.5"/>';
+s+='<text x="'+((xi+xb)/2)+'" y="362" text-anchor="middle" class="br" fill="'+KC+'">100 gradi</text>';
+
+// cursore
+s+='<g id="cur"><line id="cl" x1="0" y1="118" x2="0" y2="282" stroke="#26282B" stroke-width="2.5"/>'
+ +'<circle id="h1" cx="0" cy="'+YC+'" r="12" fill="'+CC+'" stroke="#fff" stroke-width="3"/>'
+ +'<circle id="h2" cx="0" cy="'+YK+'" r="12" fill="'+KC+'" stroke="#fff" stroke-width="3"/>'
+ +'<rect id="r1" y="146" height="30" rx="8" fill="#C2610A"/><text id="t1" y="168" text-anchor="middle" class="tag"></text>'
+ +'<rect id="r2" y="228" height="30" rx="8" fill="'+KC+'"/><text id="t2" y="250" text-anchor="middle" class="tag"></text></g>';
+svg.innerHTML=s;
+
+var el=function(id){return document.getElementById(id);};
+var cl=el('cl'),h1=el('h1'),h2=el('h2'),r1=el('r1'),t1=el('t1'),r2=el('r2'),t2=el('t2');
+var inA=el('inC'),inB=el('inK'),resA=el('resA'),resB=el('resB'),note=el('note');
+
+/* ---------- stato ---------- */
+var cur=20, tgt=20, val=20, source='cursor', over=false, bad=false, raf=0, last=0;
+var SHORT=[
+  {n:'Zero assoluto',v:-273.15,t:'0 K'},
+  {n:'Il ghiaccio fonde',v:0,t:'0 °C'},
+  {n:'Ambiente',v:20,t:'20 °C'},
+  {n:'Corpo umano',v:37,t:'37 °C'},
+  {n:'L’acqua bolle',v:100,t:'100 °C'}
+];
+var chipsEl=el('chips');
+SHORT.forEach(function(o){
+  var b=document.createElement('button');
+  b.type='button'; b.className='chip'; b.setAttribute('aria-pressed','false');
+  b.innerHTML=o.n+'<small>'+o.t+'</small>';
+  b.addEventListener('click',function(){source='cursor';tgt=o.v;go();});
+  chipsEl.appendChild(b); o.el=b;
+});
+
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+
+/* ---------- calcolatrice ---------- */
+function setNote(t,err){note.textContent=t;note.className='note'+(err?' err':'');}
+function calc(c,skip){
+  var k=Number((c+OFF).toFixed(6));
+  bad=false; over=c>TMAX+1e-9;
+  if(skip!=='A') inA.value=fmtIn(c);
+  if(skip!=='B') inB.value=fmtIn(k);
+  resA.textContent=fmtF(c)+' + 273,15 = '+fmtF(k)+' K';
+  resB.textContent=fmtF(k)+' − 273,15 = '+fmtF(c)+' °C';
+  setNote(over?'Valore oltre la scala disegnata (fino a 110 °C, cioè 383,15 K): il cursore si ferma al bordo, il calcolo resta valido.':'',false);
+}
+function fail(side,msg){
+  bad=true;
+  resA.textContent=''; resB.textContent='';
+  if(side==='A') inB.value=''; else inA.value='';
+  setNote(msg,true);
+}
+function parse(str){
+  var q=str.trim().replace(/\s/g,'').replace('−','-').replace(',','.');
+  if(q===''||q==='-'||q==='.'||q==='-.') return {empty:true};
+  if(/^-?(\d+\.?\d*|\.\d+)$/.test(q)) return {n:Number(q)};
+  return {bad:true};
+}
+var NOTNUM='Inserisci un numero, ad esempio 25 oppure −40,5.';
+var BELOW='Sotto lo zero assoluto: valore impossibile. Il minimo è −273,15 °C, cioè 0 K.';
+function onInput(side){
+  var p=parse((side==='A'?inA:inB).value);
+  if(p.empty){resA.textContent='';resB.textContent='';(side==='A'?inB:inA).value='';setNote('',false);bad=false;over=false;draw();return;}
+  if(p.bad){fail(side,NOTNUM);draw();return;}
+  var c=side==='A'?p.n:Number((p.n-OFF).toFixed(6));
+  if(c<TMIN-1e-9){fail(side,BELOW);draw();return;}
+  source=side; val=c; tgt=clamp(c,TMIN,TMAX);
+  calc(c,side); go(); draw();
+}
+inA.addEventListener('input',function(){onInput('A');});
+inB.addEventListener('input',function(){onInput('B');});
+
+/* ---------- disegno del cursore ---------- */
+function setTag(rect,txt,text,x){
+  txt.textContent=text;
+  var w=26+(txt.getBBox().width||text.length*11.5), cx=clamp(x,w/2+4,1000-w/2-4);
+  rect.setAttribute('x',cx-w/2); rect.setAttribute('width',w); txt.setAttribute('x',cx);
+}
+function draw(){
+  var x=xC(cur), rc=Math.round(cur*100)/100, rk=Math.round((cur+OFF)*100)/100;
+  cl.setAttribute('x1',x); cl.setAttribute('x2',x);
+  h1.setAttribute('cx',x); h2.setAttribute('cx',x);
+  var pre=(over&&!bad)?'≥ ':'';
+  setTag(r1,t1,pre+fmtF(rc)+' °C',x);
+  setTag(r2,t2,pre+fmtF(rk)+' K',x);
+  svg.setAttribute('aria-valuenow',rc);
+  svg.setAttribute('aria-valuetext',fmtF(rc)+' gradi Celsius, '+fmtF(rk)+' kelvin');
+  SHORT.forEach(function(o){o.el.setAttribute('aria-pressed',(!bad&&Math.abs(val-o.v)<0.005)?'true':'false');});
+}
+
+/* ---------- animazione ---------- */
+function loop(t){
+  var dt=Math.min(.25,(t-last)/1000||.016); last=t;
+  var d=tgt-cur;
+  if(reduce||Math.abs(d)<0.005) cur=tgt;
+  else{
+    var step=d*(1-Math.exp(-dt/.2)), mn=Math.min(Math.abs(d),300*dt);
+    if(Math.abs(step)<mn) step=(d>0?1:-1)*mn;
+    cur+=step;
+  }
+  if(source==='cursor'){val=Math.round(cur*100)/100;calc(val,null);}
+  draw();
+  raf=(cur!==tgt)?requestAnimationFrame(loop):0;
+}
+function go(){if(!raf){last=performance.now();raf=requestAnimationFrame(loop);}}
+
+/* ---------- trascinamento e tastiera ---------- */
+var dragging=false;
+function dragTo(e){
+  var r=svg.getBoundingClientRect();
+  var c=cX((e.clientX-r.left)/r.width*1000);
+  if(c<=TMIN+0.05) c=TMIN; else if(c>=TMAX-0.05) c=TMAX; else c=Math.round(c*10)/10;
+  source='cursor'; tgt=c; cur=c; val=c; calc(c,null); draw();
+}
+svg.addEventListener('pointerdown',function(e){dragging=true;try{svg.setPointerCapture(e.pointerId);}catch(_){}dragTo(e);});
+svg.addEventListener('pointermove',function(e){if(dragging)dragTo(e);});
+['pointerup','pointercancel'].forEach(function(n){svg.addEventListener(n,function(){dragging=false;});});
+svg.addEventListener('keydown',function(e){
+  var st=e.shiftKey?10:1, d=0;
+  if(e.key==='ArrowRight'||e.key==='ArrowUp') d=st; else if(e.key==='ArrowLeft'||e.key==='ArrowDown') d=-st; else return;
+  e.preventDefault();
+  var c=clamp(Math.round((val+d)*100)/100,TMIN,TMAX);
+  source='cursor'; tgt=cur=c; val=c; calc(c,null); draw();
+});
+
+calc(20,null); draw();
+})();
+</script>
+<div style="text-align:center;padding:4px 0 56px"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0zNDUgLTExMzAgNDM2NyAxNDg0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlByb2YuIFQiPjxkZWZzPjxmaWx0ZXIgaWQ9ImciIHg9Ii0yMCUiIHk9Ii02MCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjIyMCUiPjxmZUdhdXNzaWFuQmx1ciBpbj0iU291cmNlR3JhcGhpYyIgc3RkRGV2aWF0aW9uPSI1NC43IiByZXN1bHQ9ImIiLz48ZmVDb2xvck1hdHJpeCBpbj0iYiIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgLjQxNiAwIDAgMCAwIC42NDcgMCAwIDAgMCAxIDAgMCAwIDEuMSAwIiByZXN1bHQ9ImMiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImMiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+PC9kZWZzPjxwYXRoIHRyYW5zZm9ybT0icm90YXRlKC0zIDE4MzggLTM4OCkiIGZpbGw9IiNlNmVjZjUiIGZpbHRlcj0idXJsKCNnKSIgZD0iTTIzIC0yM1ExNSAtMzkgMjIgLTY3UTI5IC05NSA0Mi41IC0xMjVRNTYgLTE1NSA3MSAtMTgzUTg2IC0yMTEgOTQgLTIyOVE5NyAtMjM1IDk4LjUgLTIzOVExMDAgLTI0MyAxMDEuNSAtMjQ4UTEwMyAtMjUzIDEwNSAtMjU5UTEwNyAtMjY1IDExMiAtMjc2UTExOCAtMjg5IDEzMS41IC0zMTYuNVExNDUgLTM0NCAxNjIgLTM3OC41UTE3OSAtNDEzIDE5Ny41IC00NTFRMjE2IC00ODkgMjMyLjUgLTUyMy41UTI0OSAtNTU4IDI2Mi41IC01ODUuNVEyNzYgLTYxMyAyODIgLTYyNlYtNjQ5UTI2NCAtNjUyIDI0NyAtNjQ3UTIzMCAtNjQyIDIxNC41IC02MzNRMTk5IC02MjQgMTg0LjUgLTYxMi41UTE3MCAtNjAxIDE1OCAtNTkyUTE0NCAtNTk1IDE0MiAtNjA1UTE0MCAtNjE1IDE0NCAtNjI2UTE0OCAtNjM3IDE1NS41IC02NDYuNVExNjMgLTY1NiAxNjkgLTY2MFEyNzMgLTcyNSAzOTIgLTc0Ni41UTUxMSAtNzY4IDYzMyAtNzUwUTcwNyAtNzEzIDczNCAtNjcxLjVRNzYxIC02MzAgNzUzLjUgLTU4N1E3NDYgLTU0NCA3MDkuNSAtNTAyUTY3MyAtNDYwIDYxOS41IC00MjEuNVE1NjYgLTM4MyA1MDEuNSAtMzUwUTQzNyAtMzE3IDM3My41IC0yOTNRMzEwIC0yNjkgMjUzIC0yNTUuNVExOTYgLTI0MiAxNTggLTI0MlExMzkgLTIxMiAxMjcgLTE5Mi41UTExNSAtMTczIDEwOCAtMTU4LjVRMTAxIC0xNDQgOTYuNSAtMTMxLjVROTIgLTExOSA4Ny41IC0xMDMuNVE4MyAtODggNzYgLTY2UTY5IC00NCA1NyAtMTFMNDYgMFE0MiAtMiAzMy41IC0xMC41UTI1IC0xOSAyMyAtMjNaTTE5MiAtMjk5UTIzNCAtMjkyIDI4MSAtMzAxLjVRMzI4IC0zMTEgMzc0LjUgLTMyOVE0MjEgLTM0NyA0NjQgLTM2OS41UTUwNyAtMzkyIDU0MiAtNDExUTYyNiAtNDU4IDY2Ny41IC01MDIuNVE3MDkgLTU0NyA3MTggLTU4NS41UTcyNyAtNjI0IDcwOS41IC02NTRRNjkyIC02ODQgNjU3LjUgLTcwMi41UTYyMyAtNzIxIDU3Ny41IC03MjZRNTMyIC03MzEgNDg1LjUgLTcxOVE0MzkgLTcwNyAzOTcgLTY3NlEzNTUgLTY0NSAzMjcgLTU5MlEzMTcgLTU3MyAzMDMgLTU0NS41UTI4OSAtNTE4IDI3NCAtNDg4UTI1OSAtNDU4IDI0NCAtNDI4LjVRMjI5IC0zOTkgMjE3LjUgLTM3NS41UTIwNiAtMzUyIDE5OSAtMzM3UTE5MiAtMzIyIDE5MiAtMzIxWk02MzcgLTExUTYzNSAtMTIgNjM3LjUgLTM0LjVRNjQwIC01NyA2NDUgLTkxUTY1MCAtMTI1IDY1OCAtMTY2UTY2NiAtMjA3IDY3NSAtMjQ0LjVRNjg0IC0yODIgNjk0LjUgLTMxMC41UTcwNSAtMzM5IDcxNSAtMzUwUTcyMiAtMzU3IDcyOSAtMzUwLjVRNzM2IC0zNDQgNzQzIC0zMzQuNVE3NTAgLTMyNSA3NTcgLTMxNy41UTc2NCAtMzEwIDc3MiAtMzE2UTgwMCAtMzU1IDgzMy41IC0zOTAuNVE4NjcgLTQyNiA5MDggLTQ1MlE5MTIgLTQ1NSA5MzAgLTQ2MS41UTk0OCAtNDY4IDk3MSAtNDc0LjVROTk0IC00ODEgMTAxOC41IC00ODUuNVExMDQzIC00OTAgMTA2MC41IC00ODkuNVExMDc4IC00ODkgMTA4NC41IC00ODAuNVExMDkxIC00NzIgMTA3OCAtNDUyUTEwMTggLTQ1MSA5NjYgLTQxN1E5MTQgLTM4MyA4NzAgLTMzM1E4MjYgLTI4MyA3OTAgLTIyNC41UTc1NCAtMTY2IDcyNy41IC0xMTZRNzAxIC02NiA2ODMuNSAtMzNRNjY2IDAgNjU4IDBRNjU3IDAgNjQ5IC00LjVRNjQxIC05IDYzNyAtMTFaTTExNzMgLTExUTExMzEgLTI4IDExMjAuNSAtNjJRMTExMCAtOTYgMTEyMSAtMTM3LjVRMTEzMiAtMTc5IDExNTkgLTIyMy41UTExODYgLTI2OCAxMjE5IC0zMDVRMTI1MiAtMzQyIDEyODUuNSAtMzY3LjVRMTMxOSAtMzkzIDEzNDMgLTM5NlExNDA1IC00MDQgMTQ0MC41IC0zODcuNVExNDc2IC0zNzEgMTQ4OSAtMzQwUTE1MDIgLTMwOSAxNDk2IC0yNjcuNVExNDkwIC0yMjYgMTQ2OS41IC0xODRRMTQ0OSAtMTQyIDE0MTYuNSAtMTAzUTEzODQgLTY0IDEzNDQuNSAtMzcuNVExMzA1IC0xMSAxMjYxIC0yLjVRMTIxNyA2IDExNzMgLTExWk0xMTYyIC02OFExMTcwIC0zNiAxMTk2IC0zMi41UTEyMjIgLTI5IDEyNTYuNSAtNDUuNVExMjkxIC02MiAxMzI5IC05My41UTEzNjcgLTEyNSAxMzk4LjUgLTE2MlExNDMwIC0xOTkgMTQ1MC41IC0yMzYuNVExNDcxIC0yNzQgMTQ3MC41IC0zMDJRMTQ3MCAtMzMwIDE0NDMuNSAtMzQ0LjVRMTQxNyAtMzU5IDEzNTUgLTM1MFExMzQxIC0zMzcgMTMxOSAtMzE4LjVRMTI5NyAtMzAwIDEyNzMuNSAtMjc4UTEyNTAgLTI1NiAxMjI3IC0yMzAuNVExMjA0IC0yMDUgMTE4NyAtMTc4UTExNzAgLTE1MSAxMTYyLjUgLTEyM1ExMTU1IC05NSAxMTYyIC02OFpNMTU2NCAtMjNRMTU2MiAtMjUgMTU2MiAtMzRRMTU2MiAtNDMgMTU2NCAtNDVMMTY0OCAtMjM4SDE1NTNRMTU1MCAtMjM4IDE1NDcuNSAtMjQyUTE1NDUgLTI0NiAxNTQzLjUgLTI1MS41UTE1NDIgLTI1NyAxNTQxIC0yNjIuNVExNTQwIC0yNjggMTU0MiAtMjcxUTE1NDUgLTI3MiAxNTUzIC0yNzVRMTU2MSAtMjc4IDE1NzAgLTI4MlExNTc5IC0yODYgMTU4NyAtMjg5UTE1OTUgLTI5MiAxNTk4IC0yOTRRMTYwMSAtMjk1IDE2MTQuNSAtMzAwUTE2MjggLTMwNSAxNjQzLjUgLTMxMC41UTE2NTkgLTMxNiAxNjcyIC0zMjFRMTY4NSAtMzI2IDE2ODggLTMyOFExNzAwIC0zMzYgMTcxNi41IC0zNjcuNVExNzMzIC0zOTkgMTc1NCAtNDQzUTE3NzUgLTQ4NyAxODAwIC01MzcuNVExODI1IC01ODggMTg1NCAtNjM0LjVRMTg4MyAtNjgxIDE5MTUgLTcxNy41UTE5NDcgLTc1NCAxOTgxLjUgLTc2OS41UTIwMTYgLTc4NSAyMDUzIC03NzRRMjA5MCAtNzYzIDIxMjkgLTcxNVEyMTM2IC03MDUgMjEzOSAtNjkzLjVRMjE0MiAtNjgyIDIxNDAgLTY3MFEyMTMxIC02NjUgMjEyMiAtNjY4UTIxMTMgLTY3MSAyMTA1LjUgLTY3OFEyMDk4IC02ODUgMjA5MiAtNjkyLjVRMjA4NiAtNzAwIDIwODQgLTcwNFEyMDE3IC03MTUgMTk3Ny41IC02OTguNVExOTM4IC02ODIgMTkxMi41IC02NDguNVExODg3IC02MTUgMTg2OCAtNTY5UTE4NDkgLTUyMyAxODI0IC00NzRRMTgxNyAtNDYyIDE4MDcuNSAtNDQzUTE3OTggLTQyNCAxNzg5IC00MDZRMTc4MCAtMzg4IDE3NzMuNSAtMzc1UTE3NjcgLTM2MiAxNzY3IC0zNjJWLTM1MFExNzY3IC0zNDYgMTc5MiAtMzQ0UTE4MTcgLTM0MiAxODQ4LjUgLTMzOFExODgwIC0zMzQgMTkwOS41IC0zMjYuNVExOTM5IC0zMTkgMTk0OCAtMzA1TDE5MzcgLTI5NFExODgwIC0yOTcgMTg0MSAtMjk2UTE4MDIgLTI5NSAxNzczIC0yODNRMTc0NCAtMjcxIDE3MjIgLTI0NC41UTE3MDAgLTIxOCAxNjc3IC0xNzBRMTY2OSAtMTUzIDE2NTYgLTEyNi41UTE2NDMgLTEwMCAxNjMwIC03NC41UTE2MTcgLTQ5IDE2MDggLTMwLjVRMTU5OSAtMTIgMTU5OCAtMTFMMTU4NiAwUTE1ODMgLTIgMTU3NC41IC0xMC41UTE1NjYgLTE5IDE1NjQgLTIzWk0yMDI4IC0xMVEyMDE0IC0zMiAyMDIwLjUgLTUzLjVRMjAyNyAtNzUgMjA0MyAtODYuNVEyMDU5IC05OCAyMDc4IC05NS41UTIwOTcgLTkzIDIxMDcgLTY4UTIxMTMgLTUzIDIxMDUuNSAtMzYuNVEyMDk4IC0yMCAyMDg0IC05LjVRMjA3MCAxIDIwNTQgMi41UTIwMzggNCAyMDI4IC0xMVpNMjg1MyAtMTFRMjg0NyAtMzYgMjg1My41IC02OC41UTI4NjAgLTEwMSAyODcyIC0xMzRRMjg4NCAtMTY3IDI4OTggLTE5Ny41UTI5MTIgLTIyOCAyOTIxIC0yNDhRMjkyNiAtMjYwIDI5MzYuNSAtMjgzUTI5NDcgLTMwNiAyOTYwLjUgLTMzNVEyOTc0IC0zNjQgMjk4OC41IC0zOTZRMzAwMyAtNDI4IDMwMTYuNSAtNDU3UTMwMzAgLTQ4NiAzMDQwLjUgLTUwOC41UTMwNTEgLTUzMSAzMDU2IC01NDJRMzAzOSAtNTQ1IDMwMDcuNSAtNTM5UTI5NzYgLTUzMyAyOTM4IC01MjMuNVEyOTAwIC01MTQgMjg2MCAtNTA0UTI4MjAgLTQ5NCAyNzg1LjUgLTQ4OS41UTI3NTEgLTQ4NSAyNzI2LjUgLTQ4OC41UTI3MDIgLTQ5MiAyNjk2IC01MDlRMjcwMyAtNTIyIDI3NDcgLTUzOVEyNzkxIC01NTYgMjg1OS41IC01NzQuNVEyOTI4IC01OTMgMzAxMi41IC02MTJRMzA5NyAtNjMxIDMxODUgLTY0OFEzMjczIC02NjUgMzM1NyAtNjc5UTM0NDEgLTY5MyAzNTA3IC03MDJRMzU3MyAtNzExIDM2MTMuNSAtNzE0UTM2NTQgLTcxNyAzNjU2IC03MTJRMzY1OSAtNzA0IDM2NTcgLTY5Mi41UTM2NTUgLTY4MSAzNjQ0IC02NzhRMzU5NSAtNjcwIDM1MzggLTY2MC41UTM0ODEgLTY1MSAzNDIyLjUgLTY0MC41UTMzNjQgLTYzMCAzMzA4IC02MTkuNVEzMjUyIC02MDkgMzIwNCAtNTk5UTMxNzMgLTU5MyAzMTQ0IC01NjNRMzExNSAtNTMzIDMwODggLTQ4OC41UTMwNjEgLTQ0NCAzMDM2IC0zODkuNVEzMDExIC0zMzUgMjk4OC41IC0yNzlRMjk2NiAtMjIzIDI5NDcgLTE3MVEyOTI4IC0xMTkgMjkxMiAtNzkuNVEyODk2IC00MCAyODg0IC0xOFEyODcyIDQgMjg2NCAwUTI4NjIgLTIgMjg1OCAtNlEyODU0IC0xMCAyODUzIC0xMVoiLz48L3N2Zz4=" alt="Prof. T" style="height:3rem;width:auto"></div>
+<style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6aa5ff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(106,165,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}</style>
+<a class="torna-sito" href="../index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Torna a Scienza in Movimento</a>
+</body>
+</html>
