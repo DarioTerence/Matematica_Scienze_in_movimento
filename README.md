@@ -9,14 +9,14 @@ Sito: https://darioterence.github.io/Matematica_Scienze_in_movimento/
 - `style.css`: stile condiviso, tema scuro
 - `favicon.svg`: icona del sito
 - `prof_t.webp`, `prof_t_occhiolino.webp`, `bagliore.svg`: caricatura di Prof. T nella home (occhi aperti, occhiolino, bagliore sulla lente), animata solo con CSS
-- `biologia/`, `astronomia/`: una cartella per disciplina, con `index.html` (elenco) e un file HTML autonomo per ogni animazione
+- `biologia/`, `astronomia/`, `fisica/`: una cartella per disciplina, con `index.html` (elenco) e un file HTML autonomo per ogni animazione
 
 Il sito è statico: solo HTML e CSS scritti a mano, nessun framework e nessuna build. Le animazioni hanno il loro JavaScript.
 
 ## Aggiungere un'animazione
 1. Copiare il file `.html` nella cartella della disciplina.
 2. Incollare una card nella pagina `index.html` di quella disciplina.
-3. Inserire nell'animazione il bottone "Torna a Scienza in Movimento" prima di `</body>`.
+3. Inserire nell'animazione, prima di `</body>`, la firma (cliccabile verso la home) e il bottone di ritorno alla disciplina ("← Fisica", "← Biologia", ...), con il colore dell'area.
 
 ## Crediti
 La firma "Prof. T" (`firma.svg`) è ricavata dal font Nothing You Could Do di Kimberly Geswein, licenza SIL Open Font License 1.1.

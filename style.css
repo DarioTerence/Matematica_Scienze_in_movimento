@@ -196,11 +196,6 @@ a { color: inherit; text-decoration: none; }
   font-size: 1.3rem;
   color: #9cc5ff;
 }
-.testata .indietro {
-  color: var(--testo-soft);
-  font-size: 0.95rem;
-}
-.testata .indietro:hover { color: var(--testo); text-decoration: underline; }
 
 .titolo-pagina {
   margin: 26px 0 6px;
@@ -326,7 +321,7 @@ a.card:focus-visible {
 /* ---------- Piè di pagina ---------- */
 footer {
   margin-top: 48px;
-  padding: 22px 20px 36px;
+  padding: 22px 20px 64px;
   text-align: center;
   color: var(--testo-soft);
   font-size: 0.9rem;
@@ -339,6 +334,58 @@ footer .firma-img {
   margin: -0.4rem auto 0;
 }
 footer .motto { display: block; }
+
+/* Firma cliccabile (pagine di disciplina): porta alla home, bagliore al passaggio */
+footer .firma-home {
+  display: block;
+  width: fit-content;
+  margin: -0.4rem auto 0;
+}
+footer .firma-home .firma-img { margin: 0; transition: filter 0.2s ease; }
+footer .firma-home:hover .firma-img,
+footer .firma-home:focus-visible .firma-img {
+  filter: drop-shadow(0 0 8px rgba(106, 165, 255, 0.75));
+}
+
+/* ---------- Bottone di ritorno (in basso a sinistra) ----------
+   Stesso aspetto di quello delle animazioni: sale di un livello.
+   Il colore al passaggio e' l'accento dell'area (classe materia, viventi, cosmo, numeri). */
+.torna-sito {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  z-index: 9999;
+  padding: 5px 12px;
+  background: rgba(17, 26, 43, 0.95);
+  color: var(--testo);
+  border: 1px solid #3a4d70;
+  border-radius: 999px;
+  font: italic 700 15px Cambria, Georgia, "Times New Roman", serif;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.2s, border-color 0.2s, color 0.2s;
+}
+.torna-sito:hover,
+.torna-sito:focus-visible {
+  border-color: var(--accento, #6aa5ff);
+  color: #fff;
+  box-shadow: 0 0 14px 1px var(--accento-glow, rgba(106, 165, 255, 0.55));
+  animation: torna-vibra 0.35s ease-in-out;
+  outline: none;
+}
+.torna-sito.numeri  { --accento: #6aa5ff; --accento-glow: rgba(106, 165, 255, 0.55); }
+.torna-sito.materia { --accento: #ffb454; --accento-glow: rgba(255, 180, 84, 0.55); }
+.torna-sito.viventi { --accento: #6fd08c; --accento-glow: rgba(111, 208, 140, 0.55); }
+.torna-sito.cosmo   { --accento: #b38cff; --accento-glow: rgba(179, 140, 255, 0.55); }
+@keyframes torna-vibra {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  50% { transform: translateX(2px); }
+  75% { transform: translateX(-1px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .torna-sito:hover, .torna-sito:focus-visible { animation: none; }
+}
 
 /* Su schermi stretti il titolo va a capo da solo */
 @media (max-width: 560px) {
