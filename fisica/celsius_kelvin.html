@@ -62,7 +62,7 @@ input::placeholder{color:#5d6d87}
 <svg id="sc" viewBox="0 0 1000 400" role="slider" tabindex="0" aria-label="Temperatura sulle scale Celsius e Kelvin" aria-valuemin="-273.15" aria-valuemax="110" aria-valuenow="20"></svg>
 </div>
 
-<div class="anchor">Entrambe centigrade: 100 parti tra il ghiaccio che fonde e l'acqua che bolle.<br>Stesso passo: un grado Celsius vale un kelvin. Cambia solo lo zero, spostato di 273,15.</div>
+<div class="anchor">Entrambe centigrade: 100 parti tra il ghiaccio che fonde e l'acqua che bolle.<br>Stesso passo: un grado Celsius vale un kelvin. Cambia solo lo zero: i due zeri distano 273,15.</div>
 
 <div class="grid">
 <section class="card">
@@ -146,12 +146,12 @@ for(k=0;k<=380;k+=10){
   s+='<text x="'+(X0+l[0]*S)+'" y="'+(YK+36)+'" text-anchor="middle" class="lab'+(l[2]?' labs':'')+'" fill="'+(l[2]?KC:'#3b3830')+'">'+l[1]+'</text>';
 });
 
-// nomi dei punti fissi e sfasamento
+// nomi dei punti fissi e differenza tra gli zeri
 s+='<text x="'+(X0+8)+'" y="198" class="nm">zero assoluto</text>';
 s+='<text x="'+xi+'" y="198" text-anchor="middle" class="nm">il ghiaccio fonde</text>';
 s+='<text x="'+xb+'" y="198" text-anchor="end" class="nm" id="nmb">l’acqua bolle</text>';
 s+='<line x1="'+(X0+3)+'" y1="226" x2="'+(xi-3)+'" y2="226" stroke="#6B655A" stroke-width="2.5" marker-start="url(#ar)" marker-end="url(#ar)"/>';
-s+='<text x="'+((X0+xi)/2)+'" y="216" text-anchor="middle" class="nm" style="font-weight:700">sfasamento: 273,15</text>';
+s+='<text x="'+((X0+xi)/2)+'" y="216" text-anchor="middle" class="nm" style="font-weight:700">differenza tra gli zeri: 273,15</text>';
 
 // parentesi dei 100 gradi
 s+='<path d="M'+xi+',78 V70 H'+xb+' V78" fill="none" stroke="'+CC+'" stroke-width="3.5"/>';
@@ -200,7 +200,7 @@ function calc(c,skip){
   if(skip!=='B') inB.value=fmtIn(k);
   resA.textContent=fmtF(c)+' + 273,15 = '+fmtF(k)+' K';
   resB.textContent=fmtF(k)+' − 273,15 = '+fmtF(c)+' °C';
-  setNote(over?'Valore oltre la scala disegnata (fino a 110 °C, cioè 383,15 K): il cursore si ferma al bordo, il calcolo resta valido.':'',false);
+  setNote('',false);
 }
 function fail(side,msg){
   bad=true;
@@ -238,7 +238,7 @@ function draw(){
   var x=xC(cur), rc=Math.round(cur*100)/100, rk=Math.round((cur+OFF)*100)/100;
   cl.setAttribute('x1',x); cl.setAttribute('x2',x);
   h1.setAttribute('cx',x); h2.setAttribute('cx',x);
-  var pre=(over&&!bad)?'≥ ':'';
+  var pre=(over&&!bad)?'oltre ':'';
   setTag(r1,t1,pre+fmtF(rc)+' °C',x);
   setTag(r2,t2,pre+fmtF(rk)+' K',x);
   svg.setAttribute('aria-valuenow',rc);
