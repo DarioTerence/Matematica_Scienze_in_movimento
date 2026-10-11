@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La sistematica dei viventi</title>
+<style>
+:root{--bg:#0a0f1a;--panel:#111a2b;--line:#22304a;--text:#e6ecf5;--muted:#8fa0b8;--acc:#8ee0a6;--acc2:#5cc47f;--warn:#FF8A80}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background-color:#0a0f1a;background-image:radial-gradient(ellipse 80% 40% at 50% -5%,rgba(106,165,255,.12),transparent 70%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px);background-size:auto,36px 36px,36px 36px;color:var(--text);font:16px/1.5 Calibri,Carlito,"Segoe UI",sans-serif;min-height:100vh}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 16px 0}
+.eyebrow{color:var(--acc);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px}
+.sub{color:var(--muted);margin:0 0 14px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;margin-bottom:10px}
+.tab,.btn{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 16px;border-radius:999px;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn{padding:6px 13px;font-size:14px}
+.tab:hover,.btn:hover{border-color:var(--acc)}
+.tab[aria-selected=true],.btn.on{background:var(--acc);color:#0a0f1a;border-color:var(--acc)}
+.tab:focus-visible,.btn:focus-visible,.opt:focus-visible,.chip:focus-visible,.lbl:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;align-items:start}
+.grid>*{min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.hint{color:var(--muted);font-size:14px;margin:8px 2px 0}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.treebox{touch-action:pan-x pan-y;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:auto;height:min(70vh,660px);-webkit-overflow-scrolling:touch}
+.treebox svg{display:block}
+#treehead{position:sticky;top:0;z-index:2}
+#treehead text{fill:#8fa0b8;font:700 12px Calibri,Carlito,sans-serif;letter-spacing:.04em;text-transform:uppercase}
+.node{cursor:pointer}
+.node rect.bg{fill:#0d1626;stroke-width:1.5}
+.node text{pointer-events:none}
+.node .nm{fill:#e6ecf5;font:700 13px Calibri,Carlito,sans-serif}
+.node .lv{fill:#8fa0b8;font:11px Calibri,Carlito,sans-serif}
+.node.sel rect.bg{stroke-width:3;fill:var(--f)}
+.node.sel .nm,.node.sel .lv{fill:#0a0f1a}
+.node:focus{outline:none}
+.node:focus-visible rect.bg{stroke:#fff;stroke-width:3}
+.card h2{font:700 25px/1.2 Cambria,Georgia,serif;margin:0 0 6px}
+.pill{display:inline-block;border:1px solid;border-radius:999px;padding:0 10px;font-size:13px;margin-bottom:8px}
+.path{color:var(--muted);font-size:13px;margin:0 0 8px}
+.card p{margin:0 0 10px}
+.ancora{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:9px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+.ancora b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#ffb454}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{border:1px solid var(--line);background:#0d1626;color:var(--text);border-radius:999px;padding:3px 11px;font:inherit;font-size:14px;cursor:pointer}
+.chip:hover{border-color:var(--acc)}
+.sect{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
+.stage{position:relative;background:#FDFCF9;border:1px solid var(--line);border-radius:14px;overflow:hidden;aspect-ratio:4/3;min-height:300px;touch-action:none}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.lbls{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lbl{position:absolute;left:0;top:0;pointer-events:auto;font:700 12px Calibri,Carlito,sans-serif;padding:2px 9px;border-radius:999px;background:rgba(17,26,43,.88);color:#e6ecf5;border:1px solid #3a4d70;white-space:nowrap;cursor:pointer}
+.lbl.on{background:var(--acc);color:#0a0f1a;border-color:var(--acc)}
+.cap{position:absolute;left:10px;bottom:8px;font-size:12px;color:#5c6572;pointer-events:none}
+.fail{padding:24px;color:#26282B}
+.part{display:flex;align-items:center;gap:8px;width:100%;text-align:left}
+.dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;border:1px solid rgba(255,255,255,.4)}
+.pdesc{background:#0d1626;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:10px}
+.pdesc b{font-family:Cambria,Georgia,serif;font-size:17px}
+.qhead{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;margin-bottom:8px}
+.qbox{background:#0d1626;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:8px 0 12px}
+.qbox div{margin:2px 0}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:10px 12px;font:inherit;font-weight:700;cursor:pointer;text-align:left}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt.ok{background:rgba(142,224,166,.2);border-color:var(--acc)}
+.opt.ko{background:rgba(255,138,128,.16);border-color:var(--warn)}
+.opt:disabled{cursor:default}
+.fb{margin-top:12px}
+.big{font:700 40px Cambria,Georgia,serif;color:var(--acc)}
+.hide{display:none!important}
+.pick{position:relative;display:flex;gap:8px;align-items:center;margin:0 0 12px}
+.pickmain{flex:1;max-width:380px;display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left}
+.pickmain .n{color:inherit;opacity:.65;font-weight:400;font-size:13px}
+.gpanel{position:absolute;top:100%;left:0;right:0;margin-top:6px;z-index:30;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 12px 12px;max-height:70vh;overflow:auto;box-shadow:0 14px 34px rgba(0,0,0,.55)}
+.gpanel[hidden]{display:none}
+.gpanel .cat{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+.gpanel .gg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.gpanel .btn{white-space:normal;text-align:left;border-radius:10px;line-height:1.2;padding:8px 10px}
+@media (max-width:760px){
+ .gpanel .gg{grid-template-columns:repeat(2,1fr)}
+ .pickmain{max-width:none}
+ .grid{grid-template-columns:1fr}
+ .treebox{height:54vh}
+ .opts{grid-template-columns:1fr}
+ #p-3d .grid>div:first-child{display:contents}
+ #stage{position:sticky;top:4px;z-index:5;aspect-ratio:auto;height:38vh;min-height:230px}
+ #p-3d .grid{gap:10px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="eyebrow">Biologia</div>
+ <h1>La sistematica dei viventi</h1>
+ <p class="sub">Dall'albero dei gruppi ai modelli 3D: esplora, scegli una categoria, metti alla prova quello che sai.</p>
+ <div class="tabs" role="tablist" aria-label="Sezioni">
+  <button class="tab" role="tab" id="t-albero" aria-selected="true" aria-controls="p-albero">Albero della vita</button>
+  <button class="tab" role="tab" id="t-3d" aria-selected="false" aria-controls="p-3d">Esplora in 3D</button>
+  <button class="tab" role="tab" id="t-quiz" aria-selected="false" aria-controls="p-quiz">Metti alla prova</button>
+ </div>
+
+ <section id="p-albero" role="tabpanel" aria-labelledby="t-albero">
+  <div class="grid">
+   <div>
+    <div class="row">
+     <button class="btn" id="expAll">Apri tutto</button>
+     <button class="btn" id="colAll">Chiudi tutto</button>
+     <span style="flex:1"></span>
+     <button class="btn" id="zOut" aria-label="Riduci">−</button><span id="zLbl" class="hint" style="margin:0;align-self:center;min-width:42px;text-align:center">100%</span><button class="btn" id="zIn" aria-label="Ingrandisci">+</button>
+     <button class="btn" id="zFit">Vedi tutto</button>
+    </div>
+    <div class="treebox" id="treebox"><div id="treewrap"><svg id="treehead" aria-hidden="true"></svg><svg id="tree" role="tree" aria-label="Albero della classificazione"></svg></div></div>
+    <p class="hint">Tocca un gruppo: si apre il ramo e a destra compare la scheda. Un secondo tocco chiude il ramo. Con + e − (o pizzico, o Ctrl e rotella) si ingrandisce; «Vedi tutto» mostra l'albero intero. Le colonne indicano il livello sistematico: i gruppi che saltano una colonna passano direttamente al livello successivo.</p>
+   </div>
+   <div class="panel card" id="card" aria-live="polite"></div>
+  </div>
+ </section>
+
+ <section id="p-3d" role="tabpanel" aria-labelledby="t-3d" class="hide">
+  <div id="groups3d" class="pick"></div>
+  <div class="grid">
+   <div>
+    <div class="stage" id="stage"><div class="lbls" id="lbls"></div><div class="cap">Modello stilizzato, non in scala</div></div>
+    <div class="row" style="margin-top:10px">
+     <button class="btn" id="bReset">Reset vista</button>
+     <button class="btn on" id="bLbl" aria-pressed="true">Etichette</button>
+     <button class="btn" id="bRot" aria-pressed="false">Rotazione</button>
+     <button class="btn on" id="bAnim" aria-pressed="true">Movimento</button>
+    </div>
+    <p class="hint">Trascina per ruotare, pizzica o usa la rotella per ingrandire, tocca una struttura per leggerne la descrizione.</p>
+   </div>
+   <div class="panel card" id="card3d" aria-live="polite"></div>
+  </div>
+ </section>
+
+ <section id="p-quiz" role="tabpanel" aria-labelledby="t-quiz" class="hide">
+  <div class="panel" style="max-width:820px;margin:0 auto">
+   <div class="row">
+    <button class="btn" id="m-gruppi">Che gruppo sono?</button>
+    <button class="btn" id="m-livelli">Che livello è?</button>
+   </div>
+   <div id="quiz"></div>
+  </div>
+ </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===================== DATI ===================== */
+var D=[];
+function N(id,p,n,lv,t,c,tr,x){D.push(Object.assign({id:id,p:p,n:n,lv:lv,t:t,c:c,tr:tr},x||{}))}
+N('vita',null,'Esseri viventi','tutti gli organismi','Gli organismi si classificano in base a caratteri condivisi, a partire dalla struttura della cellula. Apri un ramo per vedere i gruppi.');
+N('archei','vita','Archei','dominio','Procarioti unicellulari con membrana diversa da quella dei batteri; molti vivono in ambienti estremi (sorgenti calde, acque molto salate, paludi).','Alcuni vivono in sorgenti a oltre 100 °C.',['Procarioti unicellulari','Membrana diversa da quella dei batteri','Molti vivono in ambienti estremi'],{lq:'dominio',m:'archei'});
+N('batteri','vita','Batteri','dominio','Procarioti senza nucleo, si riproducono per scissione. I cianobatteri sono fotosintetici.','In condizioni ideali alcuni si dividono ogni 20 minuti circa; i cianobatteri hanno immesso nell\'atmosfera il primo ossigeno.',['Procarioti senza nucleo','Si riproducono per scissione','Tra loro i cianobatteri sono fotosintetici'],{lq:'dominio',m:'batteri'});
+N('eucarioti','vita','Eucarioti','dominio','Cellule con nucleo delimitato da membrana e con organuli. Comprendono protisti, funghi, piante e animali.',null,null,{lq:'dominio'});
+N('virus','vita','Virus','non classificati (fuori dai domini)','Non sono cellule: materiale genetico dentro un capside, si riproducono solo dentro una cellula ospite.','I batteriofagi, che infettano i batteri, hanno un aspetto da modulo lunare.',['Non sono cellule','Materiale genetico racchiuso in un capside','Si riproducono solo dentro una cellula ospite'],{m:'virus'});
+N('protisti','eucarioti','Protisti','regno','Eucarioti per lo più unicellulari: i protozoi sono eterotrofi (ameba, paramecio), i protofiti sono alghe unicellulari fotosintetiche, i mixomiceti sono muffe mucillaginose.','Il mixomicete Physarum, senza cervello, trova il percorso più breve in un labirinto.',['Eucarioti per lo più unicellulari','Comprendono protozoi eterotrofi, alghe unicellulari e muffe mucillaginose'],{lq:'regno',m:'protisti'});
+N('funghi','eucarioti','Funghi','regno','Eterotrofi che assorbono il cibo, corpo fatto di ife e micelio, parete di chitina.','In Oregon un\'unica Armillaria occupa circa 9 km²: uno dei più grandi organismi viventi.',['Eterotrofi che assorbono il cibo','Corpo formato da ife e micelio','Parete cellulare di chitina'],{lq:'regno'});
+N('piante','eucarioti','Piante','regno','Eucarioti pluricellulari autotrofi: producono da sé il nutrimento con la fotosintesi.',null,null,{lq:'regno'});
+N('animali','eucarioti','Animali','regno','Eucarioti pluricellulari eterotrofi, senza parete cellulare, per lo più capaci di muoversi.',null,null,{lq:'regno'});
+N('briofite','piante','Briofite','gruppo (muschi)','Senza vasi conduttori, piccole, legate all\'umidità.','Lo sfagno trattiene fino a circa 20 volte il proprio peso in acqua.',['Senza vasi conduttori','Piccole','Legate all\'umidità'],{m:'briofite'});
+N('pteridofite','piante','Pteridofite','gruppo (felci)','Hanno vasi conduttori, si riproducono per spore, niente semi.','Le foreste del Carbonifero, con felci e licofite giganti, hanno dato gran parte del carbone.',['Hanno vasi conduttori','Si riproducono per spore','Non fanno semi'],{m:'pteridofite'});
+N('gimnosperme','piante','Gimnosperme','gruppo','Semi «nudi», non racchiusi in un frutto, portati da coni (conifere).','Un pino longevo californiano ha superato i 4800 anni.',['Semi «nudi», non racchiusi in un frutto','Portano i semi su coni','Comprendono le conifere'],{m:'gimnosperme'});
+N('angiosperme','piante','Angiosperme','gruppo','Fiore e frutto, il gruppo di piante più numeroso (circa 300.000 specie).','Darwin le definì «un abominevole mistero» per la rapidità con cui comparvero.',['Hanno il fiore','I semi sono racchiusi in un frutto','Il gruppo di piante più numeroso (circa 300.000 specie)'],{m:'angiosperme'});
+N('invertebrati','animali','Invertebrati','gruppo non sistematico','Animali senza colonna vertebrale: comprendono la grande maggioranza delle specie animali.');
+N('cordati','animali','Cordati','phylum','Animali con una notocorda, almeno in una fase della vita. Comprendono i vertebrati e due piccoli gruppi senza vertebre.',null,null,{lq:'phylum'});
+N('poriferi','invertebrati','Poriferi','phylum (spugne)','Senza tessuti né organi veri, corpo bucherellato, filtratori.','Una spugna ridotta in cellule separate si riaggrega.',['Senza tessuti né organi veri','Corpo bucherellato','Filtratori'],{lq:'phylum',m:'poriferi'});
+N('cnidari','invertebrati','Cnidari','phylum','Simmetria radiale, cellule urticanti, forme polipo e medusa.','La medusa Turritopsis dohrnii può tornare allo stadio di polipo.',['Simmetria radiale','Cellule urticanti','Forme polipo e medusa'],{lq:'phylum',m:'cnidari'});
+N('platelminti','invertebrati','Platelminti','phylum','Vermi piatti, simmetria bilaterale, senza cavità corporea.','Una planaria tagliata in pezzi rigenera un individuo da ciascuno.',['Vermi piatti','Simmetria bilaterale','Senza cavità corporea'],{lq:'phylum',m:'platelminti'});
+N('nematodi','invertebrati','Nematodi','phylum','Vermi cilindrici con apparato digerente completo.','Il nematode C. elegans ha 302 neuroni, tutti mappati.',['Vermi cilindrici','Apparato digerente completo, con bocca e ano'],{lq:'phylum',m:'nematodi'});
+N('anellidi','invertebrati','Anellidi','phylum','Corpo diviso in segmenti, lombrichi e sanguisughe.','Darwin dedicò decenni a studiare i lombrichi e il loro lavoro nel suolo.',['Corpo diviso in segmenti (anelli)','Comprendono lombrichi e sanguisughe'],{lq:'phylum',m:'anellidi'});
+N('molluschi','invertebrati','Molluschi','phylum','Corpo molle, mantello, spesso conchiglia.',null,['Corpo molle','Hanno un mantello','Spesso una conchiglia'],{lq:'phylum'});
+N('artropodi','invertebrati','Artropodi','phylum','Esoscheletro di chitina, zampe articolate, mute.',null,['Esoscheletro di chitina','Zampe articolate','Crescono per mute'],{lq:'phylum'});
+N('echinodermi','invertebrati','Echinodermi','phylum','Simmetria pentaradiale da adulti, scheletro calcareo interno, sistema acquifero con piedini ambulacrali.','Una stella marina può rigenerare un braccio perso.',['Simmetria pentaradiale da adulti','Scheletro calcareo interno','Sistema acquifero con piedini ambulacrali'],{lq:'phylum',m:'echinodermi'});
+N('bivalvi','molluschi','Bivalvi','classe','Due valve, filtratori.','Le perle nascono dalla difesa di un mollusco contro un corpo estraneo.',['Conchiglia a due valve','Filtratori'],{lq:'classe',m:'bivalvi'});
+N('gasteropodi','molluschi','Gasteropodi','classe','Piede muscoloso e radula.','La radula di una lumaca porta migliaia di minuscoli denti.',['Piede muscoloso','Hanno la radula'],{lq:'classe',m:'gasteropodi'});
+N('cefalopodi','molluschi','Cefalopodi','classe','Polpi, seppie, calamari.','Il polpo ha tre cuori e sangue blu.',['Comprendono polpi, seppie e calamari','Molluschi con tentacoli attorno alla testa'],{lq:'classe',m:'cefalopodi'});
+N('miriapodi','artropodi','Miriapodi','subphylum','Molti segmenti e zampe.','Nessun millepiedi ne ha davvero 1000, tranne uno scoperto nel 2020 con 1306 zampe.',['Molti segmenti','Molte zampe'],{m:'miriapodi'});
+N('crostacei','artropodi','Crostacei','subphylum','Due paia di antenne, branchie.','Il krill forma una delle maggiori biomasse del pianeta.',['Due paia di antenne','Respirano con le branchie'],{m:'crostacei'});
+N('aracnidi','artropodi','Aracnidi','classe','Otto zampe, niente antenne, cefalotorace e addome.','A parità di peso la seta di ragno regge il confronto con l\'acciaio.',['Otto zampe','Niente antenne','Corpo in cefalotorace e addome'],{lq:'classe',m:'aracnidi'});
+N('insetti','artropodi','Insetti','classe','Sei zampe, corpo in tre parti, il gruppo con più specie in assoluto.','Le api comunicano la posizione dei fiori con una danza.',['Sei zampe','Corpo in tre parti: capo, torace, addome','Il gruppo con più specie in assoluto'],{lq:'classe',m:'insetti'});
+N('tunicati','cordati','Tunicati e cefalocordati','subphylum','Cordati senza vertebre, con notocorda almeno da larve.','L\'ascidia nasce larva nuotatrice e da adulta si fissa a una roccia.',['Cordati senza vertebre','Notocorda presente almeno da larve'],{m:'tunicati'});
+N('vertebrati','cordati','Vertebrati','subphylum','Cordati con colonna vertebrale. Si dividono in sei classi: pesci cartilaginei, pesci ossei, anfibi, rettili, uccelli, mammiferi.');
+N('cartilaginei','vertebrati','Pesci cartilaginei','classe','Scheletro di cartilagine, fessure branchiali scoperte.','Uno squalo sostituisce migliaia di denti nella vita.',['Scheletro di cartilagine','Fessure branchiali scoperte','Comprendono squali e razze'],{lq:'classe',m:'cartilaginei'});
+N('ossei','vertebrati','Pesci ossei','classe','Scheletro osseo, opercolo, vescica natatoria; quasi 30.000 specie.','Nel cavalluccio marino i piccoli nascono dal maschio.',['Scheletro osseo','Opercolo e vescica natatoria','Quasi 30.000 specie'],{lq:'classe',m:'ossei'});
+N('anfibi','vertebrati','Anfibi','classe','Pelle umida e permeabile, uova senza guscio, metamorfosi.','La rana dei boschi sopporta di congelarsi durante l\'inverno.',['Pelle umida e permeabile','Uova senza guscio','Metamorfosi'],{lq:'classe',m:'anfibi'});
+N('rettili','vertebrati','Rettili','classe','Pelle con squame cheratinose, uova con guscio, ectotermi.','Una tartaruga gigante delle Seychelles ha superato i 190 anni.',['Pelle con squame cheratinose','Uova con guscio','Ectotermi'],{lq:'classe',m:'rettili'});
+N('uccelli','vertebrati','Uccelli','classe','Penne, becco, ossa leggere, endotermi.','Discendono dai dinosauri teropodi.',['Penne','Becco','Ossa leggere','Endotermi'],{lq:'classe',m:'uccelli'});
+N('mammiferi','vertebrati','Mammiferi','classe','Peli, ghiandole mammarie, endotermi; sottoclassi monotremi, marsupiali, placentati.','L\'ornitorinco depone uova e ha uno sperone velenoso.',['Peli','Ghiandole mammarie','Endotermi'],{lq:'classe',m:'mammiferi'});
+
+function RCOL(n){var l=n.lv;if(l==='tutti gli organismi')return 0;if(l==='dominio'||l.indexOf('non classificati')===0)return 1;if(l==='regno')return 2;if(l==='gruppo non sistematico')return 3;if(l==='subphylum')return 5;if(l==='classe')return 6;return 4}
+var HEAD=['','Dominio','Regno','Raggruppamento','Phylum / gruppo','Subphylum','Classe'];
+var HSHORT=['','Dom.','Reg.','Rag.','Phylum','Subph.','Classe'];
+var byId={},kids={};
+D.forEach(function(n){byId[n.id]=n;kids[n.id]=[]});
+D.forEach(function(n){if(n.p)kids[n.p].push(n.id);n.r=RCOL(n)});
+var BCOL={vita:'#e6ecf5',archei:'#f2d16b',batteri:'#6fd8d0',virus:'#aab6c8',eucarioti:'#e6ecf5',protisti:'#8fb4ff',funghi:'#e8b07a',piante:'#8ee0a6',animali:'#ff9eb0'};
+function branchOf(id){var n=byId[id];while(n.p&&n.p!=='vita'&&n.p!=='eucarioti')n=byId[n.p];return n.id}
+function colOf(id){return BCOL[branchOf(id)]||'#e6ecf5'}
+function pathOf(id){var a=[],n=byId[id];while(n){a.unshift(n);n=n.p?byId[n.p]:null}return a}
+function pathNames(id){return pathOf(id).slice(1).map(function(n){return n.n}).join(' › ')}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+
+/* ===================== SCHEDA ===================== */
+function cardHTML(id,opt){
+  opt=opt||{};var n=byId[id],col=colOf(id),h='';
+  h+='<h2>'+esc(n.n)+'</h2>';
+  h+='<span class="pill" style="color:'+col+';border-color:'+col+'">'+esc(n.lv)+'</span>';
+  if(n.p&&n.p!=='vita')h+='<div class="path">'+esc(pathNames(id))+'</div>';
+  h+='<p>'+esc(n.t)+'</p>';
+  if(n.c)h+='<div class="ancora"><b>Lo sapevi?</b>'+esc(n.c)+'</div>';
+  if(kids[id].length){h+='<div class="sect">Contiene</div><div class="chips">'+kids[id].map(function(k){return '<button class="chip" data-go="'+k+'">'+esc(byId[k].n)+'</button>'}).join('')+'</div>'}
+  if(opt.btn3d&&n.m)h+='<div class="row" style="margin-top:12px"><button class="btn" data-3d="'+id+'">Guarda il modello 3D</button></div>';
+  if(opt.btnTree)h+='<div class="row" style="margin-top:12px"><button class="btn" data-tree="'+id+'">Mostra nell\'albero</button></div>';
+  return h;
+}
+
+/* ===================== ALBERO 2D ===================== */
+var Z=1,lastW=1,lastH=1;
+var exp=new Set(['vita','eucarioti']),sel='vita',NS='http://www.w3.org/2000/svg';
+var treeEl=document.getElementById('tree'),treeBox=document.getElementById('treebox'),cardEl=document.getElementById('card');
+function nodeW(n){return Math.max(96,30+n.n.length*7.3,26+n.lv.length*5.6)}
+function drawTree(scrollToSel){
+  var pos={},order=[],row=0;
+  (function walk(id){
+    var vis=exp.has(id)?kids[id]:[];
+    if(!vis.length){pos[id]={y:row++}}
+    else{vis.forEach(walk);pos[id]={y:(pos[vis[0]].y+pos[vis[vis.length-1]].y)/2}}
+    pos[id].c=byId[id].r;order.push(id);
+  })('vita');
+  var colW={};
+  order.forEach(function(id){var c=pos[id].c;colW[c]=Math.max(colW[c]||0,nodeW(byId[id]))});
+  var used=Object.keys(colW).map(Number).sort(function(a,b){return a-b}),colX={},x=14;
+  used.forEach(function(c){colX[c]=x;x+=colW[c]+54});
+  var H=46,PITCH=54,HH=30,W=x-54+34,Ht=row*PITCH+20;lastW=W;lastH=Ht;
+  var out='';
+  order.forEach(function(id){ // collegamenti: la curva si piega vicino al genitore e poi corre orizzontale
+    var p=pos[id];if(!exp.has(id))return;
+    kids[id].forEach(function(k){
+      var c=pos[k],x1=colX[p.c]+nodeW(byId[id])+10,y1=10+p.y*PITCH+H/2,x2=colX[c.c],y2=10+c.y*PITCH+H/2,cx=x1+Math.min(40,(x2-x1)/2);
+      out+='<path d="M'+x1+' '+y1+'C'+cx+' '+y1+' '+cx+' '+y2+' '+x2+' '+y2+'" fill="none" stroke="'+colOf(k)+'" stroke-opacity=".55" stroke-width="2"/>';
+    });
+  });
+  order.forEach(function(id){
+    var n=byId[id],p=pos[id],w=nodeW(n),nx=colX[p.c],ny=10+p.y*PITCH,col=colOf(id),has=kids[id].length>0,isSel=sel===id;
+    out+='<g class="node'+(isSel?' sel':'')+'" data-id="'+id+'" tabindex="0" role="treeitem" aria-label="'+esc(n.n)+', '+esc(n.lv)+'"'+(has?' aria-expanded="'+exp.has(id)+'"':'')+'>';
+    out+='<rect class="bg" x="'+nx+'" y="'+ny+'" width="'+w+'" height="'+H+'" rx="10" stroke="'+col+'"'+(isSel?' style="--f:'+col+'"':'')+'/>';
+    out+='<text class="nm" x="'+(nx+12)+'" y="'+(ny+20)+'">'+esc(n.n)+'</text>';
+    out+='<text class="lv" x="'+(nx+12)+'" y="'+(ny+36)+'">'+esc(n.lv)+'</text>';
+    if(has){out+='<circle cx="'+(nx+w)+'" cy="'+(ny+H/2)+'" r="10" fill="#0a0f1a" stroke="'+col+'" stroke-width="1.5"/><text x="'+(nx+w)+'" y="'+(ny+H/2+5)+'" text-anchor="middle" fill="'+col+'" style="font:700 15px Calibri,sans-serif">'+(exp.has(id)?'−':'+')+'</text>'}
+    out+='</g>';
+  });
+  var hd='<rect width="'+(W*Z)+'" height="'+HH+'" fill="#111a2b"/><line x1="0" x2="'+(W*Z)+'" y1="'+(HH-.5)+'" y2="'+(HH-.5)+'" stroke="#22304a"/>';
+  used.forEach(function(c){
+    if(!HEAD[c])return;var avail=(colW[c]+54)*Z-8,lab=HEAD[c];
+    if(lab.length*7.6>avail)lab=HSHORT[c];
+    if(lab.length*7.6>avail)return;
+    hd+='<text x="'+(colX[c]*Z+4)+'" y="19">'+lab+'</text>'});
+  document.getElementById('treewrap').style.width=(W*Z)+'px';
+  var hs=document.getElementById('treehead');hs.setAttribute('width',W*Z);hs.setAttribute('height',HH);hs.removeAttribute('viewBox');hs.innerHTML=hd;
+  treeEl.setAttribute('width',W*Z);treeEl.setAttribute('height',Ht*Z);treeEl.setAttribute('viewBox','0 0 '+W+' '+Ht);
+  treeEl.innerHTML=out;
+  if(scrollToSel&&pos[sel]){
+    var sx=colX[pos[sel].c]*Z,sw=nodeW(byId[sel])*Z,sy=(10+pos[sel].y*PITCH)*Z+HH,H=46*Z;
+    var l=treeBox.scrollLeft,tp=treeBox.scrollTop,cw=treeBox.clientWidth,ch=treeBox.clientHeight,nl=l,nt=tp;
+    if(sx<l+10)nl=Math.max(0,sx-20);else if(sx+sw+30>l+cw)nl=sx+sw+40-cw;
+    if(sy<tp+HH+10)nt=Math.max(0,sy-HH-30);else if(sy+H+20>tp+ch)nt=sy+H+30-ch;
+    treeBox.scrollTo({left:nl,top:nt,behavior:'smooth'});
+  }
+}
+function selectNode(id,toggle){
+  var has=kids[id].length>0;
+  if(has){if(toggle&&sel===id)exp.has(id)?exp.delete(id):exp.add(id);else exp.add(id)}
+  sel=id;drawTree(true);cardEl.innerHTML=cardHTML(id,{btn3d:true});
+}
+function revealNode(id){ // apre il percorso e seleziona
+  var n=byId[id];while(n.p){exp.add(n.p);n=byId[n.p]}
+  sel=id;if(kids[id].length)exp.add(id);drawTree(true);cardEl.innerHTML=cardHTML(id,{btn3d:true});
+}
+treeEl.addEventListener('click',function(e){var g=e.target.closest('g[data-id]');if(g)selectNode(g.dataset.id,true)});
+treeEl.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.dataset&&e.target.dataset.id){e.preventDefault();var id=e.target.dataset.id;selectNode(id,true);var g=treeEl.querySelector('g[data-id="'+id+'"]');if(g)g.focus()}});
+cardEl.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  if(b.dataset.go)selectNode(b.dataset.go,false);
+  if(b.dataset['3d'])open3D(b.dataset['3d']);
+});
+document.getElementById('expAll').onclick=function(){D.forEach(function(n){if(kids[n.id].length)exp.add(n.id)});drawTree(true)};
+document.getElementById('colAll').onclick=function(){exp=new Set(['vita']);sel='vita';cardEl.innerHTML=cardHTML('vita');drawTree(false);treeBox.scrollTo(0,0)};
+cardEl.innerHTML=cardHTML('vita');drawTree(false);
+function setZoom(z,px,py){
+  z=Math.max(.2,Math.min(1.6,z));if(Math.abs(z-Z)<.002)return;
+  px=px==null?treeBox.clientWidth/2:px;py=py==null?treeBox.clientHeight/2:py;
+  var cx=(treeBox.scrollLeft+px)/Z,cy=(treeBox.scrollTop+py-30)/Z;
+  Z=z;drawTree(false);
+  treeBox.scrollLeft=Math.max(0,cx*Z-px);treeBox.scrollTop=Math.max(0,cy*Z+30-py);
+  document.getElementById('zLbl').textContent=Math.round(Z*100)+'%';
+}
+function fitZoom(){
+  var z=Math.min(1,(treeBox.clientWidth-10)/lastW,(treeBox.clientHeight-30-10)/lastH);
+  Z=z*1.01;setZoom(z);treeBox.scrollTo(0,0);
+}
+document.getElementById('zIn').onclick=function(){setZoom(Z*1.25)};
+document.getElementById('zOut').onclick=function(){setZoom(Z/1.25)};
+document.getElementById('zFit').onclick=fitZoom;
+treeBox.addEventListener('wheel',function(e){
+  if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();
+  var r=treeBox.getBoundingClientRect();setZoom(Z*Math.exp(-e.deltaY*.002),e.clientX-r.left,e.clientY-r.top);
+},{passive:false});
+var pinch0=0,pinchZ=1;
+treeBox.addEventListener('touchstart',function(e){if(e.touches.length===2){pinch0=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);pinchZ=Z}},{passive:true});
+treeBox.addEventListener('touchmove',function(e){
+  if(e.touches.length!==2||!pinch0)return;e.preventDefault();
+  var a=e.touches[0],b=e.touches[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),r=treeBox.getBoundingClientRect();
+  setZoom(pinchZ*d/pinch0,(a.clientX+b.clientX)/2-r.left,(a.clientY+b.clientY)/2-r.top);
+},{passive:false});
+treeBox.addEventListener('touchend',function(e){if(e.touches.length<2)pinch0=0});
+
+/* ===================== TAB ===================== */
+var TABS=['albero','3d','quiz'];
+function showTab(k){
+  TABS.forEach(function(t){
+    var on=t===k;document.getElementById('t-'+t).setAttribute('aria-selected',on);
+    document.getElementById('p-'+t).classList.toggle('hide',!on);
+  });
+  view3dActive=(k==='3d');
+  if(k==='3d')init3D();
+}
+TABS.forEach(function(t){document.getElementById('t-'+t).onclick=function(){showTab(t)}});
+
+/* ===================== 3D ===================== */
+var view3dActive=false,viewer=null,curGroup=null,curVar=0,curPart=null,HAS3D=typeof THREE!=='undefined';
+var MODELS={};
+var stageEl=document.getElementById('stage'),lblsEl=document.getElementById('lbls'),card3d=document.getElementById('card3d');
+
+function mat(color,o){return new THREE.MeshStandardMaterial(Object.assign({color:color,roughness:.62,metalness:0},o||{}))}
+function P(obj,id){obj.traverse(function(o){if(o.isMesh)o.userData.part=id});return obj}
+function seg(a,b,r1,r2,m,n){
+  var d=new THREE.Vector3().subVectors(b,a),len=d.length();
+  var me=new THREE.Mesh(new THREE.CylinderGeometry(r2,r1,len,n||8,1),m);
+  me.position.copy(a).addScaledVector(d,.5);
+  me.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());
+  return me;
+}
+function chain(n,len,r0,r1,m,knobMat,knobR){ // catena di segmenti che pende lungo -Y, ogni giunto ruota
+  var root=new THREE.Group(),cur=root,joints=[];
+  for(var i=0;i<n;i++){
+    var j=new THREE.Group();cur.add(j);joints.push(j);
+    var ra=r0+(r1-r0)*i/n,rb=r0+(r1-r0)*(i+1)/n;
+    var me=new THREE.Mesh(new THREE.CylinderGeometry(ra,rb,len,6),m);me.position.y=-len/2;j.add(me);
+    var nx=new THREE.Group();nx.position.y=-len;j.add(nx);cur=nx;
+    if(knobMat&&i%2===1){var k=new THREE.Mesh(new THREE.SphereGeometry(knobR||.045,8,6),knobMat);k.position.y=-len;j.add(k)}
+  }
+  return {root:root,joints:joints};
+}
+function rng(seed){var s=seed;return function(){s=(s*16807)%2147483647;return s/2147483647}}
+function ellipseWing(rx,ry,m){
+  var s=new THREE.Shape();s.absellipse(rx,0,rx,ry,0,Math.PI*2,false,0);
+  var me=new THREE.Mesh(new THREE.ShapeGeometry(s,24),m);me.rotation.x=-Math.PI/2;return me;
+}
+
+/* ---- fungo ---- */
+function buildFungo(){
+  var root=new THREE.Group(),r=rng(11);
+  var soil=new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.2,2.0,48,1),mat(0x6b4a2f,{transparent:true,opacity:.3,depthWrite:false}));
+  soil.position.y=-1.0;soil.renderOrder=0;root.add(soil);
+  var topDisc=new THREE.Mesh(new THREE.CircleGeometry(3.2,48),mat(0x7fae5c,{transparent:true,opacity:.12,side:THREE.DoubleSide,depthWrite:false}));
+  topDisc.rotation.x=-Math.PI/2;topDisc.position.y=.005;root.add(topDisc);
+  // gambo
+  var prof=[[0,-.3],[.14,-.27],[.3,0],[.25,.3],[.2,.8],[.19,1.3],[.22,1.9],[0,1.95]].map(function(a){return new THREE.Vector2(a[0],a[1])});
+  var stem=P(new THREE.Mesh(new THREE.LatheGeometry(prof,28),mat(0xf1e6d2)),'gambo');root.add(stem);
+  // cappello
+  var capM=mat(0xc2512f,{side:THREE.DoubleSide});
+  var cap=P(new THREE.Mesh(new THREE.SphereGeometry(1,48,20,0,Math.PI*2,0,Math.PI/2),capM),'cappello');
+  cap.scale.set(1.45,.85,1.45);cap.position.y=1.3;root.add(cap);
+  var spotM=mat(0xfff4e0);
+  for(var i=0;i<14;i++){var a=r()*6.283,rr=r()*.9+.1,th=Math.acos(Math.min(1,rr/1.0*.8+.2)); // punti sulla calotta
+    var sx=Math.cos(a)*Math.sin(th),sz=Math.sin(a)*Math.sin(th),sy=Math.cos(th);
+    var sp=P(new THREE.Mesh(new THREE.SphereGeometry(.09+r()*.06,10,8),spotM),'cappello');
+    sp.position.set(sx*1.45*1.01,1.3+sy*.85*1.01,sz*1.45*1.01);sp.scale.set(1,.45,1);sp.lookAt(sp.position.clone().multiplyScalar(2));root.add(sp)}
+  // lamelle
+  var dome=function(x){return 1.3+.85*Math.sqrt(Math.max(0,1-(x/1.45)*(x/1.45)))-.03};
+  var sh=new THREE.Shape();sh.moveTo(.3,1.12);sh.lineTo(1.4,1.12);
+  for(var x=1.4;x>=.3;x-=.1)sh.lineTo(x,dome(x));
+  sh.lineTo(.3,dome(.3));sh.lineTo(.3,1.12);
+  var gg=new THREE.ExtrudeGeometry(sh,{depth:.024,bevelEnabled:false});gg.translate(0,0,-.012);
+  var gm=mat(0xf3dcb4,{side:THREE.DoubleSide});
+  for(var k=0;k<44;k++){var l=new THREE.Mesh(gg,gm);l.rotation.y=k/44*Math.PI*2;P(l,'lamelle');root.add(l)}
+  // micelio
+  var hm=mat(0xfff3c4,{emissive:0x5a4a20});
+  var hy=new THREE.Group();root.add(hy);
+  function branch(p,dir,len,depth){
+    var pts=[p.clone()],q=p.clone(),d=dir.clone(),n=4;
+    for(var i=0;i<n;i++){
+      d.add(new THREE.Vector3(r()-.5,(r()-.5)*.5,r()-.5).multiplyScalar(.9)).normalize();
+      q=q.clone().addScaledVector(d,len/n);
+      if(q.y>-.12){q.y=-.12;d.y=-Math.abs(d.y)}
+      if(q.y<-1.8){q.y=-1.8;d.y=Math.abs(d.y)}
+      var h=Math.hypot(q.x,q.z);if(h>3.0){q.x*=3.0/h;q.z*=3.0/h}
+      pts.push(q);
+    }
+    var rad=[.04,.03,.021,.014][depth];
+    hy.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),14,rad,5,false),hm));
+    if(depth<3){var ch=2+(r()>.55?1:0);for(var c=0;c<ch;c++){
+      var s=pts[1+Math.floor(r()*(pts.length-1))].clone();
+      var nd=new THREE.Vector3(r()-.5,-.25+(r()-.5)*.4,r()-.5).normalize();
+      branch(s,nd,len*.62,depth+1)}}
+  }
+  for(var b=0;b<7;b++){var a=b/7*Math.PI*2+r()*.5;branch(new THREE.Vector3(Math.cos(a)*.08,-.25,Math.sin(a)*.08),new THREE.Vector3(Math.cos(a),-.35,Math.sin(a)),1.5,0)}
+  P(hy,'micelio');
+  // spore
+  var spm=mat(0x8a5a2b),spores=[];
+  for(var s2=0;s2<26;s2++){var m=new THREE.Mesh(new THREE.SphereGeometry(.05,8,6),spm);P(m,'spore');root.add(m);
+    var a2=r()*6.283,rr=.4+r()*.95;spores.push({m:m,x:Math.cos(a2)*rr,z:Math.sin(a2)*rr,ph:r(),sp:.12+r()*.1,dr:(r()-.3)*.8})}
+  return {root:root,
+    parts:[
+      {id:'cappello',name:'Cappello',text:'Parte visibile del carpoforo, il «frutto» del fungo. Protegge la zona che produce le spore.',a:[1.0,2.05,.2]},
+      {id:'lamelle',name:'Lamelle',text:'Lamine sotto il cappello: producono le spore (in altri funghi al loro posto ci sono tubuli).',a:[.9,1.12,.9]},
+      {id:'gambo',name:'Gambo',text:'Sostiene il cappello. Come il cappello, è fatto di ife intrecciate.',a:[.25,.55,0]},
+      {id:'spore',name:'Spore',text:'Cellule riproduttive microscopiche: il vento le disperde e, dove trovano condizioni adatte, germinano e formano nuove ife.',a:[-1.2,.45,.8]},
+      {id:'micelio',name:'Micelio e ife',text:'Rete di ife nascosta nel terreno: è il vero corpo del fungo. Le ife hanno parete di chitina e assorbono le sostanze nutritive dal substrato.',a:[1.6,-.9,.4]}],
+    cam:{th:.5,ph:1.2,dist:7.6,ty:.35},
+    update:function(t){spores.forEach(function(s){var f=(t*s.sp+s.ph)%1;s.m.position.set(s.x+s.dr*f*.9,1.08-f*1.15,s.z)})}
+  };
+}
+
+/* ---- cnidari ---- */
+function buildMedusa(){
+  var root=new THREE.Group(),body=new THREE.Group();root.add(body);
+  var r=rng(5);
+  var bm=mat(0xa88df2,{transparent:true,opacity:.55,side:THREE.DoubleSide,depthWrite:false});
+  var bellG=new THREE.Group();bellG.position.y=.8;body.add(bellG);
+  var bell=new THREE.Mesh(new THREE.SphereGeometry(1,48,24,0,Math.PI*2,0,Math.PI/2),bm);bell.scale.set(1.5,1.05,1.5);bell.renderOrder=3;bellG.add(bell);
+  var rim=new THREE.Mesh(new THREE.TorusGeometry(1.5,.06,10,56),mat(0x8f70e0,{transparent:true,opacity:.8}));rim.rotation.x=Math.PI/2;rim.renderOrder=3;bellG.add(rim);
+  var gm=mat(0xf08fc0);
+  for(var g=0;g<4;g++){var a=g/4*6.283+.4,go=new THREE.Mesh(new THREE.SphereGeometry(.2,14,10),gm);go.scale.set(1.3,.4,1);go.position.set(Math.cos(a)*.62,.38,Math.sin(a)*.62);bellG.add(go)}
+  P(bellG,'ombrello');
+  // tentacoli
+  var tm=mat(0xb79cf5),km=mat(0xf0609e),tent=[];
+  for(var i=0;i<18;i++){var ang=i/18*Math.PI*2,c=chain(10,.3,.034,.012,tm,km,.042);c.root.userData.ang=ang;c.ph=r()*6.283;body.add(c.root);tent.push(c)}
+    tent.forEach(function(c){P(c.root,'tentacoli')});
+  // bocca e braccia orali
+  var om=mat(0xf2a6c7),man=P(new THREE.Mesh(new THREE.CylinderGeometry(.2,.26,.55,16),om),'bocca');man.position.y=.62;body.add(man);
+  var arms=[];
+  for(var k=0;k<4;k++){var ar=chain(6,.27,.11,.04,om);ar.root.position.set(Math.cos(k*1.571+.78)*.14,.34,Math.sin(k*1.571+.78)*.14);ar.root.userData.a=k*1.571+.78;ar.ph=r()*6.283;P(ar.root,'bocca');body.add(ar.root);arms.push(ar)}
+  return {root:root,
+    parts:[
+      {id:'ombrello',name:'Ombrello',text:'Campana gelatinosa a simmetria radiale: contraendosi spinge l\'acqua e fa avanzare la medusa. La parete ha due soli strati di cellule con la mesoglea gelatinosa in mezzo.',a:[1.25,1.5,0]},
+      {id:'tentacoli',name:'Tentacoli',text:'Portano i cnidociti, cellule urticanti che lanciano un filamento per immobilizzare la preda. Servono a catturare il cibo e a difendersi.',a:[1.55,-.55,.4]},
+      {id:'bocca',name:'Bocca e braccia orali',text:'La bocca è l\'unica apertura del corpo: serve a introdurre il cibo e a espellere gli scarti. Si apre in una cavità digerente a sacco (cavità gastrovascolare).',a:[0,-.35,.0]}],
+    cam:{th:.3,ph:1.45,dist:7.6,ty:-.2},
+    update:function(t){
+      var s=Math.sin(t*2.2),rs=1-.08*s;
+      body.position.y=.12*Math.sin(t*2.2+1);
+      bellG.scale.set(rs,1+.18*s,rs);
+      tent.forEach(function(c,i){
+        var a=c.root.userData.ang;c.root.position.set(Math.cos(a)*1.4*rs,.8,Math.sin(a)*1.4*rs);
+        c.joints.forEach(function(j,q){j.rotation.z=.16*Math.sin(t*1.7+c.ph-q*.55)+.05*s;j.rotation.x=.16*Math.cos(t*1.4+c.ph-q*.5)});
+      });
+      arms.forEach(function(c){var a=c.root.userData.a;c.joints.forEach(function(j,q){j.rotation.z=.12*Math.sin(t*1.5+c.ph-q*.6);j.rotation.x=.12*Math.cos(t*1.2+c.ph-q*.5)})});
+    }
+  };
+}
+function buildPolipo(){
+  var root=new THREE.Group(),r=rng(9),body=new THREE.Group();root.add(body);
+  var rock=new THREE.Mesh(new THREE.IcosahedronGeometry(1.6,1),mat(0x9aa3ad,{flatShading:true}));rock.scale.set(1.1,.3,1.1);rock.position.y=-.05;root.add(rock);
+  var base=P(new THREE.Mesh(new THREE.CylinderGeometry(1.0,1.1,.16,36),mat(0xd98a74)),'p_base');base.position.y=.2;root.add(base);
+  var col=P(new THREE.Mesh(new THREE.CylinderGeometry(.62,.78,1.5,36),mat(0xf2a58a)),'p_colonna');col.position.y=1.03;root.add(col);
+  var disc=P(new THREE.Mesh(new THREE.CylinderGeometry(.92,.62,.14,36),mat(0xf7bfa6)),'p_bocca');disc.position.y=1.85;root.add(disc);
+  var mouth=P(new THREE.Mesh(new THREE.CylinderGeometry(.24,.2,.14,20),mat(0x8c2f45)),'p_bocca');mouth.position.y=1.9;root.add(mouth);
+  var tm=mat(0xf6b8a0),km=mat(0xe4496f),tent=[];
+  function ring(n,rad,lean,ph){for(var i=0;i<n;i++){
+    var a=i/n*Math.PI*2+ph,h=new THREE.Group();h.position.set(Math.cos(a)*rad,1.9,Math.sin(a)*rad);h.rotation.y=-a;
+    var c=chain(5,.26,.06,.02,tm,km,.04);c.root.rotation.z=Math.PI-lean;P(c.root,'p_tent');h.add(c.root);root.add(h);c.ph=r()*6.28;tent.push(c)}}
+  ring(18,.8,.55,0);ring(10,.5,.25,.3);
+  return {root:root,
+    parts:[
+      {id:'p_tent',name:'Tentacoli',text:'Circondano la bocca e portano i cnidociti, cellule urticanti con un filamento che immobilizza la preda.',a:[1.25,2.45,.2]},
+      {id:'p_bocca',name:'Bocca e disco orale',text:'La bocca si apre al centro, verso l\'alto, ed è l\'unica apertura del corpo: introduce il cibo ed espelle gli scarti.',a:[0,2.15,0]},
+      {id:'p_colonna',name:'Colonna',text:'Corpo a sacco: racchiude la cavità gastrovascolare, dove avviene la digestione.',a:[.95,1.1,.3]},
+      {id:'p_base',name:'Base',text:'Disco con cui il polipo si fissa a rocce o altri substrati.',a:[1.1,.2,.6]}],
+    cam:{th:.5,ph:1.35,dist:8,ty:1.2},
+    update:function(t){tent.forEach(function(c){c.joints.forEach(function(j,q){j.rotation.z=.18*Math.sin(t*1.6+c.ph+q*.5);j.rotation.x=.14*Math.cos(t*1.3+c.ph+q*.4)})});
+      body.position.y=0}
+  };
+}
+
+/* ---- insetto ---- */
+function buildInsetto(){
+  var root=new THREE.Group(),V=function(x,y,z){return new THREE.Vector3(x,y,z)};
+  var dark=mat(0x3d2a18),yel=mat(0xf0b400),blk=mat(0x251a10),eye=mat(0x15151c,{roughness:.25});
+  // capo
+  var head=new THREE.Mesh(new THREE.SphereGeometry(.3,24,16),dark);head.scale.set(1,.9,.85);head.position.set(0,.1,1.0);P(head,'capo');root.add(head);
+  [-1,1].forEach(function(s){var e=new THREE.Mesh(new THREE.SphereGeometry(.14,16,12),eye);e.position.set(s*.22,.18,1.06);e.scale.set(.8,1,1);P(e,'capo');root.add(e)});
+  // antenne
+  var am=mat(0x251a10),ant=new THREE.Group();
+  [-1,1].forEach(function(s){
+    var curve=new THREE.CatmullRomCurve3([V(s*.1,.35,1.18),V(s*.3,.65,1.5),V(s*.55,.85,1.85)]);
+    ant.add(new THREE.Mesh(new THREE.TubeGeometry(curve,14,.025,6,false),am));
+    var k=new THREE.Mesh(new THREE.SphereGeometry(.05,8,6),am);k.position.set(s*.55,.85,1.85);ant.add(k)});
+  P(ant,'antenne');root.add(ant);
+  // torace
+  var th=new THREE.Mesh(new THREE.SphereGeometry(1,28,18),mat(0x5a3d22));th.scale.set(.5,.45,.58);th.position.set(0,.1,.32);P(th,'torace');root.add(th);
+  // addome
+  var ab=new THREE.Group();
+  for(var i=0;i<5;i++){var rr=[.46,.5,.46,.38,.26][i],sg=new THREE.Mesh(new THREE.SphereGeometry(1,22,14),i%2?blk:yel);sg.scale.set(rr,rr*.92,.26);sg.position.set(0,.02-i*.01,-.2-i*.3);ab.add(sg)}
+  P(ab,'addome');root.add(ab);
+  // zampe
+  var lg=new THREE.Group(),lm=mat(0x251a10),dzs=[.4,0,-.4];
+  [-1,1].forEach(function(s){[.55,.3,.05].forEach(function(z,k){
+    var dz=dzs[k],p0=V(s*.25,-.18,z),p1=V(s*.78,.02,z+dz*.4),p2=V(s*1.0,-.72,z+dz),p3=V(s*1.05,-1.0,z+dz*1.15);
+    lg.add(seg(p0,p1,.055,.045,lm));lg.add(seg(p1,p2,.045,.03,lm));lg.add(seg(p2,p3,.03,.018,lm));
+    [p1,p2].forEach(function(p){var j=new THREE.Mesh(new THREE.SphereGeometry(.055,10,8),lm);j.position.copy(p);lg.add(j)})
+  })});
+  P(lg,'zampe');root.add(lg);
+  // ali
+  var wm=mat(0xcfe8ff,{transparent:true,opacity:.5,side:THREE.DoubleSide,depthWrite:false,emissive:0x203040});
+  var wings=[];
+  [-1,1].forEach(function(s){
+    [[.5,1.05,.4,.27],[.1,.78,.32,.2]].forEach(function(w,ix){
+      var g=new THREE.Group();g.position.set(s*.12,.5,w[0]);
+      var m=ellipseWing(w[1],w[2],wm);m.renderOrder=3;if(s<0)m.scale.x=-1;g.add(m);P(g,'ali');root.add(g);wings.push({g:g,s:s,ix:ix,rest:w[3]})})
+  });
+  return {root:root,
+    parts:[
+      {id:'capo',name:'Capo',text:'Porta gli occhi composti (formati da molte unità), le antenne e l\'apparato boccale.',a:[.5,.3,1.2]},
+      {id:'antenne',name:'Antenne',text:'Un solo paio, con funzioni di tatto e olfatto. I crostacei ne hanno due paia, gli aracnidi nessuna.',a:[.6,.95,1.9]},
+      {id:'torace',name:'Torace',text:'Formato da tre segmenti fusi: porta tutte le zampe e le ali.',a:[.5,.45,.3]},
+      {id:'zampe',name:'Zampe',text:'Sei zampe articolate, tre paia, attaccate al torace.',a:[1.1,-.85,.3]},
+      {id:'ali',name:'Ali',text:'Gli insetti alati hanno in genere due paia di ali, attaccate al torace; sono gli unici invertebrati capaci di volo attivo.',a:[1.1,.8,.45]},
+      {id:'addome',name:'Addome',text:'Contiene gran parte dell\'apparato digerente e riproduttivo. La respirazione avviene tramite trachee che si aprono in piccoli fori laterali, gli stigmi.',a:[.45,.35,-1.1]}],
+    cam:{th:.75,ph:1.2,dist:5.8,ty:-.15},
+    update:function(t){wings.forEach(function(w){var a=w.rest+.45*Math.sin(t*13+w.ix*.4);w.g.rotation.z=w.s*a;w.g.rotation.y=w.s*(w.ix?.15:-.15)})}
+  };
+}
+/* ---- briofite ---- */
+function buildMuschio(){
+  var root=new THREE.Group(),r=rng(31),V=function(x,y,z){return new THREE.Vector3(x,y,z)};
+  var soil=new THREE.Mesh(new THREE.CylinderGeometry(2.3,2.3,.4,40),mat(0x6b4a2f,{transparent:true,opacity:.22,depthWrite:false}));soil.position.y=-.22;root.add(soil);
+  var RD=1.85,HD=.95;
+  var dg=new THREE.SphereGeometry(RD,56,26,0,Math.PI*2,0,Math.PI/2),dp=dg.attributes.position;
+  for(var q=0;q<dp.count;q++){var x=dp.getX(q),y=dp.getY(q),z=dp.getZ(q),bump=1+.035*Math.sin(x*9+1)*Math.sin(z*8)+.02*Math.sin(x*21)*Math.cos(z*19);dp.setXYZ(q,x*bump,y*bump,z*bump)}
+  dg.computeVertexNormals();var dome=new THREE.Mesh(dg,mat(0x3a7a2c,{roughness:1}));dome.scale.set(1,HD/RD,1);dome.position.y=-.02;P(dome,'gametofito');root.add(dome);
+  function domeY(x,z){var k=1-(x*x+z*z)/(RD*RD);return k>0?HD*Math.sqrt(k)-.02:-.02}
+  var N=1700,geo=new THREE.ConeGeometry(.05,1,5,1);geo.translate(0,.5,0);
+  var im=new THREE.InstancedMesh(geo,mat(0x8fd05a,{roughness:.9}),N),d=new THREE.Object3D(),col=new THREE.Color();
+  for(var i=0;i<N;i++){
+    var a=r()*6.283,rr=Math.sqrt(r())*(RD-.02),x0=Math.cos(a)*rr,z0=Math.sin(a)*rr,y0=domeY(x0,z0);
+    var nv=V(x0/(RD*RD),(y0+.02)/(HD*HD),z0/(RD*RD)).normalize();nv.x+=(r()-.5)*.5;nv.y+=(r()-.5)*.3;nv.z+=(r()-.5)*.5;nv.normalize();
+    d.position.set(x0,y0-.03,z0);d.quaternion.setFromUnitVectors(V(0,1,0),nv);d.scale.set(.8+r()*.8,.16+r()*.16,.8+r()*.8);d.updateMatrix();
+    im.setMatrixAt(i,d.matrix);col.setRGB(.28+r()*.3,.5+r()*.28,.12+r()*.16);im.setColorAt(i,col);
+  }
+  im.instanceMatrix.needsUpdate=true;im.instanceColor.needsUpdate=true;im.frustumCulled=false;
+  dotC(im.material,'#6fb040');P(im,'gametofito');root.add(im);
+  var sm=mat(0xb8742a),cm=mat(0x8a4f1e),cpm=mat(0xe0c88a),spo=[],anc=[0,1.5,0];
+  for(var k=0;k<13;k++){
+    var a2=r()*6.283,r2=Math.sqrt(r())*1.45,H=.95+r()*.5,tx=(r()-.5)*.2,tz=(r()-.5)*.2,px=Math.cos(a2)*r2,pz=Math.sin(a2)*r2;
+    var g=new THREE.Group();g.position.set(px,domeY(px,pz)-.05,pz);g.rotation.set(tx,0,tz);
+    var st=new THREE.Mesh(new THREE.CylinderGeometry(.018,.026,H,6),sm);st.position.y=H/2;g.add(st);
+    var cp=new THREE.Mesh(new THREE.SphereGeometry(1,14,10),cm);cp.scale.set(.085,.18,.085);cp.position.y=H+.12;cp.rotation.z=.35;g.add(cp);
+    var ca=new THREE.Mesh(new THREE.ConeGeometry(.06,.14,8),cpm);ca.position.set(.05,H+.3,0);ca.rotation.z=.35;g.add(ca);
+    P(g,'sporofito');root.add(g);spo.push({g:g,ph:r()*6.28,tx:tx,tz:tz});
+    if(k===0)anc=[g.position.x+.4,g.position.y+H+.35,g.position.z];
+  }
+  var rm=mat(0x5a3a20),rz=new THREE.Group();
+  for(var j=0;j<70;j++){var b=r()*6.283,rb=r()*1.6,p0=V(Math.cos(b)*rb,0,Math.sin(b)*rb),p1=V(p0.x+(r()-.5)*.3,-.2-r()*.2,p0.z+(r()-.5)*.3),p2=V(p1.x+(r()-.5)*.3,-.4-r()*.2,p1.z+(r()-.5)*.3);
+    rz.add(seg(p0,p1,.01,.008,rm,5));rz.add(seg(p1,p2,.008,.005,rm,5))}
+  P(rz,'rizoidi');root.add(rz);
+  return {root:root,
+    parts:[
+      {id:'gametofito',name:'Gametofito',text:'Il cuscinetto verde, formato da tanti fusticini con foglioline: è la parte che si vede di più e fa la fotosintesi. Non ha vasi conduttori né vere radici, quindi il muschio resta piccolo.',a:[1.35,.55,.7]},
+      {id:'sporofito',name:'Sporofito',text:'Stelo con una capsula in cima: produce le spore. Cresce sul gametofito e dipende da lui.',a:anc},
+      {id:'rizoidi',name:'Rizoidi',text:'Sottili filamenti che ancorano il muschio al substrato: non sono vere radici. L\'acqua viene assorbita soprattutto dalle foglioline.',a:[1.5,-.45,.5]}],
+    cam:{th:.5,ph:1.12,dist:9,ty:.45},
+    update:function(t){spo.forEach(function(s){s.g.rotation.z=s.tz+.03*Math.sin(t*1.3+s.ph)})}
+  };
+}
+/* ---- pteridofite ---- */
+function buildFelce(){
+  var root=new THREE.Group(),r=rng(41),V=function(x,y,z){return new THREE.Vector3(x,y,z)};
+  var ground=new THREE.Mesh(new THREE.CircleGeometry(3.4,48),mat(0x7a5a3a,{transparent:true,opacity:.3,side:THREE.DoubleSide,depthWrite:false}));ground.rotation.x=-Math.PI/2;root.add(ground);
+  var rz=new THREE.Group(),rzb=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),mat(0x5b3d24));rzb.scale.set(.5,.22,.5);rzb.position.y=.05;rz.add(rzb);
+  var rm=mat(0x4a3220);
+  for(var q=0;q<14;q++){var a0=r()*6.283,p1=V(Math.cos(a0)*(.5+r()*.6),-.35-r()*.2,Math.sin(a0)*(.5+r()*.6));rz.add(seg(V(0,0,0),p1,.025,.012,rm,6))}
+  P(rz,'rizoma');root.add(rz);
+  var SM=mat(0x3e7a33),PM=mat(0x4fa043,{side:THREE.DoubleSide}),SO=mat(0x7a4a22);
+  var pinM=[],soriM=[],N=7,fr=new THREE.Group(),anc={fr:[2,1.9,.3],so:[1.2,1.5,.3]},up=V(0,1,0);
+  for(var f=0;f<N;f++){
+    var a=f/N*6.283+r()*.4,s=.85+r()*.3,dir=V(Math.cos(a),0,Math.sin(a)),B=V(-Math.sin(a),0,Math.cos(a));
+    var ctrl=[[0,.1],[.3,1.0],[.85,1.75],[1.55,2.0],[2.25,1.65],[2.75,.95]].map(function(c){return V(dir.x*c[0]*s,c[1]*(.85+.15*s),dir.z*c[0]*s)});
+    var curve=new THREE.CatmullRomCurve3(ctrl);
+    fr.add(new THREE.Mesh(new THREE.TubeGeometry(curve,40,.024,6,false),SM));
+    var M=22;
+    for(var m=0;m<M;m++){
+      var t=.16+.82*m/(M-1),P0=curve.getPoint(t),T=curve.getTangent(t);
+      for(var sd=-1;sd<=1;sd+=2){
+        var L=.62*Math.pow(1-t,.65)+.1,S=B.clone().multiplyScalar(sd).addScaledVector(T,.3).add(V(0,-.18,0)).normalize();
+        var Nn=new THREE.Vector3().crossVectors(S,T).normalize(),T2=new THREE.Vector3().crossVectors(Nn,S).normalize();
+        var mt=new THREE.Matrix4().makeBasis(S,Nn,T2),q2=new THREE.Quaternion().setFromRotationMatrix(mt),c=P0.clone().addScaledVector(S,L/2);
+        pinM.push(new THREE.Matrix4().compose(c,q2,V(L/2,.02,.065)));
+        if(t<.8){[.35,.65].forEach(function(fr2){soriM.push(new THREE.Matrix4().compose(P0.clone().addScaledVector(S,L*fr2).add(V(0,-.045,0)),new THREE.Quaternion(),V(.03,.03,.03)))})}
+        if(f===0&&m===9&&sd===1){anc.so=[c.x+.1,c.y-.1,c.z]}
+      }
+    }
+    if(f===0)anc.fr=[curve.getPoint(.75).x,curve.getPoint(.75).y+.3,curve.getPoint(.75).z];
+  }
+  P(fr,'fronde');root.add(fr);
+  var gp=new THREE.SphereGeometry(1,8,6),pim=new THREE.InstancedMesh(gp,PM,pinM.length);pinM.forEach(function(mm,i){pim.setMatrixAt(i,mm)});pim.frustumCulled=false;P(pim,'fronde');root.add(pim);
+  var som=new THREE.InstancedMesh(new THREE.SphereGeometry(1,8,6),SO,soriM.length);soriM.forEach(function(mm,i){som.setMatrixAt(i,mm)});som.frustumCulled=false;P(som,'sori');root.add(som);
+  // fronde giovani arrotolate
+  var fh=new THREE.Group(),FM=mat(0x9acd5a),ang=[.7,3.9],fa;
+  ang.forEach(function(a){
+    var d2=V(Math.cos(a),0,Math.sin(a)),pts=[],r0=.35;
+    for(var i=0;i<=5;i++)pts.push(V(d2.x*(r0+i*.01),.1+i*.23,d2.z*(r0+i*.01)));
+    var cr=r0+.28,cy=1.25;
+    for(var u=1;u<=40;u++){var k=u/40,ph=Math.PI-k*3*Math.PI,R=.28*(1-.85*k);pts.push(V(d2.x*(cr+R*Math.cos(ph)),cy+R*Math.sin(ph),d2.z*(cr+R*Math.cos(ph))))}
+    var tb=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),70,.035,6,false),FM);fh.add(tb);
+    if(!fa)fa=[d2.x*(cr+.2),cy+.45,d2.z*(cr+.2)];
+  });
+  P(fh,'giovane');root.add(fh);
+  return {root:root,
+    parts:[
+      {id:'fronde',name:'Fronde',text:'Le foglie, grandi e divise in tante foglioline (pinne). Le felci hanno vasi conduttori, per questo possono crescere più alte dei muschi.',a:anc.fr},
+      {id:'sori',name:'Sori',text:'Gruppi di sporangi, di solito sotto le foglie: producono le spore. Le felci si riproducono per spore e non fanno semi.',a:anc.so},
+      {id:'giovane',name:'Fronda giovane',text:'La foglia giovane è arrotolata a pastorale e si distende crescendo.',a:fa},
+      {id:'rizoma',name:'Rizoma e radici',text:'Il rizoma è il fusto sotterraneo o strisciante da cui nascono le foglie e le radici, che ancorano la pianta e assorbono acqua.',a:[1.0,-.25,.6]}],
+    cam:{th:.6,ph:1.15,dist:9.4,ty:1.0},
+    update:function(){}
+  };
+}
+/* ---- gimnosperme ---- */
+function buildConifera(){
+  var root=new THREE.Group(),r=rng(21),crown=new THREE.Group();root.add(crown);
+  var ground=new THREE.Mesh(new THREE.CircleGeometry(3.4,48),mat(0x7fae5c,{transparent:true,opacity:.3,side:THREE.DoubleSide,depthWrite:false}));ground.rotation.x=-Math.PI/2;root.add(ground);
+  var trunk=P(new THREE.Mesh(new THREE.CylinderGeometry(.2,.34,3.2,14),mat(0x6b4a2f)),'tronco');trunk.position.y=1.6;root.add(trunk);
+  var cm=mat(0x2f6b3a,{flatShading:true}),tiers=[];
+  for(var i=0;i<7;i++){var rad=1.75-.21*i,base=1.0+i*.62;var c=new THREE.Mesh(new THREE.ConeGeometry(rad,1.4,9,1),cm);c.position.y=base+.7;c.rotation.y=i*.6;crown.add(c);tiers.push({rad:rad,base:base})}
+  crown.children.slice().forEach(function(c){P(c,'chioma')});
+  var pts=[];for(var k=0;k<=12;k++){var t=k/12,z=(k%2?1:-1)*.1;pts.push(new THREE.Vector2(k===12?0:.17*Math.sin(Math.PI*Math.pow(t,.75))*(1+z),-t*.58))}
+  var lg=new THREE.LatheGeometry(pts,10),sm=mat(0x8b5a2b),cones=new THREE.Group(),anc=[1.2,1.8,0];
+  for(var j=0;j<9;j++){
+    var ti=tiers[1+Math.floor(r()*5)],a=r()*6.283,m=new THREE.Mesh(lg,sm);
+    m.position.set(Math.cos(a)*ti.rad*.97,ti.base+.04,Math.sin(a)*ti.rad*.97);m.rotation.y=r()*6;cones.add(m);if(j===0)anc=[m.position.x+.2,m.position.y-.3,m.position.z];
+  }
+  P(cones,'coni');crown.add(cones);
+  var wm=mat(0xf3e6c8,{side:THREE.DoubleSide}),sdm=mat(0x5a3a1c),seeds=[];
+  for(var s=0;s<14;s++){var g=new THREE.Group(),sd=new THREE.Mesh(new THREE.SphereGeometry(.04,8,6),sdm);g.add(sd);
+    var w=ellipseWing(.14,.045,wm);w.position.x=.02;g.add(w);P(g,'semi');root.add(g);
+    var a3=r()*6.283,r3=1.4+r()*1.2;seeds.push({g:g,x:Math.cos(a3)*r3,z:Math.sin(a3)*r3,ph:r(),sp:.1+r()*.08})}
+  return {root:root,
+    parts:[
+      {id:'chioma',name:'Chioma e aghi',text:'Le foglie sono aghi o squame, spesso sempreverdi. La forma conica aiuta la neve a scivolare via.',a:[1.1,3.6,.4]},
+      {id:'tronco',name:'Tronco',text:'Fusto legnoso che sostiene la pianta e porta i vasi conduttori: la linfa sale dalle radici alle foglie.',a:[.45,.9,.35]},
+      {id:'coni',name:'Coni',text:'Gli strobili (coni) portano gli organi riproduttivi. I semi stanno sulle squame, scoperti: non c\'è né fiore vero né frutto.',a:anc},
+      {id:'semi',name:'Semi',text:'Semi «nudi»: appoggiati sulle squame del cono, non racchiusi in un frutto. Molti hanno un\'aletta e viaggiano con il vento.',a:[-1.5,.8,.9]}],
+    cam:{th:.5,ph:1.3,dist:12,ty:2.6},
+    update:function(t){crown.rotation.z=.012*Math.sin(t*1.1);
+      seeds.forEach(function(s){var f=(t*s.sp+s.ph)%1;s.g.position.set(s.x+Math.sin(f*8+s.ph*6)*.25,3.4-f*3.35,s.z);s.g.rotation.y=t*3+s.ph*6;s.g.rotation.z=.4*Math.sin(f*10)})}
+  };
+}
+/* ---- angiosperme ---- */
+function buildFiore(){
+  var root=new THREE.Group(),V=function(x,y,z){return new THREE.Vector3(x,y,z)};
+  var ground=new THREE.Mesh(new THREE.CircleGeometry(2.6,40),mat(0x7fae5c,{transparent:true,opacity:.3,side:THREE.DoubleSide,depthWrite:false}));ground.rotation.x=-Math.PI/2;root.add(ground);
+  var stem=P(new THREE.Mesh(new THREE.CylinderGeometry(.06,.085,2.25,12),mat(0x4f9a43)),'fusto');stem.position.y=1.125;root.add(stem);
+  var lm=mat(0x5aa84a,{side:THREE.DoubleSide});
+  for(var i=0;i<3;i++){var g=new THREE.Group();g.position.y=.45+i*.5;g.rotation.y=i*2.1+.3;var lf=new THREE.Mesh(new THREE.SphereGeometry(1,16,10),lm);lf.scale.set(.34,.03,.85);lf.position.z=.55;lf.rotation.x=-.3;g.add(lf);P(g,'foglie');root.add(g)}
+  var pm=mat(0xf06fa8,{side:THREE.DoubleSide});
+  for(var k=0;k<6;k++){var pg=new THREE.Group();pg.position.y=2.28;pg.rotation.y=k*Math.PI/3;var tg=new THREE.Group();tg.rotation.x=-.7;pg.add(tg);
+    var pe=new THREE.Mesh(new THREE.SphereGeometry(1,16,10),pm);pe.scale.set(.42,.04,.85);pe.position.z=.62;tg.add(pe);P(pg,'petali');root.add(pg)}
+  var sm=mat(0x5aa84a);
+  for(var s=0;s<5;s++){var sg=new THREE.Group();sg.position.y=2.2;sg.rotation.y=s*Math.PI*2/5+.3;var tg2=new THREE.Group();tg2.rotation.x=-.25;sg.add(tg2);
+    var sc=new THREE.Mesh(new THREE.ConeGeometry(.12,.7,8),sm);sc.rotation.x=Math.PI/2;sc.position.z=.35;tg2.add(sc);P(sg,'sepali');root.add(sg)}
+  var rc=P(new THREE.Mesh(new THREE.SphereGeometry(.17,12,10),mat(0x5aa84a)),'sepali');rc.position.y=2.22;root.add(rc);
+  var fm=mat(0xe8e0b0),am=mat(0xf2b800);
+  for(var n=0;n<8;n++){var a=n/8*6.283,b=V(Math.cos(a)*.14,2.32,Math.sin(a)*.14),tp=V(Math.cos(a)*.33,3.0,Math.sin(a)*.33);
+    var sg2=new THREE.Group();sg2.add(seg(b,tp,.014,.012,fm,6));var an=new THREE.Mesh(new THREE.SphereGeometry(1,10,8),am);an.scale.set(.06,.1,.06);an.position.copy(tp);sg2.add(an);P(sg2,'stami');root.add(sg2)}
+  var pi=new THREE.Group();
+  var ov=new THREE.Mesh(new THREE.SphereGeometry(.17,14,10),mat(0x7fbf5a));ov.position.y=2.38;pi.add(ov);
+  pi.add(seg(V(0,2.4,0),V(0,3.2,0),.032,.026,mat(0xb9d86a),8));
+  var stg=new THREE.Mesh(new THREE.SphereGeometry(.1,12,10),mat(0xe8e24a));stg.position.y=3.26;pi.add(stg);P(pi,'pistillo');root.add(pi);
+  return {root:root,
+    parts:[
+      {id:'petali',name:'Petali',text:'Insieme formano la corolla. Colori e profumo attirano gli insetti impollinatori.',a:[1.1,2.75,.3]},
+      {id:'sepali',name:'Sepali',text:'Foglioline verdi alla base del fiore: proteggono il bocciolo. Insieme formano il calice.',a:[-.9,2.0,.5]},
+      {id:'stami',name:'Stami',text:'Organi maschili: l\'antera in cima al filamento produce il polline.',a:[.5,3.05,.35]},
+      {id:'pistillo',name:'Pistillo',text:'Organo femminile: lo stigma riceve il polline, l\'ovario alla base racchiude gli ovuli.',a:[-.45,3.3,0]},
+      {id:'foglie',name:'Foglie',text:'Sede della fotosintesi; le nervature contengono i vasi conduttori.',a:[1.0,.95,.5]},
+      {id:'fusto',name:'Fusto',text:'Sostiene il fiore e le foglie; al suo interno i vasi conduttori trasportano acqua e sostanze.',a:[.4,1.7,0]}],
+    cam:{th:.5,ph:1.3,dist:8.4,ty:1.7},
+    update:function(t){root.rotation.z=.01*Math.sin(t*1.2)}
+  };
+}
+function buildFrutto(){
+  var root=new THREE.Group(),r=rng(77);
+  var skin=P(new THREE.Mesh(new THREE.SphereGeometry(1,40,28),mat(0xd9453a,{transparent:true,opacity:.26,depthWrite:false})),'frutto');skin.scale.set(1.2,1.1,1.2);skin.renderOrder=3;root.add(skin);
+  var pulp=P(new THREE.Mesh(new THREE.SphereGeometry(1,32,22),mat(0xf5e6a0,{transparent:true,opacity:.28,depthWrite:false})),'frutto');pulp.scale.set(1.1,1.0,1.1);pulp.renderOrder=2;root.add(pulp);
+  var core=P(new THREE.Mesh(new THREE.SphereGeometry(1,24,16),mat(0xcfe3a0,{transparent:true,opacity:.35,depthWrite:false})),'frutto');core.scale.set(.5,.62,.5);core.renderOrder=1;root.add(core);
+  var sd=mat(0x3a2210);
+  for(var i=0;i<7;i++){var a=i/7*6.283,m=new THREE.Mesh(new THREE.SphereGeometry(1,12,10),sd);m.scale.set(.1,.2,.1);m.position.set(Math.cos(a)*.24,(i%2?.18:-.18),Math.sin(a)*.24);m.rotation.set((r()-.5)*.8,0,(r()-.5)*.8);P(m,'semi');root.add(m)}
+  var st=P(seg(V3(0,1.0,0),V3(.08,1.55,0),.045,.035,mat(0x6b4a2f),8),'frutto');root.add(st);
+  return {root:root,
+    parts:[
+      {id:'frutto',name:'Frutto',text:'Deriva dall\'ovario del fiore dopo la fecondazione: protegge i semi e ne favorisce la dispersione, per esempio quando gli animali lo mangiano.',a:[1.35,.9,.4]},
+      {id:'semi',name:'Semi',text:'Derivano dagli ovuli e sono racchiusi nel frutto: è ciò che distingue le angiosperme dalle gimnosperme.',a:[.35,0,.55]}],
+    cam:{th:.5,ph:1.35,dist:6.2,ty:.4},
+    update:function(t){root.rotation.y=0}
+  };
+}
+function V3(x,y,z){return new THREE.Vector3(x,y,z)}
+/* ---- bivalvi ---- */
+function setSeg(m,a,b){var d=b.clone().sub(a),len=d.length();m.position.copy(a).addScaledVector(d,.5);m.scale.set(1,len,1);m.quaternion.setFromUnitVectors(V3(0,1,0),d.normalize())}
+function buildBivalve(){
+  var root=new THREE.Group(),shM=mat(0xe2b27a,{side:THREE.DoubleSide,roughness:.7});
+  function valve(){var g=new THREE.SphereGeometry(1,48,24,0,Math.PI*2,0,Math.PI/2),p=g.attributes.position;
+    for(var i=0;i<p.count;i++){var x=p.getX(i),z=p.getZ(i),ph=Math.atan2(z,x),f=1+.045*Math.cos(18*ph);p.setX(i,x*f);p.setZ(i,z*f);p.setY(i,p.getY(i)*(1+.03*Math.cos(18*ph)))}
+    g.computeVertexNormals();return g}
+  var low=new THREE.Mesh(valve(),shM);low.scale.set(1.5,.5,1.2);low.rotation.x=Math.PI;root.add(low);P(low,'conchiglia');
+  var pivot=new THREE.Group();pivot.position.set(0,0,-1.15);root.add(pivot);
+  var up=new THREE.Mesh(valve(),shM);up.scale.set(1.5,.5,1.2);up.position.z=1.15;pivot.add(up);P(up,'conchiglia');
+  var hg=new THREE.Mesh(new THREE.BoxGeometry(.9,.09,.07),mat(0xc9a070));hg.position.set(0,0,-1.18);P(hg,'conchiglia');root.add(hg);
+  var man=new THREE.Mesh(new THREE.SphereGeometry(1,28,16),mat(0xe8b4a0));man.scale.set(1.25,.26,.95);man.position.y=-.14;P(man,'mantello');root.add(man);
+  var gm=mat(0xdc8a78);
+  for(var i=0;i<8;i++){var gl=new THREE.Mesh(new THREE.SphereGeometry(1,16,8),gm);gl.scale.set(.9,.2,.025);gl.position.set(0,0,-.65+i*.1);P(gl,'branchie');root.add(gl)}
+  var ft=new THREE.Mesh(new THREE.SphereGeometry(1,20,14),mat(0xf3c8b0));ft.scale.set(.2,.17,.75);ft.position.set(0,-.12,.9);ft.rotation.x=.2;P(ft,'piede');root.add(ft);
+  var mpr=[];for(var mi=0;mi<=14;mi++){var my=-.5+mi/14,e=Math.abs(my*2);mpr.push(new THREE.Vector2(mi===0||mi===14?.001:(.14+.05*Math.pow(e,2.5))*(mi===0||mi===14?0:1),my))}
+  mpr[0]=new THREE.Vector2(.001,-.5);mpr[14]=new THREE.Vector2(.001,.5);
+  var mgeo=new THREE.LatheGeometry(mpr,22),mgp=mgeo.attributes.position;
+  for(var mq=0;mq<mgp.count;mq++){var mx=mgp.getX(mq),mz=mgp.getZ(mq),mf=1+.07*Math.cos(3*Math.atan2(mz,mx))+.04*Math.sin(mgp.getY(mq)*7);mgp.setX(mq,mx*mf*1.15);mgp.setZ(mq,mz*mf*.85)}
+  mgeo.computeVertexNormals();var mcl=[];for(var mc=0;mc<mgp.count;mc++){var sh=.88+.12*Math.sin(16*Math.atan2(mgp.getZ(mc),mgp.getX(mc)));mcl.push(sh,sh,sh)}mgeo.setAttribute('color',new THREE.Float32BufferAttribute(mcl,3));
+  var mus=[[-.7,0xeab59a],[.6,0xe09a82]].map(function(zc){var m=new THREE.Mesh(mgeo,dotC(mat(zc[1],{roughness:.55,vertexColors:true}),'#e0a088'));P(m,'muscoli');root.add(m);return {m:m,z:zc[0]}});
+  return {root:root,
+    parts:[
+      {id:'conchiglia',name:'Conchiglia',text:'Due valve di calcare unite da una cerniera: proteggono il corpo molle. I bivalvi non hanno una testa distinta.',a:[1.55,.9,.5]},
+      {id:'mantello',name:'Mantello',text:'Lembo di tessuto che riveste il corpo e produce la conchiglia.',a:[-1.35,-.1,.7]},
+      {id:'branchie',name:'Branchie',text:'Lamine ricche di vasi: servono per respirare e trattengono le particelle di cibo dall\'acqua, perché i bivalvi sono filtratori.',a:[.95,.1,-.25]},
+      {id:'piede',name:'Piede',text:'Organo muscoloso che esce tra le valve: serve a scavare e ad ancorarsi al fondo.',a:[.35,-.2,1.6]},
+      {id:'muscoli',name:'Muscoli adduttori',text:'Fasci muscolari che chiudono le valve tirandole l\'una verso l\'altra.',a:[0,.45,-.75]}],
+    cam:{th:.6,ph:1.0,dist:6.8,ty:.15},
+    update:function(t){var op=.42+.1*Math.sin(t*.8);pivot.rotation.x=-op;
+      mus.forEach(function(s){var zl=s.z+1.15;setSeg(s.m,V3(0,-.05,s.z),V3(0,zl*Math.sin(op),-1.15+zl*Math.cos(op)))})}
+  };
+}
+/* ---- gasteropodi ---- */
+function buildChiocciola(){
+  var root=new THREE.Group(),sh=new THREE.Group();root.add(sh);
+  var N=130,im=new THREE.InstancedMesh(new THREE.SphereGeometry(1,18,12),mat(0xc8934f),N),d=new THREE.Object3D(),col=new THREE.Color();
+  for(var i=0;i<N;i++){var s=i/(N-1),ph=s*3.4*Math.PI*2,rho=.05+.62*s,Rc=.08+.62*s;
+    d.position.set(Math.cos(ph)*Rc,1.55*(1-s),Math.sin(ph)*Rc);d.scale.set(rho,rho,rho);d.updateMatrix();im.setMatrixAt(i,d.matrix);
+    var k=(Math.floor(i/3)%2)?1:.8;col.setRGB(k,k*.97,k*.9);im.setColorAt(i,col)}
+  im.instanceMatrix.needsUpdate=true;im.instanceColor.needsUpdate=true;im.frustumCulled=false;P(im,'conchiglia');
+  sh.add(im);sh.rotation.y=.94;sh.rotation.x=-.3;sh.position.set(0,.6,-.35);
+  var bm=mat(0xd8c4a0),body=new THREE.Group();root.add(body);var sp=[];
+  for(var j=0;j<30;j++){var z=1.7-3.3*j/29,prof=1;
+    if(z<-.6)prof=Math.max(.12,1-((-.6-z)/1.1)*.95);if(z>1.3)prof=1-.3*((z-1.3)/.4);
+    var m=new THREE.Mesh(new THREE.SphereGeometry(1,14,10),bm),ry=.2*prof;
+    m.scale.set(.36*prof,ry,.2);m.position.set(0,ry*.9+(z>1.2?.14*Math.min(1,(z-1.2)/.5):0),z);P(m,'piede');body.add(m);sp.push({m:m,ry:ry,z:z})}
+  var hd=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),bm);hd.scale.set(.24,.24,.28);hd.position.set(0,.42,1.75);P(hd,'piede');body.add(hd);
+  var tm=mat(0xc2ae88),em=mat(0x15151c),tents=[];
+  [-1,1].forEach(function(s2){
+    var g=new THREE.Group();g.position.set(s2*.1,.6,1.75);g.add(seg(V3(0,0,0),V3(s2*.18,.75,.25),.04,.028,tm,8));var e=new THREE.Mesh(new THREE.SphereGeometry(.07,10,8),em);e.position.set(s2*.18,.78,.25);g.add(e);P(g,'tentacoli');body.add(g);tents.push({g:g,ph:s2});
+    var g2=new THREE.Group();g2.position.set(s2*.14,.38,1.9);g2.add(seg(V3(0,0,0),V3(s2*.08,-.15,.4),.03,.022,tm,8));P(g2,'tentacoli');body.add(g2);tents.push({g:g2,ph:s2*2})});
+  var mo=new THREE.Mesh(new THREE.SphereGeometry(1,10,8),mat(0x3a2a26));mo.scale.set(.1,.05,.04);mo.position.set(0,.3,2.0);P(mo,'radula');body.add(mo);
+  return {root:root,
+    parts:[
+      {id:'conchiglia',name:'Conchiglia',text:'Guscio unico avvolto a spirale, di calcare: protegge gli organi molli, dove la lumaca può ritirarsi.',a:[.55,1.5,-.5]},
+      {id:'piede',name:'Piede e corpo molle',text:'Il piede è una larga suola muscolare: ondulando e lasciando una scia di muco, il gasteropode scivola (gasteropode = «stomaco sul piede»).',a:[.6,.1,-.9]},
+      {id:'tentacoli',name:'Tentacoli',text:'Due paia: quelli superiori, più lunghi, portano gli occhi; quelli inferiori sono tattili e olfattivi.',a:[.4,1.45,2.0]},
+      {id:'radula',name:'Radula',text:'Nastro rigido con file di minuscoli denti, nascosto nella bocca: raschia il cibo, come le foglie.',a:[.35,.1,2.2]}],
+    cam:{th:.95,ph:1.3,dist:7.6,ty:.6},
+    update:function(t){sp.forEach(function(s,i){s.m.scale.y=s.ry*(1+.12*Math.sin(t*3-i*.6))});tents.forEach(function(s){s.g.rotation.x=.1*Math.sin(t*1.7+s.ph*2);s.g.rotation.z=.08*Math.cos(t*1.3+s.ph)})}
+  };
+}
+/* ---- cefalopodi ---- */
+function buildPolpo(){
+  var root=new THREE.Group(),body=new THREE.Group();root.add(body);var cm=mat(0xe0693f),r=rng(8);
+  var man=new THREE.Mesh(new THREE.SphereGeometry(1,32,22),cm);man.scale.set(.72,1.0,.72);man.position.set(0,1.95,-.2);man.rotation.x=-.3;P(man,'mantello');body.add(man);
+  var hd=new THREE.Group(),hs=new THREE.Mesh(new THREE.SphereGeometry(.62,28,20),mat(0xe8774a));hs.position.y=1.1;hd.add(hs);
+  var ew=mat(0xf0e2b0),pu=mat(0x101014);
+  [-1,1].forEach(function(s){var e=new THREE.Mesh(new THREE.SphereGeometry(.2,16,12),ew);e.position.set(s*.52,1.2,.3);hd.add(e);var p=new THREE.Mesh(new THREE.SphereGeometry(.1,12,10),pu);p.position.set(s*.62,1.2,.42);hd.add(p)});
+  P(hd,'testa');body.add(hd);
+  var fn=new THREE.Mesh(new THREE.ConeGeometry(.12,.45,12),mat(0xc8502c));fn.position.set(.0,.95,.62);fn.rotation.x=Math.PI/2+.35;P(fn,'sifone');body.add(fn);
+  var am=mat(0xe0693f),km=mat(0xf8d8cc),arms=[];
+  for(var i=0;i<8;i++){var a=i/8*Math.PI*2,h=new THREE.Group();h.position.set(Math.cos(a)*.38,.78,Math.sin(a)*.38);h.rotation.y=-a;
+    var c=chain(11,.34,.2,.03,am,km,.055);c.root.rotation.z=.65;h.add(c.root);P(h,'bracci');body.add(h);arms.push({c:c,ph:r()*6.28})}
+  return {root:root,
+    parts:[
+      {id:'mantello',name:'Mantello',text:'Sacco muscolare che racchiude gli organi interni (tre cuori, branchie, apparato digerente). Nei polpi la conchiglia manca.',a:[.95,2.5,-.2]},
+      {id:'testa',name:'Testa e occhi',text:'Porta due grandi occhi complessi e la bocca con un becco corneo; il sistema nervoso è tra i più sviluppati degli invertebrati.',a:[1.1,1.35,.5]},
+      {id:'bracci',name:'Braccia',text:'Otto braccia con file di ventose, attorno alla bocca («cefalopodi» = piedi sulla testa). Seppie e calamari ne hanno dieci.',a:[1.45,-.4,.4]},
+      {id:'sifone',name:'Sifone',text:'Tubo da cui esce l\'acqua: espellendola con forza il polpo si sposta a reazione.',a:[-.6,.7,.9]}],
+    cam:{th:.5,ph:1.4,dist:9.2,ty:.7},
+    update:function(t){var s=Math.sin(t*1.6);man.scale.set(.72*(1+.03*s),1.0*(1-.02*s),.72*(1+.03*s));
+      arms.forEach(function(a){a.c.joints.forEach(function(j,q){j.rotation.z=.04+.1*Math.sin(t*1.4+a.ph+q*.5)+.012*q;j.rotation.x=.07*Math.cos(t*1.1+a.ph+q*.4)})})}
+  };
+}
+/* ---- miriapodi ---- */
+function buildMillepiedi(){
+  var root=new THREE.Group(),A=mat(0x4a3426),B=mat(0x7a5a3c),lm=mat(0xb08a5a),legs=[],NS=26;
+  var ground=new THREE.Mesh(new THREE.CircleGeometry(3.6,40),mat(0x7a5a3a,{transparent:true,opacity:.25,side:THREE.DoubleSide,depthWrite:false}));ground.rotation.x=-Math.PI/2;root.add(ground);
+  var segs=new THREE.Group(),lg=new THREE.Group();
+  for(var i=0;i<NS;i++){var z=2.5-i*.2,x=.35*Math.sin(z*.9),m=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),i%2?B:A);m.scale.set(.27,.25,.17);m.position.set(x,.45,z);segs.add(m);
+    if(i>=1){[-1,1].forEach(function(s){[-.05,.05].forEach(function(dz){var g=new THREE.Group();g.position.set(x+s*.2,.4,z+dz);g.userData.s=s;
+      var l=new THREE.Mesh(new THREE.CylinderGeometry(.022,.012,.45,6),lm);l.position.y=-.22;g.add(l);g.rotation.z=s*.35;lg.add(g);legs.push({g:g,i:i,s:s,rz:s*.35})})})}}
+  P(segs,'segmenti');P(lg,'zampe');root.add(segs);root.add(lg);
+  var hz=2.75,hx=.35*Math.sin(hz*.9),hd=new THREE.Group(),hm=mat(0x5a3d2a),hs=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),hm);hs.scale.set(.25,.22,.22);hd.add(hs);
+  var an=mat(0x2c2018);[-1,1].forEach(function(s){hd.add(seg(V3(s*.08,.05,.18),V3(s*.2,.12,.55),.02,.015,an,6));var k=new THREE.Mesh(new THREE.SphereGeometry(.035,8,6),an);k.position.set(s*.2,.12,.55);hd.add(k);var e=new THREE.Mesh(new THREE.SphereGeometry(.04,8,6),mat(0x101014));e.position.set(s*.13,.08,.17);hd.add(e)});
+  hd.position.set(hx,.45,hz);P(hd,'capo');root.add(hd);
+  return {root:root,
+    parts:[
+      {id:'segmenti',name:'Segmenti',text:'Corpo diviso in molti segmenti simili tra loro, rivestiti da un esoscheletro di chitina.',a:[.2,.85,.4]},
+      {id:'zampe',name:'Zampe',text:'Tante zampe articolate: nei millepiedi la maggior parte dei segmenti ne porta due paia, nei centopiedi una sola. Si muovono a onde successive.',a:[.9,.1,-.8]},
+      {id:'capo',name:'Capo e antenne',text:'Sul capo ci sono un paio di antenne e occhi semplici.',a:[hx+.5,.85,hz+.3]}],
+    cam:{th:.9,ph:1.1,dist:9.2,ty:.2},
+    update:function(t){legs.forEach(function(l){l.g.rotation.x=.5*Math.sin(t*6-l.i*.55);l.g.rotation.z=l.rz})}
+  };
+}
+/* ---- crostacei ---- */
+function buildGambero(){
+  var root=new THREE.Group(),cr=mat(0xb5532f),ab=mat(0xc4623a),lg=mat(0xa3472a),ant=mat(0x8a3c22);root.position.z=-.5;
+  var cp=new THREE.Mesh(new THREE.SphereGeometry(1,28,18),cr);cp.scale.set(.5,.45,.95);cp.position.set(0,.55,.55);P(cp,'carapace');root.add(cp);
+  var ro=new THREE.Mesh(new THREE.ConeGeometry(.08,.55,8),cr);ro.rotation.x=Math.PI/2;ro.position.set(0,.62,1.7);P(ro,'carapace');root.add(ro);
+  var em=mat(0x15151c);[-1,1].forEach(function(s){var g=new THREE.Group();g.add(seg(V3(s*.18,.8,1.25),V3(s*.3,1.0,1.5),.04,.04,cr,6));var e=new THREE.Mesh(new THREE.SphereGeometry(.075,10,8),em);e.position.set(s*.3,1.02,1.5);g.add(e);P(g,'carapace');root.add(g)});
+  var abg=new THREE.Group(),pl=[];
+  for(var i=0;i<6;i++){var m=new THREE.Mesh(new THREE.SphereGeometry(1,18,12),ab);m.scale.set(.46-.03*i,.36,.2);m.position.set(0,.52-.03*i,-.25-i*.3);abg.add(m);
+    [-1,1].forEach(function(s){if(i<5){var p=new THREE.Mesh(new THREE.SphereGeometry(1,8,6),mat(0xd8845a));p.scale.set(.05,.2,.08);var pg=new THREE.Group();pg.position.set(s*.25,.3-.03*i,-.25-i*.3);p.position.y=-.12;pg.add(p);abg.add(pg);pl.push({g:pg,s:s,i:i})}})}
+  P(abg,'addome');root.add(abg);
+  var tf=new THREE.Group(),tm=mat(0xb5532f,{side:THREE.DoubleSide});
+  [[0,0,.3],[-.3,-.45,.34],[.3,.45,.34],[-.5,-.9,.3],[.5,.9,.3]].forEach(function(u){var f=new THREE.Mesh(new THREE.SphereGeometry(1,14,8),tm);f.scale.set(.18,.035,u[2]);f.position.set(u[0]*.65,.3,-2.3-Math.abs(u[0])*.15);f.rotation.y=u[1]*.5;tf.add(f)});
+  P(tf,'coda');root.add(tf);
+  var antg=new THREE.Group(),chs=[];
+  [[-1,.45,9,.38,.022],[1,.45,9,.38,.022],[-1,.2,5,.2,.02],[1,.2,5,.2,.02]].forEach(function(c){
+    var h=new THREE.Group();h.position.set(c[0]*.12,.72,1.55);h.rotation.y=c[0]*c[1];var ch=chain(c[2],c[3],c[4],.008,ant);ch.root.rotation.x=-1.8;h.add(ch.root);antg.add(h);chs.push({ch:ch,s:c[0]})});
+  P(antg,'antenne');root.add(antg);
+  var lgg=new THREE.Group();
+  [-1,1].forEach(function(s){
+    [.95,.7,.45,.2].forEach(function(z,k){var p0=V3(s*.3,.3,z),p1=V3(s*.9,.55,z+.05),p2=V3(s*1.2,.02,z+.22);lgg.add(seg(p0,p1,.04,.03,lg,6));lgg.add(seg(p1,p2,.03,.016,lg,6));var j=new THREE.Mesh(new THREE.SphereGeometry(.04,8,6),lg);j.position.copy(p1);lgg.add(j)});
+    var q0=V3(s*.35,.42,1.45),q1=V3(s*.85,.45,1.95),q2=V3(s*.8,.4,2.4);lgg.add(seg(q0,q1,.07,.06,lg,8));lgg.add(seg(q1,q2,.06,.05,lg,8));
+    var pa=new THREE.Mesh(new THREE.SphereGeometry(1,14,10),lg);pa.scale.set(.2,.1,.36);pa.position.set(s*.8,.4,2.7);lgg.add(pa);
+    [-1,1].forEach(function(f){var fi=new THREE.Mesh(new THREE.SphereGeometry(1,10,8),lg);fi.scale.set(.06,.05,.3);fi.position.set(s*.8+f*.07,.4,3.1);fi.rotation.y=f*s*.15;lgg.add(fi)})});
+  P(lgg,'zampe');root.add(lgg);
+  return {root:root,
+    parts:[
+      {id:'carapace',name:'Cefalotorace',text:'Capo e torace sono fusi e protetti dal carapace, una corazza di chitina rinforzata da calcare. Sotto stanno le branchie; gli occhi sono su peduncoli.',a:[.75,1.05,.6]},
+      {id:'antenne',name:'Antenne',text:'Due paia (antenne e antennule): è un carattere tipico dei crostacei. Servono per tatto e olfatto.',a:[-.95,1.5,2.0]},
+      {id:'addome',name:'Addome',text:'Segmenti articolati che permettono di flettere la coda; sotto portano piccole appendici (pleopodi) usate per nuotare.',a:[.6,.7,-.9]},
+      {id:'coda',name:'Coda',text:'Il ventaglio caudale, formato da telson e uropodi: con una flessione veloce l\'animale scatta all\'indietro.',a:[.7,.45,-2.45]},
+      {id:'zampe',name:'Zampe e chele',text:'Zampe articolate per camminare; la prima coppia termina in grosse chele per afferrare il cibo e difendersi.',a:[1.35,.3,.5]}],
+    cam:{th:.85,ph:1.15,dist:10.6,ty:.35},
+    update:function(t){chs.forEach(function(c,k){c.ch.joints.forEach(function(j,q){j.rotation.z=.1*Math.sin(t*1.6+k+q*.5);j.rotation.x=.08*Math.cos(t*1.3+k+q*.4)})});
+      pl.forEach(function(p){p.g.rotation.z=p.s*(.2+.35*Math.sin(t*5-p.i*.7))})}
+  };
+}
+/* ---- aracnidi ---- */
+function buildRagno(){
+  var root=new THREE.Group(),bd=mat(0x4a3320),lm=mat(0x3a2818),body=new THREE.Group();root.add(body);
+  var pro=new THREE.Mesh(new THREE.SphereGeometry(1,26,18),bd);pro.scale.set(.5,.38,.55);pro.position.set(0,.85,.7);P(pro,'cefalotorace');body.add(pro);
+  var em=mat(0x0a0a0e);[[-.14,.25],[.14,.25],[-.07,.3],[.07,.3]].forEach(function(e){var m=new THREE.Mesh(new THREE.SphereGeometry(.05,8,6),em);m.position.set(e[0],.98,1.15+e[1]*0-.0);m.position.z=1.12+e[1]*.1;P(m,'cefalotorace');body.add(m)});
+  var ab=new THREE.Mesh(new THREE.SphereGeometry(1,30,20),mat(0x6a4a2c));ab.scale.set(.72,.6,.95);ab.position.set(0,.9,-.75);P(ab,'addome');body.add(ab);
+  var sm=mat(0xc9a66b);for(var i=0;i<6;i++){var s=new THREE.Mesh(new THREE.SphereGeometry(1,10,8),sm);s.scale.set(.12,.03,.14);var z=-.35-i*.2,y=.9+.55*Math.sqrt(Math.max(0,1-Math.pow((z+.75)/.95,2)));s.position.set(0,y,z);P(s,'addome');body.add(s)}
+  var cm=mat(0x2c2018);[-1,1].forEach(function(s2){var c=seg(V3(s2*.12,.78,1.2),V3(s2*.12,.5,1.4),.07,.045,cm,8);P(c,'cheliceri');body.add(c);var f=new THREE.Mesh(new THREE.ConeGeometry(.04,.2,6),mat(0xd8c8a8));f.position.set(s2*.12,.4,1.42);P(f,'cheliceri');body.add(f);
+    var pd=seg(V3(s2*.3,.8,1.1),V3(s2*.35,.55,1.6),.04,.03,cm,6);P(pd,'cheliceri');body.add(pd)});
+  var lgg=new THREE.Group();
+  [-1,1].forEach(function(s2){[[.95,.9],[.75,.3],[.5,-.3],[.25,-.9]].forEach(function(l){
+    var z=l[0],f=l[1],p0=V3(s2*.35,.85,z),p1=V3(s2*1.1,1.45,z+f*.35),p2=V3(s2*1.9,1.0,z+f*.7),p3=V3(s2*2.3,.0,z+f*.95);
+    lgg.add(seg(p0,p1,.055,.045,lm,6));lgg.add(seg(p1,p2,.045,.035,lm,6));lgg.add(seg(p2,p3,.035,.014,lm,6));
+    [p1,p2].forEach(function(p){var j=new THREE.Mesh(new THREE.SphereGeometry(.05,8,6),lm);j.position.copy(p);lgg.add(j)})})});
+  P(lgg,'zampe');root.add(lgg);
+  var sp=new THREE.Group(),spm=mat(0x8a6a4a);[-1,1].forEach(function(s2){var c=new THREE.Mesh(new THREE.ConeGeometry(.07,.2,8),spm);c.position.set(s2*.1,.75,-1.65);c.rotation.x=-Math.PI/2-.3;sp.add(c)});
+  sp.add(seg(V3(0,.72,-1.72),V3(0,-.2,-1.9),.012,.008,mat(0xffffff),5));P(sp,'filiere');body.add(sp);
+  return {root:root,
+    parts:[
+      {id:'cefalotorace',name:'Cefalotorace',text:'Capo e torace fusi in un unico blocco: porta gli occhi (di solito otto), le zampe e le appendici della bocca. Gli aracnidi non hanno antenne.',a:[.75,1.3,1.0]},
+      {id:'addome',name:'Addome',text:'Parte posteriore, non separata in segmenti visibili: contiene gran parte degli organi digerenti e riproduttivi.',a:[1.0,1.55,-.8]},
+      {id:'zampe',name:'Zampe',text:'Otto zampe, quattro paia, attaccate al cefalotorace.',a:[1.9,1.15,.9]},
+      {id:'cheliceri',name:'Cheliceri',text:'Appendici a uncino accanto alla bocca: nei ragni terminano con le zanne con cui si inietta il veleno.',a:[-.5,.4,1.55]},
+      {id:'filiere',name:'Filiere',text:'Piccoli organi all\'estremità dell\'addome: producono la seta, con cui il ragno fabbrica fili e ragnatele.',a:[-.7,.5,-1.8]}],
+    cam:{th:.7,ph:1.15,dist:8.8,ty:.7},
+    update:function(t){body.position.y=.03*Math.sin(t*2);ab.rotation.x=.03*Math.sin(t*1.5)}
+  };
+}
+/* ===== vertebrati: helper ===== */
+function E(m,sx,sy,sz,x,y,z,sg){var o=new THREE.Mesh(new THREE.SphereGeometry(1,sg||20,sg?Math.round(sg*.7):14),m);o.scale.set(sx,sy,sz);o.position.set(x,y,z);return o}
+function fishBodyGeo(L,Rm,pw,sx,top,bot){
+  var pts=[];for(var k=0;k<=36;k++){var s=k/36,r=Rm*Math.pow(Math.max(0,Math.sin(Math.PI*Math.pow(s,pw))),.9);pts.push(new THREE.Vector2((k===0||k===36)?0:Math.max(r,.02),-L/2+L*s))}
+  var g=new THREE.LatheGeometry(pts,36);g.rotateX(Math.PI/2);g.scale(sx,1,1);
+  var pos=g.attributes.position,cols=[],ct=new THREE.Color(top),cb=new THREE.Color(bot),c=new THREE.Color();
+  for(var i=0;i<pos.count;i++){var y=pos.getY(i)/Rm,t=Math.min(1,Math.max(0,(.25-y)/.6));t=t*t*(3-2*t);c.copy(ct).lerp(cb,t);cols.push(c.r,c.g,c.b)}
+  g.setAttribute('color',new THREE.Float32BufferAttribute(cols,3));return g}
+function fishR(L,Rm,pw,sx,z){var s=Math.min(1,Math.max(0,(z+L/2)/L));return Rm*sx*Math.pow(Math.max(0,Math.sin(Math.PI*Math.pow(s,pw))),.9)}
+function finGeo(pts,depth){var d=depth||.04,sh=new THREE.Shape();pts.forEach(function(p,i){i?sh.lineTo(p[0],p[1]):sh.moveTo(p[0],p[1])});sh.closePath();
+  var g=new THREE.ExtrudeGeometry(sh,{depth:d,bevelEnabled:false});g.translate(0,0,-d/2);g.rotateY(-Math.PI/2);return g}
+function hFinGeo(pts,depth){var d=depth||.04,sh=new THREE.Shape();pts.forEach(function(p,i){i?sh.lineTo(p[0],p[1]):sh.moveTo(p[0],p[1])});sh.closePath();
+  var g=new THREE.ExtrudeGeometry(sh,{depth:d,bevelEnabled:false});g.translate(0,0,-d/2);g.rotateX(Math.PI/2);return g}
+function scaleTex(rep){var c=document.createElement('canvas');c.width=c.height=128;var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,128,128);x.strokeStyle='rgba(0,0,0,.25)';x.lineWidth=3;
+  for(var j=0;j<5;j++)for(var i=-1;i<5;i++){x.beginPath();x.arc(i*32+(j%2?16:0),j*26,16,0,Math.PI,false);x.stroke()}
+  var t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep[0],rep[1]);return t}
+function fan(c,tips,m){var pos=[];for(var i=0;i<tips.length-1;i++){[c,tips[i],tips[i+1]].forEach(function(p){pos.push(p.x,p.y,p.z)})}
+  var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();return new THREE.Mesh(g,m)}
+function dotC(m,hex){m.userData.dot=hex;return m}
+function ring(R,tube,arc,m,rx,ry,rz,px,py,pz){var t=new THREE.Mesh(new THREE.TorusGeometry(R,tube,8,24,arc),m);t.rotation.set(rx||0,ry||0,rz||0);t.position.set(px||0,py||0,pz||0);return t}
+
+/* ---- pesci cartilaginei ---- */
+function buildSqualo(skel){
+  var root=new THREE.Group(),L=4.2,Rm=.55,pw=1.5,sx=.85,tail=new THREE.Group();
+  var bm=dotC(mat(0xffffff,{vertexColors:true,roughness:.5}),'#6c7c8a');
+  if(skel){bm.transparent=true;bm.opacity=.16;bm.depthWrite=false}
+  var body=new THREE.Mesh(fishBodyGeo(L,Rm,pw,sx,0x6c7c8a,0xe8eef2),bm);root.add(body);
+  var em=mat(0x15151c);[-1,1].forEach(function(s){var e=E(em,.07,.07,.07,s*.3,.12,1.45);root.add(e)});
+  var fm=mat(0x65788a,{side:THREE.DoubleSide}),fg=new THREE.Group();
+  var d1=new THREE.Mesh(finGeo([[.5,0],[0,.95],[-.2,.45],[-.55,0]]),fm);d1.position.set(0,.46,.3);fg.add(d1);
+  var d2=new THREE.Mesh(finGeo([[.2,0],[-.05,.35],[-.3,0]]),fm);d2.position.set(0,.4,-1.0);fg.add(d2);
+  var pg=hFinGeo([[0,.4],[1.1,-.6],[.5,-.6],[0,-.3]]);
+  [-1,1].forEach(function(s){var p=new THREE.Mesh(pg,fm);p.position.set(s*.38,-.25,.65);p.rotation.z=-s*.25;p.scale.x=s;fg.add(p);
+    var pv=new THREE.Mesh(hFinGeo([[0,.2],[.55,-.3],[0,-.25]]),fm);pv.position.set(s*.28,-.38,-.8);pv.scale.x=s;fg.add(pv)});
+  var tg=finGeo([[0,.12],[-.7,1.25],[-.45,.1],[-.7,-.55],[0,-.1]]);tail.position.set(0,0,-1.95);tail.add(new THREE.Mesh(tg,fm));
+  var gm=mat(0x25303a),gl=new THREE.Group();
+  for(var i=0;i<5;i++){var z=.95+i*.1,x=fishR(L,Rm,pw,sx,z);[-1,1].forEach(function(s){var b=new THREE.Mesh(new THREE.BoxGeometry(.014,.3,.03),gm);b.position.set(s*(x+.003),.05,z);gl.add(b)})}
+  var tm=mat(0xf4f0e0),tt=new THREE.Group(),mp=[];
+  for(var j=0;j<=14;j++){var u=j/14,zt=1.5+.14*(1-Math.pow(2*u-1,2)),Rx=fishR(L,Rm,pw,sx,zt),Ry=Rx/sx,xx=(2*u-1)*Math.min(.22,Rx*.75),yy=-Ry*Math.sqrt(Math.max(0,1-Math.pow(xx/Rx,2)));
+    var c=new THREE.Mesh(new THREE.ConeGeometry(.034,.17,6),tm);c.rotation.x=Math.PI;c.position.set(xx,yy-.02,zt);tt.add(c);mp.push(new THREE.Vector3(xx,yy+.005,zt))}
+  tt.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(mp),12,.012,5,false),gm));
+  root.add(tail);
+  if(!skel){P(fg,'pinne');P(tail,'coda');P(gl,'fessure');P(tt,'denti');root.add(fg);root.add(gl);root.add(tt)}
+  else{root.add(fg);root.add(gl);root.add(tt);
+    var bn=mat(0xdbe6f2,{roughness:.5}),sk=new THREE.Group(),vm=new THREE.CylinderGeometry(.075,.075,.085,10);
+    for(var v=0;v<36;v++){var vt=new THREE.Mesh(vm,bn);vt.rotation.x=Math.PI/2;vt.position.set(0,.0,-1.95+v*.09);sk.add(vt)}
+    for(var w=0;w<8;w++){var vt2=new THREE.Mesh(vm,bn);vt2.position.set(0,.1+w*.14,-w*.09);vt2.rotation.x=Math.PI/2-.35;tail.add(vt2)}
+    P(sk,'colonna');root.add(sk);P(tail.children[tail.children.length-1],'colonna');
+    var cr=new THREE.Group();cr.add(E(bn,.28,.2,.5,0,.05,1.5));var ro=new THREE.Mesh(new THREE.ConeGeometry(.12,.5,10),bn);ro.rotation.x=Math.PI/2;ro.position.set(0,.02,1.95);cr.add(ro);
+    cr.add(ring(.24,.035,Math.PI,bn,Math.PI/2,0,0,0,-.17,1.5));cr.add(ring(.22,.035,Math.PI,bn,Math.PI/2,0,0,0,-.3,1.48));P(cr,'cranio');root.add(cr);
+    var ga=new THREE.Group();for(var a=0;a<5;a++){var r2=ring(.27,.022,Math.PI*2,bn,0,0,0,0,-.02,.92+a*.1);r2.scale.x=.8;ga.add(r2)}P(ga,'archi');root.add(ga)}
+  return {root:root,
+    parts:skel?[
+      {id:'colonna',name:'Colonna vertebrale',text:'Serie di vertebre di cartilagine che prosegue nel lobo superiore della coda: per questo la coda è asimmetrica.',a:[.3,.2,-.6]},
+      {id:'cranio',name:'Cranio e mascelle',text:'Cranio e mascelle sono di cartilagine, non di osso. Le mascelle sono mobili e sostengono i denti.',a:[.55,.3,1.7]},
+      {id:'archi',name:'Archi branchiali',text:'Archi di cartilagine che sostengono le branchie, collocate in fessure separate.',a:[.6,.4,1.1]}]:
+     [{id:'pinne',name:'Pinne',text:'Pinne dorsali, pettorali e pelviche: stabilizzano e dirigono il nuoto. Le pettorali sono larghe e rigide e fanno da ali.',a:[.5,.95,.4]},
+      {id:'coda',name:'Coda',text:'Coda asimmetrica (eterocerca): il lobo superiore, sostenuto dalla colonna vertebrale, è più lungo di quello inferiore.',a:[.5,1.1,-2.45]},
+      {id:'fessure',name:'Fessure branchiali',text:'Cinque (o più) aperture sul fianco, scoperte: non esiste l\'opercolo che copre le branchie dei pesci ossei.',a:[.7,.4,1.2]},
+      {id:'denti',name:'Bocca e denti',text:'Bocca sotto il muso, con denti disposti in più file e sostituiti di continuo.',a:[.5,-.5,1.9]}],
+    cam:{th:.9,ph:1.3,dist:8.2,ty:.1},
+    update:function(t){tail.rotation.y=.28*Math.sin(t*3);root.position.y=.05*Math.sin(t*1.2)}
+  };
+}
+/* ---- pesci ossei ---- */
+function buildPesceOsseo(inner){
+  var root=new THREE.Group(),L=3.8,Rm=.9,pw=1.55,sx=.5,tail=new THREE.Group();
+  var bm=dotC(mat(0xffffff,{vertexColors:true,roughness:.4,map:scaleTex([12,5])}),'#5a7d5a');
+  if(inner){bm.transparent=true;bm.opacity=.16;bm.depthWrite=false;bm.map=null}
+  var body=new THREE.Mesh(fishBodyGeo(L,Rm,pw,sx,0x5a7d5a,0xe6d9a8),bm);if(!inner)P(body,'squame');root.add(body);
+  var fm=mat(0x7ea078,{side:THREE.DoubleSide,transparent:true,opacity:.9}),fg=new THREE.Group();
+  var dd=new THREE.Mesh(finGeo([[.7,0],[.45,.55],[0,.65],[-.5,.45],[-.7,0]]),fm);dd.position.set(0,.78,.1);fg.add(dd);
+  var an=new THREE.Mesh(finGeo([[.35,0],[0,-.4],[-.45,0]]),fm);an.position.set(0,-.7,-.8);fg.add(an);
+  var pg=hFinGeo([[0,.3],[.65,-.25],[.4,-.55],[0,-.25]]);
+  [-1,1].forEach(function(s){var p=new THREE.Mesh(pg,fm);p.position.set(s*.4,-.2,.95);p.rotation.z=-s*.3;p.scale.x=s;fg.add(p);
+    var pv=new THREE.Mesh(hFinGeo([[0,.25],[.4,-.3],[0,-.25]]),fm);pv.position.set(s*.25,-.62,.35);pv.scale.x=s;fg.add(pv)});
+  tail.position.set(0,0,-1.85);tail.add(new THREE.Mesh(finGeo([[0,.14],[-.95,.95],[-.6,0],[-.95,-.95],[0,-.14]]),fm));
+  var eyem=mat(0x15151c),rg=mat(0xd8dde0),eg=new THREE.Group();
+  [-1,1].forEach(function(s){eg.add(E(rg,.13,.13,.13,s*.2,.2,1.5));eg.add(E(eyem,.08,.08,.08,s*.27,.21,1.52))});
+  root.add(eg);
+  var oc=new THREE.Group(),om=mat(0xa6c4a0,{roughness:.3,metalness:.08,side:THREE.DoubleSide}),rimM=mat(0x5f7f5c);
+  (function(){var zF=1.42,zR=.95,nu=14,nv=20,phc=.1,hh=.95;
+    function pt(s,iu,iv,ex){var z=zF-(zF-zR)*iu/nu,fr=(zF-z)/(zF-zR),ext=Math.sqrt(Math.max(0,1-fr*fr)),u=2*iv/nv-1,ph=phc+ext*hh*u,Rx=fishR(L,Rm,pw,sx,z),Ry=Rx/sx,lift=(ex||0)+.03*(1-Math.pow(Math.abs(u),3))*Math.min(1,fr*5+.15);
+      return V3(s*(Rx+lift)*Math.cos(ph),(Ry+lift)*Math.sin(ph),z)}
+    [-1,1].forEach(function(s){var pos=[],idx=[];for(var iu=0;iu<=nu;iu++)for(var iv=0;iv<=nv;iv++){var p=pt(s,iu,iv);pos.push(p.x,p.y,p.z)}
+      for(var a=0;a<nu;a++)for(var b=0;b<nv;b++){var i0=a*(nv+1)+b,i1=i0+1,i2=i0+nv+1,i3=i2+1;idx.push(i0,i2,i1,i1,i2,i3)}
+      var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();oc.add(new THREE.Mesh(g,om));
+      var pr=[];for(var v=0;v<=nv;v++)pr.push(pt(s,0,v,.004));for(var w=1;w<=nu;w++)pr.push(pt(s,w,nv,.004));for(var y=nv-1;y>=0;y--)pr.push(pt(s,nu,y,.004));for(var w2=nu-1;w2>=1;w2--)pr.push(pt(s,w2,0,.004));
+      oc.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pr),60,.011,5,false),rimM))})})();
+  var ll=new THREE.Group(),lm=mat(0x2c3b2c);
+  [-1,1].forEach(function(s){var ps=[];for(var z=-1.3;z<=1.2;z+=.25)ps.push(new THREE.Vector3(s*(fishR(L,Rm,pw,sx,z)+.004),.1-(z<-.5?.0:0),z));ll.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(ps),20,.012,5,false),lm))});
+  root.add(tail);
+  if(!inner){P(fg,'pinne');P(tail,'pinne');P(oc,'opercolo');P(ll,'linea');root.add(fg);root.add(oc);root.add(ll)}
+  else{root.add(fg);
+    var bn=mat(0xf0e8d0),sk=new THREE.Group(),vm=new THREE.CylinderGeometry(.06,.06,.075,8);
+    for(var v=0;v<28;v++){var z=-1.7+v*.1,vt=new THREE.Mesh(vm,bn);vt.rotation.x=Math.PI/2;vt.position.set(0,.06,z);sk.add(vt);
+      sk.add(seg(V3(0,.1,z),V3(0,.45*(1-Math.abs(z)/2.4)+.1,z-.08),.014,.008,bn,5));
+      if(z>-.5&&z<1.0)[-1,1].forEach(function(s){sk.add(seg(V3(0,.0,z),V3(s*.3,-.42*(1-Math.abs(z-.3)/1.3),z),.014,.01,bn,5))})}
+    sk.add(E(bn,.2,.2,.45,0,.12,1.45));P(sk,'scheletro');root.add(sk);
+    var vb=P(E(mat(0xb8e0f4,{transparent:true,opacity:.6,roughness:.2}),.19,.2,.8,0,.0,.0),'vescica');root.add(vb);
+    var gb=new THREE.Group(),gr=mat(0xd24a4a);[-1,1].forEach(function(s){for(var i=0;i<4;i++)gb.add(E(gr,.015,.3,.08,s*.22,.0,1.0+i*.1))});P(gb,'branchie');root.add(gb)}
+  return {root:root,
+    parts:inner?[
+      {id:'scheletro',name:'Scheletro osseo',text:'Cranio, colonna vertebrale, costole e spine sono di tessuto osseo: più rigido della cartilagine.',a:[.5,.55,-.5]},
+      {id:'vescica',name:'Vescica natatoria',text:'Sacca piena di gas che regola il galleggiamento: il pesce può restare a una certa profondità senza consumare energia.',a:[.45,-.35,.3]},
+      {id:'branchie',name:'Branchie',text:'Filamenti rossi ricchi di vasi sanguigni: scambiano gas con l\'acqua. Sono protette dall\'opercolo.',a:[.6,-.1,1.15]}]:
+     [{id:'squame',name:'Squame',text:'Placche sottili e sovrapposte come tegole, ricoperte di muco: proteggono la pelle e riducono l\'attrito con l\'acqua.',a:[.45,.3,-.6]},
+      {id:'opercolo',name:'Opercolo',text:'Placca ossea che copre le branchie: aprendosi e chiudendosi aiuta a far passare l\'acqua.',a:[.55,.55,1.2]},
+      {id:'pinne',name:'Pinne',text:'Pinne dorsale, anale, pettorali, pelviche e caudale, sostenute da raggi ossei. La caudale è simmetrica.',a:[.2,1.1,.1]},
+      {id:'linea',name:'Linea laterale',text:'Fila di organi di senso lungo il fianco: percepisce vibrazioni e movimenti dell\'acqua.',a:[.5,.0,-.8]}],
+    cam:{th:.9,ph:1.35,dist:9.2,ty:.0},
+    update:function(t){tail.rotation.y=.25*Math.sin(t*3);root.position.y=.05*Math.sin(t*1.2)}
+  };
+}
+/* ---- anfibi ---- */
+function buildRana(){
+  var root=new THREE.Group(),sk=mat(0x5ea04a,{roughness:.3}),bl=mat(0xd8e0a0,{roughness:.35}),dk=mat(0x3d6a30,{roughness:.4});
+  var wt=new THREE.Mesh(new THREE.CircleGeometry(3.6,40),mat(0x7ab8e0,{transparent:true,opacity:.28,side:THREE.DoubleSide,depthWrite:false}));wt.rotation.x=-Math.PI/2;wt.position.y=-.04;root.add(wt);
+  var pad=new THREE.Mesh(new THREE.CylinderGeometry(2.2,2.2,.06,40),mat(0x3f8a3a));pad.position.y=.0;root.add(pad);
+  var skin=new THREE.Group(),r=rng(9);
+  var body=E(sk,1.0,.62,1.3,0,.7,0);skin.add(body);skin.add(E(sk,.95,.45,.75,0,.82,1.15));
+  var th=E(bl,.55,.28,.5,0,.55,1.2);skin.add(th);skin.add(E(bl,.85,.3,1.1,0,.42,.05));
+  for(var i=0;i<14;i++){var a=r()*6.283,f=.2+r()*.8,n=V3(Math.sin(f)*Math.cos(a),Math.cos(f),Math.sin(f)*Math.sin(a)).normalize();
+    var sp=E(dk,.13,.04,.16,n.x*1.01,.7+.62*n.y*1.01,n.z*1.3*1.01);sp.quaternion.setFromUnitVectors(V3(0,1,0),V3(n.x,n.y*1.6,n.z).normalize());skin.add(sp)}
+  P(skin,'pelle');root.add(skin);
+  var ey=new THREE.Group(),io=mat(0xd4a64a),pu=mat(0x0a0a0e);
+  [-1,1].forEach(function(s){ey.add(E(sk,.24,.24,.24,s*.45,1.08,1.38));ey.add(E(io,.16,.16,.16,s*.53,1.12,1.5));ey.add(E(pu,.12,.05,.035,s*.6,1.13,1.63))});
+  P(ey,'occhi');root.add(ey);
+  var tp=new THREE.Group();[-1,1].forEach(function(s){var d=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.03,16),mat(0x8ab87a));d.rotation.z=Math.PI/2;d.position.set(s*.86,.86,.85);tp.add(d)});P(tp,'timpano');root.add(tp);
+  var nm=mat(0x1a2a14);[-1,1].forEach(function(s){root.add(E(nm,.03,.03,.03,s*.14,.97,1.82))});
+  var hl=new THREE.Group(),legm=mat(0x5ea04a,{roughness:.3}),wb=mat(0x8fc27a,{side:THREE.DoubleSide,transparent:true,opacity:.75});
+  [-1,1].forEach(function(s){
+    var hip=V3(s*.75,.65,-.55),kn=V3(s*1.35,.6,.45),an=V3(s*1.0,.12,-.5);
+    hl.add(seg(hip,kn,.22,.17,legm,10));hl.add(seg(kn,an,.17,.1,legm,10));var kj=E(legm,.18,.18,.18,kn.x,kn.y,kn.z);hl.add(kj);
+    var tips=[];for(var j=-2;j<=2;j++){var tp2=V3(s*(1.0+j*.2),.05,.55-Math.abs(j)*.08);tips.push(tp2);hl.add(seg(an,tp2,.045,.03,legm,6))}
+    hl.add(fan(an,tips,wb))});
+  P(hl,'post');root.add(hl);
+  var fl=new THREE.Group();
+  [-1,1].forEach(function(s){var sh=V3(s*.65,.5,.7),el=V3(s*.85,.25,.55),wr=V3(s*.7,.06,1.1);fl.add(seg(sh,el,.12,.1,legm,8));fl.add(seg(el,wr,.1,.07,legm,8));
+    for(var j=-1.5;j<=1.5;j++)fl.add(seg(wr,V3(wr.x+j*.07,.03,1.28),.03,.022,legm,6))});
+  P(fl,'ant');root.add(fl);
+  return {root:root,
+    parts:[
+      {id:'pelle',name:'Pelle',text:'Liscia, umida e permeabile, ricca di ghiandole: l\'anfibio respira anche attraverso la pelle, che deve restare umida. Non ha squame né peli.',a:[-.9,1.1,-.3]},
+      {id:'occhi',name:'Occhi',text:'Grandi e sporgenti: la rana vede anche con il corpo quasi tutto immerso.',a:[.8,1.55,1.4]},
+      {id:'timpano',name:'Timpano',text:'Membrana tesa dietro l\'occhio che raccoglie i suoni: negli anfibi è sulla superficie del corpo.',a:[1.3,1.1,.85]},
+      {id:'post',name:'Zampe posteriori',text:'Lunghe e muscolose, adatte al salto; le dita sono unite da una membrana che aiuta a nuotare.',a:[1.6,.3,-.3]},
+      {id:'ant',name:'Zampe anteriori',text:'Più corte, sostengono il corpo e attutiscono l\'atterraggio.',a:[1.1,.15,1.2]}],
+    cam:{th:.7,ph:1.2,dist:7.8,ty:.5},
+    update:function(t){th.scale.y=.28*(1+.3*Math.sin(t*3));body.scale.y=.62*(1+.015*Math.sin(t*2))}
+  };
+}
+function buildGirino(){
+  var root=new THREE.Group(),bm=mat(0x3c4a32,{roughness:.4}),tail=new THREE.Group();
+  var wt=new THREE.Mesh(new THREE.CircleGeometry(3.6,40),mat(0x7ab8e0,{transparent:true,opacity:.28,side:THREE.DoubleSide,depthWrite:false}));wt.rotation.x=-Math.PI/2;wt.position.y=-.5;root.add(wt);
+  var body=E(bm,.8,.6,1.0,0,0,.6);P(body,'corpo');root.add(body);
+  var em=mat(0x0a0a0e);[-1,1].forEach(function(s){root.add(E(em,.08,.08,.08,s*.5,.3,1.3))});
+  tail.position.set(0,0,-.2);
+  tail.add(seg(V3(0,0,0),V3(0,0,-2.0),.22,.04,mat(0x4a5a3c),10));
+  var fm=mat(0x7a8a62,{side:THREE.DoubleSide,transparent:true,opacity:.75});tail.add(new THREE.Mesh(finGeo([[0,.45],[-.8,.75],[-1.8,.25],[-2.1,0],[-1.8,-.25],[-.8,-.75],[0,-.45]],.03),fm));
+  P(tail,'coda');root.add(tail);
+  var gm=mat(0xd24a4a),gg=new THREE.Group();[-1,1].forEach(function(s){for(var i=0;i<3;i++)gg.add(E(gm,.03,.2,.07,s*.7,.1-i*.01,1.0+i*.12))});P(gg,'branchie');root.add(gg);
+  var lb=new THREE.Group(),lm=mat(0x4a5a3c);[-1,1].forEach(function(s){lb.add(seg(V3(s*.45,-.2,.0),V3(s*.75,-.4,-.45),.07,.04,lm,6));lb.add(E(lm,.06,.03,.1,s*.78,-.42,-.5))});P(lb,'zampette');root.add(lb);
+  return {root:root,
+    parts:[
+      {id:'coda',name:'Coda',text:'Il girino nuota con la coda; con la metamorfosi la coda scompare.',a:[.2,.9,-2.0]},
+      {id:'branchie',name:'Branchie',text:'Il girino respira con branchie, all\'inizio esterne. Con la metamorfosi si sviluppano i polmoni.',a:[1.1,.4,1.1]},
+      {id:'zampette',name:'Zampe posteriori',text:'Compaiono per prime, come piccoli abbozzi; poi spuntano quelle anteriori.',a:[1.0,-.5,-.2]},
+      {id:'corpo',name:'Corpo',text:'Corpo tondeggiante con la bocca provvista di piccole strutture cornee per raschiare alghe: il girino è soprattutto erbivoro.',a:[-.9,.7,.8]}],
+    cam:{th:.7,ph:1.25,dist:7.2,ty:-.1},
+    update:function(t){tail.rotation.y=.4*Math.sin(t*5)}
+  };
+}
+/* ---- rettili ---- */
+function buildLucertola(){
+  var root=new THREE.Group();
+  var L=5,sp=new THREE.SplineCurve([[0,0],[.1,.04],[.25,.09],[.4,.15],[.5,.24],[.6,.31],[.72,.3],[.8,.22],[.86,.18],[.92,.2],[.97,.15],[1,0]].map(function(a){return new THREE.Vector2(a[0],a[1])}));
+  var pts=sp.getPoints(60).map(function(p){return new THREE.Vector2(Math.max(p.y,0),-L/2+L*p.x)});
+  var g=new THREE.LatheGeometry(pts,28);g.rotateX(Math.PI/2);g.scale(1,.7,1);
+  var pos=g.attributes.position,cols=[],ct=new THREE.Color(0x7a8a3a),cb=new THREE.Color(0xd8d098),c=new THREE.Color();
+  for(var i=0;i<pos.count;i++){var t=Math.min(1,Math.max(0,(-pos.getY(i)/.21+.2)/.8));c.copy(ct).lerp(cb,t*t);cols.push(c.r,c.g,c.b)}
+  g.setAttribute('color',new THREE.Float32BufferAttribute(cols,3));
+  var bm=dotC(mat(0xffffff,{vertexColors:true,roughness:.7,map:scaleTex([22,12])}),'#7a8a3a');
+  var body=new THREE.Mesh(g,bm);body.position.y=.3;P(body,'squame');root.add(body);
+  var tailG=new THREE.Group();tailG.visible=true;
+  var em=mat(0x15151c);[-1,1].forEach(function(s){root.add(E(em,.06,.06,.06,s*.17,.5,2.15))});
+  var lg=new THREE.Group(),lm=mat(0x6a7a30);
+  [[1.35,1],[.1,-1]].forEach(function(pr){var z=pr[0];[-1,1].forEach(function(s){
+    var sh=V3(s*.25,.3,z),el=V3(s*.8,.32,z-.1*pr[1]),ha=V3(s*.9,.04,z+.3*pr[1]);
+    lg.add(seg(sh,el,.09,.07,lm,8));lg.add(seg(el,ha,.07,.05,lm,8));
+    for(var j=-2;j<=2;j++)lg.add(seg(ha,V3(s*(.95+Math.abs(j)*.02)+j*.0,.02,z+.3*pr[1]+j*.07+.18*pr[1]*(1-Math.abs(j)/3)),.025,.012,lm,5))})});
+  P(lg,'zampe');root.add(lg);
+  var tg=new THREE.Group(),rm=mat(0xc03030);
+  var tongue=new THREE.Group();tongue.position.set(0,.28,2.45);tongue.add(seg(V3(0,0,0),V3(0,0,.5),.015,.012,rm,5));tongue.add(seg(V3(0,0,.5),V3(.07,0,.65),.012,.006,rm,5));tongue.add(seg(V3(0,0,.5),V3(-.07,0,.65),.012,.006,rm,5));
+  P(tongue,'lingua');root.add(tongue);
+  return {root:root,
+    parts:[
+      {id:'squame',name:'Pelle a squame',text:'Pelle asciutta con squame di cheratina: limita la perdita d\'acqua e permette di vivere lontano dall\'acqua. Si cambia con la muta.',a:[.5,.65,.8]},
+      {id:'zampe',name:'Zampe',text:'Quattro zampe attaccate ai lati del corpo, con cinque dita artigliate: il corpo resta basso e il passo è strisciante.',a:[1.1,.35,1.35]},
+      {id:'lingua',name:'Lingua',text:'Lingua sottile e forcuta: raccoglie odori dall\'aria e li porta a un organo di senso nel palato.',a:[.5,.5,3.0]},
+      {id:'coda',name:'Coda',text:'Lunga e affusolata; molte lucertole possono staccarla per distrarre un predatore, e poi rigenerarla.',a:[.4,.55,-1.9]}],
+    cam:{th:.8,ph:1.15,dist:9.5,ty:.2},
+    update:function(t){tongue.scale.z=.3+.7*Math.max(0,Math.sin(t*3));tongue.visible=Math.sin(t*3)>-.2}
+  };
+}
+function buildUovo(){
+  var root=new THREE.Group();
+  var sh=P(E(dotC(mat(0xf5f0e6,{transparent:true,opacity:.35,depthWrite:false,roughness:.5}),'#f5f0e6'),1,1.3,1,0,0,0,40),'guscio');sh.renderOrder=3;root.add(sh);
+  var am=P(E(mat(0x9fd0ea,{transparent:true,opacity:.35,depthWrite:false}),.78,.9,.78,0,.12,0,32),'amnios');am.renderOrder=2;root.add(am);
+  var yk=P(E(mat(0xf2c84a),.4,.4,.4,0,-.6,.0,24),'vitello');root.add(yk);
+  var pts=[];for(var i=0;i<=24;i++){var a=Math.PI*1.2*i/24+.4;pts.push(V3(Math.cos(a)*.32,.25+Math.sin(a)*.32+i*.004,.0))}
+  var em=P(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),30,.08,8,false),mat(0xe8a090)),'embrione');root.add(em);
+  var hd=P(E(mat(0xe8a090),.16,.16,.16,pts[0].x,pts[0].y,pts[0].z),'embrione');root.add(hd);var ey=P(E(mat(0x101014),.035,.035,.035,pts[0].x+.1,pts[0].y+.05,.1),'embrione');root.add(ey);
+  [-1,1].forEach(function(s){var b=seg(V3(pts[10].x,pts[10].y,s*.07),V3(pts[10].x+.15*s*0,pts[10].y+.0,s*.28),.035,.02,mat(0xe8a090),6);P(b,'embrione');root.add(b)});
+  return {root:root,
+    parts:[
+      {id:'guscio',name:'Guscio',text:'Rivestimento resistente ma poroso: protegge l\'embrione dall\'essiccamento e lascia passare l\'ossigeno. È ciò che permette di deporre le uova sulla terraferma.',a:[1.1,.9,.2]},
+      {id:'amnios',name:'Amnios',text:'Sacco pieno di liquido che circonda l\'embrione: è come uno stagno privato dentro l\'uovo.',a:[-.9,.6,.2]},
+      {id:'embrione',name:'Embrione',text:'L\'animale in sviluppo: si nutre del tuorlo e nasce già simile all\'adulto, senza metamorfosi.',a:[.55,.7,.2]},
+      {id:'vitello',name:'Tuorlo',text:'Riserva di nutrimento per l\'embrione.',a:[.6,-.65,.2]}],
+    cam:{th:.5,ph:1.4,dist:5.8,ty:0},
+    update:function(t){root.rotation.y=0}
+  };
+}
+/* ---- uccelli ---- */
+function featherMesh(list,m){var im=new THREE.InstancedMesh(new THREE.SphereGeometry(1,10,6),m,list.length),d=new THREE.Matrix4(),q=new THREE.Quaternion(),UP=V3(0,1,0);
+  list.forEach(function(f,i){var dir=f.d.clone().normalize(),n=UP.clone().sub(dir.clone().multiplyScalar(UP.dot(dir))).normalize(),sd=new THREE.Vector3().crossVectors(dir,n);
+    q.setFromRotationMatrix(new THREE.Matrix4().makeBasis(dir,n,sd));d.compose(f.p.clone().addScaledVector(dir,f.len/2),q,V3(f.len/2,.012,f.w||.085));im.setMatrixAt(i,d)});
+  im.frustumCulled=false;return im}
+function buildUccello(skel){
+  var root=new THREE.Group(),wings=[],tailG=new THREE.Group();
+  var bl=mat(0x5a6f8a,{roughness:.8}),bellyM=mat(0xe8ddc0,{roughness:.8}),fl=mat(0x3a4a62,{roughness:.7}),cv=mat(0x5a6f8a,{roughness:.8});
+  if(!skel){
+    var cb=new THREE.Group();cb.add(E(bl,.5,.45,.95,0,0,.2));cb.add(E(bellyM,.46,.3,.85,0,-.18,.25));cb.add(E(bl,.3,.3,.35,0,.28,1.05));
+    [-1,1].forEach(function(s){cb.add(E(mat(0x101014),.05,.05,.05,s*.18,.35,1.22))});P(cb,'corpo');root.add(cb);
+    var bk=new THREE.Mesh(new THREE.ConeGeometry(.09,.4,10),mat(0xf0a030));bk.rotation.x=Math.PI/2;bk.position.set(0,.22,1.5);P(bk,'becco');root.add(bk);
+    var lgs=new THREE.Group(),lm=mat(0xe09a30);[-1,1].forEach(function(s){lgs.add(seg(V3(s*.15,-.35,.1),V3(s*.2,-.65,.35),.03,.025,lm,6));lgs.add(seg(V3(s*.2,-.65,.35),V3(s*.2,-.75,.7),.025,.02,lm,6));for(var j=-1;j<=1;j++)lgs.add(seg(V3(s*.2,-.75,.7),V3(s*.2+j*.07,-.78,.9),.015,.01,lm,5))});
+    P(lgs,'zampe');root.add(lgs);
+    var tl=[];for(var i=0;i<7;i++){var a=(i-3)*.13;tl.push({p:V3(0,0,0),d:V3(Math.sin(a),-.04,-Math.cos(a)),len:1.0-.04*Math.abs(i-3),w:.1})}
+    var tm=featherMesh(tl,fl);P(tm,'coda');tailG.position.set(0,.05,-.7);tailG.add(tm);root.add(tailG);
+  }
+  [-1,1].forEach(function(s){
+    var g=new THREE.Group();g.position.set(s*.4,.2,.3);
+    var wr=V3(s*1.4,.12,-.15),flight=[],cov=[];
+    for(var i=0;i<9;i++){var t=.08+.92*i/8;flight.push({p:V3(wr.x*t,wr.y*t,wr.z*t),d:V3(s*.15,0,-1),len:.8-.06*t,w:.09})}
+    for(var j=0;j<8;j++){var ang=(.15+j*.1)*1.0;flight.push({p:wr.clone(),d:V3(s*Math.cos(ang),0,-Math.sin(ang)),len:1.3-.05*j,w:.085})}
+    for(var k=0;k<10;k++){var t2=k/9;cov.push({p:V3(wr.x*t2,wr.y*t2+.02,wr.z*t2+.05),d:V3(s*.1,0,-1),len:.4,w:.075})}
+    if(!skel){var fm=featherMesh(flight,fl),cm=featherMesh(cov,cv);P(fm,'ali');P(cm,'ali');g.add(fm);g.add(cm);g.add(P(seg(V3(0,0,0),wr,.07,.05,bl,6),'ali'))}
+    else{var bn=mat(0xb9a373),sk=new THREE.Group(),el=V3(s*.8,.2,.0);
+      sk.add(seg(V3(0,0,0),el,.05,.04,bn,6));sk.add(seg(el,wr,.04,.03,bn,6));sk.add(seg(el.clone().add(V3(0,0,-.06)),wr.clone().add(V3(0,0,-.06)),.025,.02,bn,6));
+      sk.add(seg(wr,V3(s*2.0,.0,-.5),.025,.012,bn,6));sk.add(seg(wr,V3(s*1.8,.0,-.2),.02,.01,bn,6));P(sk,'ossa');g.add(sk)}
+    root.add(g);wings.push({g:g,s:s})});
+  if(skel){
+    var bn2=mat(0xb9a373),sk2=new THREE.Group();
+    sk2.add(E(bn2,.22,.2,.3,0,.28,1.05));var bk2=new THREE.Mesh(new THREE.ConeGeometry(.06,.3,8),bn2);bk2.rotation.x=Math.PI/2;bk2.position.set(0,.24,1.45);sk2.add(bk2);
+    for(var v=0;v<9;v++){var tt=v/8;sk2.add(E(bn2,.07,.07,.07,0,.12+(1-tt)*.18+.1*Math.sin(tt*Math.PI)*0,.85-tt*.5))}
+    for(var w=0;w<8;w++)sk2.add(E(bn2,.08,.08,.08,0,.05,.35-w*.12));
+    sk2.add(E(bn2,.02,.12,.15,0,.02,-.65));
+    sk2.add(E(bn2,.25,.08,.3,0,-.05,-.4));
+    [-1,1].forEach(function(s){sk2.add(seg(V3(s*.18,-.1,-.3),V3(s*.22,-.45,.2),.04,.035,bn2,6));sk2.add(seg(V3(s*.22,-.45,.2),V3(s*.2,-.8,-.05),.035,.03,bn2,6));sk2.add(seg(V3(s*.2,-.8,-.05),V3(s*.2,-.9,.25),.03,.02,bn2,6))});
+    var fu=ring(.26,.025,Math.PI,bn2,0,0,Math.PI,0,.1,.65);P(fu,'ossa');root.add(fu);
+    P(sk2,'ossa');root.add(sk2);
+    var kl=new THREE.Group();kl.add(E(bn2,.35,.04,.6,0,-.25,.3));kl.add(E(bn2,.03,.28,.55,0,-.45,.3));P(kl,'carena');root.add(kl);
+    var hb=new THREE.Group(),ou=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,1.4,20,1,true),mat(0xb9a373,{side:THREE.DoubleSide,transparent:true,opacity:.35,depthWrite:false}));ou.rotation.z=Math.PI/2;hb.add(ou);
+    var strm=mat(0xb9a373);for(var q=0;q<16;q++){var xx=-.6+1.2*q/15,a1=q*1.7;hb.add(seg(V3(xx,Math.cos(a1)*.2,Math.sin(a1)*.2),V3(xx+.1,-Math.cos(a1)*.2,-Math.sin(a1)*.2),.012,.012,strm,5))}
+    hb.position.set(0,-1.5,.2);P(hb,'osso');root.add(hb)}
+  return {root:root,
+    parts:skel?[
+      {id:'ossa',name:'Scheletro',text:'Ossa sottili e in parte fuse, per ridurre il peso: l\'arto anteriore è trasformato in ala, il collo è lungo e flessibile.',a:[1.5,.5,-.3]},
+      {id:'carena',name:'Carena dello sterno',text:'Cresta ossea dello sterno a cui si attaccano i potenti muscoli che muovono le ali.',a:[.45,-.65,.3]},
+      {id:'osso',name:'Osso cavo (ingrandito)',text:'Molte ossa degli uccelli sono cave, con piccoli sostegni interni: leggere ma robuste. Spesso sono collegate a sacche d\'aria.',a:[.9,-1.4,.2]}]:
+     [{id:'corpo',name:'Corpo e piumaggio',text:'Le penne che rivestono il corpo (compreso il piumino) trattengono il calore: gli uccelli sono endotermi, cioè mantengono costante la temperatura del corpo.',a:[.5,.55,.5]},
+      {id:'becco',name:'Becco',text:'Struttura cornea senza denti: la forma dipende dal cibo di cui si nutre l\'uccello.',a:[.3,.5,1.7]},
+      {id:'ali',name:'Ali',text:'Arti anteriori trasformati in ali: le penne remiganti, lunghe e rigide, dànno la spinta e la portanza.',a:[2.0,.6,-.2]},
+      {id:'coda',name:'Coda',text:'Le penne timoniere servono da timone e freno durante il volo.',a:[.5,.2,-1.7]},
+      {id:'zampe',name:'Zampe',text:'Zampe coperte di scaglie, con quattro dita artigliate (qui ripiegate in volo).',a:[.5,-.8,.5]}],
+    cam:{th:.6,ph:1.0,dist:9.6,ty:-.2},
+    update:function(t){wings.forEach(function(w){w.g.rotation.z=w.s*(.15+.4*Math.sin(t*3));w.g.rotation.y=-w.s*.05*Math.sin(t*3)});tailG.rotation.x=.05*Math.sin(t*3+1);root.position.y=.12*Math.sin(t*3+2)}
+  };
+}
+/* ---- mammiferi ---- */
+function buildCane(){
+  var root=new THREE.Group(),r=rng(51),fur=mat(0xb87a3e,{roughness:.9}),lt=mat(0xefe0c4,{roughness:.9}),ear=mat(0x8a5a2c,{roughness:.9});
+  var gp=new THREE.Mesh(new THREE.CircleGeometry(3.4,40),mat(0x7fae5c,{transparent:true,opacity:.3,side:THREE.DoubleSide,depthWrite:false}));gp.rotation.x=-Math.PI/2;root.add(gp);
+  var ell=[[.75,.6,1.15,0,1.15,0],[.7,.65,.6,0,1.2,.6],[.45,.4,.5,0,1.75,1.5],[.22,.2,.4,0,1.65,1.95]];
+  var fg=new THREE.Group();ell.forEach(function(e){fg.add(E(fur,e[0],e[1],e[2],e[3],e[4],e[5],26))});fg.add(E(fur,.3,.35,.5,0,1.5,1.05));
+  var legs=[[.38,.9,.62,.4,.45,.66,.4,.05,.72],[.38,.95,-.8,.45,.5,-.95,.4,.05,-.7]];
+  legs.forEach(function(l){[-1,1].forEach(function(s){fg.add(seg(V3(s*l[0],l[1],l[2]),V3(s*l[3],l[4],l[5]),.17,.11,fur,8));fg.add(seg(V3(s*l[3],l[4],l[5]),V3(s*l[6],l[7],l[8]),.11,.08,fur,8));fg.add(E(lt,.1,.07,.15,s*l[6],.05,l[8]+.05))})});
+  var tl=chain(6,.28,.2,.08,fur);tl.root.position.set(0,1.4,-1.1);tl.root.rotation.x=2.0;fg.add(tl.root);
+  P(fg,'pelo');root.add(fg);
+  var NH=9500,hg=new THREE.ConeGeometry(.024,.17,3,1);hg.translate(0,.085,0);
+  var hairs=new THREE.InstancedMesh(hg,mat(0xffffff,{roughness:.95}),NH),d=new THREE.Matrix4(),q=new THREE.Quaternion(),col=new THREE.Color(),n=0,BACK=V3(0,0,-1);
+  function addHair(p,nm,tan,len,belly){var dir=nm.clone().multiplyScalar(.35).addScaledVector(tan,.9).add(V3(0,-.25,0)).normalize();
+    q.setFromUnitVectors(V3(0,1,0),dir);d.compose(p.clone().addScaledVector(nm,-.03),q,V3(1,len,1));hairs.setMatrixAt(n,d);
+    var k=.8+r()*.4,c=belly?[.94,.86,.72]:[.74,.46,.22];if(!belly&&r()<.18)c=[.6,.36,.17];col.setRGB(c[0]*k,c[1]*k,c[2]*k);hairs.setColorAt(n,col);n++}
+  var tgt=[ell[0],ell[1],[.3,.35,.5,0,1.5,1.05]],wts=[1.2,1.0,.45],wsum=2.65;
+  while(n<NH-1){var rw=r()*wsum,ti=rw<wts[0]?0:(rw<wts[0]+wts[1]?1:2),e=tgt[ti],u=V3(r()*2-1,r()*2-1,r()*2-1);if(u.length()>1||u.length()<.1)continue;u.normalize();
+    var nm=V3(u.x/e[0],u.y/e[1],u.z/e[2]).normalize(),p=V3(e[3]+u.x*e[0],e[4]+u.y*e[1],e[5]+u.z*e[2]);
+    var tan=BACK.clone().addScaledVector(nm,-BACK.dot(nm));if(tan.length()<.05)tan=V3(0,-1,0);tan.normalize();
+    addHair(p,nm,tan,.8+r()*.7,nm.y<-.15)}
+  var tailHairs=[];
+  tl.joints.forEach(function(j,ji){var ra=(.2+(.08-.2)*ji/6+.03)*(.95-.1*ji/6),NT=250,tm2=new THREE.InstancedMesh(hg,hairs.material,NT),dm=new THREE.Matrix4(),qq=new THREE.Quaternion(),cc=new THREE.Color();
+    for(var h=0;h<NT;h++){var tt=r(),ang=r()*6.283,pe=V3(Math.cos(ang),0,Math.sin(ang)),base=V3(pe.x*ra,-tt*.28,pe.z*ra),dir=pe.clone().multiplyScalar(.35).add(V3(0,-.9,0)).normalize();
+      qq.setFromUnitVectors(V3(0,1,0),dir);dm.compose(base.addScaledVector(pe,-.03),qq,V3(1,1+r()*.9,1));tm2.setMatrixAt(h,dm);var k=.8+r()*.4,c=r()<.18?[.6,.36,.17]:[.74,.46,.22];cc.setRGB(c[0]*k,c[1]*k,c[2]*k);tm2.setColorAt(h,cc)}
+    tm2.instanceMatrix.needsUpdate=true;tm2.instanceColor.needsUpdate=true;tm2.frustumCulled=false;P(tm2,'pelo');j.add(tm2)});
+  hairs.count=n;hairs.instanceMatrix.needsUpdate=true;hairs.instanceColor.needsUpdate=true;
+  hairs.frustumCulled=false;dotC(hairs.material,'#b87a3e');P(hairs,'pelo');root.add(hairs);
+  var ears=new THREE.Group();[-1,1].forEach(function(s){var c=new THREE.Mesh(new THREE.ConeGeometry(.17,.45,10),ear);c.position.set(s*.27,2.1,1.35);c.rotation.z=-s*.25;c.rotation.x=-.15;ears.add(c)});P(ears,'orecchie');root.add(ears);
+  var ey=mat(0x101014);[-1,1].forEach(function(s){root.add(E(ey,.06,.06,.06,s*.2,1.83,1.82))});root.add(E(mat(0x101014),.08,.06,.08,0,1.7,2.34));
+  var mm=new THREE.Group(),pk=mat(0xe89a9a);for(var i=0;i<4;i++)[-1,1].forEach(function(s){mm.add(E(pk,.05,.04,.05,s*.2,.58,.5-i*.35))});P(mm,'mammelle');root.add(mm);
+  return {root:root,
+    parts:[
+      {id:'pelo',name:'Pelo',text:'Il pelo isola dal freddo: i mammiferi sono endotermi, producono il calore necessario a mantenere costante la temperatura del corpo.',a:[.9,1.5,-.2]},
+      {id:'orecchie',name:'Orecchie',text:'I padiglioni auricolari esterni sono tipici dei mammiferi e convogliano i suoni verso l\'orecchio.',a:[.6,2.35,1.3]},
+      {id:'mammelle',name:'Ghiandole mammarie',text:'Sul ventre della femmina: producono il latte con cui si nutrono i piccoli (da qui il nome «mammiferi»). Ruota il modello per vederle.',a:[.45,.5,.5]}],
+    cam:{th:.8,ph:1.25,dist:8,ty:.6},
+    update:function(t){tl.joints.forEach(function(j,i){j.rotation.z=.12*Math.sin(t*3-i*.6)})}
+  };
+}
+function buildCranio(){
+  var root=new THREE.Group(),bn=mat(0xe6dcc5,{roughness:.6}),tm=mat(0xfaf6ea,{roughness:.35});
+  var up=new THREE.Group();up.add(E(bn,.7,.55,.9,0,.7,-.4,26));up.add(E(bn,.38,.3,.9,0,.45,.75,24));
+  [-1,1].forEach(function(s){up.add(E(mat(0x3a3028),.12,.12,.1,s*.55,.8,.25));var za=ring(.4,.03,Math.PI,bn,0,Math.PI/2,0,s*.62,.55,-.15);up.add(za)});
+  P(up,'cranio');root.add(up);
+  var jw=new THREE.Group();jw.position.set(0,.2,-.2);jw.add(E(bn,.3,.16,.95,0,-.12,.8));
+  P(jw,'mandibola');root.add(jw);
+  var inc=new THREE.Group(),can=new THREE.Group(),pre=new THREE.Group(),mol=new THREE.Group();
+  function row(g,y,flip,jwLocal){[
+      ['i',-.2,1.55,.07,.12],['i',-.1,1.6,.07,.12],['i',0,1.62,.07,.12],['i',.1,1.6,.07,.12],['i',.2,1.55,.07,.12]
+    ].forEach(function(t){var b=new THREE.Mesh(new THREE.BoxGeometry(.09,.13,.06),tm);b.position.set(t[1],y,t[2]+(jwLocal?-.0:0));inc.add(b)});}
+  function teeth(host,y,dir,jl){
+    [-1,1].forEach(function(s){
+      var c=new THREE.Mesh(new THREE.ConeGeometry(.08,.32,8),tm);c.position.set(s*.25,y+dir*.0,1.38+(jl?-.0:0));c.rotation.x=dir<0?Math.PI:0;can.add(c);
+      [1.1,.92,.74].forEach(function(z,i){var p=new THREE.Mesh(new THREE.ConeGeometry(.07,.2,6),tm);p.position.set(s*.27,y,z);p.rotation.x=dir<0?Math.PI:0;pre.add(p)});
+      [.5,.28].forEach(function(z,i){var m=new THREE.Mesh(new THREE.BoxGeometry(.2,.1,.2),tm);m.position.set(s*.28,y,z);mol.add(m)})});
+    for(var k=-2;k<=2;k++){var b=new THREE.Mesh(new THREE.BoxGeometry(.09,.13,.06),tm);b.position.set(k*.09,y,1.62-Math.abs(k)*.03);inc.add(b)}}
+  teeth(up,.18,-1,false);
+  var jin=new THREE.Group(),jc=new THREE.Group(),jp=new THREE.Group(),jm=new THREE.Group();
+  [-1,1].forEach(function(s){
+    var c=new THREE.Mesh(new THREE.ConeGeometry(.07,.28,8),tm);c.position.set(s*.2,.0,1.36);jc.add(c);
+    [1.05,.88,.72].forEach(function(z){var p=new THREE.Mesh(new THREE.ConeGeometry(.06,.18,6),tm);p.position.set(s*.22,-.0,z);jp.add(p)});
+    [.5,.3].forEach(function(z){var m=new THREE.Mesh(new THREE.BoxGeometry(.18,.1,.2),tm);m.position.set(s*.25,-.0,z);jm.add(m)})});
+  for(var k=-2;k<=2;k++){var b=new THREE.Mesh(new THREE.BoxGeometry(.08,.12,.06),tm);b.position.set(k*.08,-.0,1.58-Math.abs(k)*.02);jin.add(b)}
+  jw.add(jin);jw.add(jc);jw.add(jp);jw.add(jm);
+  jin.position.y=.0;
+  [jin,inc].forEach(function(g){P(g,'incisivi')});[jc,can].forEach(function(g){P(g,'canini')});[jp,pre].forEach(function(g){P(g,'premolari')});[jm,mol].forEach(function(g){P(g,'molari')});
+  root.add(inc);root.add(can);root.add(pre);root.add(mol);
+  return {root:root,
+    parts:[
+      {id:'incisivi',name:'Incisivi',text:'Denti anteriori, a scalpello: servono per tagliare.',a:[.3,.4,1.7]},
+      {id:'canini',name:'Canini',text:'Denti appuntiti: servono per afferrare e perforare la preda.',a:[.5,.15,1.5]},
+      {id:'premolari',name:'Premolari',text:'Denti con più punte o creste: tagliano e schiacciano.',a:[.5,.15,.95]},
+      {id:'molari',name:'Molari',text:'Denti posteriori, larghi: triturano il cibo.',a:[.5,.15,.35]},
+      {id:'mandibola',name:'Mandibola',text:'Nei mammiferi la mandibola è formata da un solo osso. I denti sono di forme diverse (incisivi, canini, premolari, molari): è la dentatura «eterodonte».',a:[0,-.35,1.0]},
+      {id:'cranio',name:'Cranio',text:'Cranio con una grande scatola cranica che ospita un encefalo sviluppato.',a:[0,1.4,-.4]}],
+    cam:{th:.9,ph:1.35,dist:6.2,ty:.4},
+    update:function(t){jw.rotation.x=.12+.1*Math.sin(t*1.4)}
+  };
+}
+/* ---- poriferi ---- */
+function buildSpugna(sec){
+  var root=new THREE.Group(),r=rng(11),sp=mat(0xe3a24c,{roughness:.85,side:THREE.DoubleSide}),inM=mat(0xf0c070,{roughness:.8,side:THREE.DoubleSide});
+  var pr=[[0,0],[.45,0],[.8,.5],[1.05,1.3],[1.0,2.1],[.8,2.8],[.7,3.1],[.5,3.1],[.65,2.7],[.8,2.0],[.85,1.3],[.6,.7],[0,.45]].map(function(p){return new THREE.Vector2(p[0],p[1])});
+  var body=new THREE.Mesh(new THREE.LatheGeometry(pr,48,sec?.75:0,sec?Math.PI*2-1.5:Math.PI*2),sec?inM:sp);body.position.y=-1.4;P(body,'parete');root.add(body);
+  var rock=new THREE.Mesh(new THREE.DodecahedronGeometry(1.2,0),mat(0x8a8478,{roughness:1}));rock.scale.set(1.4,.5,1.4);rock.position.y=-1.6;root.add(rock);
+  var osc=new THREE.Mesh(new THREE.TorusGeometry(.6,.07,8,32),mat(0xb06a28));osc.rotation.x=Math.PI/2;osc.position.y=1.72;P(osc,'osculo');root.add(osc);
+  var dk=mat(0x6a3a14);
+  if(!sec){for(var i=0;i<70;i++){var y=.2+r()*2.5,ph=r()*6.28,R=y<.5?.55+y*.5:(y<1.3?.8+(y-.5)*.3:(y<2.1?1.04:(y<2.8?1.0-(y-2.1)*.28:.78)));
+      var d=E(dk,.07,.07,.07,Math.sin(ph)*R*1.0,y-1.4,Math.cos(ph)*R*1.0);P(d,'pori');root.add(d)}}
+  var flow=[];
+  if(sec){
+    var ch=mat(0xd04a2a);
+    for(var j=0;j<46;j++){var y2=.6+r()*2.1,ph2=.75+r()*(Math.PI*2-1.5),R2=.82;var c=new THREE.Group();c.position.set(Math.sin(ph2)*R2,y2-1.4,Math.cos(ph2)*R2);
+      var cb=E(ch,.09,.09,.09,0,0,0);c.add(cb);var cl=new THREE.Mesh(new THREE.ConeGeometry(.07,.16,6,1,true),mat(0xf6e090,{side:THREE.DoubleSide}));cl.position.set(-Math.sin(ph2)*.1,0,-Math.cos(ph2)*.1);cl.rotation.set(Math.cos(ph2)*Math.PI/2,0,-Math.sin(ph2)*Math.PI/2);c.add(cl);P(c,'coanociti');root.add(c)}
+    var sc=mat(0xfff4dc);
+    for(var k=0;k<22;k++){var y3=.5+r()*2.2,ph3=.75+r()*(Math.PI*2-1.5),R3=.95;var a=V3(Math.sin(ph3)*R3,y3-1.4,Math.cos(ph3)*R3),b=a.clone().add(V3((r()-.5)*.3,(r()-.5)*.3,(r()-.5)*.3));var s=seg(a,b,.018,.01,sc,5);P(s,'spicole');root.add(s)}
+    var pm=mat(0x3a8ac0);for(var q=0;q<16;q++){var p=E(pm,.05,.05,.05,0,0,0);root.add(p);flow.push({m:p,u:r(),y:.7+r()*1.8,ph:.8+r()*(Math.PI*2-1.5)})}
+  }
+  return {root:root,
+    parts:sec?[
+      {id:'parete',name:'Parete e spongocele',text:'La parete è attraversata da canali; al centro c\'è la cavità interna (spongocele), che comunica con l\'esterno attraverso l\'osculo.',a:[.9,.4,1.1]},
+      {id:'coanociti',name:'Coanociti',text:'Cellule con un flagello circondato da un collare: il battito dei flagelli crea la corrente d\'acqua e le cellule trattengono le particelle di cibo.',a:[-.4,.3,.9]},
+      {id:'spicole',name:'Spicole',text:'Aghetti calcarei o silicei (oppure fibre di spongina) che sostengono il corpo.',a:[.9,-.9,.4]},
+      {id:'osculo',name:'Osculo',text:'Apertura da cui l\'acqua filtrata esce.',a:[0,1.9,.7]}]:
+     [{id:'parete',name:'Corpo a vaso',text:'Corpo privo di tessuti e organi veri, fissato a un substrato (sono animali sessili).',a:[1.2,.1,.4]},
+      {id:'pori',name:'Pori inalanti',text:'Piccoli fori da cui entra l\'acqua con il cibo: le spugne sono filtratrici, ne filtrano grandi quantità.',a:[-.5,.5,1.1]},
+      {id:'osculo',name:'Osculo',text:'Apertura maggiore da cui l\'acqua esce dopo essere stata filtrata.',a:[0,1.9,.7]}],
+    cam:{th:.6,ph:1.3,dist:9.5,ty:.0},
+    update:function(t){flow.forEach(function(f){var u=(f.u+t*.12)%1;if(u<.4){var k=u/.4;var R=1.35*(1-k)+.0*k;f.m.position.set(Math.sin(f.ph)*R,f.y-1.4,Math.cos(f.ph)*R)}else{var k2=(u-.4)/.6;f.m.position.set(0,(f.y-1.4)+(1.9-f.y+1.4)*k2+.0,0)}})}
+  };
+}
+/* ---- platelminti ---- */
+function buildPlanaria(){
+  var root=new THREE.Group(),sl=[],NS=16,bm=mat(0xc9a27a,{transparent:true,opacity:.85,depthWrite:false}),gm=mat(0x4a2a1a),pk=mat(0xe58a8a);
+  var body=new THREE.Group(),gut=new THREE.Group();
+  for(var i=0;i<NS;i++){var u=i/(NS-1),z=2.4-u*4.8,w=Math.sin(Math.min(1,.18+u*1.05)*Math.PI*.95)*.8+.05;if(u>.8)w*=1-(u-.8)*2.2;
+    var m=E(bm,Math.max(.12,w),.14,.55,0,0,z);body.add(m);sl.push({m:m,z:z,g:null});
+    var g=E(gm,Math.max(.05,w*.18),.06,.2,0,0,z);gut.add(g);sl.push({m:g,z:z});
+    if(u>.12&&u<.85){[-1,1].forEach(function(s){var b=E(gm,.05,.05,.12,s*w*.55,0,z);gut.add(b);sl.push({m:b,z:z,dx:s*w*.55})})}}
+  P(body,'corpo');P(gut,'intestino');root.add(body);root.add(gut);
+  var ph=new THREE.Mesh(new THREE.CylinderGeometry(.14,.2,.9,12,1,true),mat(0xe58a8a,{side:THREE.DoubleSide}));ph.rotation.x=Math.PI/2;ph.position.set(0,-.1,.2);ph.rotation.x=Math.PI/2.4;P(ph,'faringe');root.add(ph);
+  var ey=new THREE.Group();[-1,1].forEach(function(s){ey.add(E(mat(0xffffff),.12,.1,.12,s*.18,.1,2.0));ey.add(E(mat(0x101014),.06,.06,.06,s*.15,.15,2.05))});P(ey,'occhi');root.add(ey);
+  var au=new THREE.Group();[-1,1].forEach(function(s){var c=new THREE.Mesh(new THREE.ConeGeometry(.18,.5,8),bm);c.rotation.set(Math.PI/2,0,-s*Math.PI/2.4);c.position.set(s*.5,0,1.9);au.add(c)});P(au,'auricole');root.add(au);
+  return {root:root,
+    parts:[
+      {id:'corpo',name:'Corpo appiattito',text:'Verme piatto con simmetria bilaterale e senza cavità corporea: gli organi sono immersi nei tessuti. Gli scambi di gas avvengono per diffusione attraverso la pelle.',a:[1.3,.3,-1]},
+      {id:'occhi',name:'Macchie oculari',text:'Piccoli occhi semplici che distinguono luce e buio: la planaria evita la luce.',a:[.5,.4,2.2]},
+      {id:'auricole',name:'Auricole',text:'Lobi sensoriali ai lati della testa, sensibili a sostanze chimiche e correnti d\'acqua.',a:[1.0,.2,1.9]},
+      {id:'faringe',name:'Faringe',text:'Tubo muscoloso che esce dalla bocca (ventrale) per catturare il cibo.',a:[-.7,-.5,.1]},
+      {id:'intestino',name:'Intestino ramificato',text:'Un solo orifizio fa da bocca e da ano; l\'intestino ramificato distribuisce i nutrienti perché non c\'è apparato circolatorio.',a:[-.9,.3,-.8]}],
+    cam:{th:.3,ph:.6,dist:9,ty:0},
+    update:function(t){sl.forEach(function(s){var dx=Math.sin(t*2.2-s.z*.9)*.22*(1-(s.z+2.4)/6);s.m.position.x=(s.dx||0)+dx})}
+  };
+}
+function buildTenia(){
+  var root=new THREE.Group(),bm=mat(0xd8c090),pm=[],N=26,pts=[];
+  for(var i=0;i<N;i++){var u=i/(N-1);pts.push(V3(-3.6+u*7.2,Math.sin(u*5)*.35,Math.cos(u*3.5)*.25))}
+  var pg=new THREE.Group(),eg=new THREE.Group(),eggM=mat(0x8a5a3a);
+  for(var j=1;j<N;j++){var u2=j/(N-1),w=.05+u2*.4,h=.12+u2*.45;var p=pts[j],m=new THREE.Mesh(new THREE.BoxGeometry(.24,h*1.5,w*1.6),bm);m.position.copy(p);m.rotation.z=Math.cos(u2*5)*.3;pg.add(m);
+    if(u2>.6){for(var e=0;e<3;e++){eg.add(E(eggM,.035,.035,.035,p.x,p.y+(e-1)*h*.28,p.z))}}}
+  P(pg,'proglottidi');P(eg,'uova');root.add(pg);root.add(eg);
+  var sc=new THREE.Group();sc.add(E(bm,.28,.28,.28,pts[0].x-.1,pts[0].y,pts[0].z));
+  for(var s=0;s<4;s++){var a=s*Math.PI/2+Math.PI/4;sc.add(E(mat(0xd9a0a0),.1,.1,.06,pts[0].x-.3,pts[0].y+Math.sin(a)*.2,pts[0].z+Math.cos(a)*.2))}
+  var hk=mat(0x6a5a4a);for(var h2=0;h2<8;h2++){var a2=h2/8*6.28;sc.add(seg(V3(pts[0].x-.36,pts[0].y+Math.sin(a2)*.07,pts[0].z+Math.cos(a2)*.07),V3(pts[0].x-.5,pts[0].y+Math.sin(a2)*.1,pts[0].z+Math.cos(a2)*.1),.012,.004,hk,4))}
+  P(sc,'scolice');root.add(sc);
+  var nk=seg(pts[0],pts[3],.07,.1,bm,8);P(nk,'collo');root.add(nk);
+  return {root:root,
+    parts:[
+      {id:'scolice',name:'Scolice',text:'La «testa» munita di ventose e uncini con cui il parassita si ancora alla parete dell\'intestino dell\'ospite.',a:[-3.8,.8,.2]},
+      {id:'collo',name:'Collo',text:'Zona di crescita: da qui si formano continuamente nuovi segmenti.',a:[-2.7,.5,0]},
+      {id:'proglottidi',name:'Proglottidi',text:'Segmenti in fila, ognuno con propri organi riproduttori. Il verme non ha apparato digerente: assorbe i nutrienti già digeriti dall\'ospite attraverso il tegumento.',a:[0,1.1,.4]},
+      {id:'uova',name:'Segmenti maturi con uova',text:'I segmenti terminali, pieni di uova, si staccano e escono con le feci dell\'ospite.',a:[3.2,1.1,.3]}],
+    cam:{th:.3,ph:1.2,dist:11,ty:0},
+    update:function(t){root.rotation.y=.12*Math.sin(t*.8)}
+  };
+}
+/* ---- nematodi ---- */
+function buildNematode(){
+  var root=new THREE.Group(),NS=50,out=[],inn=[],ph=[],om=mat(0xe8dcc4,{transparent:true,opacity:.42,depthWrite:false}),im=mat(0x6a8a4a),fm=mat(0xd9a08a);
+  var go=new THREE.Group(),gi=new THREE.Group(),gp=new THREE.Group();
+  for(var i=0;i<NS;i++){var u=i/(NS-1),z=3.2-u*6.4,rad=.3*Math.pow(Math.sin(Math.PI*(.08+u*.84)),.5);
+    var m=E(om,rad*1.0,rad*1.0,.22,0,0,z,12);go.add(m);out.push({m:m,z:z});
+    if(u<.2){var f=E(fm,rad*.45,rad*.45,.17,0,0,z,10);gp.add(f);ph.push({m:f,z:z})}
+    else if(u<.95){var g=E(im,rad*.5,rad*.5,.17,0,0,z,10);gi.add(g);inn.push({m:g,z:z})}}
+  P(go,'cuticola');P(gi,'intestino');P(gp,'faringe');root.add(go);root.add(gi);root.add(gp);
+  var all=out.concat(inn).concat(ph);
+  function posf(z,t){return Math.sin(z*1.3-t*3)*.55*(.4+.6*Math.abs(z/3.2)*0+.6)}
+  return {root:root,
+    parts:[
+      {id:'cuticola',name:'Cuticola',text:'Rivestimento resistente e flessibile che il verme cambia (muta) crescendo; sotto ci sono soli muscoli longitudinali, per questo il corpo si muove con onde a S.',a:[.5,.5,0]},
+      {id:'faringe',name:'Bocca e faringe',text:'Il tubo digerente è completo, con bocca e ano: è il carattere che distingue i nematodi dai platelminti.',a:[.4,.5,2.8]},
+      {id:'intestino',name:'Intestino',text:'Tubo che percorre tutto il corpo fino all\'ano. Tra il tubo digerente e la parete c\'è una cavità piena di liquido (pseudoceloma).',a:[-.4,.4,-1.6]}],
+    cam:{th:.4,ph:1.15,dist:8,ty:0},
+    update:function(t){all.forEach(function(s){s.m.position.x=posf(s.z,t)})}
+  };
+}
+/* ---- anellidi ---- */
+function buildLombrico(inside){
+  var root=new THREE.Group(),NS=30,segs=[],bm=inside?mat(0xd9908a,{transparent:true,opacity:.32,depthWrite:false}):mat(0xc9737a,{roughness:.7}),cl=inside?mat(0xe8b0a8,{transparent:true,opacity:.4,depthWrite:false}):mat(0xe0a098,{roughness:.6});
+  function cx(z){return Math.sin(z*.7)*.5}
+  var go=new THREE.Group(),gc=new THREE.Group(),gs=new THREE.Group();
+  for(var i=0;i<NS;i++){var u=i/(NS-1),z=3.6-u*7.2,rad=.32*(1-.5*Math.pow(Math.abs(u-.45)*0+u,3))*(u<.04?.6:1);if(u>.9)rad*=1-(u-.9)*3;
+    var isC=i>=8&&i<=11,m=E(isC?cl:bm,rad*(isC?1.12:1),rad*(isC?1.12:1),.17,cx(z),0,z,16);go.add(m);segs.push({m:m,r:rad,z:z,i:i});
+    if(!inside&&i>1&&i<NS-1)[-1,1].forEach(function(s){gs.add(seg(V3(cx(z)+s*.12,-rad*.95,z),V3(cx(z)+s*.14,-rad*1.2,z),.012,.006,mat(0x5a2a2a),4))})}
+  P(go,'segmenti');root.add(go);
+  if(!inside){var c2=new THREE.Group();segs.forEach(function(s){if(s.i>=8&&s.i<=11)c2.add(E(mat(0xe0a098),s.r*1.14,s.r*1.14,.17,cx(s.z),0,s.z))});}
+  P(gs,'setole');root.add(gs);
+  var mouth=E(mat(0x8a3a44),.1,.06,.1,cx(3.7),-.1,3.75);P(mouth,'bocca');root.add(mouth);
+  if(inside){
+    var pts=segs.map(function(s){return V3(cx(s.z),0,s.z)});
+    for(var k=0;k<pts.length-1;k++){gc.add(seg(pts[k].clone().add(V3(0,-.02,0)),pts[k+1].clone().add(V3(0,-.02,0)),.09,.09,mat(0xb08a3a),8))}
+    P(gc,'intestino');root.add(gc);
+    var nv=new THREE.Group();for(var n=0;n<pts.length-1;n++)nv.add(seg(pts[n].clone().add(V3(0,-.2,0)),pts[n+1].clone().add(V3(0,-.2,0)),.03,.03,mat(0xf0e050),6));P(nv,'nervo');root.add(nv);
+    var vs=new THREE.Group();for(var v=0;v<pts.length-1;v++)vs.add(seg(pts[v].clone().add(V3(0,.18,0)),pts[v+1].clone().add(V3(0,.18,0)),.035,.035,mat(0xc02020),6));
+    for(var h=0;h<5;h++){var zz=segs[6+h].z;var rr=ring(.17,.03,Math.PI,mat(0xc02020),0,Math.PI/2,0,cx(zz),0,zz);rr.rotation.set(0,0,0);rr.rotation.y=Math.PI/2;vs.add(rr)}
+    P(vs,'circolazione');root.add(vs);
+    var sp=new THREE.Group();segs.forEach(function(s){if(s.i%1===0&&s.i>0)sp.add(ring(s.r*.95,.012,Math.PI*2,mat(0xffffff,{transparent:true,opacity:.6,depthWrite:false}),0,0,0,cx(s.z),0,s.z))});
+    sp.children.forEach(function(c){c.rotation.set(0,0,0)});P(sp,'setti');root.add(sp);
+  }
+  return {root:root,
+    parts:inside?[
+      {id:'intestino',name:'Tubo digerente',text:'Tubo completo che attraversa il corpo da bocca ad ano; il lombrico si nutre di terra e sostanza organica che transita lungo l\'intestino.',a:[.8,.4,1.2]},
+      {id:'circolazione',name:'Apparato circolatorio chiuso',text:'Il sangue circola dentro vasi: vaso dorsale e ventrale collegati da cinque paia di «cuori» (archi aortici) contrattili.',a:[.8,.7,2.2]},
+      {id:'nervo',name:'Catena nervosa ventrale',text:'Cordone nervoso con gangli in ogni segmento, collegato ai gangli cerebrali nella testa.',a:[-.8,-.6,-.2]},
+      {id:'setti',name:'Setti',text:'Pareti trasversali che dividono internamente il corpo in segmenti (metameria).',a:[.8,.5,-2.2]},
+      {id:'segmenti',name:'Corpo segmentato',text:'Il corpo è diviso in anelli simili: da qui il nome del phylum.',a:[-1,.6,1.6]}]:
+     [{id:'segmenti',name:'Segmenti (anelli)',text:'Corpo allungato diviso in segmenti ripetuti. Il movimento avviene per onde di contrazione dei muscoli circolari e longitudinali.',a:[.9,.5,-1.8]},
+      {id:'clitello',name:'Clitello',text:'Fascia più chiara e rigonfia coinvolta nella riproduzione: secerne il bozzolo in cui vengono deposte le uova. I lombrichi sono ermafroditi.',a:[.7,.6,1.0]},
+      {id:'setole',name:'Setole',text:'Piccole setole sul lato ventrale: fanno presa sul terreno durante lo scavo.',a:[-.6,-.7,-.4]},
+      {id:'bocca',name:'Bocca',text:'Punto di ingresso della terra e dei resti organici di cui si nutre.',a:[.5,.5,3.6]}],
+    cam:{th:.5,ph:1.2,dist:9,ty:0},
+    update:function(t){segs.forEach(function(s){var k=Math.sin(s.i*.9-t*3),sc=1+.12*k;s.m.scale.x=s.r*sc*(s.i>=8&&s.i<=11?1.12:1);s.m.scale.y=s.r*sc*(s.i>=8&&s.i<=11?1.12:1)})}
+  };
+}
+/* ---- echinodermi ---- */
+function buildStella(oral){
+  var root=new THREE.Group(),g=new THREE.Group(),bm=mat(0xe8703a,{roughness:.8}),sp=mat(0xf6e6c8),ft=mat(0xf0b07a),sg=oral?-1:1;
+  function A(x,y,z){return oral?[x,-y,-z]:[x,y,z]}
+  g.add(P(E(bm,1.0,.4,1.0,0,.0,0),'disco'));
+  var arms=new THREE.Group(),fg=new THREE.Group(),spg=new THREE.Group();
+  for(var a=0;a<5;a++){var ang=a/5*Math.PI*2+.3,dx=Math.cos(ang),dz=Math.sin(ang);
+    for(var i=0;i<9;i++){var d=.6+i*.4,w=.66*(1-i/11),m=E(bm,w,.28*(1-i/16)+.07,w,dx*d,0,dz*d,14);arms.add(m);
+      if(i%2===0&&i<8)for(var k=0;k<2;k++){var s=new THREE.Mesh(new THREE.ConeGeometry(.04,.16,5),sp);s.position.set(dx*d+(k?-dz:dz)*.12*(k?1:-1)*.8,.28*(1-i/16)+.1,dz*d+(k?dx:-dx)*.12*.8);spg.add(s)}
+      if(i<8)[-1,1].forEach(function(sd){var fx=dx*d-dz*sd*.14,fz=dz*d+dx*sd*.14;var f=seg(V3(fx,-.15,fz),V3(fx,-.45,fz),.035,.03,ft,5);fg.add(f);fg.add(E(ft,.06,.04,.06,fx,-.47,fz))})}
+    var tip=E(mat(0xc02020),.07,.07,.07,dx*3.9,.18,dz*3.9);spg.add(tip)}
+  P(arms,'braccia');P(spg,'spine');P(fg,'piedini');g.add(arms);g.add(spg);g.add(fg);
+  var mad=E(mat(0xf8f0e0),.2,.05,.2,.35,.37,.1);P(mad,'madreporite');g.add(mad);
+  var mo=E(mat(0x6a2a20),.22,.05,.22,0,-.35,0);P(mo,'bocca');g.add(mo);
+  if(oral)g.rotation.x=Math.PI;
+  root.add(g);
+  var Pa=oral?[
+    {id:'piedini',name:'Piedini ambulacrali',text:'File di piccoli tubi con ventosa lungo la faccia inferiore delle braccia: fanno parte del sistema acquifero, un apparato idraulico esclusivo degli echinodermi, e servono a muoversi e ad aprire i bivalvi.',a:A(1.9,-.4,1.2)},
+    {id:'bocca',name:'Bocca',text:'Al centro della faccia orale: la stella marina può estroflettere lo stomaco sulla preda e digerirla all\'esterno.',a:A(0,-.4,.1)},
+    {id:'braccia',name:'Braccia',text:'Cinque braccia (simmetria pentaradiale da adulti, bilaterale da larve). Se una si stacca può rigenerarsi.',a:A(-2.5,.1,2.0)}]:
+   [{id:'disco',name:'Disco centrale',text:'Parte centrale del corpo da cui partono le braccia; contiene gran parte degli organi.',a:A(0,.5,0)},
+    {id:'braccia',name:'Braccia',text:'Cinque braccia: simmetria pentaradiale negli adulti. Si rigenerano se perse.',a:A(2.4,.7,1.5)},
+    {id:'spine',name:'Scheletro e spine',text:'Placche calcaree sotto la pelle (endoscheletro) con spine sporgenti: da qui «echinodermi», pelle spinosa. In punta a ogni braccio c\'è una macchia oculare.',a:A(1.0,.9,-2.6)},
+    {id:'madreporite',name:'Madreporite',text:'Placca forata da cui entra l\'acqua nel sistema acquifero.',a:A(.35,.6,.1)}];
+  return {root:root,parts:Pa,cam:oral?{th:.5,ph:1.1,dist:12,ty:0}:{th:.5,ph:1.0,dist:12,ty:0},
+    update:function(t){g.rotation.y=.0;var s=1+.015*Math.sin(t*1.5);g.scale.set(s,1,s)}};
+}
+/* ---- tunicati ---- */
+function buildAscidia(){
+  var root=new THREE.Group(),tm=mat(0xeac27a,{transparent:true,opacity:.5,depthWrite:false,side:THREE.DoubleSide}),ph=mat(0xe58a98);
+  var pr=[[0,0],[.5,0],[.95,.5],[1.1,1.4],[.9,2.2],[.5,2.6],[0,2.6]].map(function(p){return new THREE.Vector2(p[0],p[1])});
+  var body=new THREE.Mesh(new THREE.LatheGeometry(pr,32),tm);body.position.y=-1.4;P(body,'tunica');root.add(body);
+  var rock=new THREE.Mesh(new THREE.DodecahedronGeometry(1.2,0),mat(0x8a8478,{roughness:1}));rock.scale.set(1.5,.4,1.5);rock.position.y=-1.55;root.add(rock);
+  [[-.45,1],[.5,-1]].forEach(function(d,i){var s=seg(V3(d[0],1.0,0),V3(d[0]+d[1]*.2,1.9,0),.28,.22,mat(i?0xd9a050:0xe0b060,{transparent:true,opacity:.7,depthWrite:false}),14);P(s,'sifoni');root.add(s);
+    var rg=new THREE.Mesh(new THREE.TorusGeometry(.24,.05,8,20),mat(0xb8782a));rg.rotation.x=Math.PI/2;rg.position.set(d[0]+d[1]*.2,1.9,0);P(rg,'sifoni');root.add(rg)});
+  var fa=new THREE.Group();for(var i=0;i<9;i++){var y=-.9+i*.18,R=.55*Math.sin((i+1)/10*Math.PI)+.15;var r=new THREE.Mesh(new THREE.TorusGeometry(R,.025,6,24),ph);r.rotation.x=Math.PI/2;r.position.set(-.1,y+.0,0);fa.add(r)}
+  for(var j=0;j<10;j++){var a=j/10*6.28;fa.add(seg(V3(-.1+Math.cos(a)*.3,-.9,Math.sin(a)*.3),V3(-.1+Math.cos(a)*.5,.6,Math.sin(a)*.5),.014,.014,ph,4))}
+  P(fa,'faringe');root.add(fa);
+  var gut=new THREE.Group();gut.add(E(mat(0x8a4a3a),.3,.25,.28,.4,-.7,.1));gut.add(E(mat(0x6a3a2a),.18,.18,.18,.55,-.35,.3));P(gut,'viscere');root.add(gut);
+  var arrows=[];var wm=mat(0x3a8ac0);for(var w=0;w<8;w++){var p=E(wm,.05,.05,.05,0,0,0);root.add(p);arrows.push({m:p,u:w/8})}
+  return {root:root,
+    parts:[
+      {id:'tunica',name:'Tunica',text:'Rivestimento che dà il nome ai tunicati; contiene tunicina, una sostanza simile alla cellulosa.',a:[1.3,0,.5]},
+      {id:'sifoni',name:'Sifoni',text:'Il sifone inalante fa entrare l\'acqua, quello esalante la fa uscire. Dopo la metamorfosi la notocorda scompare: l\'adulto è sessile e non sembra un cordato.',a:[0,2.3,.6]},
+      {id:'faringe',name:'Cestello branchiale',text:'Faringe forata e ricoperta di ciglia: filtra l\'acqua trattenendo il cibo e scambia gas. Le fessure faringee sono uno dei caratteri dei cordati.',a:[-.9,.2,.7]},
+      {id:'viscere',name:'Organi interni',text:'Stomaco e intestino sono ripiegati: l\'ano si apre vicino al sifone esalante.',a:[.9,-.4,.4]}],
+    cam:{th:.6,ph:1.3,dist:9,ty:.1},
+    update:function(t){arrows.forEach(function(a){var u=(a.u+t*.1)%1,p;if(u<.35){var k=u/.35;p=V3(-.45-.2*k,2.4-k*2.2,0)}else if(u<.75){var k2=(u-.35)/.4;p=V3(-.65+1.0*k2,.2+.0,Math.sin(k2*3)*.1)}else{var k3=(u-.75)/.25;p=V3(.35+.15*k3,.2+k3*2.2,0)}a.m.position.copy(p)});var s=1+.02*Math.sin(t*1.5);body.scale.set(s,1,s)}
+  };
+}
+function buildLarvaAscidia(){
+  var root=new THREE.Group(),bm=mat(0xeac27a,{transparent:true,opacity:.55,depthWrite:false}),nm=mat(0xf6f0e0),cm=mat(0x2a2a40),mm=mat(0xc06a50);
+  var head=new THREE.Group();head.add(E(bm,.85,.7,.7,0,0,0,24));head.add(E(mat(0xe58a98),.35,.3,.3,.1,0,0));
+  var sens=E(mat(0x101014),.1,.1,.1,.3,.3,.2);head.add(sens);
+  for(var i=0;i<3;i++)head.add(E(mat(0xd9a050),.07,.07,.1,-.85,i*.15-.15,0));
+  P(head,'corpo');root.add(head);
+  var tail=new THREE.Group(),ts=[];
+  for(var j=0;j<14;j++){var u=j/13,x=.7+u*3.2,r=.28*(1-u*.8);var n=E(nm,.3,r*.6,r*.6,x,0,0,10);var c=E(cm,.3,r*.45,r*.45,x,r*.9,0,8),m1=E(mm,.28,r*.55,r*.35,x,-.0,r*.55,8),m2=E(mm,.28,r*.55,r*.35,x,-.0,-r*.55,8);tail.add(n);tail.add(c);tail.add(m1);tail.add(m2);ts.push([n,c,m1,m2,x,r])}
+  var tg=new THREE.Group();
+  ts.forEach(function(s){P(s[0],'notocorda');P(s[1],'nervo');P(s[2],'muscoli');P(s[3],'muscoli');tg.add(s[0]);tg.add(s[1]);tg.add(s[2]);tg.add(s[3])});
+  var fin=E(bm,1.6,.45,.04,2.4,0,0,10);P(fin,'pinna');tg.add(fin);root.add(tg);
+  root.position.x=-1.4;
+  return {root:root,
+    parts:[
+      {id:'notocorda',name:'Notocorda',text:'Bastoncello flessibile di sostegno lungo il dorso: carattere distintivo dei cordati. Nei tunicati c\'è solo nella larva e scompare nell\'adulto.',a:[1.0,.6,.4]},
+      {id:'nervo',name:'Tubo nervoso dorsale',text:'Cordone nervoso cavo sopra la notocorda: un altro carattere dei cordati.',a:[.8,1.0,0]},
+      {id:'muscoli',name:'Muscoli',text:'Bande di muscoli ai lati della coda: la fanno ondeggiare spingendo la larva a nuotare.',a:[1.7,-.6,.5]},
+      {id:'pinna',name:'Pinna caudale',text:'Membrana che aumenta la spinta della coda.',a:[2.0,.5,0]},
+      {id:'corpo',name:'Testa',text:'Contiene l\'abbozzo di cervello, un organo sensibile alla luce e le papille adesive con cui la larva si fisserà a una roccia.',a:[-1.8,.6,0]}],
+    cam:{th:.6,ph:1.35,dist:9,ty:0},
+    update:function(t){tg.children.forEach(function(c){if(c.userData.z0===undefined)c.userData.z0=c.position.z;c.position.z=c.userData.z0+Math.sin(t*4-c.position.x*1.4)*.22*Math.max(0,(c.position.x-.5)/3)});}
+  };
+}
+/* ---- microscopici ---- */
+function coil(n,R,m,r,seed,tube){var g=new THREE.Group(),pts=[],rr=rng(seed||3);
+  for(var i=0;i<n;i++){var a=i/n*Math.PI*2,k=1+.45*Math.sin(a*5+rr()*0)+.2*Math.sin(a*9);pts.push(V3(Math.cos(a)*R*k+(rr()-.5)*R*.2,Math.sin(a*3)*R*.5+(rr()-.5)*R*.2,Math.sin(a)*R*k*.8+(rr()-.5)*R*.2))}
+  for(var j=0;j<n;j++)g.add(seg(pts[j],pts[(j+1)%n],tube||.035,tube||.035,m,5));return g}
+function buildArcheo(){
+  var root=new THREE.Group(),r=rng(4);
+  var mem=new THREE.Mesh(new THREE.SphereGeometry(1.6,40,28),mat(0xe8a050,{transparent:true,opacity:.32,depthWrite:false}));P(mem,'membrana');root.add(mem);
+  var wall=new THREE.Mesh(new THREE.SphereGeometry(1.75,40,28),mat(0xf2d4a0,{transparent:true,opacity:.18,depthWrite:false}));P(wall,'parete');root.add(wall);
+  var dna=coil(40,.7,mat(0x3a5fa0),0,6,.05);P(dna,'dna');dna.position.set(-.1,0,0);root.add(dna);
+  var rb=new THREE.Group(),rm=mat(0x7a4a2a);for(var i=0;i<46;i++){var u=r()*2-1,ph=r()*6.28,rad=Math.sqrt(1-u*u),R=r()*1.1+.2;rb.add(E(rm,.07,.07,.07,rad*Math.cos(ph)*R*.9,u*R*.9,rad*Math.sin(ph)*R*.9))}P(rb,'ribosomi');root.add(rb);
+  var fl=new THREE.Group(),fm=mat(0xb06a28),fp=[];
+  for(var k=0;k<22;k++){var s=E(fm,.09-.002*k,.09-.002*k,.09-.002*k,0,0,0);fl.add(s);fp.push(s)}
+  P(fl,'archeoflagello');root.add(fl);
+  return {root:root,
+    parts:[
+      {id:'membrana',name:'Membrana',text:'Fatta di lipidi diversi da quelli di batteri ed eucarioti: resiste a temperature e salinità estreme, un motivo per cui gli archei vivono in ambienti difficili.',a:[1.6,.9,.6]},
+      {id:'parete',name:'Parete cellulare',text:'Rivestimento esterno privo di peptidoglicano, il composto tipico della parete dei batteri.',a:[-1.8,.9,.6]},
+      {id:'dna',name:'DNA circolare',text:'Cromosoma circolare libero nel citoplasma: gli archei sono procarioti, non hanno nucleo.',a:[0,.9,.3]},
+      {id:'ribosomi',name:'Ribosomi',text:'Sintetizzano le proteine; sono più simili a quelli degli eucarioti che a quelli dei batteri.',a:[.9,-.9,.8]},
+      {id:'archeoflagello',name:'Archeoflagello',text:'Struttura per il movimento, con organizzazione diversa dal flagello dei batteri.',a:[-1.6,-1.3,.5]}],
+    cam:{th:.5,ph:1.3,dist:9.5,ty:-.3},
+    update:function(t){fp.forEach(function(s,i){var u=i/21,a=u*9-t*5;s.position.set(1.2+u*1.7,-.9-u*1.0+Math.sin(a)*.1,Math.cos(a)*.1)});dna.rotation.y=t*.15;mem.scale.setScalar(1+.01*Math.sin(t*2))}
+  };
+}
+function capsule(R,mem,cm){var g=new THREE.Group(),cy=new THREE.Mesh(new THREE.CylinderGeometry(R,R,1,24,1,true),cm),a=new THREE.Mesh(new THREE.SphereGeometry(R,24,14),cm),b=new THREE.Mesh(new THREE.SphereGeometry(R,24,14),cm);cy.rotation.z=Math.PI/2;g.add(cy,a,b);g.userData={cy:cy,a:a,b:b};return g}
+function setCap(g,L,R){g.userData.cy.scale.set(1,L,1);g.userData.a.position.x=-L/2;g.userData.b.position.x=L/2}
+function buildBatterio(){
+  var root=new THREE.Group(),R=.7,L=2.4;
+  var caps=capsule(R*1.25,0,mat(0xf2e8b0,{transparent:true,opacity:.2,depthWrite:false}));setCap(caps,L,R*1.25);P(caps,'capsula');root.add(caps);
+  var wall=capsule(R,0,mat(0x8ac08a,{transparent:true,opacity:.35,depthWrite:false}));setCap(wall,L,R);P(wall,'parete');root.add(wall);
+  var dna=coil(44,.5,mat(0x3a5fa0),0,9,.04);dna.scale.set(1.6,.7,.7);P(dna,'dna');root.add(dna);
+  var pl=new THREE.Group();[[.9,.25,.2],[-.9,-.2,-.1]].forEach(function(p){var t=new THREE.Mesh(new THREE.TorusGeometry(.14,.025,6,16),mat(0xd04a2a));t.position.set(p[0],p[1],p[2]);t.rotation.set(1,.5,0);pl.add(t)});P(pl,'plasmidi');root.add(pl);
+  var rb=new THREE.Group(),rm=mat(0x7a4a2a),r=rng(5);for(var i=0;i<34;i++)rb.add(E(rm,.05,.05,.05,(r()-.5)*L*1.4,(r()-.5)*R*1.3,(r()-.5)*R*1.3));P(rb,'ribosomi');root.add(rb);
+  var pili=new THREE.Group(),pm=mat(0x6a8a6a);for(var j=0;j<24;j++){var a=r()*6.28,x=(r()-.5)*L*1.6;pili.add(seg(V3(x,Math.sin(a)*R*1.25,Math.cos(a)*R*1.25),V3(x,Math.sin(a)*R*1.8,Math.cos(a)*R*1.8),.012,.008,pm,4))}P(pili,'pili');root.add(pili);
+  var fl=new THREE.Group(),fs=[],fm=mat(0xb06a28);for(var k=0;k<24;k++){var s=E(fm,.045,.045,.045,0,0,0);fl.add(s);fs.push(s)}P(fl,'flagello');root.add(fl);
+  return {root:root,
+    parts:[
+      {id:'capsula',name:'Capsula',text:'Strato gelatinoso esterno presente in molti batteri: protegge e aiuta ad aderire alle superfici.',a:[1.5,1.2,.4]},
+      {id:'parete',name:'Parete cellulare',text:'Rivestimento rigido (di peptidoglicano) che dà forma alla cellula: è il bersaglio di molti antibiotici.',a:[-1.2,1.0,.8]},
+      {id:'dna',name:'Nucleoide',text:'Il cromosoma circolare è libero nel citoplasma: i batteri non hanno nucleo.',a:[.3,.6,.6]},
+      {id:'plasmidi',name:'Plasmidi',text:'Piccoli anelli di DNA aggiuntivi che possono passare da un batterio all\'altro (anche geni per la resistenza agli antibiotici).',a:[1.1,.6,.5]},
+      {id:'ribosomi',name:'Ribosomi',text:'Sintetizzano le proteine, sono più piccoli di quelli degli eucarioti.',a:[-.6,-.6,.6]},
+      {id:'flagello',name:'Flagello',text:'Filamento rotante che spinge il batterio.',a:[-3.2,-.3,.3]},
+      {id:'pili',name:'Pili',text:'Sottili filamenti per aderire alle superfici e scambiare DNA.',a:[1.6,-1.1,.5]}],
+    cam:{th:.6,ph:1.35,dist:9,ty:0},
+    update:function(t){fs.forEach(function(s,i){var u=i/23,a=u*10-t*8;s.position.set(-L/2-R*.6-u*2.1,Math.sin(a)*.14*u*3,Math.cos(a)*.14*u*3)});}
+  };
+}
+function buildScissione(){
+  var root=new THREE.Group(),R=.7,cm=mat(0x8ac08a,{transparent:true,opacity:.4,depthWrite:false});
+  var A=capsule(R,0,cm),B=capsule(R,0,cm);P(A,'parete');P(B,'parete');root.add(A);root.add(B);
+  var dm=mat(0x3a5fa0),dA=coil(36,.4,dm,0,9,.04),dB=coil(36,.4,dm,0,10,.04);P(dA,'dna');P(dB,'dna');root.add(dA);root.add(dB);
+  var sep=new THREE.Mesh(new THREE.CylinderGeometry(R*.9,R*.9,.1,24),mat(0xb8d89a,{transparent:true,opacity:.8}));sep.rotation.z=Math.PI/2;P(sep,'setto');root.add(sep);
+  return {root:root,
+    parts:[
+      {id:'parete',name:'Cellula',text:'Il batterio si riproduce per scissione binaria: la cellula si allunga, forma un setto trasversale e si divide in due cellule figlie identiche (riproduzione asessuata).',a:[0,1.4,.5]},
+      {id:'dna',name:'DNA',text:'Prima della divisione il cromosoma circolare viene copiato; le due copie si separano verso i poli opposti.',a:[-1.2,-.9,.6]},
+      {id:'setto',name:'Setto',text:'Nuova parete che si forma al centro e separa le due cellule. In condizioni ideali alcuni batteri si dividono ogni 20 minuti circa.',a:[0,-1.2,.5]}],
+    cam:{th:.5,ph:1.35,dist:10,ty:0},
+    update:function(t){var p=(t*.12)%1,Lc,gap=0;
+      if(p<.5){Lc=1.0+p/.5*1.8;A.visible=true;B.visible=false;setCap(A,Lc,R);A.position.x=0;dA.position.x=-Lc*.28;dB.position.x=Lc*.28;dA.scale.setScalar(.8);dB.scale.setScalar(.8);sep.visible=p>.35;sep.scale.set(1,1,Math.max(.01,(p-.35)/.15));sep.position.x=0;dB.visible=p>.2;dA.visible=true;if(p<.2)dA.position.x=0}
+      else{var q=(p-.5)/.5;A.visible=B.visible=true;sep.visible=false;var Ld=1.4;setCap(A,Ld,R);setCap(B,Ld,R);var d=(Ld+R)*.5+.5+q*.9;A.position.x=-d+.0;B.position.x=d;dA.position.x=-d;dB.position.x=d;dA.scale.setScalar(.8);dB.scale.setScalar(.8);dA.visible=dB.visible=true}
+    }
+  };
+}
+function buildFago(){
+  var root=new THREE.Group(),cap=mat(0x5a8ac0,{roughness:.5}),tl=mat(0xb8c8d8),legs=[];
+  var cp=new THREE.Mesh(new THREE.IcosahedronGeometry(1.2,0),cap);cp.scale.set(1,1.15,1);cp.position.y=2.2;cp.rotation.y=.3;P(cp,'capside');root.add(cp);
+  var gen=new THREE.Mesh(new THREE.TorusKnotGeometry(.45,.12,60,8,2,3),mat(0xe0a030));gen.position.y=2.2;gen.scale.set(1,1,1);P(gen,'genoma');root.add(gen);
+  var col=new THREE.Mesh(new THREE.CylinderGeometry(.35,.35,.15,16),cap);col.position.y=.95;P(col,'coda');root.add(col);
+  var tail=new THREE.Group();for(var i=0;i<10;i++){var r=new THREE.Mesh(new THREE.TorusGeometry(.2,.055,6,16),tl);r.rotation.x=Math.PI/2;r.position.y=.8-i*.17;tail.add(r)}
+  var core=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,1.8,10),mat(0x8a98a8));core.position.y=.0;tail.add(core);P(tail,'coda');root.add(tail);
+  var bp=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,.18,6),mat(0x4a6a98));bp.position.y=-.95;P(bp,'piastra');root.add(bp);
+  var fm=mat(0x8aa8c8);
+  for(var k=0;k<6;k++){var a=k/6*6.28,g=new THREE.Group();g.position.set(Math.cos(a)*.4,-.9,Math.sin(a)*.4);g.rotation.y=-a;
+    g.add(seg(V3(0,0,0),V3(.7,.25,0),.04,.035,fm,5));g.add(seg(V3(.7,.25,0),V3(1.5,-.5,0),.035,.025,fm,5));P(g,'fibre');root.add(g);legs.push({g:g,ph:k})}
+  return {root:root,
+    parts:[
+      {id:'capside',name:'Capside',text:'Involucro proteico a simmetria icosaedrica che contiene il materiale genetico.',a:[1.3,3.1,.3]},
+      {id:'genoma',name:'Genoma (DNA)',text:'Qui è DNA. I virus non sono cellule: contengono acido nucleico (DNA o RNA, mai entrambi) e si riproducono solo dentro una cellula ospite.',a:[-1.0,2.5,.5]},
+      {id:'coda',name:'Guaina della coda',text:'Tubo contrattile attraverso cui il DNA viene iniettato nel batterio ospite.',a:[.8,.4,.5]},
+      {id:'piastra',name:'Piastra basale',text:'Si lega ai recettori sulla superficie del batterio.',a:[-.9,-1.0,.5]},
+      {id:'fibre',name:'Fibre caudali',text:'Riconoscono la superficie del batterio ospite: ogni batteriofago infetta solo certi batteri.',a:[1.6,-.9,.8]}],
+    cam:{th:.7,ph:1.35,dist:9.5,ty:.6},
+    update:function(t){root.rotation.y=t*.25;legs.forEach(function(l){l.g.rotation.z=.08*Math.sin(t*1.5+l.ph)})}
+  };
+}
+function buildVirusEnv(){
+  var root=new THREE.Group(),r=rng(13),N=70;
+  var env=new THREE.Mesh(new THREE.SphereGeometry(1.4,36,24),mat(0xd8a0c0,{transparent:true,opacity:.5,depthWrite:false}));P(env,'involucro');root.add(env);
+  var sp=new THREE.Group(),sm=mat(0xc04a60),sb=mat(0xe07a8a);
+  for(var i=0;i<N;i++){var y=1-2*(i+.5)/N,rr=Math.sqrt(1-y*y),th=i*2.399963,d=V3(Math.cos(th)*rr,y,Math.sin(th)*rr);var a=d.clone().multiplyScalar(1.38),b=d.clone().multiplyScalar(1.95);sp.add(seg(a,b,.04,.025,sm,5));var k=E(sb,.1,.1,.1,b.x,b.y,b.z,8);sp.add(k)}
+  P(sp,'spicole');root.add(sp);
+  var nc=new THREE.Group();var pts=[];for(var j=0;j<60;j++){var a2=j/59*Math.PI*8,R=.55+.1*Math.sin(j*.5);pts.push(V3(Math.cos(a2)*R*Math.sin(j/59*Math.PI),(j/59-.5)*1.6,Math.sin(a2)*R*Math.sin(j/59*Math.PI)))}
+  for(var q=0;q<59;q++)nc.add(seg(pts[q],pts[q+1],.09,.09,mat(0xe0a030),6));P(nc,'genoma');root.add(nc);
+  return {root:root,
+    parts:[
+      {id:'involucro',name:'Involucro',text:'Alcuni virus (non tutti) hanno un rivestimento lipidico derivato dalla membrana della cellula in cui si sono formati.',a:[1.5,1.2,.4]},
+      {id:'spicole',name:'Proteine di superficie',text:'Si legano ai recettori delle cellule ospiti: determinano quali cellule il virus può infettare.',a:[-1.8,1.0,1.0]},
+      {id:'genoma',name:'Genoma (RNA)',text:'In questo schema il genoma è RNA, avvolto da proteine. Non c\'è metabolismo: il virus usa quello della cellula infettata.',a:[0,0,.8]}],
+    cam:{th:.5,ph:1.3,dist:9,ty:0},
+    update:function(t){root.rotation.y=t*.2}
+  };
+}
+function buildAmeba(){
+  var root=new THREE.Group(),geo=new THREE.SphereGeometry(1.6,48,32),base=geo.attributes.position.array.slice(),bm=mat(0xa8d8c8,{transparent:true,opacity:.6,depthWrite:false});
+  var body=new THREE.Mesh(geo,bm);P(body,'corpo');root.add(body);
+  var nuc=E(mat(0x6a4a8a),.45,.45,.45,0,0,0,16);P(nuc,'nucleo');root.add(nuc);
+  var vc=E(mat(0xc8e8f8,{transparent:true,opacity:.8}),.28,.28,.28,.8,.2,.5,14);P(vc,'vacuolo');root.add(vc);
+  var fv=new THREE.Group();fv.add(E(mat(0xd8e0c0,{transparent:true,opacity:.7}),.5,.5,.5,-.8,-.3,.4,14));fv.add(E(mat(0x3a8a3a),.2,.2,.2,-.8,-.3,.4,10));P(fv,'digestivo');root.add(fv);
+  var lobes=[[1,0,0],[-.7,.2,.7],[.2,-.3,-1]].map(function(l){return V3(l[0],l[1],l[2]).normalize()});
+  return {root:root,
+    parts:[
+      {id:'corpo',name:'Pseudopodi',text:'L\'ameba si muove e cattura il cibo emettendo prolungamenti temporanei del citoplasma (pseudopodi): per questo il suo contorno cambia di continuo.',a:[1.9,.6,0]},
+      {id:'nucleo',name:'Nucleo',text:'Come tutti i protisti, l\'ameba è eucariote: ha un vero nucleo delimitato da membrana.',a:[.3,.9,.2]},
+      {id:'vacuolo',name:'Vacuolo contrattile',text:'Elimina l\'acqua in eccesso che entra per osmosi: l\'ameba vive in acqua dolce.',a:[1.2,.6,.8]},
+      {id:'digestivo',name:'Vacuolo digerente',text:'La preda viene inglobata (fagocitosi) in un vacuolo dove viene digerita: i protozoi sono eterotrofi.',a:[-1.5,-.8,.7]}],
+    cam:{th:.5,ph:1.3,dist:8.5,ty:0},
+    update:function(t){var pa=geo.attributes.position,v=V3(0,0,0);for(var i=0;i<pa.count;i++){v.set(base[i*3],base[i*3+1],base[i*3+2]).normalize();var d=0;
+        lobes.forEach(function(l,k){var a=t*.4+k*2.1,L=V3(Math.cos(a)*l.x-Math.sin(a)*l.z,l.y,Math.sin(a)*l.x+Math.cos(a)*l.z).normalize();var c=Math.max(0,v.dot(L));d+=Math.pow(c,5)*(.7+.3*Math.sin(t*.9+k))});
+        var R=1.4+d*.9;pa.setXYZ(i,v.x*R,v.y*R*.85,v.z*R)}pa.needsUpdate=true;geo.computeVertexNormals();
+      var s=1+.18*Math.sin(t*1.8);vc.scale.set(.28*s,.28*s,.28*s)}
+  };
+}
+function buildParamecio(){
+  var root=new THREE.Group(),bm=mat(0xe8d8a0,{transparent:true,opacity:.5,depthWrite:false}),NC=260;
+  var body=E(bm,2.8,1.0,1.0,0,0,0,32);P(body,'corpo');root.add(body);
+  var mac=E(mat(0x7a4a8a),.7,.28,.28,.2,0,0,16);P(mac,'nucleo');root.add(mac);root.add(P(E(mat(0x4a2a6a),.12,.12,.12,.25,.3,.1),'nucleo'));
+  var og=new THREE.Mesh(new THREE.CylinderGeometry(.08,.14,1.4,8,1,true),mat(0x6a5a30,{side:THREE.DoubleSide}));og.rotation.z=Math.PI/2+.25;og.position.set(-1.0,-.2,.55);P(og,'bocca');root.add(og);
+  var vcs=[[1.8,.15,.1],[-1.8,.15,.1]].map(function(p){var v=E(mat(0xc8e8f8,{transparent:true,opacity:.85}),.28,.28,.28,p[0],p[1],p[2],14);P(v,'vacuolo');root.add(v);return v});
+  var fv=new THREE.Group();[[-.4,-.25,.3],[.7,-.3,-.2],[-.9,.0,-.3]].forEach(function(p){fv.add(E(mat(0xa8c890,{transparent:true,opacity:.8}),.2,.2,.2,p[0],p[1],p[2],10))});P(fv,'digestivo');root.add(fv);
+  var cg=new THREE.CylinderGeometry(.012,.012,1,4);cg.translate(0,.5,0);var cil=new THREE.InstancedMesh(cg,mat(0xd8c890),NC);P(cil,'ciglia');root.add(cil);
+  var r=rng(6),cd=[];for(var i=0;i<NC;i++){var th=Math.acos(2*r()-1),ph=r()*6.28;var n=V3(Math.sin(th)*Math.cos(ph),Math.cos(th),Math.sin(th)*Math.sin(ph));var p=V3(n.x*2.8,n.y*1.0,n.z*1.0);var nn=V3(n.x/2.8,n.y/1.0,n.z/1.0).normalize();cd.push({p:p,n:nn,ph:r()*6.28})}
+  var M=new THREE.Matrix4(),q=new THREE.Quaternion(),UP=V3(0,1,0),sc=V3(1,.3,1);
+  return {root:root,
+    parts:[
+      {id:'corpo',name:'Cellula a pantofola',text:'Protozoo unicellulare di acqua dolce, con forma allungata e un rivestimento flessibile (pellicola).',a:[0,1.5,.8]},
+      {id:'ciglia',name:'Ciglia',text:'Centinaia di corte appendici che battono in modo coordinato e fanno nuotare la cellula; spingono anche il cibo verso la bocca. Per questo i paramecio sono ciliati.',a:[2.3,.9,.8]},
+      {id:'bocca',name:'Doccia orale',text:'Incavo ciliato in cui convoglia batteri e piccoli organismi di cui si nutre.',a:[-1.8,-.7,.9]},
+      {id:'nucleo',name:'Macronucleo e micronucleo',text:'Due tipi di nucleo: il grande macronucleo regola le funzioni quotidiane, il piccolo micronucleo interviene nella riproduzione.',a:[.2,.6,.5]},
+      {id:'vacuolo',name:'Vacuoli contrattili',text:'Due vacuoli che si gonfiano e svuotano a turno per espellere l\'acqua che entra per osmosi.',a:[1.9,.6,.5]},
+      {id:'digestivo',name:'Vacuoli digestivi',text:'Dentro ai vacuoli le prede vengono digerite; i protozoi sono eterotrofi.',a:[.7,-.7,.4]}],
+    cam:{th:.5,ph:1.25,dist:9.5,ty:0},
+    update:function(t){for(var i=0;i<NC;i++){var c=cd[i],bend=.7*Math.sin(t*9-c.p.x*2+c.ph);var d=c.n.clone();d.x-=bend*.6;d.normalize();q.setFromUnitVectors(UP,d);M.compose(c.p,q,V3(1,.22+.03*Math.sin(t*9+c.ph),1));cil.setMatrixAt(i,M)}cil.instanceMatrix.needsUpdate=true;
+      vcs[0].scale.setScalar(.28*(1+.3*Math.sin(t*1.6)));vcs[1].scale.setScalar(.28*(1+.3*Math.sin(t*1.6+3.14)))}
+  };
+}
+function buildEuglena(){
+  var root=new THREE.Group(),bm=mat(0x6ab04a,{transparent:true,opacity:.6,depthWrite:false});
+  var body=E(bm,2.0,.8,.8,0,0,0,30);P(body,'corpo');root.add(body);
+  var nuc=E(mat(0x6a4a8a),.3,.3,.3,-.3,0,.1,14);P(nuc,'nucleo');root.add(nuc);
+  var cm=mat(0x1a6a2a),ch=new THREE.Group();for(var i=0;i<14;i++){var a=i*2.4,x=-1.2+(i%7)*.4;ch.add(E(cm,.16,.05,.16,x,Math.sin(a)*.5,Math.cos(a)*.5,8))}P(ch,'cloroplasti');root.add(ch);
+  var st=E(mat(0xd03a2a),.1,.1,.1,1.35,.3,.35,10);P(st,'stigma');root.add(st);
+  var vc=E(mat(0xc8e8f8,{transparent:true,opacity:.85}),.2,.2,.2,1.5,-.15,.15,10);P(vc,'vacuolo');root.add(vc);
+  var fl=chain(18,.2,.05,.015,mat(0xe0a030));fl.root.rotation.z=Math.PI/2;fl.root.position.set(2.0,0,0);P(fl.root,'flagello');root.add(fl.root);
+  return {root:root,
+    parts:[
+      {id:'corpo',name:'Cellula',text:'Protista unicellulare di acqua dolce, con pellicola flessibile al posto della parete rigida: può cambiare forma.',a:[0,1.2,.8]},
+      {id:'cloroplasti',name:'Cloroplasti',text:'Fanno la fotosintesi: l\'euglena è un protofita. Al buio può però nutrirsi di sostanze organiche assorbendole.',a:[-1.0,.9,.7]},
+      {id:'flagello',name:'Flagello',text:'Lungo filamento che frusta l\'acqua e trascina la cellula.',a:[3.3,.5,0]},
+      {id:'stigma',name:'Stigma',text:'Macchia rossa sensibile alla luce: orienta il nuoto verso la luce.',a:[1.4,.9,.7]},
+      {id:'nucleo',name:'Nucleo',text:'Come tutti i protisti, ha un nucleo vero (eucariote).',a:[-.3,.4,.6]},
+      {id:'vacuolo',name:'Vacuolo contrattile',text:'Espelle l\'acqua in eccesso.',a:[1.5,-.5,.6]}],
+    cam:{th:.5,ph:1.3,dist:12,ty:0},
+    update:function(t){fl.joints.forEach(function(j,i){j.rotation.x=.45*Math.sin(t*7-i*.5);j.rotation.z=.12*Math.cos(t*5-i*.4)});root.rotation.x=.12*Math.sin(t*1.2)}
+  };
+}
+
+MODELS.poriferi={name:'Poriferi',note:'',variants:[{label:'Esterno',build:function(){return buildSpugna(false)},note:'Spugna a forma di vaso.'},{label:'Sezione',build:function(){return buildSpugna(true)},note:'In sezione: i puntini azzurri mostrano il percorso dell\'acqua (si muovono lentamente).'}]};
+MODELS.platelminti={name:'Platelminti',note:'',variants:[{label:'Planaria',build:buildPlanaria,note:'Verme piatto libero, di acqua dolce.'},{label:'Tenia',build:buildTenia,note:'Verme piatto parassita dell\'intestino (qui accorciato).'}]};
+MODELS.nematodi={name:'Nematodi',note:'Esempio: un nematode con il corpo trasparente (schema).',variants:[{label:'Nematode',build:buildNematode}]};
+MODELS.anellidi={name:'Anellidi',note:'',variants:[{label:'Lombrico',build:function(){return buildLombrico(false)},note:'Esterno: il corpo si muove con onde di contrazione.'},{label:'Interno',build:function(){return buildLombrico(true)},note:'Corpo trasparente: gli organi interni (schema semplificato).'}]};
+MODELS.echinodermi={name:'Echinodermi',note:'',variants:[{label:'Stella marina',build:function(){return buildStella(false)},note:'Faccia superiore (aborale).'},{label:'Faccia inferiore',build:function(){return buildStella(true)},note:'Faccia orale, con bocca e piedini ambulacrali.'}]};
+MODELS.tunicati={name:'Tunicati e cefalocordati',note:'',variants:[{label:'Ascidia adulta',build:buildAscidia,note:'Gli adulti sono fissi; i puntini azzurri indicano il flusso d\'acqua. I cefalocordati (anfiosso) non hanno modello: sono piccoli vertebrati-simili marini con notocorda per tutta la vita.'},{label:'Larva',build:buildLarvaAscidia,note:'La larva nuotatrice ha tutti i caratteri dei cordati.'}]};
+MODELS.archei={name:'Archei',note:'Schema di una cellula di archeo (non in scala, ingrandita molte migliaia di volte).',variants:[{label:'Cellula',build:buildArcheo}]};
+MODELS.batteri={name:'Batteri',note:'Schema di un batterio a bastoncino (non in scala).',variants:[{label:'Bacillo',build:buildBatterio},{label:'Scissione',build:buildScissione,note:'Riproduzione per scissione binaria (ciclo in animazione).'}]};
+MODELS.virus={name:'Virus',note:'Schemi non in scala: i virus sono molto più piccoli di una cellula.',variants:[{label:'Batteriofago',build:buildFago,note:'Virus che infetta i batteri.'},{label:'Con involucro',build:buildVirusEnv,note:'Schema generico di virus con involucro.'}]};
+MODELS.protisti={name:'Protisti',note:'',variants:[{label:'Ameba',build:buildAmeba,note:'Protozoo che si muove con pseudopodi.'},{label:'Paramecio',build:buildParamecio,note:'Protozoo ciliato.'},{label:'Euglena',build:buildEuglena,note:'Alga unicellulare con flagello (protofita).'}]};
+MODELS.funghi={name:'Fungo',note:'Esempio: un fungo con carpoforo (cappello e gambo) e il micelio nel terreno.',variants:[{label:'Fungo',build:buildFungo}]};
+MODELS.cnidari={name:'Cnidari',note:'',variants:[{label:'Medusa',build:buildMedusa,note:'La medusa è la forma libera, a campana, che nuota.'},{label:'Polipo',build:buildPolipo,note:'Il polipo è la forma fissa, a sacco, con la bocca rivolta verso l\'alto. Anemoni e coralli hanno solo il polipo; molti altri cnidari alternano polipo e medusa.'}]};
+MODELS.insetti={name:'Insetti',note:'Esempio: un\'ape stilizzata.',variants:[{label:'Ape',build:buildInsetto}]};
+MODELS.briofite={name:'Briofite',note:'Esempio: un cuscinetto di muschio con i suoi sporofiti.',variants:[{label:'Muschio',build:buildMuschio}]};
+MODELS.pteridofite={name:'Pteridofite',note:'Esempio: una felce con rizoma, fronde e sori.',variants:[{label:'Felce',build:buildFelce}]};
+MODELS.gimnosperme={name:'Gimnosperme',note:'Esempio: una conifera con coni e semi alati.',variants:[{label:'Conifera',build:buildConifera}]};
+MODELS.angiosperme={name:'Angiosperme',note:'',variants:[{label:'Fiore',build:buildFiore,note:'Il fiore contiene gli organi riproduttori. Dopo l\'impollinazione e la fecondazione l\'ovario diventa il frutto e gli ovuli diventano semi.'},{label:'Frutto',build:buildFrutto,note:'Il frutto racchiude i semi: da qui il nome del gruppo (dal greco, «seme in un contenitore»). Modello trasparente per vedere i semi.'}]};
+MODELS.bivalvi={name:'Bivalvi',note:'Esempio: una conchiglia a due valve aperta (le valve si aprono e si chiudono lentamente).',variants:[{label:'Bivalve',build:buildBivalve}]};
+MODELS.gasteropodi={name:'Gasteropodi',note:'Esempio: una chiocciola con la conchiglia a spirale.',variants:[{label:'Chiocciola',build:buildChiocciola}]};
+MODELS.cefalopodi={name:'Cefalopodi',note:'Esempio: un polpo.',variants:[{label:'Polpo',build:buildPolpo}]};
+MODELS.miriapodi={name:'Miriapodi',note:'Esempio: un millepiedi.',variants:[{label:'Millepiedi',build:buildMillepiedi}]};
+MODELS.crostacei={name:'Crostacei',note:'Esempio: un gambero.',variants:[{label:'Gambero',build:buildGambero}]};
+MODELS.aracnidi={name:'Aracnidi',note:'Esempio: un ragno.',variants:[{label:'Ragno',build:buildRagno}]};
+MODELS.cartilaginei={name:'Pesci cartilaginei',note:'Esempio: uno squalo.',variants:[{label:'Esterno',build:function(){return buildSqualo(false)}},{label:'Scheletro',build:function(){return buildSqualo(true)},note:'Lo scheletro è di cartilagine, più leggera e flessibile dell\'osso (nello scheletro sono evidenziati solo cranio, colonna e archi branchiali).'}]};
+MODELS.ossei={name:'Pesci ossei',note:'Esempio: un pesce osseo generico.',variants:[{label:'Esterno',build:function(){return buildPesceOsseo(false)}},{label:'Interno',build:function(){return buildPesceOsseo(true)},note:'Corpo reso trasparente per vedere scheletro osseo, vescica natatoria e branchie.'}]};
+MODELS.anfibi={name:'Anfibi',note:'Le uova degli anfibi sono deposte in acqua e non hanno guscio; da ciascuna nasce un girino che subisce la metamorfosi.',variants:[{label:'Rana',build:buildRana},{label:'Girino',build:buildGirino}]};
+MODELS.rettili={name:'Rettili',note:'I rettili sono ectotermi: ricavano calore dall\'ambiente e per questo si scaldano al sole.',variants:[{label:'Lucertola',build:buildLucertola},{label:'Uovo',build:buildUovo,note:'Uovo con guscio e annessi embrionali (amnios, tuorlo): ha reso possibile la vita lontano dall\'acqua.'}]};
+MODELS.uccelli={name:'Uccelli',note:'Esempio: un uccello in volo, con le ali che battono.',variants:[{label:'In volo',build:function(){return buildUccello(false)}},{label:'Scheletro',build:function(){return buildUccello(true)}}]};
+MODELS.mammiferi={name:'Mammiferi',note:'Esempio: un mammifero quadrupede stilizzato.',variants:[{label:'Corpo',build:buildCane},{label:'Cranio',build:buildCranio,note:'Cranio di un mammifero carnivoro: i denti hanno forme diverse e funzioni diverse.'}]};
+var ORDER3D=['archei','batteri','virus','protisti','funghi','briofite','pteridofite','gimnosperme','angiosperme','poriferi','cnidari','platelminti','nematodi','anellidi','bivalvi','gasteropodi','cefalopodi','miriapodi','crostacei','aracnidi','insetti','echinodermi','tunicati','cartilaginei','ossei','anfibi','rettili','uccelli','mammiferi'];
+
+/* ---- visualizzatore ---- */
+function Viewer(host){
+  var self=this;this.host=host;this.fail=false;
+  this.canvas=document.createElement('canvas');host.insertBefore(this.canvas,host.firstChild);
+  try{this.renderer=new THREE.WebGLRenderer({canvas:this.canvas,antialias:true,alpha:true});}
+  catch(e){this.fail=true;return}
+  this.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  this.scene=new THREE.Scene();
+  this.camera=new THREE.PerspectiveCamera(40,1,.1,100);
+  this.scene.add(new THREE.AmbientLight(0xffffff,.8));
+  var d1=new THREE.DirectionalLight(0xffffff,.6);d1.position.set(3,5,4);this.scene.add(d1);
+  var d2=new THREE.DirectionalLight(0xffffff,.3);d2.position.set(-4,2,-3);this.scene.add(d2);
+  this.s={th:.5,ph:1.3,dist:8,ty:0};this.def={th:.5,ph:1.3,dist:8,ty:0};
+  this.fit=1;this.auto=false;this.anim=true;this.labels=true;
+  this.t=0;this.last=performance.now();this.model=null;this.group=null;this.partMeshes={};this.partMats={};this.sel=null;this.lbl={};
+  this.ray=new THREE.Raycaster();this.pointers={};this.pinch=0;
+  var c=this.canvas;
+  c.addEventListener('pointerdown',function(e){c.setPointerCapture(e.pointerId);self.pointers[e.pointerId]={x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY,t0:performance.now()};self.pinch=0;});
+  c.addEventListener('pointermove',function(e){
+    var p=self.pointers[e.pointerId];if(!p)return;
+    var ids=Object.keys(self.pointers);
+    if(ids.length===1){self.s.th-=(e.clientX-p.x)*.008;self.s.ph=Math.min(Math.PI-.15,Math.max(.15,self.s.ph-(e.clientY-p.y)*.008))}
+    p.x=e.clientX;p.y=e.clientY;
+    if(ids.length===2){var a=self.pointers[ids[0]],b=self.pointers[ids[1]],d=Math.hypot(a.x-b.x,a.y-b.y);if(self.pinch)self.s.dist=self.clampD(self.s.dist*self.pinch/d);self.pinch=d}
+  });
+  function up(e){var p=self.pointers[e.pointerId];if(!p)return;delete self.pointers[e.pointerId];self.pinch=0;
+    if(Math.hypot(e.clientX-p.x0,e.clientY-p.y0)<6&&performance.now()-p.t0<500&&e.type==='pointerup')self.tap(e)}
+  c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up);
+  c.addEventListener('wheel',function(e){e.preventDefault();self.s.dist=self.clampD(self.s.dist*Math.exp(e.deltaY*.001))},{passive:false});
+  if(window.ResizeObserver)new ResizeObserver(function(){self.resize()}).observe(host);else window.addEventListener('resize',function(){self.resize()});
+  this.resize();
+  (function loop(){requestAnimationFrame(loop);self.frame()})();
+}
+Viewer.prototype.clampD=function(d){var b=this.def.dist;return Math.min(b*1.8,Math.max(b*.35,d))};
+Viewer.prototype.resize=function(){
+  var w=this.host.clientWidth,h=this.host.clientHeight;if(!w||!h)return;
+  this.renderer.setSize(w,h,false);this.camera.aspect=w/h;this.camera.updateProjectionMatrix();
+  this.fit=Math.max(1,1.25/this.camera.aspect);
+};
+Viewer.prototype.reset=function(){Object.assign(this.s,this.def)};
+Viewer.prototype.tap=function(e){
+  var r=this.canvas.getBoundingClientRect(),v=new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);
+  this.ray.setFromCamera(v,this.camera);
+  var hits=this.ray.intersectObjects(this.pickables||[],false),id=null;
+  if(hits.length){
+    var first=hits[0].object,trans=first.material.userData.baseOp<.9;
+    if(trans){for(var i=1;i<hits.length;i++){if(hits[i].object.material.userData.baseOp>=.9){id=hits[i].object.userData.part;break}}}
+    if(!id)id=first.userData.part;
+  }
+  this.select(id===this.sel?null:id);
+};
+Viewer.prototype.load=function(variant){
+  var self=this;
+  if(this.group){this.scene.remove(this.group);this.group.traverse(function(o){if(o.geometry)o.geometry.dispose()})}
+  lblsEl.innerHTML='';this.lbl={};this.sel=null;
+  var m=variant.build();this.model=m;this.group=m.root;this.scene.add(m.root);
+  this.partMeshes={};this.partMats={};this.pickables=[];
+  m.root.traverse(function(o){if(o.isMesh&&o.userData.part){
+    var id=o.userData.part;(self.partMeshes[id]=self.partMeshes[id]||[]).push(o);self.pickables.push(o);
+    var mt=o.material;if(!mt.userData.base){mt.userData.base=true;mt.userData.baseOp=mt.opacity;mt.userData.baseTr=mt.transparent;mt.userData.baseDW=mt.depthWrite;mt.userData.baseEm=mt.emissive.clone()}
+    (self.partMats[id]=self.partMats[id]||new Set()).add(mt)}});
+  m.parts.forEach(function(p){
+    var b=document.createElement('button');b.className='lbl';b.textContent=p.name;b.onclick=function(){self.select(self.sel===p.id?null:p.id)};
+    lblsEl.appendChild(b);self.lbl[p.id]=b});
+  this.def={th:m.cam.th,ph:m.cam.ph,dist:m.cam.dist,ty:m.cam.ty};this.reset();this.applySel();this.resize();
+};
+Viewer.prototype.select=function(id){this.sel=id;this.applySel();if(this.onSelect)this.onSelect(id)};
+Viewer.prototype.applySel=function(){
+  var self=this;
+  Object.keys(this.partMats).forEach(function(id){
+    self.partMats[id].forEach(function(mt){
+      if(self.sel===null){mt.opacity=mt.userData.baseOp;mt.transparent=mt.userData.baseTr;mt.depthWrite=mt.userData.baseDW;mt.emissive.copy(mt.userData.baseEm)}
+      else if(self.sel===id){mt.opacity=mt.userData.baseOp;mt.transparent=mt.userData.baseTr;mt.depthWrite=mt.userData.baseDW;mt.emissive.copy(mt.color).multiplyScalar(.38)}
+      else{mt.transparent=true;mt.depthWrite=false;mt.opacity=mt.userData.baseOp*.16;mt.emissive.copy(mt.userData.baseEm)}
+      mt.needsUpdate=true})});
+  Object.keys(this.lbl).forEach(function(id){self.lbl[id].classList.toggle('on',id===self.sel)});
+};
+Viewer.prototype.frame=function(){
+  var now=performance.now(),dt=Math.min(.05,(now-this.last)/1000);this.last=now;
+  if(!view3dActive||!this.model)return;
+  if(this.anim){this.t+=dt;this.model.update(this.t,dt)}
+  if(this.auto&&Object.keys(this.pointers).length===0)this.s.th+=dt*.35;
+  var s=this.s,d=s.dist*this.fit;
+  this.camera.position.set(Math.sin(s.ph)*Math.sin(s.th)*d,s.ty+Math.cos(s.ph)*d,Math.sin(s.ph)*Math.cos(s.th)*d);
+  this.camera.lookAt(0,s.ty,0);
+  this.renderer.render(this.scene,this.camera);
+  // etichette
+  var w=this.host.clientWidth,h=this.host.clientHeight,self=this;
+  this.model.parts.forEach(function(p){
+    var el=self.lbl[p.id];if(!el)return;
+    if(!self.labels){el.style.display='none';return}
+    var v=new THREE.Vector3(p.a[0],p.a[1],p.a[2]).project(self.camera);
+    if(v.z>1||Math.abs(v.x)>1.05||Math.abs(v.y)>1.05){el.style.display='none';return}
+    el.style.display='';
+    el.style.transform='translate(-50%,-50%) translate('+((v.x*.5+.5)*w)+'px,'+((-v.y*.5+.5)*h)+'px)';
+  });
+};
+
+function init3D(){
+  if(viewer||!HAS3D){if(!HAS3D&&!viewer){stageEl.innerHTML='<div class="fail">Il modello 3D richiede la libreria Three.js (serve la connessione a internet). Riprova più tardi: l\'albero e il quiz funzionano comunque.</div>';viewer={fail:true}}return}
+  viewer=new Viewer(stageEl);
+  if(viewer.fail){stageEl.innerHTML='<div class="fail">Il browser non supporta WebGL: il 3D non è disponibile su questo dispositivo. L\'albero e il quiz funzionano comunque.</div>';return}
+  viewer.onSelect=function(id){curPart=id;renderCard3d()};
+  var g=document.getElementById('groups3d');
+  var CATS=[['Microscopici (procarioti, virus, protisti)',['archei','batteri','virus','protisti']],['Funghi e piante',['funghi','briofite','pteridofite','gimnosperme','angiosperme']],['Animali invertebrati',['poriferi','cnidari','platelminti','nematodi','anellidi','bivalvi','gasteropodi','cefalopodi','miriapodi','crostacei','aracnidi','insetti','echinodermi']],['Cordati',['tunicati','cartilaginei','ossei','anfibi','rettili','uccelli','mammiferi']]];
+  g.innerHTML='<button class="btn" id="gPrev" aria-label="Gruppo precedente">‹</button><button class="btn on pickmain" id="gOpen" aria-expanded="false" aria-controls="gPanel"><span id="gName"></span><span class="n" id="gNum"></span></button><button class="btn" id="gNext" aria-label="Gruppo successivo">›</button><div class="gpanel" id="gPanel" hidden></div>';
+  var gp=document.getElementById('gPanel');
+  CATS.forEach(function(c){var h=document.createElement('div');h.className='cat';h.textContent=c[0];gp.appendChild(h);var gg=document.createElement('div');gg.className='gg';
+    c[1].forEach(function(id){var b=document.createElement('button');b.className='btn';b.dataset.g=id;b.textContent=MODELS[id].name;b.onclick=function(){setGroup(id,0);togglePanel(false)};gg.appendChild(b)});gp.appendChild(gg)});
+  function togglePanel(on){if(on===undefined)on=gp.hidden;gp.hidden=!on;document.getElementById('gOpen').setAttribute('aria-expanded',on?'true':'false');if(on){var cur=gp.querySelector('.btn.on');if(cur&&cur.scrollIntoView)cur.scrollIntoView({block:'nearest'})}}
+  document.getElementById('gOpen').onclick=function(e){e.stopPropagation();togglePanel()};
+  document.getElementById('gPrev').onclick=function(){var i=ORDER3D.indexOf(curGroup);setGroup(ORDER3D[(i+ORDER3D.length-1)%ORDER3D.length],0)};
+  document.getElementById('gNext').onclick=function(){var i=ORDER3D.indexOf(curGroup);setGroup(ORDER3D[(i+1)%ORDER3D.length],0)};
+  document.addEventListener('click',function(e){if(!gp.hidden&&!g.contains(e.target))togglePanel(false)});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!gp.hidden){togglePanel(false);document.getElementById('gOpen').focus()}});
+  setGroup(curGroup||'funghi',0);
+}
+function setGroup(id,vi){
+  if(!viewer||viewer.fail)return;
+  curGroup=id;curVar=vi;curPart=null;
+  Array.prototype.forEach.call(document.querySelectorAll('#gPanel .btn'),function(b){b.classList.toggle('on',b.dataset.g===id)});var gn=document.getElementById('gName');if(gn){gn.textContent=MODELS[id].name;document.getElementById('gNum').textContent=(ORDER3D.indexOf(id)+1)+' / '+ORDER3D.length}
+  viewer.load(MODELS[id].variants[vi]);renderCard3d();
+}
+function renderCard3d(){
+  var g=MODELS[curGroup],v=g.variants[curVar],h=cardHTML(curGroup==='funghi'?'funghi':curGroup,{btnTree:true});
+  var ctrl='';
+  if(g.variants.length>1){ctrl+='<div class="sect">Forma</div><div class="row">'+g.variants.map(function(x,i){return '<button class="btn'+(i===curVar?' on':'')+'" data-var="'+i+'">'+x.label+'</button>'}).join('')+'</div>'}
+  var note=v.note||g.note;if(note)ctrl+='<p class="hint" style="margin:0 0 6px">'+esc(note)+'</p>';
+  var parts='<div class="sect">Strutture</div><div class="row">'+viewer.model.parts.map(function(p){
+    var mts=viewer.partMats[p.id],col='#999';if(mts){var f=mts.values().next().value;col=f.userData.dot||f.color.getStyle()}
+    return '<button class="btn part'+(curPart===p.id?' on':'')+'" data-part="'+p.id+'" style="flex:0 1 auto"><span class="dot" style="background:'+col+'"></span>'+esc(p.name)+'</button>'}).join('')+'</div>';
+  var pd='';
+  if(curPart){var pp=viewer.model.parts.filter(function(x){return x.id===curPart})[0];pd='<div class="pdesc"><b>'+esc(pp.name)+'</b><br>'+esc(pp.text)+'</div>'}
+  else pd='<p class="hint">Tocca una struttura nel modello, un\'etichetta o un pulsante.</p>';
+  card3d.innerHTML=h+ctrl+parts+pd;
+}
+card3d.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  if(b.dataset.part)viewer.select(curPart===b.dataset.part?null:b.dataset.part);
+  else if(b.dataset.var!==undefined)setGroup(curGroup,+b.dataset.var);
+  else if(b.dataset.go)openTree(b.dataset.go);
+  else if(b.dataset.tree)openTree(b.dataset.tree);
+});
+function bindToggle(id,fn){var b=document.getElementById(id);b.onclick=function(){var on=!b.classList.contains('on');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);fn(on)}}
+bindToggle('bLbl',function(on){if(viewer&&!viewer.fail)viewer.labels=on});
+bindToggle('bRot',function(on){if(viewer&&!viewer.fail)viewer.auto=on});
+bindToggle('bAnim',function(on){if(viewer&&!viewer.fail)viewer.anim=on});
+document.getElementById('bReset').onclick=function(){if(viewer&&!viewer.fail)viewer.reset()};
+function open3D(id){showTab('3d');if(viewer&&!viewer.fail&&MODELS[id])setGroup(id,0);else if(MODELS[id])curGroup=id;window.scrollTo({top:0,behavior:'smooth'})}
+function openTree(id){showTab('albero');revealNode(id);window.scrollTo({top:0,behavior:'smooth'})}
+
+/* ===================== QUIZ ===================== */
+var qz=null,qmode='gruppi',quizEl=document.getElementById('quiz');
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+var LEVELS=['dominio','regno','phylum','classe'];
+function startQuiz(mode){
+  qmode=mode;
+  document.getElementById('m-gruppi').classList.toggle('on',mode==='gruppi');
+  document.getElementById('m-livelli').classList.toggle('on',mode==='livelli');
+  var pool=D.filter(function(n){return mode==='gruppi'?!!n.tr:!!n.lq});
+  var items=shuffle(pool).slice(0,10).map(function(n){
+    var opts;
+    if(mode==='gruppi'){
+      var same=shuffle(pool.filter(function(x){return x.id!==n.id&&branchOf(x.id)===branchOf(n.id)})).slice(0,2);
+      var rest=shuffle(pool.filter(function(x){return x.id!==n.id&&same.indexOf(x)<0}));
+      opts=shuffle([n].concat(same,rest).slice(0,4).map(function(x){return x.id}));
+      if(opts.length<4)opts=shuffle([n.id].concat(rest.map(function(x){return x.id})).slice(0,4));
+    }else opts=LEVELS.slice();
+    return {id:n.id,opts:opts};
+  });
+  qz={i:0,score:0,items:items,wrong:[],done:false,ans:null};
+  renderQuiz();
+}
+function art(l){return l==='classe'?'una classe':'un '+l}
+function renderQuiz(){
+  if(qz.i>=qz.items.length){
+    var h='<div class="qhead"><span>Fine del giro</span></div><div class="big">'+qz.score+' / '+qz.items.length+'</div>';
+    if(qz.wrong.length){h+='<p>Da rivedere:</p><div class="chips">'+qz.wrong.map(function(id){return '<button class="chip" data-tree="'+id+'">'+esc(byId[id].n)+'</button>'}).join('')+'</div><p class="hint">Tocca un gruppo per aprirlo nell\'albero.</p>'}
+    else h+='<p>Nessun errore.</p>';
+    h+='<div class="row" style="margin-top:14px"><button class="btn on" data-restart="1">Nuovo giro</button></div>';
+    quizEl.innerHTML=h;return;
+  }
+  var it=qz.items[qz.i],n=byId[it.id],h='';
+  h+='<div class="qhead"><span>Domanda '+(qz.i+1)+' di '+qz.items.length+'</span><span>Punti: '+qz.score+'</span></div>';
+  if(qmode==='gruppi'){
+    h+='<b>Di quale gruppo si parla?</b><div class="qbox">'+n.tr.map(function(t){return '<div>'+esc(t)+'</div>'}).join('')+'</div>';
+    h+='<div class="opts">'+it.opts.map(function(o){return '<button class="opt" data-o="'+o+'">'+esc(byId[o].n)+'</button>'}).join('')+'</div>';
+  }else{
+    h+='<b>A quale livello sistematico appartiene «'+esc(n.n)+'»?</b>';
+    h+='<div class="opts" style="margin-top:12px">'+it.opts.map(function(o){return '<button class="opt" data-o="'+o+'">'+o+'</button>'}).join('')+'</div>';
+  }
+  h+='<div class="fb" id="fb"></div>';
+  quizEl.innerHTML=h;
+}
+quizEl.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  if(b.dataset.restart){startQuiz(qmode);return}
+  if(b.dataset.tree){openTree(b.dataset.tree);return}
+  if(b.dataset.next){qz.i++;renderQuiz();return}
+  if(b.dataset.o===undefined||qz.ans)return;
+  var it=qz.items[qz.i],n=byId[it.id],right=(qmode==='gruppi'?it.id:n.lq),ok=b.dataset.o===right;
+  qz.ans=true;if(ok)qz.score++;else qz.wrong.push(it.id);
+  Array.prototype.forEach.call(quizEl.querySelectorAll('.opt'),function(x){x.disabled=true;if(x.dataset.o===right)x.classList.add('ok');else if(x===b)x.classList.add('ko')});
+  var fb='<p><b>'+(ok?'Corretto.':'Non proprio.')+'</b> ';
+  if(qmode==='gruppi')fb+=(ok?'':'Era ')+esc(n.n)+' ('+esc(n.lv)+'): '+esc(n.t);
+  else fb+=esc(n.n)+' è '+art(n.lq)+'. Percorso: '+esc(pathNames(n.id))+'.';
+  fb+='</p><div class="row"><button class="btn on" data-next="1">'+(qz.i+1<qz.items.length?'Avanti':'Vedi il risultato')+'</button><button class="btn" data-tree="'+n.id+'">Apri nell\'albero</button></div>';
+  document.getElementById('fb').innerHTML=fb;
+  qz.ans=false;qz.ans=true;
+});
+quizEl.addEventListener('click',function(e){if(e.target.closest('[data-next]'))qz.ans=false},true);
+document.getElementById('m-gruppi').onclick=function(){startQuiz('gruppi')};
+document.getElementById('m-livelli').onclick=function(){startQuiz('livelli')};
+startQuiz('gruppi');
+</script>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0zNDUgLTExMzAgNDM2NyAxNDg0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlByb2YuIFQiPjxkZWZzPjxmaWx0ZXIgaWQ9ImciIHg9Ii0yMCUiIHk9Ii02MCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjIyMCUiPjxmZUdhdXNzaWFuQmx1ciBpbj0iU291cmNlR3JhcGhpYyIgc3RkRGV2aWF0aW9uPSI1NC43IiByZXN1bHQ9ImIiLz48ZmVDb2xvck1hdHJpeCBpbj0iYiIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgLjQxNiAwIDAgMCAwIC42NDcgMCAwIDAgMCAxIDAgMCAwIDEuMSAwIiByZXN1bHQ9ImMiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImMiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+PC9kZWZzPjxwYXRoIHRyYW5zZm9ybT0icm90YXRlKC0zIDE4MzggLTM4OCkiIGZpbGw9IiNlNmVjZjUiIGZpbHRlcj0idXJsKCNnKSIgZD0iTTIzIC0yM1ExNSAtMzkgMjIgLTY3UTI5IC05NSA0Mi41IC0xMjVRNTYgLTE1NSA3MSAtMTgzUTg2IC0yMTEgOTQgLTIyOVE5NyAtMjM1IDk4LjUgLTIzOVExMDAgLTI0MyAxMDEuNSAtMjQ4UTEwMyAtMjUzIDEwNSAtMjU5UTEwNyAtMjY1IDExMiAtMjc2UTExOCAtMjg5IDEzMS41IC0zMTYuNVExNDUgLTM0NCAxNjIgLTM3OC41UTE3OSAtNDEzIDE5Ny41IC00NTFRMjE2IC00ODkgMjMyLjUgLTUyMy41UTI0OSAtNTU4IDI2Mi41IC01ODUuNVEyNzYgLTYxMyAyODIgLTYyNlYtNjQ5UTI2NCAtNjUyIDI0NyAtNjQ3UTIzMCAtNjQyIDIxNC41IC02MzNRMTk5IC02MjQgMTg0LjUgLTYxMi41UTE3MCAtNjAxIDE1OCAtNTkyUTE0NCAtNTk1IDE0MiAtNjA1UTE0MCAtNjE1IDE0NCAtNjI2UTE0OCAtNjM3IDE1NS41IC02NDYuNVExNjMgLTY1NiAxNjkgLTY2MFEyNzMgLTcyNSAzOTIgLTc0Ni41UTUxMSAtNzY4IDYzMyAtNzUwUTcwNyAtNzEzIDczNCAtNjcxLjVRNzYxIC02MzAgNzUzLjUgLTU4N1E3NDYgLTU0NCA3MDkuNSAtNTAyUTY3MyAtNDYwIDYxOS41IC00MjEuNVE1NjYgLTM4MyA1MDEuNSAtMzUwUTQzNyAtMzE3IDM3My41IC0yOTNRMzEwIC0yNjkgMjUzIC0yNTUuNVExOTYgLTI0MiAxNTggLTI0MlExMzkgLTIxMiAxMjcgLTE5Mi41UTExNSAtMTczIDEwOCAtMTU4LjVRMTAxIC0xNDQgOTYuNSAtMTMxLjVROTIgLTExOSA4Ny41IC0xMDMuNVE4MyAtODggNzYgLTY2UTY5IC00NCA1NyAtMTFMNDYgMFE0MiAtMiAzMy41IC0xMC41UTI1IC0xOSAyMyAtMjNaTTE5MiAtMjk5UTIzNCAtMjkyIDI4MSAtMzAxLjVRMzI4IC0zMTEgMzc0LjUgLTMyOVE0MjEgLTM0NyA0NjQgLTM2OS41UTUwNyAtMzkyIDU0MiAtNDExUTYyNiAtNDU4IDY2Ny41IC01MDIuNVE3MDkgLTU0NyA3MTggLTU4NS41UTcyNyAtNjI0IDcwOS41IC02NTRRNjkyIC02ODQgNjU3LjUgLTcwMi41UTYyMyAtNzIxIDU3Ny41IC03MjZRNTMyIC03MzEgNDg1LjUgLTcxOVE0MzkgLTcwNyAzOTcgLTY3NlEzNTUgLTY0NSAzMjcgLTU5MlEzMTcgLTU3MyAzMDMgLTU0NS41UTI4OSAtNTE4IDI3NCAtNDg4UTI1OSAtNDU4IDI0NCAtNDI4LjVRMjI5IC0zOTkgMjE3LjUgLTM3NS41UTIwNiAtMzUyIDE5OSAtMzM3UTE5MiAtMzIyIDE5MiAtMzIxWk02MzcgLTExUTYzNSAtMTIgNjM3LjUgLTM0LjVRNjQwIC01NyA2NDUgLTkxUTY1MCAtMTI1IDY1OCAtMTY2UTY2NiAtMjA3IDY3NSAtMjQ0LjVRNjg0IC0yODIgNjk0LjUgLTMxMC41UTcwNSAtMzM5IDcxNSAtMzUwUTcyMiAtMzU3IDcyOSAtMzUwLjVRNzM2IC0zNDQgNzQzIC0zMzQuNVE3NTAgLTMyNSA3NTcgLTMxNy41UTc2NCAtMzEwIDc3MiAtMzE2UTgwMCAtMzU1IDgzMy41IC0zOTAuNVE4NjcgLTQyNiA5MDggLTQ1MlE5MTIgLTQ1NSA5MzAgLTQ2MS41UTk0OCAtNDY4IDk3MSAtNDc0LjVROTk0IC00ODEgMTAxOC41IC00ODUuNVExMDQzIC00OTAgMTA2MC41IC00ODkuNVExMDc4IC00ODkgMTA4NC41IC00ODAuNVExMDkxIC00NzIgMTA3OCAtNDUyUTEwMTggLTQ1MSA5NjYgLTQxN1E5MTQgLTM4MyA4NzAgLTMzM1E4MjYgLTI4MyA3OTAgLTIyNC41UTc1NCAtMTY2IDcyNy41IC0xMTZRNzAxIC02NiA2ODMuNSAtMzNRNjY2IDAgNjU4IDBRNjU3IDAgNjQ5IC00LjVRNjQxIC05IDYzNyAtMTFaTTExNzMgLTExUTExMzEgLTI4IDExMjAuNSAtNjJRMTExMCAtOTYgMTEyMSAtMTM3LjVRMTEzMiAtMTc5IDExNTkgLTIyMy41UTExODYgLTI2OCAxMjE5IC0zMDVRMTI1MiAtMzQyIDEyODUuNSAtMzY3LjVRMTMxOSAtMzkzIDEzNDMgLTM5NlExNDA1IC00MDQgMTQ0MC41IC0zODcuNVExNDc2IC0zNzEgMTQ4OSAtMzQwUTE1MDIgLTMwOSAxNDk2IC0yNjcuNVExNDkwIC0yMjYgMTQ2OS41IC0xODRRMTQ0OSAtMTQyIDE0MTYuNSAtMTAzUTEzODQgLTY0IDEzNDQuNSAtMzcuNVExMzA1IC0xMSAxMjYxIC0yLjVRMTIxNyA2IDExNzMgLTExWk0xMTYyIC02OFExMTcwIC0zNiAxMTk2IC0zMi41UTEyMjIgLTI5IDEyNTYuNSAtNDUuNVExMjkxIC02MiAxMzI5IC05My41UTEzNjcgLTEyNSAxMzk4LjUgLTE2MlExNDMwIC0xOTkgMTQ1MC41IC0yMzYuNVExNDcxIC0yNzQgMTQ3MC41IC0zMDJRMTQ3MCAtMzMwIDE0NDMuNSAtMzQ0LjVRMTQxNyAtMzU5IDEzNTUgLTM1MFExMzQxIC0zMzcgMTMxOSAtMzE4LjVRMTI5NyAtMzAwIDEyNzMuNSAtMjc4UTEyNTAgLTI1NiAxMjI3IC0yMzAuNVExMjA0IC0yMDUgMTE4NyAtMTc4UTExNzAgLTE1MSAxMTYyLjUgLTEyM1ExMTU1IC05NSAxMTYyIC02OFpNMTU2NCAtMjNRMTU2MiAtMjUgMTU2MiAtMzRRMTU2MiAtNDMgMTU2NCAtNDVMMTY0OCAtMjM4SDE1NTNRMTU1MCAtMjM4IDE1NDcuNSAtMjQyUTE1NDUgLTI0NiAxNTQzLjUgLTI1MS41UTE1NDIgLTI1NyAxNTQxIC0yNjIuNVExNTQwIC0yNjggMTU0MiAtMjcxUTE1NDUgLTI3MiAxNTUzIC0yNzVRMTU2MSAtMjc4IDE1NzAgLTI4MlExNTc5IC0yODYgMTU4NyAtMjg5UTE1OTUgLTI5MiAxNTk4IC0yOTRRMTYwMSAtMjk1IDE2MTQuNSAtMzAwUTE2MjggLTMwNSAxNjQzLjUgLTMxMC41UTE2NTkgLTMxNiAxNjcyIC0zMjFRMTY4NSAtMzI2IDE2ODggLTMyOFExNzAwIC0zMzYgMTcxNi41IC0zNjcuNVExNzMzIC0zOTkgMTc1NCAtNDQzUTE3NzUgLTQ4NyAxODAwIC01MzcuNVExODI1IC01ODggMTg1NCAtNjM0LjVRMTg4MyAtNjgxIDE5MTUgLTcxNy41UTE5NDcgLTc1NCAxOTgxLjUgLTc2OS41UTIwMTYgLTc4NSAyMDUzIC03NzRRMjA5MCAtNzYzIDIxMjkgLTcxNVEyMTM2IC03MDUgMjEzOSAtNjkzLjVRMjE0MiAtNjgyIDIxNDAgLTY3MFEyMTMxIC02NjUgMjEyMiAtNjY4UTIxMTMgLTY3MSAyMTA1LjUgLTY3OFEyMDk4IC02ODUgMjA5MiAtNjkyLjVRMjA4NiAtNzAwIDIwODQgLTcwNFEyMDE3IC03MTUgMTk3Ny41IC02OTguNVExOTM4IC02ODIgMTkxMi41IC02NDguNVExODg3IC02MTUgMTg2OCAtNTY5UTE4NDkgLTUyMyAxODI0IC00NzRRMTgxNyAtNDYyIDE4MDcuNSAtNDQzUTE3OTggLTQyNCAxNzg5IC00MDZRMTc4MCAtMzg4IDE3NzMuNSAtMzc1UTE3NjcgLTM2MiAxNzY3IC0zNjJWLTM1MFExNzY3IC0zNDYgMTc5MiAtMzQ0UTE4MTcgLTM0MiAxODQ4LjUgLTMzOFExODgwIC0zMzQgMTkwOS41IC0zMjYuNVExOTM5IC0zMTkgMTk0OCAtMzA1TDE5MzcgLTI5NFExODgwIC0yOTcgMTg0MSAtMjk2UTE4MDIgLTI5NSAxNzczIC0yODNRMTc0NCAtMjcxIDE3MjIgLTI0NC41UTE3MDAgLTIxOCAxNjc3IC0xNzBRMTY2OSAtMTUzIDE2NTYgLTEyNi41UTE2NDMgLTEwMCAxNjMwIC03NC41UTE2MTcgLTQ5IDE2MDggLTMwLjVRMTU5OSAtMTIgMTU5OCAtMTFMMTU4NiAwUTE1ODMgLTIgMTU3NC41IC0xMC41UTE1NjYgLTE5IDE1NjQgLTIzWk0yMDI4IC0xMVEyMDE0IC0zMiAyMDIwLjUgLTUzLjVRMjAyNyAtNzUgMjA0MyAtODYuNVEyMDU5IC05OCAyMDc4IC05NS41UTIwOTcgLTkzIDIxMDcgLTY4UTIxMTMgLTUzIDIxMDUuNSAtMzYuNVEyMDk4IC0yMCAyMDg0IC05LjVRMjA3MCAxIDIwNTQgMi41UTIwMzggNCAyMDI4IC0xMVpNMjg1MyAtMTFRMjg0NyAtMzYgMjg1My41IC02OC41UTI4NjAgLTEwMSAyODcyIC0xMzRRMjg4NCAtMTY3IDI4OTggLTE5Ny41UTI5MTIgLTIyOCAyOTIxIC0yNDhRMjkyNiAtMjYwIDI5MzYuNSAtMjgzUTI5NDcgLTMwNiAyOTYwLjUgLTMzNVEyOTc0IC0zNjQgMjk4OC41IC0zOTZRMzAwMyAtNDI4IDMwMTYuNSAtNDU3UTMwMzAgLTQ4NiAzMDQwLjUgLTUwOC41UTMwNTEgLTUzMSAzMDU2IC01NDJRMzAzOSAtNTQ1IDMwMDcuNSAtNTM5UTI5NzYgLTUzMyAyOTM4IC01MjMuNVEyOTAwIC01MTQgMjg2MCAtNTA0UTI4MjAgLTQ5NCAyNzg1LjUgLTQ4OS41UTI3NTEgLTQ4NSAyNzI2LjUgLTQ4OC41UTI3MDIgLTQ5MiAyNjk2IC01MDlRMjcwMyAtNTIyIDI3NDcgLTUzOVEyNzkxIC01NTYgMjg1OS41IC01NzQuNVEyOTI4IC01OTMgMzAxMi41IC02MTJRMzA5NyAtNjMxIDMxODUgLTY0OFEzMjczIC02NjUgMzM1NyAtNjc5UTM0NDEgLTY5MyAzNTA3IC03MDJRMzU3MyAtNzExIDM2MTMuNSAtNzE0UTM2NTQgLTcxNyAzNjU2IC03MTJRMzY1OSAtNzA0IDM2NTcgLTY5Mi41UTM2NTUgLTY4MSAzNjQ0IC02NzhRMzU5NSAtNjcwIDM1MzggLTY2MC41UTM0ODEgLTY1MSAzNDIyLjUgLTY0MC41UTMzNjQgLTYzMCAzMzA4IC02MTkuNVEzMjUyIC02MDkgMzIwNCAtNTk5UTMxNzMgLTU5MyAzMTQ0IC01NjNRMzExNSAtNTMzIDMwODggLTQ4OC41UTMwNjEgLTQ0NCAzMDM2IC0zODkuNVEzMDExIC0zMzUgMjk4OC41IC0yNzlRMjk2NiAtMjIzIDI5NDcgLTE3MVEyOTI4IC0xMTkgMjkxMiAtNzkuNVEyODk2IC00MCAyODg0IC0xOFEyODcyIDQgMjg2NCAwUTI4NjIgLTIgMjg1OCAtNlEyODU0IC0xMCAyODUzIC0xMVoiLz48L3N2Zz4=" alt="Prof. T" style="height:3rem;width:auto"></a></div>
+<style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6fd08c!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(111,208,140,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
+<a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Biologia</a>
+<script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
