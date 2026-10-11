@@ -395,6 +395,7 @@ footer .firma-img {
   margin: -0.4rem auto 0;
 }
 footer .motto { display: block; }
+footer .copyright { display: block; margin-top: 8px; font-size: 0.78rem; color: var(--testo-dim); }
 
 /* Firma cliccabile (pagine di disciplina): porta alla home, bagliore al passaggio */
 footer .firma-home {

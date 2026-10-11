@@ -21,5 +21,7 @@ Il sito è statico: solo HTML e CSS scritti a mano, nessun framework e nessuna b
 ## Crediti
 La firma "Prof. T" (`firma.svg`) è ricavata dal font Nothing You Could Do di Kimberly Geswein, licenza SIL Open Font License 1.1.
 
+Le animazioni 3D usano Three.js (licenza MIT).
+
 ## Licenza
-Da definire.
+© 2026 Prof. T. Tutti i diritti riservati (vedi `LICENSE`). Le librerie e i font di terzi restano soggetti alle rispettive licenze.
