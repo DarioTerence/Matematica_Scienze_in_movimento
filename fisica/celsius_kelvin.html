@@ -12,7 +12,7 @@ body{margin:0;min-height:100vh;color:var(--ink);font-family:Calibri,Carlito,"Seg
 background:radial-gradient(ellipse 80% 45% at 50% 0%,rgba(106,165,255,.10),transparent 70%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px) 0 0/36px 36px,linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px) 0 0/36px 36px,#0a0f1a}
 .wrap{max-width:1180px;margin:0 auto;padding:16px 16px 0}
 h1,h2{font-family:Cambria,Georgia,serif;color:var(--acc);margin:0}
-h1{font-size:28px;margin-bottom:4px}
+h1{font-size:28px;margin-bottom:4px;color:var(--ink)}
 h2{font-size:20px;margin-bottom:10px}
 .sub{color:var(--mut);margin:0 0 12px}
 .stage{background:var(--stagebg);border:1px solid var(--line);border-radius:12px;padding:6px}
@@ -51,10 +51,12 @@ input::placeholder{color:#5d6d87}
 @media (max-width:760px){.grid,.calcgrid{grid-template-columns:1fr}h1{font-size:23px}
 .ttl{font-size:30px}.lab{font-size:28px}.labs{font-size:29px}.nm{font-size:23px}.br{font-size:27px}.tag{font-size:28px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.eyebrow{color:#ffd08a;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 </style>
 </head>
 <body>
 <div class="wrap">
+<div class="eyebrow">Fisica</div>
 <h1>Celsius e Kelvin: due scale, stesso passo</h1>
 <p class="sub">Trascina il cursore sulle due semirette (o usa le frecce della tastiera): leggi lo stesso punto sulle due scale.</p>
 

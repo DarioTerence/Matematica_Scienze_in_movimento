@@ -22,7 +22,7 @@ body{
 }
 .wrap{max-width:1180px;margin:0 auto;padding:16px}
 h1,h2{font-family:Cambria,Georgia,serif;margin:0}
-h1{color:var(--accent);font-size:30px;line-height:1.15}
+h1{color:var(--text);font-size:30px;line-height:1.15}
 .sub{margin:4px 0 14px;color:var(--muted);font-size:18px}
 h2{color:var(--accent);font-size:20px;margin-bottom:10px}
 .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
@@ -88,10 +88,12 @@ details p{margin:8px 0 0}
 .ring.pulse{animation:pulse .9s ease-out}
 @keyframes pulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(4.2);opacity:0}}
 @media (prefers-reduced-motion:reduce){.ring.pulse{animation:none}}
+.eyebrow{color:#c9aaff;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="eyebrow">Astronomia</div>
   <h1>La velocità della luce</h1>
   <p class="sub" id="sub"></p>
   <div class="tabs" id="tabs" role="group" aria-label="Schede"></div>

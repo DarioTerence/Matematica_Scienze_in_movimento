@@ -10,7 +10,7 @@
 html,body{margin:0}
 body{background:radial-gradient(ellipse at 50% -10%,rgba(106,165,255,.14),transparent 60%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px),#0a0f1a;background-size:auto,36px 36px,36px 36px;color:var(--txt);font-family:Calibri,"Segoe UI",system-ui,sans-serif;min-height:100vh}
 .wrap{max-width:1180px;margin:0 auto;padding:16px}
-h1{font-family:Cambria,Georgia,serif;color:var(--acc);font-size:clamp(24px,4vw,34px);margin:6px 0 2px}
+h1{font-family:Cambria,Georgia,serif;color:var(--txt);font-size:clamp(24px,4vw,34px);margin:6px 0 2px}
 .lead{color:var(--sub);margin:0 0 12px;font-size:16px}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
 .tab{font:inherit;font-size:15px;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--txt);cursor:pointer}
@@ -97,10 +97,12 @@ sup{font-size:.62em;line-height:0}
  .stage{display:flex;flex-direction:column}
 }
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}}
+.eyebrow{color:#9cc5ff;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 </style>
 </head>
 <body>
 <div class="wrap">
+ <div class="eyebrow">Aritmetica</div>
  <h1>Il Reattore dei numeri</h1>
  <p class="lead">Il reattore di Prof. T è instabile: aiutalo a calcolare il valore che lo stabilizza.</p>
  <div class="tabs" role="tablist" id="tabs"></div>
