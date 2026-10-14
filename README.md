@@ -2,7 +2,7 @@
 
 Animazioni didattiche interattive di matematica e scienze per la scuola secondaria di primo grado, a cura di Prof. T.
 
-Sito: https://darioterence.github.io/Matematica_Scienze_in_movimento/
+Sito: https://scienzainmovimento.it/
 
 ## Contenuto
 - `index.html`: home con le quattro aree (Numeri e forme, Materia ed energia, Viventi, Terra e cosmo)
