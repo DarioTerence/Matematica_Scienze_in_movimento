@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://scienzainmovimento.it/sitemap.xml

@@ -13,13 +13,15 @@ Sito: https://scienzainmovimento.it/
 - `prof_t.webp`, `prof_t_occhiolino.webp`, `bagliore.svg`: caricatura di Prof. T nella home (occhi aperti, occhiolino, bagliore sulla lente), animata solo con CSS
 - `aritmetica/`, `fisica/`, `biologia/`, `astronomia/`: una cartella per disciplina, con `index.html` (elenco) e un file HTML autonomo per ogni animazione
 - `CNAME`: dominio personalizzato del sito (non rimuovere)
+- `sitemap.xml`, `robots.txt`: elenco delle pagine per i motori di ricerca (la sitemap va aggiornata a ogni nuova pagina)
 - `LICENSE`: licenza (tutti i diritti riservati)
 
 Il sito è statico: solo HTML e CSS scritti a mano, nessun framework e nessuna build. Uniche eccezioni nelle pagine del sito: `frasi.js` e il contatore anonimo GoatCounter. Le animazioni hanno il loro JavaScript.
 
 ## Aggiungere un'animazione
 1. Copiare il file `.html` nella cartella della disciplina.
-2. Incollare una card nella pagina `index.html` di quella disciplina.
+2. Incollare una card nella pagina `index.html` di quella disciplina e aggiungere l'indirizzo della nuova pagina in `sitemap.xml`.
+   Nell'`<head>` dell'animazione, dopo `<title>`, vanno anche `meta description`, `canonical` (indirizzo completo con il dominio) e i tag Open Graph (`og:type`, `og:site_name`, `og:locale`, `og:title`, `og:description`, `og:url`): copiarli da una pagina esistente e adattarli.
 3. Inserire nell'animazione, prima di `</body>`, la firma (cliccabile verso la home), il bottone di ritorno alla disciplina ("← Fisica", "← Biologia", ...) con il colore dell'area e, come ultima riga, lo script del contatore GoatCounter.
 
 ## Crediti
