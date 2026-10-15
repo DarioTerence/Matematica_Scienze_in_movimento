@@ -14,6 +14,7 @@ Sito: https://scienzainmovimento.it/
 - `aritmetica/`, `fisica/`, `biologia/`, `astronomia/`: una cartella per disciplina, con `index.html` (elenco) e un file HTML autonomo per ogni animazione
 - `CNAME`: dominio personalizzato del sito (non rimuovere)
 - `og_image.jpg`: immagine 1200x630 px per l'anteprima dei link condivisi (WhatsApp, chat, social), indicata da `og:image` in tutte le pagine
+- `immagini/og_image/`: sorgente di `og_image.jpg` (`og_image.html`) e script `genera_og_image.py` per rigenerarla se cambiano titolo, sottotitolo, firma o caricatura (istruzioni nel commento iniziale dello script)
 - `sitemap.xml`, `robots.txt`: elenco delle pagine per i motori di ricerca (la sitemap va aggiornata a ogni nuova pagina)
 - `LICENSE`: licenza (tutti i diritti riservati)
 
