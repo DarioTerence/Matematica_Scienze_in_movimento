@@ -12,7 +12,7 @@ Sito: https://scienzainmovimento.it/
 - `apple-touch-icon.png`: icona 180x180 px per la schermata Home di iPhone e iPad, indicata da `<link rel="apple-touch-icon">` in tutte le pagine; sorgente in `immagini/apple_touch_icon/` (`apple_touch_icon.svg`, versione quadrata della favicon, e script `genera_apple_touch_icon.py` per rigenerarla se cambia la favicon)
 - `firma.svg`: firma "Prof. T"
 - `prof_t.webp`, `prof_t_occhiolino.webp`, `bagliore.svg`: caricatura di Prof. T nella home (occhi aperti, occhiolino, bagliore sulla lente), animata solo con CSS
-- `aritmetica/`, `fisica/`, `biologia/`, `astronomia/`: una cartella per disciplina, con `index.html` (elenco) e un file HTML autonomo per ogni animazione
+- `aritmetica/`, `geometria/`, `fisica/`, `biologia/`, `astronomia/`: una cartella per disciplina, con `index.html` (elenco) e un file HTML autonomo per ogni animazione
 - `CNAME`: dominio personalizzato del sito (non rimuovere)
 - `og_image.jpg`: immagine 1200x630 px per l'anteprima dei link condivisi (WhatsApp, chat, social), indicata da `og:image` in tutte le pagine
 - `immagini/og_image/`: sorgente di `og_image.jpg` (`og_image.html`) e script `genera_og_image.py` per rigenerarla se cambiano titolo, sottotitolo, firma o caricatura (istruzioni nel commento iniziale dello script)
