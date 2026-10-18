@@ -223,14 +223,17 @@ function confetti(){
 
 /* ---------- animazione ---------- */
 var tw={};
-function tween(key,target,ms){
+function tween(key,target,ms,done){
  cancelAnimationFrame(tw[key]);var from=S[key];
- if(reduce||ms<=0||from===target){S[key]=target;tick(key);return;}
+ if(reduce||ms<=0||from===target){S[key]=target;tick(key);if(done)done();return;}
  var t0=performance.now();
  var f=function(now){var k=Math.min(1,(now-t0)/ms);var e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
-  S[key]=from+(target-from)*e;tick(key);if(k<1)tw[key]=requestAnimationFrame(f);};
+  S[key]=from+(target-from)*e;tick(key);if(k<1)tw[key]=requestAnimationFrame(f);else if(done)done();};
  tw[key]=requestAnimationFrame(f);}
-function stopAnim(){cancelAnimationFrame(tw.p);cancelAnimationFrame(tw.q);}
+var playT=0;
+/* tempi (ms): Riproduci = movimento + pausa per ogni passo; Avanti/Indietro; Srotola */
+var T_PLAY=2000,T_PAUSE=1500,T_STEP=1200,T_UNROLL=2400;
+function stopAnim(){cancelAnimationFrame(tw.p);cancelAnimationFrame(tw.q);clearTimeout(playT);}
 function tick(key){drawStage();if(key==='p')updProof();}
 function pMax(){return S.tab==='equivalenze'?2:3;}
 
@@ -662,9 +665,14 @@ function stepCtrl(){
  +'<input type="range" id="pRange" min="0" max="'+(n*100)+'" step="1" value="0" aria-label="Avanzamento della dimostrazione"><div class="dots">'+d+'</div></div>';}
 function bindSteps(){
  var n=pMax();
- $('bPrev').onclick=function(){tween('p',Math.max(0,Math.ceil(S.p-0.001)-1),700);};
- $('bNext').onclick=function(){tween('p',Math.min(n,Math.floor(S.p+0.001)+1),700);};
- $('bPlay').onclick=function(){if(S.p>=n-0.01){S.p=0;drawStage();}tween('p',n,1300*(n-S.p));};
+ $('bPrev').onclick=function(){stopAnim();tween('p',Math.max(0,Math.ceil(S.p-0.001)-1),T_STEP);};
+ $('bNext').onclick=function(){stopAnim();tween('p',Math.min(n,Math.floor(S.p+0.001)+1),T_STEP);};
+ $('bPlay').onclick=function(){
+  stopAnim();if(S.p>=n-0.01){S.p=0;drawStage();}
+  // un passo alla volta: movimento di T_PLAY ms, poi pausa di T_PAUSE ms con la didascalia ferma
+  var go=function(){var tg=Math.floor(S.p+0.001)+1;
+   tween('p',tg,T_PLAY*(tg-S.p),function(){if(tg<n)playT=setTimeout(go,reduce?0:T_PAUSE);});};
+  go();};
  $('pRange').oninput=function(){stopAnim();S.p=(+this.value)/100;drawStage();updProof();};}
 function updProof(){
  var r=$('pRange');if(!r||S.mode!=='dim')return;
@@ -689,7 +697,7 @@ function renderPanel(){
    P.innerHTML='<div class="card"><div class="row"><label>Passaggio<select id="eqPair">'+opts+'</select></label></div></div>'+stepCtrl()
     +'<div class="anchor">Un salto della scala delle aree vale <b>100</b> e non 10, perché 10 '+TIMES+' 10 = 100.</div>';
    bindSteps();
-   $('eqPair').onchange=function(){S.eq.pair=+this.value;drawStage();updProof();};
+   $('eqPair').onchange=function(){stopAnim();S.eq.pair=+this.value;drawStage();updProof();};
    updProof();}
   else if(md==='form')renderConv();
   else renderTrainEq();}}
@@ -719,7 +727,7 @@ function renderForm(){
  $('chips').onclick=function(e){var c=e.target.closest('.chip');if(!c)return;S.inc=c.dataset.k;S.q=0;renderForm();drawStage();};
  if($('bUnroll'))$('bUnroll').onclick=function(){
   var btn=this,target=S.q>.5?0:1;btn.disabled=true;
-  toStage(function(){tween('q',target,1400);setTimeout(renderForm,reduce?0:1450);});};
+  toStage(function(){tween('q',target,T_UNROLL);setTimeout(renderForm,reduce?0:T_UNROLL+50);});};
  say(k.u==='A'||k.u==='P'?k.hint:'Operazione inversa: parti dalla formula diretta e ricava il dato che manca. '+k.hint,'idle');}
 
 /* --- Allenati (poligoni) --- */
