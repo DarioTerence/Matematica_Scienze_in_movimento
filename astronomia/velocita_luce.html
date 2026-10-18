@@ -321,12 +321,26 @@ details p{margin:8px 0 0}
         '<feGaussianBlur stdDeviation="3" result="b"/>' +
         '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>' +
       '</filter>' +
-      '<radialGradient id="' + p + 'head" cx="50%" cy="50%" r="50%">' +
+      '<filter id="' + p + 'soft" filterUnits="userSpaceOnUse" x="0" y="0" width="1000" height="300">' +
+        '<feGaussianBlur stdDeviation="2.2" result="b"/>' +
+        '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+      '</filter>' +
+      '<filter id="' + p + 'blur" filterUnits="userSpaceOnUse" x="0" y="0" width="1000" height="300">' +
+        '<feGaussianBlur stdDeviation="5"/>' +
+      '</filter>' +
+      /* testa: il punto più luminoso è vicino al fronte (cx 85%), la luce sfuma all'indietro */
+      '<radialGradient id="' + p + 'head" cx="85%" cy="50%" r="85%">' +
         '<stop offset="0" stop-color="#ffffff" stop-opacity="1"/>' +
-        '<stop offset=".3" stop-color="#fffbd6" stop-opacity="1"/>' +
-        '<stop offset=".6" stop-color="#ffec8a" stop-opacity=".7"/>' +
-        '<stop offset="1" stop-color="#ffd54a" stop-opacity="0"/>' +
+        '<stop offset=".3" stop-color="#fffaf0" stop-opacity=".95"/>' +
+        '<stop offset=".65" stop-color="#ffe9c4" stop-opacity=".45"/>' +
+        '<stop offset="1" stop-color="#ffe9c4" stop-opacity="0"/>' +
       '</radialGradient>' +
+      /* scia: tenue vicino alla sorgente, più accesa vicino alla testa (estremi aggiornati in beamTo) */
+      '<linearGradient id="' + p + 'trail" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1" y2="0">' +
+        '<stop offset="0" stop-color="#fff0d2" stop-opacity=".15"/>' +
+        '<stop offset=".55" stop-color="#fff0d2" stop-opacity=".4"/>' +
+        '<stop offset="1" stop-color="#fff0d2" stop-opacity=".85"/>' +
+      '</linearGradient>' +
       '<radialGradient id="' + p + 'sun" cx="50%" cy="50%" r="50%">' +
         '<stop offset="0" stop-color="#fff6c8"/><stop offset=".55" stop-color="#ffc247"/><stop offset="1" stop-color="#ff8c1a"/>' +
       '</radialGradient>' +
@@ -345,19 +359,37 @@ details p{margin:8px 0 0}
     }
   }
 
-  /* fascio di luce: alone sottile + linea gialla + anima chiara, più la testa schiacciata sulla retta */
-  function beam(parent, p){
-    var b = {};
-    b.gl   = el(parent, 'line', {x1:X0, y1:Y, x2:X0, y2:Y, stroke:'#ffd54a', 'stroke-width':6, opacity:.25, 'stroke-linecap':'round', filter:'url(#' + p + 'glow)'});
-    b.lit  = el(parent, 'line', {x1:X0, y1:Y, x2:X0, y2:Y, stroke:'#ffe27a', 'stroke-width':4, 'stroke-linecap':'round'});
-    b.core = el(parent, 'line', {x1:X0, y1:Y, x2:X0, y2:Y, stroke:'#fffbe0', 'stroke-width':1.8, 'stroke-linecap':'round'});
-    b.head = el(parent, 'ellipse', {cx:X0, cy:Y, rx:46, ry:7, fill:'url(#' + p + 'head)', filter:'url(#' + p + 'glow)'});
-    b.head2 = el(parent, 'ellipse', {cx:X0, cy:Y, rx:16, ry:2.8, fill:'#ffffff', filter:'url(#' + p + 'glow)'});
+  /* fascio di luce color avorio: scia sottile che si accende verso la testa, testa allungata
+     con il punto più luminoso sul fronte (x). Parametri: y = quota della retta, x0 = partenza,
+     rHide = raggio del corpo che emette la luce (0 se non c'è).
+     Una maschera di ritaglio nasconde tutto ciò che sta a sinistra di x0 o dentro il corpo:
+     così la luce all'inizio non si vede ed esce dal bordo poco alla volta. */
+  function beam(parent, p, y, x0, rHide){
+    var b = {x0:x0, grad:parent.querySelector('#' + p + 'trail')};
+    var d = 'M' + x0 + ',0 H1000 V300 H' + x0 + ' Z';
+    if (rHide > 0){
+      // secondo contorno (il cerchio del corpo): con la regola evenodd diventa un "buco" nel ritaglio
+      d += ' M' + (x0 + rHide) + ',' + y + ' a' + rHide + ',' + rHide + ' 0 1,0 ' + (-2 * rHide) + ',0' +
+           ' a' + rHide + ',' + rHide + ' 0 1,0 ' + (2 * rHide) + ',0 Z';
+    }
+    var cp = el(parent.querySelector('defs'), 'clipPath', {id:p + 'clip'});
+    el(cp, 'path', {d:d, 'clip-rule':'evenodd'});
+    var g = el(parent, 'g', {'clip-path':'url(#' + p + 'clip)'});
+    b.gl   = el(g, 'line', {x1:x0, y1:y, x2:x0, y2:y, stroke:'url(#' + p + 'trail)', 'stroke-width':5, opacity:.35, filter:'url(#' + p + 'blur)'});
+    b.core = el(g, 'line', {x1:x0, y1:y, x2:x0, y2:y, stroke:'url(#' + p + 'trail)', 'stroke-width':1.6, 'stroke-linecap':'round'});
+    b.halo  = el(g, 'ellipse', {cx:x0, cy:y, rx:52, ry:12, fill:'#ffe9c4', opacity:.14, filter:'url(#' + p + 'blur)'});
+    b.head  = el(g, 'ellipse', {cx:x0, cy:y, rx:44, ry:6, fill:'url(#' + p + 'head)', filter:'url(#' + p + 'soft)'});
+    b.head2 = el(g, 'ellipse', {cx:x0, cy:y, rx:13, ry:2.4, fill:'#ffffff', filter:'url(#' + p + 'soft)'});
     return b;
   }
+  /* x è il fronte della luce: le ellissi sono spostate indietro così la parte luminosa sta sul fronte */
   function beamTo(b, x){
-    b.gl.setAttribute('x2', x); b.lit.setAttribute('x2', x); b.core.setAttribute('x2', x);
-    b.head.setAttribute('cx', x); b.head2.setAttribute('cx', x);
+    var xe = Math.max(x - 4, b.x0);
+    b.gl.setAttribute('x2', xe); b.core.setAttribute('x2', xe);
+    b.grad.setAttribute('x1', b.x0); b.grad.setAttribute('x2', Math.max(xe, b.x0 + 1));
+    b.halo.setAttribute('cx', x - 32);
+    b.head.setAttribute('cx', x - 31);
+    b.head2.setAttribute('cx', x - 3);
   }
 
   /* ---------- stato ---------- */
@@ -385,7 +417,7 @@ details p{margin:8px 0 0}
       tx.textContent = tk.l;
     });
 
-    cur = {beam: beam(svg, 'a-')};
+    cur = {beam: beam(svg, 'a-', Y, X0, card.src.type === 'sun' ? 26 : 22)};   // raggio del Sole o della Terra disegnati sotto
 
     // sorgente della luce
     if (card.src.type === 'sun'){
@@ -521,10 +553,7 @@ details p{margin:8px 0 0}
     stars(svg2, 1000, 150, 40);
     var n = card.steps.length;
     el(svg2, 'line', {x1:LX0, y1:LY, x2:LX1, y2:LY, stroke:'#3a4d70', 'stroke-width':2});
-    ladder = {beam: beam(svg2, 'b-'), nodes:[]};
-    ladder.beam.gl.setAttribute('y1', LY); ladder.beam.gl.setAttribute('y2', LY);
-    [ladder.beam.lit, ladder.beam.core].forEach(function(l){ l.setAttribute('y1', LY); l.setAttribute('y2', LY); });
-    ladder.beam.head.setAttribute('cy', LY); ladder.beam.head2.setAttribute('cy', LY);
+    ladder = {beam: beam(svg2, 'b-', LY, LX0, 0), nodes:[]};
     card.steps.forEach(function(s, i){
       var c = el(svg2, 'circle', {cx:lx(i), cy:LY, r:9, fill:'#1b2740', stroke:'#5a6f94', 'stroke-width':2});
       var tx = el(svg2, 'text', {x:lx(i), y:112, 'text-anchor':'middle', fill:'#8fa0b8', 'font-size':25, 'font-family':'Calibri,Carlito,sans-serif'});
