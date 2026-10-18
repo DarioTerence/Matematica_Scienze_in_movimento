@@ -82,7 +82,7 @@ details p{margin:8px 0 0}
 .cmp{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
 .cmp .row{display:grid;grid-template-columns:104px 1fr 78px;gap:10px;align-items:center;padding:4px 0;font-size:15px}
 .cmp .track{height:12px;background:#0d1524;border-radius:6px;overflow:hidden}
-.cmp .bar{height:100%;background:#ffe27a;border-radius:6px}
+.cmp .bar{height:100%;background:#fff0d2;border-radius:6px}
 .cmp b{text-align:right;color:var(--sun);font-variant-numeric:tabular-nums}
 .cmp .small{margin:6px 0 0}
 .nav{display:flex;gap:10px;margin:14px 0 10px}
@@ -321,20 +321,21 @@ details p{margin:8px 0 0}
         '<feGaussianBlur stdDeviation="3" result="b"/>' +
         '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>' +
       '</filter>' +
-      '<filter id="' + p + 'soft" filterUnits="userSpaceOnUse" x="0" y="0" width="1000" height="300">' +
+      /* sfumatura della testa: area relativa alla forma, perché la testa viene spostata con translate */
+      '<filter id="' + p + 'hsoft" x="-30%" y="-150%" width="160%" height="400%">' +
         '<feGaussianBlur stdDeviation="2.2" result="b"/>' +
         '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>' +
       '</filter>' +
       '<filter id="' + p + 'blur" filterUnits="userSpaceOnUse" x="0" y="0" width="1000" height="300">' +
         '<feGaussianBlur stdDeviation="5"/>' +
       '</filter>' +
-      /* testa: il punto più luminoso è vicino al fronte (cx 85%), la luce sfuma all'indietro */
-      '<radialGradient id="' + p + 'head" cx="85%" cy="50%" r="85%">' +
-        '<stop offset="0" stop-color="#ffffff" stop-opacity="1"/>' +
-        '<stop offset=".3" stop-color="#fffaf0" stop-opacity=".95"/>' +
-        '<stop offset=".65" stop-color="#ffe9c4" stop-opacity=".45"/>' +
-        '<stop offset="1" stop-color="#ffe9c4" stop-opacity="0"/>' +
-      '</radialGradient>' +
+      /* testa: trasparente in coda, piena vicino al fronte, leggermente attenuata sulla punta */
+      '<linearGradient id="' + p + 'head" x1="0" y1="0" x2="1" y2="0">' +
+        '<stop offset="0" stop-color="#ffe9c4" stop-opacity="0"/>' +
+        '<stop offset=".5" stop-color="#ffe9c4" stop-opacity=".4"/>' +
+        '<stop offset=".8" stop-color="#fffaf0" stop-opacity="1"/>' +
+        '<stop offset="1" stop-color="#ffffff" stop-opacity=".75"/>' +
+      '</linearGradient>' +
       /* scia: tenue vicino alla sorgente, più accesa vicino alla testa (estremi aggiornati in beamTo) */
       '<linearGradient id="' + p + 'trail" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1" y2="0">' +
         '<stop offset="0" stop-color="#fff0d2" stop-opacity=".15"/>' +
@@ -365,7 +366,7 @@ details p{margin:8px 0 0}
      Una maschera di ritaglio nasconde tutto ciò che sta a sinistra di x0 o dentro il corpo:
      così la luce all'inizio non si vede ed esce dal bordo poco alla volta. */
   function beam(parent, p, y, x0, rHide){
-    var b = {x0:x0, grad:parent.querySelector('#' + p + 'trail')};
+    var b = {x0:x0, y:y, grad:parent.querySelector('#' + p + 'trail')};
     var d = 'M' + x0 + ',0 H1000 V300 H' + x0 + ' Z';
     if (rHide > 0){
       // secondo contorno (il cerchio del corpo): con la regola evenodd diventa un "buco" nel ritaglio
@@ -377,9 +378,13 @@ details p{margin:8px 0 0}
     var g = el(parent, 'g', {'clip-path':'url(#' + p + 'clip)'});
     b.gl   = el(g, 'line', {x1:x0, y1:y, x2:x0, y2:y, stroke:'url(#' + p + 'trail)', 'stroke-width':5, opacity:.35, filter:'url(#' + p + 'blur)'});
     b.core = el(g, 'line', {x1:x0, y1:y, x2:x0, y2:y, stroke:'url(#' + p + 'trail)', 'stroke-width':1.6, 'stroke-linecap':'round'});
-    b.halo  = el(g, 'ellipse', {cx:x0, cy:y, rx:52, ry:12, fill:'#ffe9c4', opacity:.14, filter:'url(#' + p + 'blur)'});
-    b.head  = el(g, 'ellipse', {cx:x0, cy:y, rx:44, ry:6, fill:'url(#' + p + 'head)', filter:'url(#' + p + 'soft)'});
-    b.head2 = el(g, 'ellipse', {cx:x0, cy:y, rx:13, ry:2.4, fill:'#ffffff', filter:'url(#' + p + 'soft)'});
+    b.halo  = el(g, 'ellipse', {cx:x0, cy:y, rx:50, ry:10, fill:'#ffe9c4', opacity:.14, filter:'url(#' + p + 'blur)'});
+    /* testa a fuso, disegnata attorno al punto (0,0) = fronte della luce e poi spostata con translate:
+       punta corta in avanti (16), massimo spessore poco dietro il fronte, coda lunga e sottile (80) */
+    b.headG = el(g, 'g', {transform:'translate(' + x0 + ',' + y + ')'});
+    el(b.headG, 'path', {d:'M16,0 C10,-2.4 3,-5.2 -6,-5.2 C-30,-5.2 -58,-2 -80,-0.7 L-80,0.7 C-58,2 -30,5.2 -6,5.2 C3,5.2 10,2.4 16,0 Z',
+                         fill:'url(#' + p + 'head)', filter:'url(#' + p + 'hsoft)'});
+    el(b.headG, 'ellipse', {cx:-4, cy:0, rx:11, ry:2.2, fill:'#ffffff', filter:'url(#' + p + 'hsoft)'});
     return b;
   }
   /* x è il fronte della luce: le ellissi sono spostate indietro così la parte luminosa sta sul fronte */
@@ -387,9 +392,8 @@ details p{margin:8px 0 0}
     var xe = Math.max(x - 4, b.x0);
     b.gl.setAttribute('x2', xe); b.core.setAttribute('x2', xe);
     b.grad.setAttribute('x1', b.x0); b.grad.setAttribute('x2', Math.max(xe, b.x0 + 1));
-    b.halo.setAttribute('cx', x - 32);
-    b.head.setAttribute('cx', x - 31);
-    b.head2.setAttribute('cx', x - 3);
+    b.halo.setAttribute('cx', x - 30);
+    b.headG.setAttribute('transform', 'translate(' + x + ',' + b.y + ')');
   }
 
   /* ---------- stato ---------- */
@@ -583,8 +587,8 @@ details p{margin:8px 0 0}
     beamTo(ladder.beam, lx(stepIdx));
     ladder.nodes.forEach(function(n, i){
       var on = i <= stepIdx;
-      n.c.setAttribute('fill', on ? '#ffe27a' : '#1b2740');
-      n.c.setAttribute('stroke', on ? '#fff4b8' : '#5a6f94');
+      n.c.setAttribute('fill', on ? '#fff0d2' : '#1b2740');
+      n.c.setAttribute('stroke', on ? '#fffaf0' : '#5a6f94');
       n.tx.setAttribute('fill', i === stepIdx ? '#ffd08a' : '#8fa0b8');
       n.tx.setAttribute('font-weight', i === stepIdx ? '700' : '400');
     });
