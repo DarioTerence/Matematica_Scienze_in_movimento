@@ -99,7 +99,10 @@ input[type=range]{accent-color:var(--acc);height:28px}
 .bigbtn{font-size:17px;padding:9px 26px}
 .geo{position:absolute;right:0;bottom:0;height:330px;width:auto;pointer-events:none}
 #q-geo2{right:12px}
-.qhead{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;margin-bottom:8px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--muted);font-size:14px;margin-bottom:8px}
+.qright{display:flex;align-items:center;gap:10px}
+#q-restart{padding:4px 12px;font-size:13px}
+#q-restart.conf{border-color:var(--warn);color:var(--warn)}
 .qwrap{display:grid;grid-template-columns:1fr 130px;gap:14px;align-items:end}
 .qmain{min-width:0}
 .pose{width:130px;height:auto;align-self:end}
@@ -266,7 +269,7 @@ input[type=range]{accent-color:var(--acc);height:28px}
    <img class="geo" id="q-geo" alt="Prof. T con l'elmetto da geologo osserva un cristallo con la lente">
   </div>
   <div class="panel quiz hide" id="q-game">
-   <div class="qhead"><span id="q-n"></span><span id="q-score"></span></div>
+   <div class="qhead"><span id="q-n"></span><span class="qright"><span id="q-score"></span><button class="btn" id="q-restart">Ricomincia</button></span></div>
    <div class="qwrap">
     <div class="qmain">
      <div id="q-fig"></div>
@@ -962,6 +965,11 @@ window.onde=(function(){
   $('q-endt').textContent=score===10?'Perfetto!':score>=8?'Ottimo lavoro!':score>=6?'Bene!':'Puoi fare di meglio';
   $('q-endm').textContent=score>=8?'Conosci bene l\'interno della Terra.':score>=6?'Ripassa le schede dove hai sbagliato e riprova.':'Riguarda le schede «La Terra a spicchi» e «Le onde sismiche», poi riprova: le domande cambiano ogni volta.'}});
  $('q-start').addEventListener('click',start);$('q-again').addEventListener('click',start);
+ /* Ricomincia durante il giro: al primo tocco chiede conferma, al secondo parte un giro nuovo */
+ const rb=$('q-restart');let rbT=0;
+ const rbReset=()=>{clearTimeout(rbT);rb.classList.remove('conf');rb.textContent='Ricomincia'};
+ rb.addEventListener('click',()=>{if(rb.classList.contains('conf')){rbReset();start();return}
+  rb.classList.add('conf');rb.textContent='Tocca di nuovo';rbT=setTimeout(rbReset,3000)});
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">La Terra in 3D aperta a spicchi: crosta continentale e oceanica, mantello superiore e inferiore, nucleo esterno e interno, litosfera, astenosfera e mesosfera, moti convettivi; viaggio dalla superficie al centro con temperatura, pressione e densità; onde sismiche P e S, zona d'ombra e scoperta del nucleo interno; quiz finale. Immagine della superficie: NASA Visible Earth.</p>
