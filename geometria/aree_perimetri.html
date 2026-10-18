@@ -47,7 +47,9 @@ button,select,input{font-family:inherit}
 .sliders label{display:flex;flex-direction:column;font-size:14px;color:var(--mut)}
 .sliders .rw{display:flex;align-items:center;gap:8px}
 .sliders input[type=range]{flex:1;accent-color:var(--acc);min-width:0}
-.sliders output{color:var(--txt);min-width:46px;text-align:right;font-size:14px}
+.sliders .lh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sliders output{color:var(--txt);text-align:right;font-size:14px;white-space:nowrap}
+.sliders input[type=range]{width:100%}
 .prof{display:flex;gap:12px;align-items:flex-end;position:relative;margin-bottom:12px}
 .prof img{height:150px;width:auto;flex:none}
 @media(max-width:760px){.prof img{height:110px}}
@@ -642,7 +644,7 @@ function buildSliders(){
  var el=$('sliders');
  if(S.tab==='equivalenze'||S.mode==='train'){el.style.display='none';return;}
  var F=FIG[S.tab],p=S.par[S.tab];el.style.display='';
- el.innerHTML=F.sl.map(function(s){return '<label>'+s.label+'<span class="rw"><input type="range" data-k="'+s.k+'" step="1"><output></output></span></label>';}).join('');
+ el.innerHTML=F.sl.map(function(s){return '<label><span class="lh"><span>'+s.label+'</span><output></output></span><input type="range" data-k="'+s.k+'" step="1"></label>';}).join('');
  refreshSliders();}
 function refreshSliders(){
  if(S.tab==='equivalenze')return;
