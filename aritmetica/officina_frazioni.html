@@ -102,7 +102,7 @@ var INK='#e6ecf5',MUT='#8fa0b8',C1='#9cc5ff',C2='#ffb454',CM='#8ee0a6',HL='#ffb4
 var COLS=[C1,C2];
 /* ---------- stazioni ---------- */
 var ST=[
- {id:'equiv',name:'Equivalenti',sub:'Amplificare e semplificare, con le barre e con il M.C.D.'},
+ {id:'equiv',name:'Equivalenti',sub:'Espandere e ridurre, con le barre e con il M.C.D.'},
  {id:'dc',name:'Denominatore comune',sub:'Il m.c.m. dei denominatori e le frazioni equivalenti, con il metodo delle frecce.'},
  {id:'somma',name:'Somma e differenza',sub:'Denominatore comune, somma o differenza dei numeratori, risultato ai minimi termini.'},
  {id:'prod',name:'Prodotto'},
@@ -475,12 +475,12 @@ function makeTrainer(cfg){
 var EQB=[[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,6],[5,6]];
 var EQ_BY=[236,300],EQ_H=36;
 function eqNewF(prev){var p;do{p=pick(EQB);}while(prev&&prev.a===p[0]&&prev.b===p[1]);return {a:p[0],b:p[1]};}
-var EQX=makeExplorer({id:'eq',n:5,ms:[0,2600,2600,3600,3000],newLabel:'Nuova frazione',
+var EQX=makeExplorer({id:'eq',n:5,ms:[0,2600,2600,6100,3000],newLabel:'Nuova frazione',
  anchor:'Frazioni <b>equivalenti</b> si ottengono moltiplicando (o dividendo) numeratore e denominatore per lo <b>stesso numero</b>, diverso da zero.',
  first:function(){return {a:2,b:3};},newF:eqNewF,
  render:function(F,p){
   var a=F.a,b=F.b,s1=op1(p),s2=op1(p-1),s3=op1(p-2),s4=op1(p-3),o='';
-  // parte alta: amplificare (passi 1-2), semplificare (passo 3), M.C.D. (passo 4)
+  // parte alta: espandere (passi 1-2), ridurre (passo 3), M.C.D. (passo 4)
   var oA=1-op1(s3*5),oB=op1((s3-.1)*5)*(1-op1(s4*5)),oC=op1((s4-.1)*5);
   if(oA>0)o+='<g opacity="'+oA.toFixed(2)+'">'+chain([[a,b,C1],[2*a,2*b,C2],[4*a,4*b,C2]],['· 2','· 2'],s1+s2,120)+'</g>';
   if(oB>0)o+='<g opacity="'+oB.toFixed(2)+'">'+chain([[4*a,4*b,C2],[2*a,2*b,C2],[a,b,C1]],[': 2',': 2'],2*op1((s3-.15)/.85),120)+'</g>';
@@ -498,12 +498,12 @@ var EQX=makeExplorer({id:'eq',n:5,ms:[0,2600,2600,3600,3000],newLabel:'Nuova fra
  text:function(F,k){var a=F.a,b=F.b;
   switch(k){
   case 0:return {h:'Una frazione',x:'La barra è divisa in '+b+' parti uguali e ne sono colorate '+a+'. È la frazione '+fr(a,b)+'. La barra sotto è uguale, per ora.',p:'Quanti nomi diversi può avere la stessa parte colorata?',mood:'hi'};
-  case 1:return {h:'Amplificare',x:'Tagliamo ogni pezzo della seconda barra in 2. Tutti i pezzi diventano 2 volte tanti, quelli colorati e gli altri, quindi numeratore e denominatore si moltiplicano per 2.<br>La parte colorata non cambia, '+fr(a,b)+' = '+fr(2*a,2*b)+'.',p:'Stesso numero sopra e sotto, sempre.',mood:'ok'};
+  case 1:return {h:'Espandere',x:'Tagliamo ogni pezzo della seconda barra in 2. Tutti i pezzi diventano 2 volte tanti, quelli colorati e gli altri, quindi numeratore e denominatore si moltiplicano per 2.<br>La parte colorata non cambia, '+fr(a,b)+' = '+fr(2*a,2*b)+'.',p:'Stesso numero sopra e sotto, sempre.',mood:'ok'};
   case 2:return {h:'Infinite frazioni equivalenti',x:'Tagliando ancora ogni pezzo in 2 si ottiene '+fr(4*a,4*b)+'. Moltiplicando numeratore e denominatore per lo stesso numero si trovano infinite frazioni equivalenti, '+fr(a,b)+' = '+fr(2*a,2*b)+' = '+fr(3*a,3*b)+' = '+fr(4*a,4*b)+' e così via.',p:'Potrei continuare all’infinito.',mood:'idle'};
-  case 3:return {h:'Semplificare',x:'Si può fare anche il contrario. Si dividono numeratore e denominatore per lo stesso divisore comune e i pezzi si ricompongono.<br>Quando numeratore e denominatore non hanno più divisori comuni (oltre a 1), la frazione è <b>ridotta ai minimi termini</b>.',p:'Semplificare è amplificare al contrario.',mood:'ok'};
+  case 3:return {h:'Ridurre ai minimi termini',x:'Si può fare anche il contrario. Si dividono numeratore e denominatore per lo stesso divisore comune e i pezzi si ricompongono.<br>Quando numeratore e denominatore non hanno più divisori comuni (oltre a 1), la frazione è <b>ridotta ai minimi termini</b>.',p:'Ridurre è espandere al contrario.',mood:'ok'};
   default:return {h:'In un passo solo, con il M.C.D.',x:'Invece di dividere più volte, si divide subito per il <b>massimo comune divisore</b>. M.C.D.('+4*a+', '+4*b+') = 4, quindi '+fr(4*a,4*b)+' = '+fr(a,b)+' in un passo solo.',p:'Con il M.C.D. basta un passaggio!',mood:'ok'};}}});
 var EQT=makeTrainer({id:'eq',
- anchor:'Numeratore e denominatore si moltiplicano o si dividono per lo <b>stesso numero</b>. Per semplificare in un passo si divide per il <b>M.C.D.</b>',
+ anchor:'Numeratore e denominatore si moltiplicano o si dividono per lo <b>stesso numero</b>. Per ridurre in un passo si divide per il <b>M.C.D.</b>',
  newEx:function(prev){
   var kinds=['A','B','C'],kind;do{kind=pick(kinds);}while(prev&&prev.kind===kind&&Math.random()<.6);
   var p,a,b;do{b=ri(2,9);a=ri(1,b-1);}while(gcd(a,b)!==1);
@@ -567,10 +567,10 @@ function eqC(a,b,g){var N=a*g,D=b*g;
     if(N%v===0&&D%v===0)return {msg:v+' è un divisore comune, ma non il più grande. Si può fare di meglio.'};
     var no=N%v!==0?N:D;return {msg:v+' non divide '+no+'. Il M.C.D. deve dividere sia '+N+' sia '+D+'.'};}},
   {key:'sn',q:function(){return 'Nuovo numeratore, '+N+' : '+g+' = ?';},ans:function(){return a;},
-   check:function(v){if(v===a)return null;if(v===N-g)return {msg:'Hai sottratto. Si divide, '+N+' : '+g+'.'};if(v===N*g)return {msg:'Hai moltiplicato. Per semplificare si divide, '+N+' : '+g+'.'};return {msg:'Calcola '+N+' : '+g+'.'};}},
+   check:function(v){if(v===a)return null;if(v===N-g)return {msg:'Hai sottratto. Si divide, '+N+' : '+g+'.'};if(v===N*g)return {msg:'Hai moltiplicato. Per ridurre si divide, '+N+' : '+g+'.'};return {msg:'Calcola '+N+' : '+g+'.'};}},
   {key:'sd',q:function(){return 'Nuovo denominatore, '+D+' : '+g+' = ?';},ans:function(){return b;},
    after:function(v,T){T.anim('c',1200);},
-   check:function(v){if(v===b)return null;if(v===D-g)return {msg:'Hai sottratto. Si divide, '+D+' : '+g+'.'};if(v===D*g)return {msg:'Hai moltiplicato. Per semplificare si divide, '+D+' : '+g+'.'};return {msg:'Calcola '+D+' : '+g+'.'};}}];
+   check:function(v){if(v===b)return null;if(v===D-g)return {msg:'Hai sottratto. Si divide, '+D+' : '+g+'.'};if(v===D*g)return {msg:'Hai moltiplicato. Per ridurre si divide, '+D+' : '+g+'.'};return {msg:'Calcola '+D+' : '+g+'.'};}}];
  E.summary=function(){return fr(N,D)+' = '+fr(a,b)+', ridotta ai minimi termini';};
  E.finish=function(){return 'Stessa parte colorata, pezzi più grandi.';};
  return E;}
@@ -607,8 +607,8 @@ function smMove(F,s2){
  return o;}
 function smSegs(F){var m=F.m;
  return F.op==='+'?[{x0:0,x1:F.n[0]/m,col:C1},{x0:F.n[0]/m,x1:F.res/m,col:C2}]:[{x0:0,x1:F.res/m,col:C1}];}
-var SMX=makeExplorer({id:'sm',n:4,ms:[0,4600,4200,2600],newLabel:'Nuove frazioni',
- anchor:'Prima lo stesso denominatore (m.c.m.). Poi si sommano o si sottraggono <b>solo i numeratori</b>, il denominatore resta. Alla fine si semplifica.',
+var SMX=makeExplorer({id:'sm',n:4,ms:[0,7000,5600,3600],newLabel:'Nuove frazioni',
+ anchor:'Prima lo stesso denominatore (m.c.m.). Poi si sommano o si sottraggono <b>solo i numeratori</b>, il denominatore resta. Alla fine si riduce.',
  first:function(){return smMake(3,4,5,6,'+');},newF:smNewF,
  render:function(F,p){
   var s1=op1(p),s2=op1(p-1),s3=op1(p-2),o='',m=F.m,U=F.U,h=SM_H,Y=SM_BY,opS=F.op==='+'?'+':'−';
@@ -648,9 +648,9 @@ var SMX=makeExplorer({id:'sm',n:4,ms:[0,4600,4200,2600],newLabel:'Nuove frazioni
    note:F.res>m?'Il risultato è maggiore di 1, perché il numeratore è maggiore del denominatore. La barra del risultato ora mostra due interi.':'',
    p:'Il denominatore dice quanto è grande un pezzo, il numeratore quanti pezzi ci sono.',mood:'ok'};
   default:var r=F.res/F.g,d=m/F.g;
-   return {h:'Si può semplificare?',x:(F.g>1?'M.C.D.('+F.res+', '+m+') = '+F.g+', quindi '+fr(F.res,m)+' = '+fr(r,d)+' ai minimi termini.':F.res+' e '+m+' non hanno divisori comuni (oltre a 1), quindi '+fr(F.res,m)+' è già ai minimi termini.')+'<br>Risultato, '+A+' '+opS+' '+B+' = '+fr(r,d)+'.',
+   return {h:'Si può ridurre?',x:(F.g>1?'M.C.D.('+F.res+', '+m+') = '+F.g+', quindi '+fr(F.res,m)+' = '+fr(r,d)+' ai minimi termini.':F.res+' e '+m+' non hanno divisori comuni (oltre a 1), quindi '+fr(F.res,m)+' è già ai minimi termini.')+'<br>Risultato, '+A+' '+opS+' '+B+' = '+fr(r,d)+'.',
    note:r>d?'Come numero misto, '+fr(r,d)+' = 1 + '+fr(r-d,d)+'.':'',
-   p:'Ultimo controllo, sempre. Si può semplificare?',mood:'ok'};}}});
+   p:'Ultimo controllo, sempre. Si può ridurre?',mood:'ok'};}}});
 var SMT=makeTrainer({id:'sm',
  anchor:'Denominatore comune, poi '+'si sommano o si sottraggono <b>solo i numeratori</b>. Il risultato va ridotto ai minimi termini.',
  newEx:function(prev){
@@ -689,11 +689,11 @@ var SMT=makeTrainer({id:'sm',
     if(v===(plus?N(0)-N(1):N(0)+N(1)))return {msg:'Attenzione all’operazione, qui si '+(plus?'somma':'sottrae')+'.'};
     if(v===N(0)*N(1))return {msg:'Hai moltiplicato. Si '+(plus?'sommano':'sottraggono')+' i numeratori.'};
     return {msg:'Ricontrolla il calcolo '+N(0)+' '+opS+' '+N(1)+'.'};}});
-  E.steps.push({key:'sn',skip:function(){return G()===1;},q:function(){return 'Semplifica '+fr(R(),E.D)+' ai minimi termini. Qual è il numeratore?';},ans:function(){return R()/G();},
+  E.steps.push({key:'sn',skip:function(){return G()===1;},q:function(){return 'Riduci '+fr(R(),E.D)+' ai minimi termini. Qual è il numeratore?';},ans:function(){return R()/G();},
    check:function(v){var r=R(),g=G();
     if(v===r/g)return null;
     if(v===r)return {msg:r+' e '+E.D+' hanno divisori comuni, quindi il numeratore cambia.'};
-    if(v>0&&r%v===0&&g%(r/v)===0)return {msg:'Hai diviso per '+(r/v)+', ma si può semplificare ancora. M.C.D.('+r+', '+E.D+') = '+g+'.'};
+    if(v>0&&r%v===0&&g%(r/v)===0)return {msg:'Hai diviso per '+(r/v)+', ma si può ridurre ancora. M.C.D.('+r+', '+E.D+') = '+g+'.'};
     return {msg:'Calcola il M.C.D. di '+r+' e '+E.D+', poi dividi '+r+' per il M.C.D.'};}});
   E.steps.push({key:'sd',skip:function(){return G()===1;},q:function(){return fr(R(),E.D)+' = '+fr(E.got.sn,'?')+'. Qual è il denominatore?';},ans:function(){return E.D/G();},
    after:function(v,T){T.anim('z',1200);},
