@@ -6,13 +6,13 @@
 <!-- © 2026 Prof. T. Tutti i diritti riservati. -->
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>L'Officina delle frazioni - Scienza in Movimento</title>
-<meta name="description" content="Frazioni con i modelli a barre: frazioni equivalenti, denominatore comune con il m.c.m. e metodo delle frecce, operazioni e potenze, con esercizi guidati.">
+<meta name="description" content="Le frazioni con i modelli a barre, dalle frazioni equivalenti al denominatore comune con il m.c.m. e il metodo delle frecce, con esercizi guidati.">
 <link rel="canonical" href="https://scienzainmovimento.it/aritmetica/officina_frazioni.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Scienza in Movimento">
 <meta property="og:locale" content="it_IT">
 <meta property="og:title" content="L'Officina delle frazioni - Scienza in Movimento">
-<meta property="og:description" content="Frazioni con i modelli a barre: frazioni equivalenti, denominatore comune con il m.c.m. e metodo delle frecce, operazioni e potenze, con esercizi guidati.">
+<meta property="og:description" content="Le frazioni con i modelli a barre, dalle frazioni equivalenti al denominatore comune con il m.c.m. e il metodo delle frecce, con esercizi guidati.">
 <meta property="og:url" content="https://scienzainmovimento.it/aritmetica/officina_frazioni.html">
 <meta property="og:image" content="https://scienzainmovimento.it/og_image.jpg">
 <meta property="og:image:width" content="1200">
@@ -245,7 +245,7 @@ function tween(obj,key,to,ms,step,done){
 /* =========================================================
    ESPLORA: cinque passi, la variabile S.p va da 0 a 4
    ========================================================= */
-var STEP_MS=[0,2600,3600,2600,1200];   // durata dell'animazione per arrivare al passo k
+var STEP_MS=[0,2600,5000,3800,1200];   // durata dell'animazione per arrivare al passo k
 function explV(){
  var F=S.F,p=S.p,s1=clamp(p,0,1),s2=clamp(p-1,0,1),s3=clamp(p-2,0,1),s4=clamp(p-3,0,1);
  var out=clamp(s2*5,0,1),inn=clamp((s2-.12)*5,0,1);
@@ -258,21 +258,21 @@ function explV(){
 function explText(F,k){
  var a=F.a,b=F.b,m=F.m,r=F.r,n=F.n,pr=b[0]*b[1];
  switch(k){
- case 0:return {h:'Pezzi diversi',x:'La prima barra è tagliata in '+b[0]+' parti, la seconda in '+b[1]+'. I pezzi non hanno la stessa grandezza: non si possono confrontare né sommare contando i pezzi.',
+ case 0:return {h:'Pezzi diversi',x:'La prima barra è tagliata in '+b[0]+' parti, la seconda in '+b[1]+'. I pezzi non hanno la stessa grandezza, quindi non si possono confrontare né sommare contando i pezzi.',
   p:'Due barre, due tagli diversi. Come le mettiamo d’accordo?',mood:'hi'};
- case 1:return {h:'Il minimo comune multiplo',x:'Scriviamo i multipli dei due denominatori: il primo numero che compare in tutte e due le righe è il <b>m.c.m.</b>, cioè '+m+'. È il taglio più piccolo che va bene per entrambe le barre.',
-  note:(m<pr?'Anche '+b[0]+' · '+b[1]+' = '+pr+' è un multiplo comune, ma '+m+' è più piccolo: i conti restano più semplici.':(gcd(b[0],b[1])===1?b[0]+' e '+b[1]+' non hanno divisori comuni (oltre a 1): il m.c.m. è il loro prodotto, '+pr+'.':''))
+ case 1:return {h:'Il minimo comune multiplo',x:'Scriviamo i multipli dei due denominatori. Il primo numero che compare in tutte e due le righe è il <b>m.c.m.</b>, cioè '+m+'. È il taglio più piccolo che va bene per entrambe le barre.',
+  note:(m<pr?'Anche '+b[0]+' · '+b[1]+' = '+pr+' è un multiplo comune, ma '+m+' è più piccolo e i conti restano più semplici.':(gcd(b[0],b[1])===1?b[0]+' e '+b[1]+' non hanno divisori comuni (oltre a 1), quindi il m.c.m. è il loro prodotto, '+pr+'.':''))
    +(Math.max(b[0],b[1])===m?' Qui '+m+' è già multiplo dell’altro denominatore.':''),
-  p:'Cerco il primo multiplo che hanno in comune: è il m.c.m.',mood:'idle'};
+  p:'Il primo multiplo che hanno in comune è il m.c.m.',mood:'idle'};
  case 2:case 3:var i=k-2;return {h:(i?'Seconda':'Prima')+' frazione',
-  x:'Freccia sotto: '+m+' : '+b[i]+' = <b>'+r[i]+'</b>. Ogni pezzo da '+fr(1,b[i])+' si taglia in '+r[i]+' pezzi più piccoli.<br>Freccia sopra: anche i pezzi colorati diventano '+r[i]+' volte tanti, '+a[i]+' · '+r[i]+' = <b>'+n[i]+'</b>.',
-  p:'Freccia sotto: <b>divido</b>. Freccia sopra: <b>moltiplico</b>.',mood:'ok'};
- default:return {h:'Stesso taglio',x:'Ora i pezzi sono uguali: '+fr(n[0],m)+' e '+fr(n[1],m)+' si confrontano, si sommano e si sottraggono contando i pezzi. La parte colorata di ogni barra non è cambiata: '+fr(a[0],b[0])+' = '+fr(n[0],m)+' e '+fr(a[1],b[1])+' = '+fr(n[1],m)+' sono <b>frazioni equivalenti</b>.',
-  p:'Stessa parte colorata, numeri diversi: frazioni equivalenti!',mood:'ok'};}}
+  x:'Con la freccia sotto si divide, '+m+' : '+b[i]+' = <b>'+r[i]+'</b>. Ogni pezzo da '+fr(1,b[i])+' si taglia in '+r[i]+' pezzi più piccoli.<br>Con la freccia sopra si moltiplica. Anche i pezzi colorati diventano '+r[i]+' volte tanti, '+a[i]+' · '+r[i]+' = <b>'+n[i]+'</b>.',
+  p:'Con la freccia sotto <b>divido</b>, con la freccia sopra <b>moltiplico</b>.',mood:'ok'};
+ default:return {h:'Stesso taglio',x:'Ora i pezzi sono uguali, quindi '+fr(n[0],m)+' e '+fr(n[1],m)+' si confrontano, si sommano e si sottraggono contando i pezzi. La parte colorata di ogni barra non è cambiata, perché '+fr(a[0],b[0])+' = '+fr(n[0],m)+' e '+fr(a[1],b[1])+' = '+fr(n[1],m)+' sono <b>frazioni equivalenti</b>.',
+  p:'Stessa parte colorata, numeri diversi. Sono frazioni equivalenti!',mood:'ok'};}}
 function explPanel(){
  var tx=explText(S.F,S.step),d='';
  for(var i=0;i<5;i++)d+='<span class="dot'+(i===S.step?' on':'')+'"></span>';
- $('panel').innerHTML='<div class="anchor">Denominatore comune = <b>m.c.m.</b> dei denominatori. Poi, per ogni frazione: denominatore comune <b>:</b> denominatore, e il risultato <b>·</b> numeratore.</div>'
+ $('panel').innerHTML='<div class="anchor">Denominatore comune = <b>m.c.m.</b> dei denominatori. Poi, per ogni frazione, si divide il denominatore comune per il denominatore (<b>:</b>) e si moltiplica il risultato per il numeratore (<b>·</b>).</div>'
   +'<div class="card"><div class="h">'+tx.h+'</div><div class="txt">'+fh(tx.x)+'</div>'+(tx.note?'<div class="note">'+tx.note+'</div>':'')
   +'<div class="ctrl"><button class="btn" id="bPrev"'+(S.step===0?' disabled':'')+'>Indietro</button><button class="btn pri" id="bNext"'+(S.step===4?' disabled':'')+'>Avanti</button><button class="btn" id="bNew">Nuove frazioni</button></div>'
   +'<div class="dots" aria-hidden="true">'+d+'</div></div>';
@@ -292,7 +292,7 @@ function newEx(){
  var F=newPair(S.E&&S.E.F),q=S.level===1?['mcm','div0','num0','div1','num1']:['mcm','num0','num1'];
  S.E={F:F,q:q,k:0,got:{},err:0,tries:0,cut:[0,0],cmp:0,done:false,fb:''};
  trainPanel();drawTrain();
- say(S.level===1?'Completa lo schema: prima il m.c.m., poi le frecce.':'Ora senza frecce: fai i passaggi a mente.','idle');}
+ say(S.level===1?'Completa lo schema, prima il m.c.m. e poi le frecce.':'Ora senza frecce, fai i passaggi a mente.','idle');}
 function drawTrain(){
  var E=S.E,F=E.F,g=E.got,cur=E.done?null:E.q[E.k];
  var V={F:F,rowA:0,mult:0,multOp:0,headOp:1,mval:g.mcm?F.m:'?',mden:g.mcm?F.m:'?',hl:cur,cmp:E.cmp,sch:[],cut:E.cut,ls:[E.cut[0]>.95?1:0,E.cut[1]>.95?1:0]};
@@ -302,32 +302,32 @@ function drawTrain(){
 function qText(E){
  var F=E.F,c=E.q[E.k],i=+c.slice(-1);
  if(c==='mcm')return 'Qual è il m.c.m. di '+F.b[0]+' e '+F.b[1]+'?';
- if(c.indexOf('div')===0)return 'Freccia sotto: '+F.m+' : '+F.b[i]+' = ?';
- if(S.level===1)return 'Freccia sopra: '+F.a[i]+' · '+F.r[i]+' = ?';
+ if(c.indexOf('div')===0)return 'Con la freccia sotto, quanto fa '+F.m+' : '+F.b[i]+'?';
+ if(S.level===1)return 'Con la freccia sopra, quanto fa '+F.a[i]+' · '+F.r[i]+'?';
  return fr(F.a[i],F.b[i])+' = '+fr('?',F.m)+'. Qual è il nuovo numeratore?';}
 // diagnosi: restituisce null se la risposta è giusta, altrimenti il messaggio
 function diag(E,v){
  var F=E.F,c=E.q[E.k],i=+c.slice(-1),b=F.b,m=F.m;
  if(c==='mcm'){
   if(v===m)return null;
-  if(v===b[0]+b[1]&&v%b[0]+v%b[1]!==0)return 'Non si sommano i denominatori: cerca un numero che sia multiplo sia di '+b[0]+' sia di '+b[1]+'.';
-  if(v%b[0]===0&&v%b[1]===0)return v+' è un multiplo comune, ma non il più piccolo'+(v===b[0]*b[1]?' (è il prodotto '+b[0]+' · '+b[1]+')':'')+'. Scrivi i multipli di '+Math.max(b[0],b[1])+': qual è il primo che è anche multiplo di '+Math.min(b[0],b[1])+'?';
-  if(v<Math.max(b[0],b[1]))return 'Il m.c.m. non può essere più piccolo di '+Math.max(b[0],b[1])+': deve essere un suo multiplo.';
+  if(v===b[0]+b[1]&&v%b[0]+v%b[1]!==0)return 'Non si sommano i denominatori. Cerca un numero che sia multiplo sia di '+b[0]+' sia di '+b[1]+'.';
+  if(v%b[0]===0&&v%b[1]===0)return v+' è un multiplo comune, ma non il più piccolo'+(v===b[0]*b[1]?' (è il prodotto '+b[0]+' · '+b[1]+')':'')+'. Tra i multipli di '+Math.max(b[0],b[1])+', qual è il primo che è anche multiplo di '+Math.min(b[0],b[1])+'?';
+  if(v<Math.max(b[0],b[1]))return 'Il m.c.m. non può essere più piccolo di '+Math.max(b[0],b[1])+', perché deve essere un suo multiplo.';
   var no=v%b[0]!==0?b[0]:b[1];
-  return v+' non è multiplo di '+no+': '+no+' non ci sta un numero intero di volte.';}
+  return v+' non è multiplo di '+no+', perché '+no+' non ci sta un numero intero di volte in '+v+'.';}
  var r=F.r[i],a=F.a[i];
  if(c.indexOf('div')===0){
   if(v===r)return null;
-  if(v===m*b[i])return 'Hai moltiplicato: la freccia sotto porta il segno <b>:</b>, quindi si divide '+m+' : '+b[i]+'.';
-  if(v===m-b[i])return 'Hai sottratto: serve la divisione '+m+' : '+b[i]+'.';
+  if(v===m*b[i])return 'Hai moltiplicato, ma la freccia sotto porta il segno della divisione. Calcola '+m+' : '+b[i]+'.';
+  if(v===m-b[i])return 'Hai sottratto, ma serve la divisione '+m+' : '+b[i]+'.';
   return 'Quante volte il '+b[i]+' sta nel '+m+'? Calcola '+m+' : '+b[i]+'.';}
  if(v===F.n[i])return null;
  var via=S.level===1?'per il numero nel cerchietto, '+r:'per '+m+' : '+b[i]+' = '+r;
- if(v===a*m)return 'Hai moltiplicato il numeratore per '+m+': va moltiplicato '+via+'.';
- if(v===a+r)return 'Hai sommato: si moltiplica '+a+' · '+r+'.';
- if(v===a)return 'Il numeratore non resta uguale: se ogni pezzo si taglia in '+r+', anche i pezzi colorati diventano '+r+' volte tanti.';
- if(v===r)return r+' è il risultato della divisione: ora moltiplicalo per il numeratore '+a+'.';
- if(S.level===2&&v===a*b[i])return 'Hai moltiplicato per il denominatore '+b[i]+': prima calcola '+m+' : '+b[i]+' = '+r+', poi '+a+' · '+r+'.';
+ if(v===a*m)return 'Hai moltiplicato il numeratore per '+m+', ma va moltiplicato '+via+'.';
+ if(v===a+r)return 'Hai sommato, ma si moltiplica '+a+' · '+r+'.';
+ if(v===a)return 'Il numeratore non resta uguale. Se ogni pezzo si taglia in '+r+', anche i pezzi colorati diventano '+r+' volte tanti.';
+ if(v===r)return r+' è il risultato della divisione, ora moltiplicalo per il numeratore '+a+'.';
+ if(S.level===2&&v===a*b[i])return 'Hai moltiplicato per il denominatore '+b[i]+'. Prima calcola '+m+' : '+b[i]+' = '+r+', poi '+a+' · '+r+'.';
  return S.level===1?'Controlla la moltiplicazione '+a+' · '+r+'.':'Prima calcola '+m+' : '+b[i]+', poi moltiplica il risultato per il numeratore '+a+'.';}
 function answerOf(E){var F=E.F,c=E.q[E.k],i=+c.slice(-1);return c==='mcm'?F.m:(c.indexOf('div')===0?F.r[i]:F.n[i]);}
 function check(){
@@ -336,8 +336,8 @@ function check(){
  if(!/^\d+$/.test(s)){E.fb='<span class="no">Scrivi un numero intero.</span>';trainPanel();return;}
  var v=+s,msg=diag(E,v),c=E.q[E.k];
  if(msg){E.err++;E.tries++;
-  if(E.tries>=2){var ans=answerOf(E);E.fb='<span class="no">Non ancora.</span> '+msg+' La risposta è <b>'+ans+'</b>.';say('Ecco la risposta: guardala nello schema e andiamo avanti.','ko');accept(c,true);return;}
-  E.fb='<span class="no">Non ancora.</span> '+msg;say(pick(['Quasi! Leggi il suggerimento e riprova.','Ci sei vicino: riprova.','Guarda bene lo schema e riprova.']),'ko');trainPanel();return;}
+  if(E.tries>=2){var ans=answerOf(E);E.fb='<span class="no">Non ancora.</span> '+msg+' La risposta è <b>'+ans+'</b>.';say('Ecco la risposta. Guardala nello schema e andiamo avanti.','ko');accept(c,true);return;}
+  E.fb='<span class="no">Non ancora.</span> '+msg;say(pick(['Quasi! Leggi il suggerimento e riprova.','Ci sei vicino, riprova.','Guarda bene lo schema e riprova.']),'ko');trainPanel();return;}
  E.fb='<span class="ok">'+pick(OK)+'</span>';say(pick(OK)+(c==='mcm'?' Il denominatore comune è '+E.F.m+'.':''),'ok',false);accept(c,false);}
 function accept(c,shown){
  var E=S.E;E.got[c]=true;E.tries=0;
@@ -346,7 +346,7 @@ function accept(c,shown){
  E.k++;
  if(E.k>=E.q.length){E.done=true;S.done++;
   var lvMsg='';
-  if(E.err===0){S.clean++;if(S.level===1&&S.clean>=3){S.level=2;S.clean=0;lvMsg=' Tre esercizi senza errori: dal prossimo, niente frecce!';}}
+  if(E.err===0){S.clean++;if(S.level===1&&S.clean>=3){S.level=2;S.clean=0;lvMsg=' Tre esercizi senza errori, dal prossimo niente frecce!';}}
   else{S.clean=0;if(S.level===2&&E.err>=2){S.level=1;lvMsg=' Dal prossimo esercizio tornano le frecce.';}}
   tween(E,'cmp',1,reduce?0:800,drawTrain);
   say((E.err===0?'Schema completo, senza errori!':'Schema completo.')+lvMsg,'ok',E.err===0);}
@@ -356,8 +356,8 @@ function trainPanel(){
  if(E.done){body='<div class="q">'+fh(fr(E.F.a[0],E.F.b[0])+' = '+fr(E.F.n[0],E.F.m)+' e '+fr(E.F.a[1],E.F.b[1])+' = '+fr(E.F.n[1],E.F.m))+'</div>'
   +'<div class="ctrl"><button class="btn pri" id="bNx">Nuovo esercizio</button></div>';}
  else body='<div class="q">'+fh(qText(E))+'</div><div class="ans"><input id="inA" inputmode="numeric" autocomplete="off" aria-label="Risposta"><button class="btn pri" id="bOk">Verifica</button></div>';
- $('panel').innerHTML='<div class="anchor">'+(S.level===1?'Freccia sotto: denominatore comune <b>:</b> denominatore. Freccia sopra: risultato <b>·</b> numeratore.':'Denominatore comune <b>:</b> denominatore, poi il risultato <b>·</b> numeratore.')+'</div>'
-  +'<div class="card"><div class="stat">Esercizi completati: '+S.done+' · '+(S.level===1?'con le frecce':'senza aiuti')+'</div>'+body+(E.fb?'<div class="fb">'+E.fb+'</div>':'')+'</div>';
+ $('panel').innerHTML='<div class="anchor">'+(S.level===1?'Con la freccia sotto si divide il denominatore comune per il denominatore (<b>:</b>), con la freccia sopra si moltiplica il risultato per il numeratore (<b>·</b>).':'Si divide il denominatore comune per il denominatore (<b>:</b>), poi si moltiplica il risultato per il numeratore (<b>·</b>).')+'</div>'
+  +'<div class="card"><div class="stat">'+(S.done===1?'1 esercizio completato':S.done+' esercizi completati')+' · '+(S.level===1?'con le frecce':'senza aiuti')+'</div>'+body+(E.fb?'<div class="fb">'+E.fb+'</div>':'')+'</div>';
  if(E.done){$('bNx').onclick=newEx;$('bNx').focus({preventScroll:true});}
  else{var inp=$('inA');$('bOk').onclick=check;inp.onkeydown=function(e){if(e.key==='Enter')check();};
   if(S.mode==='allenati'&&document.activeElement&&document.activeElement.tagName!=='BODY')inp.focus({preventScroll:true});}}
@@ -379,7 +379,7 @@ show();
 say('Benvenuti in officina! Qui le frazioni si tagliano e si ricompongono.','hi');
 })();
 </script>
-<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Le frazioni con i modelli a barre: frazioni equivalenti, denominatore comune con il minimo comune multiplo e il metodo delle frecce, con esercizi guidati e suggerimenti sugli errori. Per le frazioni con il segno c'è il <a href="reattore_relativi.html" style="color:#9cc5ff">Reattore dei numeri</a>.</p>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Le frazioni con i modelli a barre, dalle frazioni equivalenti al denominatore comune con il minimo comune multiplo e il metodo delle frecce, con esercizi guidati e suggerimenti sugli errori. Per le frazioni con il segno c'è il <a href="reattore_relativi.html" style="color:#9cc5ff">Reattore dei numeri</a>.</p>
 <div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0zNDUgLTExMzAgNDM2NyAxNDg0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlByb2YuIFQiPjxkZWZzPjxmaWx0ZXIgaWQ9ImciIHg9Ii0yMCUiIHk9Ii02MCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjIyMCUiPjxmZUdhdXNzaWFuQmx1ciBpbj0iU291cmNlR3JhcGhpYyIgc3RkRGV2aWF0aW9uPSI1NC43IiByZXN1bHQ9ImIiLz48ZmVDb2xvck1hdHJpeCBpbj0iYiIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgLjQxNiAwIDAgMCAwIC42NDcgMCAwIDAgMCAxIDAgMCAwIDEuMSAwIiByZXN1bHQ9ImMiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImMiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+PC9kZWZzPjxwYXRoIHRyYW5zZm9ybT0icm90YXRlKC0zIDE4MzggLTM4OCkiIGZpbGw9IiNlNmVjZjUiIGZpbHRlcj0idXJsKCNnKSIgZD0iTTIzIC0yM1ExNSAtMzkgMjIgLTY3UTI5IC05NSA0Mi41IC0xMjVRNTYgLTE1NSA3MSAtMTgzUTg2IC0yMTEgOTQgLTIyOVE5NyAtMjM1IDk4LjUgLTIzOVExMDAgLTI0MyAxMDEuNSAtMjQ4UTEwMyAtMjUzIDEwNSAtMjU5UTEwNyAtMjY1IDExMiAtMjc2UTExOCAtMjg5IDEzMS41IC0zMTYuNVExNDUgLTM0NCAxNjIgLTM3OC41UTE3OSAtNDEzIDE5Ny41IC00NTFRMjE2IC00ODkgMjMyLjUgLTUyMy41UTI0OSAtNTU4IDI2Mi41IC01ODUuNVEyNzYgLTYxMyAyODIgLTYyNlYtNjQ5UTI2NCAtNjUyIDI0NyAtNjQ3UTIzMCAtNjQyIDIxNC41IC02MzNRMTk5IC02MjQgMTg0LjUgLTYxMi41UTE3MCAtNjAxIDE1OCAtNTkyUTE0NCAtNTk1IDE0MiAtNjA1UTE0MCAtNjE1IDE0NCAtNjI2UTE0OCAtNjM3IDE1NS41IC02NDYuNVExNjMgLTY1NiAxNjkgLTY2MFEyNzMgLTcyNSAzOTIgLTc0Ni41UTUxMSAtNzY4IDYzMyAtNzUwUTcwNyAtNzEzIDczNCAtNjcxLjVRNzYxIC02MzAgNzUzLjUgLTU4N1E3NDYgLTU0NCA3MDkuNSAtNTAyUTY3MyAtNDYwIDYxOS41IC00MjEuNVE1NjYgLTM4MyA1MDEuNSAtMzUwUTQzNyAtMzE3IDM3My41IC0yOTNRMzEwIC0yNjkgMjUzIC0yNTUuNVExOTYgLTI0MiAxNTggLTI0MlExMzkgLTIxMiAxMjcgLTE5Mi41UTExNSAtMTczIDEwOCAtMTU4LjVRMTAxIC0xNDQgOTYuNSAtMTMxLjVROTIgLTExOSA4Ny41IC0xMDMuNVE4MyAtODggNzYgLTY2UTY5IC00NCA1NyAtMTFMNDYgMFE0MiAtMiAzMy41IC0xMC41UTI1IC0xOSAyMyAtMjNaTTE5MiAtMjk5UTIzNCAtMjkyIDI4MSAtMzAxLjVRMzI4IC0zMTEgMzc0LjUgLTMyOVE0MjEgLTM0NyA0NjQgLTM2OS41UTUwNyAtMzkyIDU0MiAtNDExUTYyNiAtNDU4IDY2Ny41IC01MDIuNVE3MDkgLTU0NyA3MTggLTU4NS41UTcyNyAtNjI0IDcwOS41IC02NTRRNjkyIC02ODQgNjU3LjUgLTcwMi41UTYyMyAtNzIxIDU3Ny41IC03MjZRNTMyIC03MzEgNDg1LjUgLTcxOVE0MzkgLTcwNyAzOTcgLTY3NlEzNTUgLTY0NSAzMjcgLTU5MlEzMTcgLTU3MyAzMDMgLTU0NS41UTI4OSAtNTE4IDI3NCAtNDg4UTI1OSAtNDU4IDI0NCAtNDI4LjVRMjI5IC0zOTkgMjE3LjUgLTM3NS41UTIwNiAtMzUyIDE5OSAtMzM3UTE5MiAtMzIyIDE5MiAtMzIxWk02MzcgLTExUTYzNSAtMTIgNjM3LjUgLTM0LjVRNjQwIC01NyA2NDUgLTkxUTY1MCAtMTI1IDY1OCAtMTY2UTY2NiAtMjA3IDY3NSAtMjQ0LjVRNjg0IC0yODIgNjk0LjUgLTMxMC41UTcwNSAtMzM5IDcxNSAtMzUwUTcyMiAtMzU3IDcyOSAtMzUwLjVRNzM2IC0zNDQgNzQzIC0zMzQuNVE3NTAgLTMyNSA3NTcgLTMxNy41UTc2NCAtMzEwIDc3MiAtMzE2UTgwMCAtMzU1IDgzMy41IC0zOTAuNVE4NjcgLTQyNiA5MDggLTQ1MlE5MTIgLTQ1NSA5MzAgLTQ2MS41UTk0OCAtNDY4IDk3MSAtNDc0LjVROTk0IC00ODEgMTAxOC41IC00ODUuNVExMDQzIC00OTAgMTA2MC41IC00ODkuNVExMDc4IC00ODkgMTA4NC41IC00ODAuNVExMDkxIC00NzIgMTA3OCAtNDUyUTEwMTggLTQ1MSA5NjYgLTQxN1E5MTQgLTM4MyA4NzAgLTMzM1E4MjYgLTI4MyA3OTAgLTIyNC41UTc1NCAtMTY2IDcyNy41IC0xMTZRNzAxIC02NiA2ODMuNSAtMzNRNjY2IDAgNjU4IDBRNjU3IDAgNjQ5IC00LjVRNjQxIC05IDYzNyAtMTFaTTExNzMgLTExUTExMzEgLTI4IDExMjAuNSAtNjJRMTExMCAtOTYgMTEyMSAtMTM3LjVRMTEzMiAtMTc5IDExNTkgLTIyMy41UTExODYgLTI2OCAxMjE5IC0zMDVRMTI1MiAtMzQyIDEyODUuNSAtMzY3LjVRMTMxOSAtMzkzIDEzNDMgLTM5NlExNDA1IC00MDQgMTQ0MC41IC0zODcuNVExNDc2IC0zNzEgMTQ4OSAtMzQwUTE1MDIgLTMwOSAxNDk2IC0yNjcuNVExNDkwIC0yMjYgMTQ2OS41IC0xODRRMTQ0OSAtMTQyIDE0MTYuNSAtMTAzUTEzODQgLTY0IDEzNDQuNSAtMzcuNVExMzA1IC0xMSAxMjYxIC0yLjVRMTIxNyA2IDExNzMgLTExWk0xMTYyIC02OFExMTcwIC0zNiAxMTk2IC0zMi41UTEyMjIgLTI5IDEyNTYuNSAtNDUuNVExMjkxIC02MiAxMzI5IC05My41UTEzNjcgLTEyNSAxMzk4LjUgLTE2MlExNDMwIC0xOTkgMTQ1MC41IC0yMzYuNVExNDcxIC0yNzQgMTQ3MC41IC0zMDJRMTQ3MCAtMzMwIDE0NDMuNSAtMzQ0LjVRMTQxNyAtMzU5IDEzNTUgLTM1MFExMzQxIC0zMzcgMTMxOSAtMzE4LjVRMTI5NyAtMzAwIDEyNzMuNSAtMjc4UTEyNTAgLTI1NiAxMjI3IC0yMzAuNVExMjA0IC0yMDUgMTE4NyAtMTc4UTExNzAgLTE1MSAxMTYyLjUgLTEyM1ExMTU1IC05NSAxMTYyIC02OFpNMTU2NCAtMjNRMTU2MiAtMjUgMTU2MiAtMzRRMTU2MiAtNDMgMTU2NCAtNDVMMTY0OCAtMjM4SDE1NTNRMTU1MCAtMjM4IDE1NDcuNSAtMjQyUTE1NDUgLTI0NiAxNTQzLjUgLTI1MS41UTE1NDIgLTI1NyAxNTQxIC0yNjIuNVExNTQwIC0yNjggMTU0MiAtMjcxUTE1NDUgLTI3MiAxNTUzIC0yNzVRMTU2MSAtMjc4IDE1NzAgLTI4MlExNTc5IC0yODYgMTU4NyAtMjg5UTE1OTUgLTI5MiAxNTk4IC0yOTRRMTYwMSAtMjk1IDE2MTQuNSAtMzAwUTE2MjggLTMwNSAxNjQzLjUgLTMxMC41UTE2NTkgLTMxNiAxNjcyIC0zMjFRMTY4NSAtMzI2IDE2ODggLTMyOFExNzAwIC0zMzYgMTcxNi41IC0zNjcuNVExNzMzIC0zOTkgMTc1NCAtNDQzUTE3NzUgLTQ4NyAxODAwIC01MzcuNVExODI1IC01ODggMTg1NCAtNjM0LjVRMTg4MyAtNjgxIDE5MTUgLTcxNy41UTE5NDcgLTc1NCAxOTgxLjUgLTc2OS41UTIwMTYgLTc4NSAyMDUzIC03NzRRMjA5MCAtNzYzIDIxMjkgLTcxNVEyMTM2IC03MDUgMjEzOSAtNjkzLjVRMjE0MiAtNjgyIDIxNDAgLTY3MFEyMTMxIC02NjUgMjEyMiAtNjY4UTIxMTMgLTY3MSAyMTA1LjUgLTY3OFEyMDk4IC02ODUgMjA5MiAtNjkyLjVRMjA4NiAtNzAwIDIwODQgLTcwNFEyMDE3IC03MTUgMTk3Ny41IC02OTguNVExOTM4IC02ODIgMTkxMi41IC02NDguNVExODg3IC02MTUgMTg2OCAtNTY5UTE4NDkgLTUyMyAxODI0IC00NzRRMTgxNyAtNDYyIDE4MDcuNSAtNDQzUTE3OTggLTQyNCAxNzg5IC00MDZRMTc4MCAtMzg4IDE3NzMuNSAtMzc1UTE3NjcgLTM2MiAxNzY3IC0zNjJWLTM1MFExNzY3IC0zNDYgMTc5MiAtMzQ0UTE4MTcgLTM0MiAxODQ4LjUgLTMzOFExODgwIC0zMzQgMTkwOS41IC0zMjYuNVExOTM5IC0zMTkgMTk0OCAtMzA1TDE5MzcgLTI5NFExODgwIC0yOTcgMTg0MSAtMjk2UTE4MDIgLTI5NSAxNzczIC0yODNRMTc0NCAtMjcxIDE3MjIgLTI0NC41UTE3MDAgLTIxOCAxNjc3IC0xNzBRMTY2OSAtMTUzIDE2NTYgLTEyNi41UTE2NDMgLTEwMCAxNjMwIC03NC41UTE2MTcgLTQ5IDE2MDggLTMwLjVRMTU5OSAtMTIgMTU5OCAtMTFMMTU4NiAwUTE1ODMgLTIgMTU3NC41IC0xMC41UTE1NjYgLTE5IDE1NjQgLTIzWk0yMDI4IC0xMVEyMDE0IC0zMiAyMDIwLjUgLTUzLjVRMjAyNyAtNzUgMjA0MyAtODYuNVEyMDU5IC05OCAyMDc4IC05NS41UTIwOTcgLTkzIDIxMDcgLTY4UTIxMTMgLTUzIDIxMDUuNSAtMzYuNVEyMDk4IC0yMCAyMDg0IC05LjVRMjA3MCAxIDIwNTQgMi41UTIwMzggNCAyMDI4IC0xMVpNMjg1MyAtMTFRMjg0NyAtMzYgMjg1My41IC02OC41UTI4NjAgLTEwMSAyODcyIC0xMzRRMjg4NCAtMTY3IDI4OTggLTE5Ny41UTI5MTIgLTIyOCAyOTIxIC0yNDhRMjkyNiAtMjYwIDI5MzYuNSAtMjgzUTI5NDcgLTMwNiAyOTYwLjUgLTMzNVEyOTc0IC0zNjQgMjk4OC41IC0zOTZRMzAwMyAtNDI4IDMwMTYuNSAtNDU3UTMwMzAgLTQ4NiAzMDQwLjUgLTUwOC41UTMwNTEgLTUzMSAzMDU2IC01NDJRMzAzOSAtNTQ1IDMwMDcuNSAtNTM5UTI5NzYgLTUzMyAyOTM4IC01MjMuNVEyOTAwIC01MTQgMjg2MCAtNTA0UTI4MjAgLTQ5NCAyNzg1LjUgLTQ4OS41UTI3NTEgLTQ4NSAyNzI2LjUgLTQ4OC41UTI3MDIgLTQ5MiAyNjk2IC01MDlRMjcwMyAtNTIyIDI3NDcgLTUzOVEyNzkxIC01NTYgMjg1OS41IC01NzQuNVEyOTI4IC01OTMgMzAxMi41IC02MTJRMzA5NyAtNjMxIDMxODUgLTY0OFEzMjczIC02NjUgMzM1NyAtNjc5UTM0NDEgLTY5MyAzNTA3IC03MDJRMzU3MyAtNzExIDM2MTMuNSAtNzE0UTM2NTQgLTcxNyAzNjU2IC03MTJRMzY1OSAtNzA0IDM2NTcgLTY5Mi41UTM2NTUgLTY4MSAzNjQ0IC02NzhRMzU5NSAtNjcwIDM1MzggLTY2MC41UTM0ODEgLTY1MSAzNDIyLjUgLTY0MC41UTMzNjQgLTYzMCAzMzA4IC02MTkuNVEzMjUyIC02MDkgMzIwNCAtNTk5UTMxNzMgLTU5MyAzMTQ0IC01NjNRMzExNSAtNTMzIDMwODggLTQ4OC41UTMwNjEgLTQ0NCAzMDM2IC0zODkuNVEzMDExIC0zMzUgMjk4OC41IC0yNzlRMjk2NiAtMjIzIDI5NDcgLTE3MVEyOTI4IC0xMTkgMjkxMiAtNzkuNVEyODk2IC00MCAyODg0IC0xOFEyODcyIDQgMjg2NCAwUTI4NjIgLTIgMjg1OCAtNlEyODU0IC0xMCAyODUzIC0xMVoiLz48L3N2Zz4K" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">&copy; 2026 Prof. T</div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6aa5ff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(106,165,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Aritmetica</a>
