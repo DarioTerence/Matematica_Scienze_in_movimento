@@ -105,9 +105,9 @@ var ST=[
  {id:'equiv',name:'Equivalenti',sub:'Espandere e ridurre, con le barre e con il M.C.D.'},
  {id:'dc',name:'Denominatore comune',sub:'Il m.c.m. dei denominatori e le frazioni equivalenti, con il metodo delle frecce.'},
  {id:'somma',name:'Somma e differenza',sub:'Denominatore comune, somma o differenza dei numeratori, risultato ai minimi termini.'},
- {id:'prod',name:'Prodotto'},
- {id:'quoz',name:'Quoziente'},
- {id:'pot',name:'Potenze'}];
+ {id:'prod',name:'Prodotto',sub:'Il prodotto con il modello ad area, e la riduzione in croce.'},
+ {id:'quoz',name:'Quoziente',sub:'Quante volte ci sta? Il quoziente con le barre e con il reciproco.'},
+ {id:'pot',name:'Potenze',sub:'La potenza di una frazione, prodotto ripetuto. Esponenti 1 e 0.'}];
 var S={st:'equiv',mode:'esplora',p:0,step:0,F:null,E:null,lastImg:'',done:0,clean:0,level:1};
 /* ---------- aritmetica ---------- */
 function gcd(a,b){while(b){var t=b;b=a%b;a=t;}return a;}
@@ -236,11 +236,11 @@ function confetti(){
   w.appendChild(s);(function(el){setTimeout(function(){el.remove();},1600);})(s);}}
 /* ---------- animazioni (valore che va da "from" a "to" in ms millisecondi) ---------- */
 var tws={};
-function tween(obj,key,to,ms,step,done){
+function tween(obj,key,to,ms,step,done,lin){
  cancelAnimationFrame(tws[key]);var from=obj[key];
  if(reduce||ms<=0||from===to){obj[key]=to;step();if(done)done();return;}
  var t0=performance.now();
- var f=function(now){var k=Math.min(1,(now-t0)/ms),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+ var f=function(now){var k=Math.min(1,(now-t0)/ms),e=lin?k:(k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2);
   obj[key]=from+(to-from)*e;step();if(k<1)tws[key]=requestAnimationFrame(f);else if(done)done();};
  tws[key]=requestAnimationFrame(f);}
 /* =========================================================
@@ -427,7 +427,7 @@ function makeExplorer(cfg){
   $('bNew').onclick=function(){X.F=cfg.newF(X.F,X);X.step=0;cancelAnimationFrame(tws[X.pk]);X[X.pk]=0;X.panel();X.draw();};
   say(tx.p,tx.mood,X.step===cfg.n-1);};
  X.go=function(k){k=clamp(k,0,cfg.n-1);var back=k<X.step;X.step=k;X.panel();
-  tween(X,X.pk,k,back?500:(typeof cfg.ms==='function'?cfg.ms(X.F,k):cfg.ms[k]),X.draw);};
+  tween(X,X.pk,k,back?500:(typeof cfg.ms==='function'?cfg.ms(X.F,k):cfg.ms[k]),X.draw,null,cfg.linear&&!back);};
  X.show=function(){if(!X.F)X.F=cfg.first?cfg.first():cfg.newF();cancelAnimationFrame(tws[X.pk]);X[X.pk]=X.step;X.panel();X.draw();};
  return X;}
 /* ---------- Allenati generico: caselle da riempire una alla volta ---------- */
@@ -799,6 +799,312 @@ var SMT=makeTrainer({id:'sm',
   o+=smBars(Fd,{cut:cut,down:sf>=1?1:sf*.999,simp:Fd.g>1?(an.sm_z||0):0,resLab:sf});
   $('svg').innerHTML=o;}});
 
+/* =========================================================
+   TEMPI UNIFORMI (stazioni 4-6): ogni freccia e ogni spostamento dura sempre lo stesso tempo
+   ========================================================= */
+var T_ARROW=1600,   // disegno di una freccia o di una linea
+    T_MOVE=1400,    // spostamento di un pezzo o comparsa di una barra
+    T_SHOW=1200;    // comparsa di una scritta
+// potenza di una frazione: parentesi ed esponente
+function powF(x,y,a,b,n,o){
+ o=o||{};var s=o.s||28,c=o.c||INK,w=Math.max(tw(a,s),tw(b,s))+10,xl=x-w/2-5,xr=x+w/2+5,top=y-s*1.15,bot=y+s*1.3;
+ var r=frac(x,y,a,b,{s:s,c:c,hn:o.hn,hd:o.hd});
+ r+='<path d="M'+(xl+3).toFixed(1)+','+top.toFixed(1)+' Q'+(xl-9).toFixed(1)+','+((top+bot)/2).toFixed(1)+' '+(xl+3).toFixed(1)+','+bot.toFixed(1)+'" fill="none" stroke="'+c+'" stroke-width="2.2"/>';
+ r+='<path d="M'+(xr-3).toFixed(1)+','+top.toFixed(1)+' Q'+(xr+9).toFixed(1)+','+((top+bot)/2).toFixed(1)+' '+(xr-3).toFixed(1)+','+bot.toFixed(1)+'" fill="none" stroke="'+c+'" stroke-width="2.2"/>';
+ r+=val(xr+13,top+s*.5,n,s*.62,o.ce||c,o.he);
+ return r;}
+// riga generica: stringhe, frazioni [n,d,colore,hl] e potenze {pw:[a,b,n,colore]}
+function rowP(cx,y,parts,s){
+ var q=function(v){return v==='?'?'00':v;},fs=s*.85;
+ var ws=parts.map(function(p){
+  if(typeof p==='string')return tw(p,s)+10;
+  if(p.pw)return Math.max(tw(p.pw[0],fs),tw(p.pw[1],fs))+46;
+  if(p.v!=null)return (p.v==='?'?s:tw(p.v,s))+12;
+  return Math.max(tw(q(p[0]),fs),tw(q(p[1]),fs))+16;});
+ var tot=ws.reduce(function(a,b){return a+b;},0),x=cx-tot/2,o='';
+ parts.forEach(function(p,i){var m=x+ws[i]/2;
+  if(typeof p==='string')o+=t(m,y+s*.33,p,{s:s});
+  else if(p.v!=null)o+=val(m,y+s*.33,p.v,s,p.c||INK,p.hl);
+  else if(p.pw)o+=powF(m-11,y,p.pw[0],p.pw[1],p.pw[2],{s:fs,c:p.pw[3]||INK});
+  else o+=frac(m,y,p[0],p[1],{s:fs,c:p[2]||INK,cd:p[4],hn:p[3]==='n',hd:p[3]==='d'});
+  x+=ws[i];});
+ return o;}
+function fade(svg,op){return op<=0?'':(op>=1?svg:'<g opacity="'+op.toFixed(2)+'">'+svg+'</g>');}
+// linea dritta che si disegna da 0 a 1
+function sLine(p0,p1,prog,col,w){if(prog<=0)return '';
+ return '<path d="M'+p0[0]+','+p0[1]+' L'+p1[0]+','+p1[1]+'" fill="none" stroke="'+col+'" stroke-width="'+(w||2.4)+'" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="'+(1-prog).toFixed(3)+'"/>';}
+function strike(x,y,s,op){return op<=0?'':'<line x1="'+(x-s*.45).toFixed(1)+'" y1="'+(y+s*.15).toFixed(1)+'" x2="'+(x+s*.45).toFixed(1)+'" y2="'+(y-s*.55).toFixed(1)+'" stroke="'+MUT+'" stroke-width="2.4" opacity="'+op.toFixed(2)+'"/>';}
+// tempi di un passo divisi in fasi di durata nota: fase(p, inizio, durata) in millisecondi
+function phase(sp,total,startMs,durMs){return op1((sp*total-startMs)/durMs);}
+function redFrac(n,d){var g=gcd(n,d);return [n/g,d/g];}
+function mixedTxt(n,d){var r=redFrac(n,d);if(r[1]===1)return String(r[0]);var w=Math.floor(r[0]/r[1]);return w>0?w+' + '+fr(r[0]-w*r[1],r[1]):fr(r[0],r[1]);}
+function properPair(maxB){var b,a;do{b=ri(2,maxB);a=ri(1,b-1);}while(gcd(a,b)!==1);return [a,b];}
+// diagnosi della riduzione finale, comune alle stazioni 4 e 5
+function reduceSteps(E,numF,denF){
+ function G(){return gcd(numF(),denF());}
+ return [
+  {key:'sn',skip:function(){return G()===1;},q:function(){return 'Riduci '+fr(numF(),denF())+' ai minimi termini. Qual è il numeratore?';},ans:function(){return numF()/G();},
+   check:function(v){var r=numF(),g=G();
+    if(v===r/g)return null;
+    if(v===r)return {msg:r+' e '+denF()+' hanno divisori comuni, quindi il numeratore cambia.'};
+    if(v>0&&r%v===0&&g%(r/v)===0)return {msg:'Hai diviso per '+(r/v)+', ma si può ridurre ancora. M.C.D.('+r+', '+denF()+') = '+g+'.'};
+    return {msg:'Calcola il M.C.D. di '+r+' e '+denF()+', poi dividi '+r+' per il M.C.D.'};}},
+  {key:'sd',skip:function(){return G()===1;},q:function(){return fr(numF(),denF())+' = '+fr(E.got.sn,'?')+'. Qual è il denominatore?';},ans:function(){return denF()/G();},
+   check:function(v){var g=G();
+    if(v===denF()/g)return null;
+    if(v===denF())return {msg:'Il denominatore va diviso per lo stesso numero del numeratore, '+g+'.'};
+    return {msg:'Dividi anche il denominatore per '+g+', '+denF()+' : '+g+'.'};}}];}
+
+/* =========================================================
+   STAZIONE 4: PRODOTTO (modello ad area)
+   ========================================================= */
+var PQ={x:70,y:130,s:220},PX1=360,PX2=480,PXC=420,PY1=130,PY2=248;
+function prMake(a,b,c,d){var F={a:a,b:b,c:c,d:d,A:a*c,B:b*d};F.g1=gcd(a,d);F.g2=gcd(c,b);
+ F.a2=a/F.g1;F.d2=d/F.g1;F.c2=c/F.g2;F.b2=b/F.g2;F.A2=F.a2*F.c2;F.B2=F.b2*F.d2;return F;}
+function prNew(prev){
+ for(var t2=0;t2<500;t2++){var p=properPair(9),q=properPair(9),F=prMake(p[0],p[1],q[0],q[1]);
+  if(F.g1===1&&F.g2===1)continue;
+  if(prev&&prev.b===F.b&&prev.d===F.d)continue;return F;}
+ return prMake(4,9,3,8);}
+var PR_MS=function(F,k){var nx=(F.g1>1?1:0)+(F.g2>1?1:0);return [0,T_MOVE,T_MOVE,T_SHOW*2,nx*(T_ARROW+T_SHOW)+T_SHOW][k];};
+var PRX=makeExplorer({id:'pr',n:5,linear:true,newLabel:'Nuove frazioni',ms:PR_MS,
+ anchor:'Nel prodotto si moltiplica <b>numeratore per numeratore</b> e <b>denominatore per denominatore</b>, senza denominatore comune. Prima conviene ridurre in croce.',
+ first:function(){return prMake(4,9,3,8);},newF:prNew,
+ render:function(F,p){
+  var s1=op1(p),s2=op1(p-1),s3=op1(p-2),s4=op1(p-3),o='',a=F.a,b=F.b,c=F.c,d=F.d,X=PQ.x,Y=PQ.y,S=PQ.s,cw=S/b,ch=S/d,i;
+  // quadrato intero
+  o+='<rect x="'+X+'" y="'+Y+'" width="'+S+'" height="'+S+'" fill="#16223a"/>';
+  var dim=1-.55*op1(s3*2);
+  if(s1>0)o+='<rect x="'+X+'" y="'+Y+'" width="'+(a*cw).toFixed(1)+'" height="'+S+'" fill="'+C1+'" opacity="'+(.42*s1*dim).toFixed(2)+'"/>';
+  if(s2>0)o+='<rect x="'+X+'" y="'+Y+'" width="'+S+'" height="'+(c*ch).toFixed(1)+'" fill="'+C2+'" opacity="'+(.42*s2*dim).toFixed(2)+'"/>';
+  var ov=op1((s2-.5)*2)*.3+op1(s3*2)*.6;
+  if(ov>0)o+='<rect x="'+X+'" y="'+Y+'" width="'+(a*cw).toFixed(1)+'" height="'+(c*ch).toFixed(1)+'" fill="'+CM+'" opacity="'+ov.toFixed(2)+'"/>';
+  var gl='';
+  for(i=1;i<b;i++)gl+='<line x1="'+(X+i*cw).toFixed(1)+'" y1="'+Y+'" x2="'+(X+i*cw).toFixed(1)+'" y2="'+(Y+S)+'" stroke="#05080f" stroke-width="1.6" opacity="'+s1.toFixed(2)+'"/>';
+  for(i=1;i<d;i++)gl+='<line x1="'+X+'" y1="'+(Y+i*ch).toFixed(1)+'" x2="'+(X+S)+'" y2="'+(Y+i*ch).toFixed(1)+'" stroke="#05080f" stroke-width="1.6" opacity="'+s2.toFixed(2)+'"/>';
+  o+=gl+'<rect x="'+X+'" y="'+Y+'" width="'+S+'" height="'+S+'" fill="none" stroke="#3a4d70" stroke-width="2"/>';
+  // indicazioni sui lati
+  o+=fade('<line x1="'+X+'" y1="'+(Y-10)+'" x2="'+(X+a*cw).toFixed(1)+'" y2="'+(Y-10)+'" stroke="'+C1+'" stroke-width="2.4"/>'+frac(X+a*cw/2,Y-44,a,b,{s:20,c:C1}),s1);
+  o+=fade('<line x1="'+(X-10)+'" y1="'+Y+'" x2="'+(X-10)+'" y2="'+(Y+c*ch).toFixed(1)+'" stroke="'+C2+'" stroke-width="2.4"/>'+frac(X-36,Y+c*ch/2-2,c,d,{s:20,c:C2}),s2);
+  o+=fade(t(X+S/2,Y+S+30,a+' · '+c+' = '+F.A+' quadretti su '+b+' · '+d+' = '+F.B,{s:17,w:400,c:CM}),op1(s3*2));
+  // formule a destra
+  o+=frac(PX1,PY1,a,b,{s:30,c:C1})+t(PXC,PY1+10,'·',{s:30})+frac(PX2,PY1,c,d,{s:30,c:C2});
+  o+=fade(rowP(PXC,PY2,['=','?'],30),1-op1(s3*3));
+  var r3=rowP(PXC,PY2,['=',[a+' · '+c,b+' · '+d],'=',[F.A,F.B,CM]],30);
+  o+=fade(r3,op1(s3*3)*(1-op1(s4*4)));
+  // passo 4: riduzione in croce, una coppia alla volta
+  var tot=PR_MS(F,4),tm=0,pairs=[];
+  if(F.g1>1)pairs.push({p0:[PX1+12,PY1-20],p1:[PX2-12,PY1+22],g:F.g1,top:[PX1,a,F.a2],bot:[PX2,d,F.d2],lab:[PX1+34,PY1-40]});
+  if(F.g2>1)pairs.push({p0:[PX2-12,PY1-20],p1:[PX1+12,PY1+22],g:F.g2,top:[PX2,c,F.c2],bot:[PX1,b,F.b2],lab:[PX2-34,PY1-40]});
+  pairs.forEach(function(pr){
+   var ln=phase(s4,tot,tm,T_ARROW),nw=phase(s4,tot,tm+T_ARROW,T_SHOW);tm+=T_ARROW+T_SHOW;
+   o+=sLine(pr.p0,pr.p1,ln,CM,2.2);
+   o+=fade(t(pr.lab[0],pr.lab[1],': '+pr.g,{s:18,c:CM}),op1(ln*2));
+   o+=strike(pr.top[0],PY1-30*.28,30,nw)+strike(pr.bot[0],PY1+30*.95,30,nw);
+   o+=fade(t(pr.top[0],PY1-46,pr.top[2],{s:22,c:CM})+t(pr.bot[0],PY1+72,pr.bot[2],{s:22,c:CM}),nw);});
+  var fin=phase(s4,tot,tm,T_SHOW);
+  o+=fade(rowP(PXC,PY2,['=',[F.a2+' · '+F.c2,F.b2+' · '+F.d2],'=',[F.A2,F.B2,CM]],30),fin);
+  return o;},
+ text:function(F,k){var a=F.a,b=F.b,c=F.c,d=F.d;
+  switch(k){
+  case 0:return {h:'Il problema',x:'Bisogna calcolare '+fr(a,b)+' · '+fr(c,d)+'. Il quadrato rappresenta l’intero.',p:'Il prodotto si vede con un quadrato e due tagli.',mood:'hi'};
+  case 1:return {h:'Prima frazione',x:'Tagliamo il quadrato in '+b+' colonne uguali e ne coloriamo '+a+'. Sono '+fr(a,b)+' del quadrato.',p:'Prima i tagli in verticale.',mood:'idle'};
+  case 2:return {h:'Seconda frazione',x:'Ora tagliamo in '+d+' righe e ne coloriamo '+c+', cioè '+fr(c,d)+'. Il prodotto è la parte colorata due volte, dove le due frazioni si incrociano.',p:'Poi i tagli in orizzontale.',mood:'idle'};
+  case 3:return {h:'Contiamo i quadretti',x:'I quadretti colorati due volte sono '+a+' · '+c+' = '+F.A+', quelli in tutto '+b+' · '+d+' = '+F.B+'. Quindi '+fr(a,b)+' · '+fr(c,d)+' = '+fr(F.A,F.B)+'.<br>Si moltiplica numeratore per numeratore e denominatore per denominatore, senza denominatore comune.',p:'Righe per colonne, come per l’area del rettangolo.',mood:'ok'};
+  default:var pr=[];if(F.g1>1)pr.push(a+' e '+d+' si dividono per '+F.g1);if(F.g2>1)pr.push(c+' e '+b+' si dividono per '+F.g2);
+   return {h:'Ridurre in croce',x:'Prima di moltiplicare conviene ridurre in croce, un numeratore con il denominatore dell’altra frazione. Qui '+pr.join(', e ')+'.<br>'+fr(a,b)+' · '+fr(c,d)+' = '+fr(F.a2,F.b2)+' · '+fr(F.c2,F.d2)+' = '+fr(F.A2,F.B2)+', con numeri più piccoli e già ai minimi termini.',
+    note:'Lo stesso risultato si ottiene riducendo '+fr(F.A,F.B)+' alla fine, con M.C.D.('+F.A+', '+F.B+') = '+gcd(F.A,F.B)+'.',p:'In croce sì, ma solo nel prodotto!',mood:'ok'};}}});
+var PRT=makeTrainer({id:'pr',
+ anchor:'Numeratore per numeratore, denominatore per denominatore. Se puoi, riduci prima in croce.',
+ newEx:function(prev){
+  var p=properPair(9),q=properPair(9),F=prMake(p[0],p[1],q[0],q[1]),E={F:F,cross:false,intro:'Calcola il prodotto. Puoi ridurre in croce prima di moltiplicare.'};
+  var a=F.a,b=F.b,c=F.c,d=F.d,canCross=F.g1>1||F.g2>1;
+  E.steps=[
+   {key:'pn',q:function(){return fr(a,b)+' · '+fr(c,d)+' = '+fr('?','?')+'. Qual è il numeratore?';},ans:function(){return F.A;},
+    check:function(v){
+     if(v===F.A)return null;
+     if(canCross&&v===F.A2){E.cross=true;return {note:'Hai già ridotto in croce, ottimo.'};}
+     if(v===a*d)return {msg:'Hai moltiplicato in croce. Nel prodotto si moltiplicano i numeratori tra loro, '+a+' · '+c+'.'};
+     if(v===a+c)return {msg:'Hai sommato. Nel prodotto si moltiplica, '+a+' · '+c+'.'};
+     return {msg:'Calcola '+a+' · '+c+'.'};}},
+   {key:'pd',q:function(){return fr(a,b)+' · '+fr(c,d)+' = '+fr(E.got.pn,'?')+'. Qual è il denominatore?';},ans:function(){return E.cross?F.B2:F.B;},
+    check:function(v){var want=E.cross?F.B2:F.B;
+     if(v===want)return null;
+     if(v===lcm(b,d)&&v!==want)return {msg:'Nel prodotto non serve il denominatore comune, si moltiplicano i denominatori.'};
+     if(v===b*c)return {msg:'Hai moltiplicato in croce. Si moltiplicano i denominatori tra loro.'};
+     if(v===b+d)return {msg:'Hai sommato. Nel prodotto si moltiplica.'};
+     if(E.cross&&v===F.B)return {msg:'Hai ridotto in croce il numeratore, quindi anche i denominatori vanno ridotti, '+F.b2+' · '+F.d2+'.'};
+     if(!E.cross&&v===F.B2)return {msg:'Se riduci il denominatore devi ridurre anche il numeratore. Qui calcola '+b+' · '+d+'.'};
+     return {msg:'Calcola '+(E.cross?F.b2+' · '+F.d2:b+' · '+d)+'.'};}}];
+  E.steps=E.steps.concat(reduceSteps(E,function(){return E.got.pn;},function(){return E.got.pd;}));
+  E.summary=function(){var n=E.got.pn,dd=E.got.pd,g=gcd(n,dd);return fr(a,b)+' · '+fr(c,d)+' = '+fr(n,dd)+(g>1?' = '+fr(n/g,dd/g):'');};
+  E.finish=function(){return canCross&&!E.cross?'Prova la prossima volta a ridurre in croce prima.':'';};
+  return E;},
+ draw:function(T){
+  var E=T.ex,F=E.F,g=E.got,cur=T.done?null:T.cur().key,o='';
+  var parts=[[F.a,F.b,C1],'·',[F.c,F.d,C2],'=',[g.pn!=null?g.pn:'?',g.pd!=null?g.pd:'?',INK,cur==='pn'?'n':(cur==='pd'?'d':null)]];
+  if(g.pd!=null&&gcd(g.pn,g.pd)>1)parts.push('=',[g.sn!=null?g.sn:'?',g.sd!=null?g.sd:'?',CM,cur==='sn'?'n':(cur==='sd'?'d':null)]);
+  o+=rowP(280,150,parts,40);
+  if(T.done){var S=150,X=205,Y=215,cw=S/F.b,ch=S/F.d,gl='';
+   for(var i=1;i<F.b;i++)gl+='<line x1="'+(X+i*cw).toFixed(1)+'" y1="'+Y+'" x2="'+(X+i*cw).toFixed(1)+'" y2="'+(Y+S)+'" stroke="#05080f" stroke-width="1.4"/>';
+   for(i=1;i<F.d;i++)gl+='<line x1="'+X+'" y1="'+(Y+i*ch).toFixed(1)+'" x2="'+(X+S)+'" y2="'+(Y+i*ch).toFixed(1)+'" stroke="#05080f" stroke-width="1.4"/>';
+   o+='<rect x="'+X+'" y="'+Y+'" width="'+S+'" height="'+S+'" fill="#16223a"/><rect x="'+X+'" y="'+Y+'" width="'+(F.a*cw).toFixed(1)+'" height="'+S+'" fill="'+C1+'" opacity=".2"/><rect x="'+X+'" y="'+Y+'" width="'+S+'" height="'+(F.c*ch).toFixed(1)+'" fill="'+C2+'" opacity=".2"/><rect x="'+X+'" y="'+Y+'" width="'+(F.a*cw).toFixed(1)+'" height="'+(F.c*ch).toFixed(1)+'" fill="'+CM+'" opacity=".8"/>'+gl+'<rect x="'+X+'" y="'+Y+'" width="'+S+'" height="'+S+'" fill="none" stroke="#3a4d70" stroke-width="2"/>';}
+  $('svg').innerHTML=o;}});
+
+/* =========================================================
+   STAZIONE 5: QUOZIENTE (quante volte ci sta? e reciproco)
+   ========================================================= */
+var QY_A=190,QY_M=232,QY_D=322,QH=30;
+function quMake(a,b,c,d){var F={a:a,b:b,c:c,d:d,A:a*d,B:b*c};F.q=F.A/F.B;F.N=Math.ceil(F.q-1e-9);F.g=gcd(F.A,F.B);return F;}
+function quNew(prev){
+ for(var t2=0;t2<500;t2++){var p=properPair(8),q=properPair(8),F=quMake(p[0],p[1],q[0],q[1]);
+  if(F.q<=1||F.N>4)continue;if(prev&&prev.b===F.b&&prev.d===F.d&&prev.a===F.a)continue;return F;}
+ return quMake(3,4,3,8);}
+var QU_MS=function(F,k){return [0,F.N*T_MOVE+T_SHOW,T_SHOW+T_ARROW,T_SHOW*2][k];};
+function quFlip(x,y,c,d,u,s,col){
+ // c (sopra) scende lungo un arco a destra, d (sotto) sale lungo un arco a sinistra
+ var top=y-s*.28,bot=y+s*.95,o='',e=ease(u),ang=Math.PI*e,R=(bot-top)/2,cyc=(top+bot)/2;
+ var pc=[x+Math.sin(ang)*R*.9,cyc-Math.cos(ang)*R],pd=[x-Math.sin(ang)*R*.9,cyc+Math.cos(ang)*R];
+ o+='<line x1="'+(x-s*.42)+'" y1="'+y+'" x2="'+(x+s*.42)+'" y2="'+y+'" stroke="'+col+'" stroke-width="2.4" stroke-linecap="round"/>';
+ o+=t(pc[0],pc[1],c,{s:s,c:col})+t(pd[0],pd[1],d,{s:s,c:col});
+ if(u>0&&u<1){o+=qArrow([x+16,top-s*.6],[x+s*1.3,cyc-s*.3],[x+16,bot-s*.2],op1(u*1.4),MUT)+qArrow([x-16,bot-s*.2],[x-s*1.3,cyc-s*.3],[x-16,top-s*.6],op1(u*1.4),MUT);}
+ return o;}
+var QUX=makeExplorer({id:'qu',n:4,linear:true,newLabel:'Nuove frazioni',ms:QU_MS,
+ anchor:'Dividere per una frazione è come <b>moltiplicare per il suo reciproco</b>. Si capovolge solo il divisore, la seconda frazione.',
+ first:function(){return quMake(3,4,3,8);},newF:quNew,
+ render:function(F,p){
+  var s1=op1(p),s2=op1(p-1),s3=op1(p-2),o='',a=F.a,b=F.b,c=F.c,d=F.d,U=BW,i,s=30,y=62;
+  // riga in alto
+  o+=frac(140,y,a,b,{s:s,c:C1})+t(195,y+10,':',{s:s})+frac(250,y,c,d,{s:s,c:C2});
+  o+=fade(t(305,y+10,'= ?',{s:s,a:'start'}),1-op1(s2*4));
+  var tot2=QU_MS(F,2),r1=phase(s2,tot2,0,T_SHOW),fl=phase(s2,tot2,T_SHOW,T_ARROW);
+  o+=fade(t(318,y+10,'=',{s:s})+frac(375,y,a,b,{s:s,c:C1})+t(425,y+10,'·',{s:s}),r1);
+  if(r1>0)o+=fade(quFlip(480,y,c,d,fl,s,C2),r1);
+  var r3=rowP(370,150,['=',[a+' · '+d,b+' · '+c],'=',[F.A,F.B,CM]].concat(F.g>1?['=',(F.B/F.g===1?String(F.A/F.g):[F.A/F.g,F.B/F.g,CM])]:[]),30);
+  o+=fade(r3,op1(s3*2));
+  // barre
+  o+=gBar(QY_A,QH,U,1,[{x0:0,x1:a/b,col:C1}],[{d:b,op:1,w:2.4}])+bLab(QY_A,QH,[{n:a,d:b,col:C1}],18);
+  o+=gBar(QY_D,QH,U,1,[{x0:0,x1:c/d,col:C2}],[{d:d,op:1,w:2.4}])+bLab(QY_D,QH,[{n:c,d:d,col:C2}],18);
+  var xe=X0+a/b*U;
+  o+='<rect x="'+X0+'" y="'+QY_M+'" width="'+(a/b*U).toFixed(1)+'" height="'+QH+'" fill="none" stroke="'+C1+'" stroke-width="1.5" stroke-dasharray="5 4" opacity=".7"/>';
+  o+='<line x1="'+xe.toFixed(1)+'" y1="'+(QY_A-6)+'" x2="'+xe.toFixed(1)+'" y2="'+(QY_M+QH+6)+'" stroke="'+C1+'" stroke-width="2" stroke-dasharray="4 4"/>';
+  var tot1=QU_MS(F,1),w=c/d*U;
+  for(i=0;i<F.N;i++){var v=phase(s1,tot1,i*T_MOVE,T_MOVE);if(v<=0)continue;
+   var e=ease(v),x=lerp(X0,X0+i*w,e),yy=lerp(QY_D,QY_M,e),last=i===F.N-1&&Math.abs(F.q-F.N)>1e-9;
+   if(!last||v<1)o+=pieces(x,yy,w,QH,c,C2,1);
+   else{var inside=(F.q-i)*w;
+    o+=pieces(x,yy,w,QH,c,C2,.25)+'<rect x="'+x.toFixed(1)+'" y="'+yy.toFixed(1)+'" width="'+inside.toFixed(1)+'" height="'+QH+'" fill="'+C2+'" opacity=".85"/>';}
+   o+='<rect x="'+x.toFixed(1)+'" y="'+yy.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+QH+'" fill="none" stroke="#0a0f1a" stroke-width="3"/>';
+   if(v>=1)o+=t(x+(last?(F.q-i)*w:w)/2,QY_M+QH/2+6,last?'':String(i+1),{s:16,c:'#0a0f1a'});}
+  var cnt=phase(s1,tot1,F.N*T_MOVE,T_SHOW);
+  var rq=redFrac(F.A,F.B),wq=Math.floor(rq[0]/rq[1]),rr=rq[0]-wq*rq[1];
+  o+=fade(t(X0+BW,QY_M+QH+30,'ci sta '+wq+(rr?' + '+rr+'/'+rq[1]:'')+(F.q===1?' volta':' volte'),{s:18,w:400,c:CM,a:'end'}),cnt);
+  return o;},
+ text:function(F,k){var a=F.a,b=F.b,c=F.c,d=F.d,m=mixedTxt(F.A,F.B);
+  switch(k){
+  case 0:return {h:'Il problema',x:'Bisogna calcolare '+fr(a,b)+' : '+fr(c,d)+'. Dividere per '+fr(c,d)+' vuol dire chiedersi quante volte '+fr(c,d)+' sta in '+fr(a,b)+'.',p:'Quante volte ci sta?',mood:'hi'};
+  case 1:return {h:'Quante volte ci sta?',x:'Mettiamo i pezzi da '+fr(c,d)+' uno dopo l’altro sotto '+fr(a,b)+'. Ci stanno '+m+(F.q===1?' volta':' volte')+'.',p:'Contiamo le misure, come con un righello.',mood:'idle'};
+  case 2:return {h:'Il reciproco',x:'Per fare il calcolo senza barre, la divisione diventa una moltiplicazione per il <b>reciproco</b> del divisore. Il reciproco di '+fr(c,d)+' è '+fr(d,c)+', si scambiano numeratore e denominatore.<br>Si capovolge solo la seconda frazione, mai la prima.',p:'Divisione per una frazione? Capovolgo e moltiplico!',mood:'ok'};
+  default:return {h:'Calcoliamo',x:fr(a,b)+' · '+fr(d,c)+' = '+fr(F.A,F.B)+(F.g>1?' = '+(F.B/F.g===1?F.A/F.g:fr(F.A/F.g,F.B/F.g)):'')+'. È proprio il numero di volte trovato con le barre.',
+   note:'Anche qui si può ridurre in croce, dopo aver capovolto il divisore.',p:'Barre e calcolo danno lo stesso risultato.',mood:'ok'};}}});
+var QUT=makeTrainer({id:'qu',
+ anchor:'Si capovolge il divisore (il reciproco) e si moltiplica. Si capovolge solo la seconda frazione.',
+ newEx:function(){
+  var p,q;do{p=properPair(9);q=properPair(9);}while(p[0]===q[0]&&p[1]===q[1]);
+  var F=quMake(p[0],p[1],q[0],q[1]),E={F:F,cross:false,intro:'Prima il reciproco del divisore, poi il prodotto.'};
+  var a=F.a,b=F.b,c=F.c,d=F.d,g1=gcd(a,c),g2=gcd(d,b),A2=(a/g1)*(d/g2),B2=(b/g2)*(c/g1),canCross=g1>1||g2>1;
+  E.steps=[
+   {key:'rn',q:function(){return 'Il reciproco di '+fr(c,d)+' è '+fr('?','?')+'. Qual è il numeratore?';},ans:function(){return d;},
+    check:function(v){if(v===d)return null;if(v===c)return {msg:'Il reciproco si ottiene scambiando numeratore e denominatore. Il numeratore diventa '+d+'.'};if(v===b||v===a)return {msg:'Si capovolge il divisore, cioè la seconda frazione, '+fr(c,d)+'.'};return {msg:'Scambia numeratore e denominatore di '+fr(c,d)+'.'};}},
+   {key:'rd',q:function(){return 'Il reciproco di '+fr(c,d)+' è '+fr(d,'?')+'. Qual è il denominatore?';},ans:function(){return c;},
+    check:function(v){if(v===c)return null;if(v===d)return {msg:'Il denominatore diventa il vecchio numeratore, '+c+'.'};return {msg:'Scambia numeratore e denominatore di '+fr(c,d)+'.'};}},
+   {key:'pn',q:function(){return fr(a,b)+' · '+fr(d,c)+' = '+fr('?','?')+'. Qual è il numeratore?';},ans:function(){return F.A;},
+    check:function(v){
+     if(v===F.A)return null;
+     if(canCross&&v===A2){E.cross=true;return {note:'Hai già ridotto in croce, ottimo.'};}
+     if(v===b*c)return {msg:'Hai capovolto la prima frazione. Si capovolge solo il divisore, poi '+a+' · '+d+'.'};
+     if(v===a*c)return {msg:'Non hai usato il reciproco. Si moltiplica per '+fr(d,c)+', quindi '+a+' · '+d+'.'};
+     return {msg:'Calcola '+a+' · '+d+'.'};}},
+   {key:'pd',q:function(){return fr(a,b)+' · '+fr(d,c)+' = '+fr(E.got.pn,'?')+'. Qual è il denominatore?';},ans:function(){return E.cross?B2:F.B;},
+    check:function(v){var want=E.cross?B2:F.B;
+     if(v===want)return null;
+     if(v===b*d)return {msg:'Non hai usato il reciproco. Al denominatore va '+b+' · '+c+'.'};
+     if(v===a*d)return {msg:'Hai capovolto la prima frazione. Al denominatore va '+b+' · '+c+'.'};
+     if(E.cross&&v===F.B)return {msg:'Hai ridotto in croce il numeratore, quindi riduci anche il denominatore.'};
+     return {msg:'Calcola '+(E.cross?(b/g2)+' · '+(c/g1):b+' · '+c)+'.'};}}];
+  E.steps=E.steps.concat(reduceSteps(E,function(){return E.got.pn;},function(){return E.got.pd;}));
+  E.summary=function(){var n=E.got.pn,dd=E.got.pd,g=gcd(n,dd);return fr(a,b)+' : '+fr(c,d)+' = '+fr(a,b)+' · '+fr(d,c)+' = '+fr(n,dd)+(g>1?' = '+fr(n/g,dd/g):'');};
+  return E;},
+ draw:function(T){
+  var E=T.ex,F=E.F,g=E.got,cur=T.done?null:T.cur().key,o='',hl=function(k1,k2){return cur===k1?'n':(cur===k2?'d':null);};
+  o+=rowP(280,110,[[F.a,F.b,C1],':',[F.c,F.d,C2]],40);
+  var parts=['=',[F.a,F.b,C1],'·',[g.rn!=null?g.rn:'?',g.rd!=null?g.rd:'?',C2,hl('rn','rd')],'=',[g.pn!=null?g.pn:'?',g.pd!=null?g.pd:'?',INK,hl('pn','pd')]];
+  if(g.pd!=null&&gcd(g.pn,g.pd)>1)parts.push('=',[g.sn!=null?g.sn:'?',g.sd!=null?g.sd:'?',CM,hl('sn','sd')]);
+  o+=rowP(280,250,parts,34);
+  $('svg').innerHTML=o;}});
+
+/* =========================================================
+   STAZIONE 6: POTENZE
+   ========================================================= */
+var WY0=190,WSP=52,WH=30;
+function poMake(a,b,n){return {a:a,b:b,n:n,A:Math.pow(a,n),B:Math.pow(b,n)};}
+function poNew(prev){
+ for(var t2=0;t2<300;t2++){var p=properPair(8),n=Math.pow(p[1],3)<=64&&Math.random()<.5?3:2;
+  if(Math.pow(p[1],n)>64)continue;if(prev&&prev.a===p[0]&&prev.b===p[1])continue;return poMake(p[0],p[1],n);}
+ return poMake(2,3,3);}
+var PO_MS=function(F,k){return [0,T_SHOW,F.n*T_MOVE,T_SHOW*2,T_SHOW*2][k];};
+var POX=makeExplorer({id:'po',n:5,linear:true,newLabel:'Nuova potenza',ms:PO_MS,
+ anchor:'Per elevare a potenza una frazione si elevano <b>sia il numeratore sia il denominatore</b>.',
+ first:function(){return poMake(2,3,3);},newF:poNew,
+ render:function(F,p){
+  var s1=op1(p),s2=op1(p-1),s3=op1(p-2),s4=op1(p-3),o='',a=F.a,b=F.b,n=F.n,i,y=72;
+  var pw={pw:[a,b,n,C1]},rep=[];for(i=0;i<n;i++){if(i>0)rep.push('·');rep.push([a,b,C1]);}
+  var na=[],nb=[];for(i=0;i<n;i++){na.push(a);nb.push(b);}
+  var top=1-op1(s4*4);
+  o+=fade(rowP(280,y,[pw,'=','?'],34),(1-op1(s1*3))*top);
+  o+=fade(rowP(280,y,[pw,'='].concat(rep),34),op1(s1*3)*(1-op1(s3*3))*top);
+  o+=fade(rowP(280,y,[pw,'=',[na.join(' · '),nb.join(' · ')],'=',[F.A,F.B,CM]],34),op1(s3*3)*top);
+  // passo 4: esponenti 1 e 0
+  o+=fade(rowP(150,y,[{pw:[a,b,1,C1]},'=',[a,b,C1]],34)+rowP(410,y,[{pw:[a,b,0,C1]},'=','1'],34),op1((s4-.2)*3));
+  // barre: ogni barra è a/b della parte colorata della barra precedente
+  var tot=PO_MS(F,2);
+  for(var k=1;k<=n;k++){var v=phase(s2,tot,(k-1)*T_MOVE,T_MOVE);if(v<=0)continue;
+   var yk=WY0+(k-1)*WSP,prev=Math.pow(a/b,k-1),now=Math.pow(a/b,k),ap=op1(v/.3),cutOp=op1((v-.3)/.35),sh=ease(op1((v-.6)/.4));
+   var seg=[{x0:0,x1:lerp(prev,now,sh),col:C1}],bars=gBar(yk,WH,BW,1,seg,[{d:Math.pow(b,k),op:cutOp*.8,w:1.2}]);
+   var marks='';for(var j=1;j<b;j++){var xm=X0+prev*j/b*BW;marks+='<line x1="'+xm.toFixed(1)+'" y1="'+(yk-4)+'" x2="'+xm.toFixed(1)+'" y2="'+(yk+WH+4)+'" stroke="'+INK+'" stroke-width="2"/>';}
+   bars+=fade(marks,cutOp)+'<rect x="'+X0+'" y="'+yk+'" width="'+(prev*BW).toFixed(1)+'" height="'+WH+'" fill="none" stroke="'+INK+'" stroke-width="1.5" stroke-dasharray="5 4" opacity="'+(cutOp*.8).toFixed(2)+'"/>';
+   bars+=bLab(yk,WH,[{n:Math.pow(a,k),d:Math.pow(b,k),col:C1,op:sh}],16);
+   o+=fade(bars,ap*(1-op1(s4*3)*.6));}
+  return o;},
+ text:function(F,k){var a=F.a,b=F.b,n=F.n,P='('+fr(a,b)+')<sup>'+n+'</sup>',rep=[];for(var i=0;i<n;i++)rep.push(fr(a,b));
+  switch(k){
+  case 0:return {h:'Il problema',x:'Bisogna calcolare '+P+'.',p:'Una potenza di una frazione. Che cosa vuol dire?',mood:'hi'};
+  case 1:return {h:'Un prodotto ripetuto',x:'Come per i numeri naturali, la potenza è un prodotto ripetuto. '+P+' = '+rep.join(' · ')+', '+n+' fattori uguali.',p:'L’esponente dice quante volte moltiplico.',mood:'idle'};
+  case 2:return {h:'Una frazione di una frazione',x:'Ogni volta si prende '+fr(a,b)+' della parte colorata prima. La parte colorata diventa sempre più piccola, perché '+fr(a,b)+' è minore di 1.',p:'Ogni volta una parte della parte. Sempre meno!',mood:'idle'};
+  case 3:return {h:'La regola',x:'Si elevano a potenza <b>sia il numeratore sia il denominatore</b>. '+P+' = '+fr(a+'<sup>'+n+'</sup>',b+'<sup>'+n+'</sup>')+' = '+fr(F.A,F.B)+'.',p:'Sopra e sotto, tutti e due!',mood:'ok'};
+  default:return {h:'Esponente 1 e 0',x:'Con esponente 1 la frazione resta uguale, ('+fr(a,b)+')<sup>1</sup> = '+fr(a,b)+'.<br>Con esponente 0 il risultato è 1, come per ogni numero diverso da zero. Infatti dividendo una potenza per sé stessa si ottiene 1, '+P+' : '+P+' = ('+fr(a,b)+')<sup>0</sup> = 1.',p:'Esponente zero? Fa sempre 1!',mood:'ok'};}}});
+var POT=makeTrainer({id:'po',
+ anchor:'Si elevano a potenza sia il numeratore sia il denominatore. Con esponente 0 il risultato è 1.',
+ newEx:function(){
+  var r=Math.random(),n=r<.12?0:(r<.24?1:(r<.7?2:3)),a,b;
+  do{b=ri(2,n===3?5:9);a=ri(1,Math.random()<.25?b+4:b-1);}while(gcd(a,b)!==1||a===b);
+  var F=poMake(a,b,n),E={F:F,intro:'Calcola la potenza.'},P='('+fr(a,b)+')<sup>'+n+'</sup>';
+  if(n===0)E.steps=[{key:'z',q:function(){return 'Quanto vale '+P+'?';},ans:function(){return 1;},
+   check:function(v){if(v===1)return null;if(v===a||v===b)return {msg:'Con esponente 0 non resta la frazione. Il risultato è 1.'};return {msg:'Ogni numero diverso da zero elevato a zero fa 1.'};}}];
+  else E.steps=[
+   {key:'pn',q:function(){return P+' = '+fr('?','?')+'. Qual è il numeratore?';},ans:function(){return F.A;},
+    check:function(v){if(v===F.A)return null;if(n>1&&v===a*n)return {msg:'Hai moltiplicato per l’esponente. La potenza è un prodotto ripetuto, '+Array(n+1).join(a+' · ').slice(0,-3)+'.'};if(n>1&&v===a)return {msg:'Anche il numeratore va elevato a potenza.'};return {msg:'Calcola '+a+'<sup>'+n+'</sup>.'};}},
+   {key:'pd',q:function(){return P+' = '+fr(E.got.pn,'?')+'. Qual è il denominatore?';},ans:function(){return F.B;},
+    check:function(v){if(v===F.B)return null;if(n>1&&v===b)return {msg:'Anche il denominatore va elevato a potenza, non solo il numeratore.'};if(n>1&&v===b*n)return {msg:'Hai moltiplicato per l’esponente. Calcola '+Array(n+1).join(b+' · ').slice(0,-3)+'.'};return {msg:'Calcola '+b+'<sup>'+n+'</sup>.'};}}];
+  E.summary=function(){return P+' = '+(n===0?'1':fr(F.A,F.B));};
+  E.finish=function(){return n>0&&a>b?'La frazione è maggiore di 1, quindi la potenza cresce.':'';};
+  return E;},
+ draw:function(T){
+  var E=T.ex,F=E.F,g=E.got,cur=T.done?null:T.cur().key,o='';
+  if(F.n===0)o+=rowP(280,170,[{pw:[F.a,F.b,0,C1]},'=',{v:g.z!=null?'1':'?',c:CM,hl:cur==='z'}],48);
+  else o+=rowP(280,170,[{pw:[F.a,F.b,F.n,C1]},'=',[g.pn!=null?g.pn:'?',g.pd!=null?g.pd:'?',CM,cur==='pn'?'n':(cur==='pd'?'d':null)]],48);
+  $('svg').innerHTML=o;}});
+
 /* ---------- menu ---------- */
 function tabs(){
  var h='';
@@ -811,7 +1117,7 @@ function tabs(){
  $('sub').textContent=ST.filter(function(s){return s.id===S.st;})[0].sub;}
 function show(){
  tabs();cancelAnimationFrame(tws.p);
- if(S.st!=='dc'){var M=S.st==='equiv'?[EQX,EQT]:[SMX,SMT];(S.mode==='esplora'?M[0]:M[1]).show();return;}
+ if(S.st!=='dc'){var M={equiv:[EQX,EQT],somma:[SMX,SMT],prod:[PRX,PRT],quoz:[QUX,QUT],pot:[POX,POT]}[S.st];(S.mode==='esplora'?M[0]:M[1]).show();return;}
  if(S.mode==='esplora'){if(!S.F)S.F=newPair();S.p=S.step;explPanel();render(explV());}
  else{if(!S.E)newEx();else{trainPanel();drawTrain();}}}
 S.F={a:[3,5],b:[4,6],m:12,r:[3,2],n:[9,10]};
