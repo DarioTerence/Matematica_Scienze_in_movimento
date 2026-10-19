@@ -100,6 +100,13 @@ var pick=function(a){return a[Math.floor(Math.random()*a.length)];};
 var reduce=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
 var INK='#e6ecf5',MUT='#8fa0b8',C1='#9cc5ff',C2='#ffb454',CM='#8ee0a6',HL='#ffb454',BG='#0b1222';
 var COLS=[C1,C2];
+/* TEMPI UNIFORMI per tutte le stazioni: ogni freccia, ogni spostamento e ogni scritta dura sempre lo stesso tempo */
+var T_ARROW=1600,   // disegno di una freccia o di una linea (ms)
+    T_MOVE=1400,    // spostamento di un pezzo, ritaglio o comparsa di una barra (ms)
+    T_SHOW=1200;    // comparsa di una scritta o di un risultato (ms)
+// nelle frecce del denominatore comune ogni freccia occupa il 30% della fase di una frazione
+var U_FR=T_ARROW/.3,  // fase di una frazione con le due frecce
+    L_CH=T_ARROW/.6;  // un anello della catena di frazioni equivalenti (freccia nel 60%)
 /* ---------- stazioni ---------- */
 var ST=[
  {id:'equiv',name:'Equivalenti',sub:'Espandere e ridurre, con le barre e con il M.C.D.'},
@@ -246,7 +253,7 @@ function tween(obj,key,to,ms,step,done,lin){
 /* =========================================================
    ESPLORA: cinque passi, la variabile S.p va da 0 a 4
    ========================================================= */
-var STEP_MS=[0,2600,5000,3800,1200];   // durata dell'animazione per arrivare al passo k
+function STEP_MS(k){return [0,T_MOVE*2,U_FR/.7,U_FR,T_SHOW][k];}   // durata dell'animazione per arrivare al passo k
 function explV(){
  var F=S.F,p=S.p,s1=clamp(p,0,1),s2=clamp(p-1,0,1),s3=clamp(p-2,0,1),s4=clamp(p-3,0,1);
  var out=clamp(s2*5,0,1),inn=clamp((s2-.12)*5,0,1);
@@ -283,7 +290,7 @@ function explPanel(){
  say(tx.p,tx.mood,S.step===4);}
 function goStep(k){
  k=clamp(k,0,4);var back=k<S.step;S.step=k;explPanel();
- tween(S,'p',k,back?500:STEP_MS[k],function(){render(explV());});}
+ tween(S,'p',k,back?500:STEP_MS(k),function(){render(explV());},null,!back);}
 /* =========================================================
    ALLENATI: si riempiono le caselle dello schema
    livello 1 = con frecce e cerchietti; livello 2 = senza aiuti
@@ -343,13 +350,13 @@ function check(){
 function accept(c,shown){
  var E=S.E;E.got[c]=true;E.tries=0;
  if(c.indexOf('num')===0){var i=+c.slice(-1);
-  tween(E.cut,i,1,reduce?0:900,drawTrain);}
+  tween(E.cut,i,1,reduce?0:T_MOVE,drawTrain);}
  E.k++;
  if(E.k>=E.q.length){E.done=true;S.done++;
   var lvMsg='';
   if(E.err===0){S.clean++;if(S.level===1&&S.clean>=3){S.level=2;S.clean=0;lvMsg=' Tre esercizi senza errori, dal prossimo niente frecce!';}}
   else{S.clean=0;if(S.level===2&&E.err>=2){S.level=1;lvMsg=' Dal prossimo esercizio tornano le frecce.';}}
-  tween(E,'cmp',1,reduce?0:800,drawTrain);
+  tween(E,'cmp',1,reduce?0:T_SHOW,drawTrain);
   say((E.err===0?'Schema completo, senza errori!':'Schema completo.')+lvMsg,'ok',E.err===0);}
  trainPanel();drawTrain();}
 function trainPanel(){
@@ -466,7 +473,7 @@ function makeTrainer(cfg){
    if(document.activeElement&&document.activeElement.tagName!=='BODY')inp.focus({preventScroll:true});}};
  T.show=function(){if(!T.ex)T.start();else{T.panel();T.draw();}};
  // anima una proprietà di ex.an (da 0 a 1) e ridisegna
- T.anim=function(key,ms){var k=cfg.id+'_'+key;T.ex.an[k]=T.ex.an[k]||0;tween(T.ex.an,k,1,reduce?0:(ms||900),T.draw);};
+ T.anim=function(key,ms){var k=cfg.id+'_'+key;T.ex.an[k]=T.ex.an[k]||0;tween(T.ex.an,k,1,reduce?0:(ms||T_MOVE),T.draw);};
  return T;}
 
 /* =========================================================
@@ -475,7 +482,7 @@ function makeTrainer(cfg){
 var EQB=[[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,6],[5,6]];
 var EQ_BY=[236,300],EQ_H=36;
 function eqNewF(prev){var p;do{p=pick(EQB);}while(prev&&prev.a===p[0]&&prev.b===p[1]);return {a:p[0],b:p[1]};}
-var EQX=makeExplorer({id:'eq',n:5,ms:[0,2600,2600,6100,3000],newLabel:'Nuova frazione',
+var EQX=makeExplorer({id:'eq',n:5,linear:true,ms:function(F,k){return [0,L_CH,L_CH,2*L_CH/.85,L_CH/.85][k];},newLabel:'Nuova frazione',
  anchor:'Frazioni <b>equivalenti</b> si ottengono moltiplicando (o dividendo) numeratore e denominatore per lo <b>stesso numero</b>, diverso da zero.',
  first:function(){return {a:2,b:3};},newF:eqNewF,
  render:function(F,p){
@@ -569,7 +576,7 @@ function eqC(a,b,g){var N=a*g,D=b*g;
   {key:'sn',q:function(){return 'Nuovo numeratore, '+N+' : '+g+' = ?';},ans:function(){return a;},
    check:function(v){if(v===a)return null;if(v===N-g)return {msg:'Hai sottratto. Si divide, '+N+' : '+g+'.'};if(v===N*g)return {msg:'Hai moltiplicato. Per ridurre si divide, '+N+' : '+g+'.'};return {msg:'Calcola '+N+' : '+g+'.'};}},
   {key:'sd',q:function(){return 'Nuovo denominatore, '+D+' : '+g+' = ?';},ans:function(){return b;},
-   after:function(v,T){T.anim('c',1200);},
+   after:function(v,T){T.anim('c');},
    check:function(v){if(v===b)return null;if(v===D-g)return {msg:'Hai sottratto. Si divide, '+D+' : '+g+'.'};if(v===D*g)return {msg:'Hai moltiplicato. Per ridurre si divide, '+D+' : '+g+'.'};return {msg:'Calcola '+D+' : '+g+'.'};}}];
  E.summary=function(){return fr(N,D)+' = '+fr(a,b)+', ridotta ai minimi termini';};
  E.finish=function(){return 'Stessa parte colorata, pezzi più grandi.';};
@@ -675,7 +682,7 @@ function smBars(F,st){
  o+=bLab(yr,h,[{n:null,op:1-st.resLab},{n:F.res,d:m,op:st.resLab*(1-st.simp)},{n:F.res/F.g,d:m/F.g,cd:CM,op:st.simp}],16);
  return o;}
 var SMX=makeExplorer({id:'sm',n:5,newLabel:'Nuove frazioni',
- ms:function(F,k){return [0,3000,2900*F.k+400,2600+1500*F.k,3600][k];},
+ linear:true,ms:function(F,k){return [0,T_SHOW*2,F.k*U_FR,F.k*(T_MOVE/.65)/.85,L_CH/.85][k];},
  anchor:'Un’unica linea di frazione con il <b>denominatore comune</b> (m.c.m.) sotto. Sopra, per ogni frazione, denominatore comune <b>:</b> denominatore <b>·</b> numeratore, con il suo segno. Alla fine si riduce.',
  first:function(){return smBuild([3,5],[4,6],['+']);},
  newF:function(prev,X){X.nf=(X.nf||0)+1;return smNewF(prev,smK(X.nf+1));},
@@ -704,7 +711,7 @@ var SMX=makeExplorer({id:'sm',n:5,newLabel:'Nuove frazioni',
   // passo 4: riduzione
   var o4=op1((s4-.1)*5);
   if(o4>0){
-   if(F.g>1)o+=hdr('M.C.D.('+F.res+', '+F.m+') = ',String(F.g),CM,false,o4)+'<g opacity="'+o4.toFixed(2)+'">'+chain([[F.res,F.m,INK],[F.res/F.g,F.m/F.g,CM]],[': '+F.g],op1((s4-.15)/.6),120,{gap:200})+'</g>';
+   if(F.g>1)o+=hdr('M.C.D.('+F.res+', '+F.m+') = ',String(F.g),CM,false,o4)+'<g opacity="'+o4.toFixed(2)+'">'+chain([[F.res,F.m,INK],[F.res/F.g,F.m/F.g,CM]],[': '+F.g],op1((s4-.15)/.85),120,{gap:200})+'</g>';
    else o+='<g opacity="'+o4.toFixed(2)+'">'+row(280,108,[[F.res,F.m,CM]],34)+t(280,186,'già ai minimi termini',{s:20,w:400,c:CM})+'</g>';}
   // barre
   var cut=[];for(i=0;i<k;i++){var ui=op1(s2*k-i);cut.push(op1((ui-.3)/.45));}
@@ -760,7 +767,7 @@ var SMT=makeTrainer({id:'sm',
      if(v===r)return {msg:r+' è il risultato della divisione, ora moltiplicalo per il numeratore '+a[i]+'.'};
      return {msg:'Calcola '+E.D+' : '+b[i]+', poi moltiplica il risultato per '+a[i]+'.'};}});});
   E.steps.push({key:'r',q:function(){return 'Sopra la linea, quanto fa '+smNumExpr(F,NS())+'?';},ans:R,
-   after:function(v,T2){T2.anim('s',900*k);},
+   after:function(v,T2){T2.anim('s',k*T_MOVE/.65);},
    check:function(v){
     if(v===R())return null;
     var orig=a[0];for(var i=1;i<k;i++)orig+=F.ops[i-1]==='+'?a[i]:-a[i];
@@ -775,7 +782,7 @@ var SMT=makeTrainer({id:'sm',
     if(v>0&&r%v===0&&g%(r/v)===0)return {msg:'Hai diviso per '+(r/v)+', ma si può ridurre ancora. M.C.D.('+r+', '+E.D+') = '+g+'.'};
     return {msg:'Calcola il M.C.D. di '+r+' e '+E.D+', poi dividi '+r+' per il M.C.D.'};}});
   E.steps.push({key:'sd',skip:function(){return G()===1;},q:function(){return fr(R(),E.D)+' = '+fr(E.got.sn,'?')+'. Qual è il denominatore?';},ans:function(){return E.D/G();},
-   after:function(v,T2){T2.anim('z',1200);},
+   after:function(v,T2){T2.anim('z',T_SHOW);},
    check:function(v){var g=G();
     if(v===E.D/g)return null;
     if(v===E.D)return {msg:'Il denominatore va diviso per lo stesso numero del numeratore, '+g+'.'};
@@ -802,9 +809,6 @@ var SMT=makeTrainer({id:'sm',
 /* =========================================================
    TEMPI UNIFORMI (stazioni 4-6): ogni freccia e ogni spostamento dura sempre lo stesso tempo
    ========================================================= */
-var T_ARROW=1600,   // disegno di una freccia o di una linea
-    T_MOVE=1400,    // spostamento di un pezzo o comparsa di una barra
-    T_SHOW=1200;    // comparsa di una scritta
 // potenza di una frazione: parentesi ed esponente
 function powF(x,y,a,b,n,o){
  o=o||{};var s=o.s||28,c=o.c||INK,w=Math.max(tw(a,s),tw(b,s))+10,xl=x-w/2-5,xr=x+w/2+5,top=y-s*1.15,bot=y+s*1.3;
@@ -967,7 +971,7 @@ function quFlip(x,y,c,d,u,s,col){
  var pc=[x+Math.sin(ang)*R*.9,cyc-Math.cos(ang)*R],pd=[x-Math.sin(ang)*R*.9,cyc+Math.cos(ang)*R];
  o+='<line x1="'+(x-s*.42)+'" y1="'+y+'" x2="'+(x+s*.42)+'" y2="'+y+'" stroke="'+col+'" stroke-width="2.4" stroke-linecap="round"/>';
  o+=t(pc[0],pc[1],c,{s:s,c:col})+t(pd[0],pd[1],d,{s:s,c:col});
- if(u>0&&u<1){o+=qArrow([x+16,top-s*.6],[x+s*1.3,cyc-s*.3],[x+16,bot-s*.2],op1(u*1.4),MUT)+qArrow([x-16,bot-s*.2],[x-s*1.3,cyc-s*.3],[x-16,top-s*.6],op1(u*1.4),MUT);}
+ if(u>0&&u<1){o+=qArrow([x+16,top-s*.6],[x+s*1.3,cyc-s*.3],[x+16,bot-s*.2],op1(u),MUT)+qArrow([x-16,bot-s*.2],[x-s*1.3,cyc-s*.3],[x-16,top-s*.6],op1(u),MUT);}
  return o;}
 var QUX=makeExplorer({id:'qu',n:4,linear:true,newLabel:'Nuove frazioni',ms:QU_MS,
  anchor:'Dividere per una frazione è come <b>moltiplicare per il suo reciproco</b>. Si capovolge solo il divisore, la seconda frazione.',
