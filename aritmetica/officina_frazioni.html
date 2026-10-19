@@ -424,10 +424,10 @@ function makeExplorer(cfg){
    +'<div class="dots" aria-hidden="true">'+d+'</div></div>';
   $('bPrev').onclick=function(){X.go(X.step-1);};
   $('bNext').onclick=function(){X.go(X.step+1);};
-  $('bNew').onclick=function(){X.F=cfg.newF(X.F);X.step=0;cancelAnimationFrame(tws[X.pk]);X[X.pk]=0;X.panel();X.draw();};
+  $('bNew').onclick=function(){X.F=cfg.newF(X.F,X);X.step=0;cancelAnimationFrame(tws[X.pk]);X[X.pk]=0;X.panel();X.draw();};
   say(tx.p,tx.mood,X.step===cfg.n-1);};
  X.go=function(k){k=clamp(k,0,cfg.n-1);var back=k<X.step;X.step=k;X.panel();
-  tween(X,X.pk,k,back?500:cfg.ms[k],X.draw);};
+  tween(X,X.pk,k,back?500:(typeof cfg.ms==='function'?cfg.ms(X.F,k):cfg.ms[k]),X.draw);};
  X.show=function(){if(!X.F)X.F=cfg.first?cfg.first():cfg.newF();cancelAnimationFrame(tws[X.pk]);X[X.pk]=X.step;X.panel();X.draw();};
  return X;}
 /* ---------- Allenati generico: caselle da riempire una alla volta ---------- */
@@ -436,7 +436,7 @@ function makeTrainer(cfg){
  var T={ex:null,k:0,tries:0,err:0,fb:'',done:false,count:0};
  T.cur=function(){return T.done?null:T.ex.steps[T.k];};
  T.draw=function(){cfg.draw(T);};
- T.start=function(){T.ex=cfg.newEx(T.ex);T.ex.got={};T.ex.an={};T.k=0;T.tries=0;T.err=0;T.fb='';T.done=false;T.panel();T.draw();
+ T.start=function(){T.ex=cfg.newEx(T.ex,T);T.ex.got={};T.ex.an={};T.k=0;T.tries=0;T.err=0;T.fb='';T.done=false;T.panel();T.draw();
   say(T.ex.intro||'Riempi le caselle una alla volta.','idle');};
  T.check=function(){
   if(T.done)return;
@@ -576,119 +576,198 @@ function eqC(a,b,g){var N=a*g,D=b*g;
  return E;}
 
 /* =========================================================
-   STAZIONE 3: SOMMA E DIFFERENZA
+   STAZIONE 3: SOMMA E DIFFERENZA (unica linea di frazione)
+   da 2 a 4 frazioni; ops[i] è il segno davanti alla frazione i+1
    ========================================================= */
-var SM_BY=[222,278,334],SM_H=28;
-function smMake(a0,b0,a1,b1,op){
- var F={a:[a0,a1],b:[b0,b1],op:op};F.m=lcm(b0,b1);F.r=[F.m/b0,F.m/b1];F.n=[a0*F.r[0],a1*F.r[1]];
- F.res=op==='+'?F.n[0]+F.n[1]:F.n[0]-F.n[1];F.g=gcd(F.res,F.m);
- F.units=F.res>F.m?2:1;F.U=F.units===2?BW/2:BW;return F;}
-function smNewF(prev){
- var F;
- do{var p=pick(DEN);if(Math.random()<.5)p=[p[1],p[0]];if(lcm(p[0],p[1])>24)continue;
-  var a0=numFor(p[0]),a1=numFor(p[1]),op=Math.random()<.55?'+':'−';
-  if(op==='−'&&a0/p[0]<a1/p[1]){var tA=a0;a0=a1;a1=tA;p=[p[1],p[0]];}
-  F=smMake(a0,p[0],a1,p[1],op);}
- while(!F||(prev&&prev.b[0]===F.b[0]&&prev.b[1]===F.b[1]));
- return F;}
-function smOpWord(F,cap){return F.op==='+'?(cap?'Somma':'somma'):(cap?'Differenza':'differenza');}
-// pezzi che scendono nella barra del risultato (passo 2)
-function smMove(F,s2){
- var o='',U=F.U,h=SM_H,m=F.m,n0=F.n[0],n1=F.n[1],Y=SM_BY;
- var uA=ease(op1(s2/.45)),uB=ease(op1((s2-.5)/.4)),uC=op1((s2-.85)/.15);
- if(F.op==='+'){
-  o+=pieces(X0,lerp(Y[0],Y[2],uA),n0/m*U,h,n0,C1,1);
-  if(s2>.5)o+=pieces(lerp(X0,X0+n0/m*U,uB),lerp(Y[1],Y[2],uB),n1/m*U,h,n1,C2,1);}
- else{
-  var keep=n0-n1;
-  o+=pieces(X0,lerp(Y[0],Y[2],uA),keep/m*U,h,keep,C1,1);
-  o+=pieces(X0+keep/m*U,lerp(Y[0],Y[2],uA),n1/m*U,h,n1,C1,1-uC);
-  if(s2>.5)o+=pieces(X0+keep/m*U,lerp(Y[1],Y[2],uB),n1/m*U,h,n1,C2,(1-uC)*.9);}
+var SCOL=[C1,C2,'#c9aaff','#7fd6d0'];
+var SDEN=[2,3,4,5,6,8,9,10,12];
+// numero dell'esercizio (1, 2, 3...) -> quante frazioni: ogni 4 una "difficile", a turno da 3 e da 4
+function smK(c){return c%8===0?4:(c%4===0?3:2);}
+function smBuild(a,b,ops){
+ var k=a.length,F={k:k,a:a,b:b,ops:ops},i;
+ F.m=b.reduce(lcm);F.r=b.map(function(d){return F.m/d;});F.n=a.map(function(x,j){return x*F.r[j];});
+ var tot=F.n[0];for(i=1;i<k;i++)tot+=ops[i-1]==='+'?F.n[i]:-F.n[i];
+ F.res=tot;F.g=gcd(tot,F.m);F.units=tot>F.m?2:1;F.U=F.units===2?BW/2:BW;return F;}
+function smNewF(prev,k){
+ k=k||2;
+ for(var tries=0;tries<800;tries++){
+  var b=[],i;while(b.length<k){var d=pick(SDEN);if(b.indexOf(d)<0)b.push(d);}
+  if(b.reduce(lcm)>24)continue;
+  var a=b.map(numFor),ops=[];for(i=1;i<k;i++)ops.push(Math.random()<.6?'+':'−');
+  var F=smBuild(a,b,ops),run=F.n[0],ok=true;
+  for(i=1;i<k;i++){run+=ops[i-1]==='+'?F.n[i]:-F.n[i];if(run<=0)ok=false;}
+  if(!ok||F.res<=0||F.res>2*F.m)continue;
+  if(prev&&prev.b.join()===b.join())continue;
+  return F;}
+ return smBuild([3,5],[4,6],['+']);}
+function smExpr(F){var s=fr(F.a[0],F.b[0]);for(var i=1;i<F.k;i++)s+=' '+F.ops[i-1]+' '+fr(F.a[i],F.b[i]);return s;}
+function smNumExpr(F,n){var s=''+n[0];for(var i=1;i<F.k;i++)s+=' '+F.ops[i-1]+' '+n[i];return s;}
+// posizioni della riga: frazioni, segni, "=", linea lunga con i termini sopra e il denominatore sotto
+function smLay(F,s,y){
+ var k=F.k,L={s:s,y:y,fx:[],tx:[]},opw=tw('+',s)+s*(k===2?1.4:1),x=0,i,parts=[];
+ for(i=0;i<k;i++){if(i>0){parts.push(['op',opw,i]);}parts.push(['f',Math.max(tw(F.a[i],s),tw(F.b[i],s))+12,i]);}
+ parts.push(['eq',tw('=',s)+s*(k===2?1.6:1.1)]);
+ var tw2=[],lw=0;
+ for(i=0;i<k;i++){if(i>0)lw+=opw;var w=Math.max(tw(F.n[i],s),tw('00',s))+4;tw2.push(w);lw+=w;}
+ lw=Math.max(lw,tw(F.m,s))+18;parts.push(['long',lw]);
+ var tot=parts.reduce(function(t2,p){return t2+p[1];},0);x=280-tot/2;
+ L.ops=[];
+ parts.forEach(function(p){var c=x+p[1]/2;
+  if(p[0]==='f')L.fx[p[2]]=c;else if(p[0]==='op')L.ops.push(c);else if(p[0]==='eq')L.eq=c;
+  else{L.lx=x;L.lw=p[1];L.mx=c;var xx=x+9;for(var j=0;j<k;j++){if(j>0){L['to'+j]=xx+opw/2;xx+=opw;}L.tx[j]=xx+tw2[j]/2;xx+=tw2[j];}}
+  x+=p[1];});
+ return L;}
+function smSize(F){return F.k===2?30:(F.k===3?26:22);}
+// linea lunga: terms = valori o "?", den = valore o "?", hl = casella evidenziata
+function smLong(F,L,terms,den,hl,op){
+ var s=L.s,y=L.y,o='';
+ o+='<line x1="'+L.lx.toFixed(1)+'" y1="'+y+'" x2="'+(L.lx+L.lw).toFixed(1)+'" y2="'+y+'" stroke="'+INK+'" stroke-width="2.4" stroke-linecap="round"/>';
+ for(var i=0;i<F.k;i++){if(i>0)o+=t(L['to'+i],y-s*.28,F.ops[i-1],{s:s});
+  o+=val(L.tx[i],y-s*.28,terms[i],s,SCOL[i],hl==='n'+i);}
+ o+=val(L.mx,y+s*.95,den,s,CM,hl==='D');
+ return '<g opacity="'+(op==null?1:op).toFixed(2)+'">'+o+'</g>';}
+function smLeft(F,L,op){
+ var s=L.s,y=L.y,o='';
+ for(var i=0;i<F.k;i++){if(i>0)o+=t(L.ops[i-1],y+s*.33,F.ops[i-1],{s:s});o+=frac(L.fx[i],y,F.a[i],F.b[i],{s:s,c:SCOL[i]});}
+ o+=t(L.eq,y+s*.33,'=',{s:s});
+ return '<g opacity="'+op.toFixed(2)+'">'+o+'</g>';}
+// frecce della frazione i: sotto dal denominatore comune al denominatore (divisione), sopra dal numeratore al termine (prodotto)
+function smArrows(F,L,i,u,op){
+ if(u<=0||op<=0)return '';
+ var s=L.s,y=L.y,col=SCOL[i],o='',ad=op1(u/.3),cop=op1((u-.3)/.15),au=op1((u-.45)/.3);
+ var cx=L.fx[i],cy=y+s*1.25+32,dir=L.mx>cx?1:-1,p0=[L.mx,y+s*1.25],p1=[cx+dir*18,cy];
+ o+=qArrow(p0,[(p0[0]+p1[0])/2,Math.max(p0[1],cy)+16+Math.abs(L.mx-cx)*.05],p1,ad,col);
+ if(cop>0)o+='<g opacity="'+cop.toFixed(2)+'">'+'<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="15" fill="'+BG+'" stroke="'+col+'" stroke-width="2.2"/>'+t(cx,cy+7,F.r[i],{s:18})+'</g>';
+ var span2=Math.abs(L.tx[i]-L.fx[i]),dep2=16+span2*.1,q0=[L.fx[i],y-s*1.15],q1=[L.tx[i]-4,y-s*1.15],mx=(q0[0]+q1[0])/2,my=q0[1]-dep2;
+ o+=qArrow(q0,[mx,q0[1]-2*dep2],q1,au,col);
+ if(au>.35){var lb='· '+F.r[i],lw=tw(lb,18)+12;
+  o+='<g opacity="'+op1((au-.35)*3).toFixed(2)+'"><rect x="'+(mx-lw/2).toFixed(1)+'" y="'+(my-13).toFixed(1)+'" width="'+lw.toFixed(1)+'" height="24" rx="6" fill="'+BG+'"/>'+t(mx,my+6,lb,{s:18,c:col})+'</g>';}
+ return '<g opacity="'+op.toFixed(2)+'">'+o+'</g>';}
+/* ---------- barre: una per frazione e una per il risultato ---------- */
+function smBarGeo(F){var k=F.k,h=k===2?26:(k===3?20:16),sp=k===2?40:(k===3?30:24);var ys=[];for(var i=0;i<=k;i++)ys.push(248+i*sp);return {h:h,ys:ys};}
+// stato della barra del risultato dopo aver portato giù le prime j frazioni
+function smSegsAfter(F,j){
+ var segs=[],pos=0;
+ for(var i=0;i<j;i++){var n=F.n[i];
+  if(i===0||F.ops[i-1]==='+'){segs.push({x0:pos,x1:pos+n,col:SCOL[i]});pos+=n;}
+  else{pos-=n;segs=smTrim(segs,pos).keep;}}
+ return {segs:segs,pos:pos};}
+function smTrim(segs,from){var keep=[],cut=[];
+ segs.forEach(function(s){if(s.x1<=from)keep.push(s);else if(s.x0>=from)cut.push(s);else{keep.push({x0:s.x0,x1:from,col:s.col});cut.push({x0:from,x1:s.x1,col:s.col});}});
+ return {keep:keep,cut:cut};}
+function smPieces(F,list,y,h,op){var U=F.U,m=F.m,o='';
+ list.forEach(function(s){o+=pieces(X0+s.x0/m*U,y,(s.x1-s.x0)/m*U,h,s.x1-s.x0,s.col,op==null?1:op);});return o;}
+function smBars(F,st){
+ // st: cut[i] (0-1 ritaglio della barra i), lab (etichette), down (0-1 discesa dei pezzi), simp (0-1 riduzione), resLab
+ var G=smBarGeo(F),h=G.h,ys=G.ys,U=F.U,m=F.m,k=F.k,o='',i;
+ for(i=0;i<k;i++){
+  o+=gBar(ys[i],h,U,1,[{x0:0,x1:F.a[i]/F.b[i],col:SCOL[i]}],[{d:m,op:st.cut[i],w:1.5},{d:F.b[i],op:1,w:k>2?2.4:3.2}]);
+  if(k===2)o+=bLab(ys[i],h,[{n:F.a[i],d:F.b[i],col:SCOL[i],op:1-st.cut[i]},{n:F.n[i],d:m,col:SCOL[i],cd:CM,op:st.cut[i]}],16);}
+ var yr=ys[k];
+ if(st.down<1){
+  o+=gBar(yr,h,U,F.units,[],[{d:m,op:op1(st.down*4)*.6,w:1.5}]);
+  if(st.down>0){var v=st.down*k,j=Math.min(k-1,Math.floor(v)),w=v-j,S=smSegsAfter(F,j),n=F.n[j],uA=ease(op1(w/.65)),fade=op1((w-.7)/.3);
+   if(j===0||F.ops[j-1]==='+'){o+=smPieces(F,S.segs,yr,h);
+    o+=pieces(lerp(X0,X0+S.pos/m*U,uA),lerp(ys[j],yr,uA),n/m*U,h,n,SCOL[j],1);}
+   else{var T2=smTrim(S.segs,S.pos-n);o+=smPieces(F,T2.keep,yr,h)+smPieces(F,T2.cut,yr,h,1-fade);
+    o+=pieces(lerp(X0,X0+(S.pos-n)/m*U,uA),lerp(ys[j],yr,uA),n/m*U,h,n,SCOL[j],(1-fade)*.9);}}}
+ else o+=gBar(yr,h,U,F.units,smSegsAfter(F,k).segs.map(function(s){return {x0:s.x0/m,x1:s.x1/m,col:s.col};}),[{d:m,op:1-st.simp,w:1.5},{d:m/F.g,op:st.simp,w:2.4}]);
+ o+=bLab(yr,h,[{n:null,op:1-st.resLab},{n:F.res,d:m,op:st.resLab*(1-st.simp)},{n:F.res/F.g,d:m/F.g,cd:CM,op:st.simp}],16);
  return o;}
-function smSegs(F){var m=F.m;
- return F.op==='+'?[{x0:0,x1:F.n[0]/m,col:C1},{x0:F.n[0]/m,x1:F.res/m,col:C2}]:[{x0:0,x1:F.res/m,col:C1}];}
-var SMX=makeExplorer({id:'sm',n:4,ms:[0,7000,5600,3600],newLabel:'Nuove frazioni',
- anchor:'Prima lo stesso denominatore (m.c.m.). Poi si sommano o si sottraggono <b>solo i numeratori</b>, il denominatore resta. Alla fine si riduce.',
- first:function(){return smMake(3,4,5,6,'+');},newF:smNewF,
+var SMX=makeExplorer({id:'sm',n:5,newLabel:'Nuove frazioni',
+ ms:function(F,k){return [0,3000,2900*F.k+400,2600+1500*F.k,3600][k];},
+ anchor:'Un’unica linea di frazione con il <b>denominatore comune</b> (m.c.m.) sotto. Sopra, per ogni frazione, denominatore comune <b>:</b> denominatore <b>·</b> numeratore, con il suo segno. Alla fine si riduce.',
+ first:function(){return smBuild([3,5],[4,6],['+']);},
+ newF:function(prev,X){X.nf=(X.nf||0)+1;return smNewF(prev,smK(X.nf+1));},
  render:function(F,p){
-  var s1=op1(p),s2=op1(p-1),s3=op1(p-2),o='',m=F.m,U=F.U,h=SM_H,Y=SM_BY,opS=F.op==='+'?'+':'−';
-  // parte alta
-  var o0=1-op1(s1*5);
-  if(o0>0)o+='<g opacity="'+o0.toFixed(2)+'">'+row(280,115,[[F.a[0],F.b[0],C1],opS,[F.a[1],F.b[1],C2],'=','?'],34)+'</g>';
-  var oh=op1((s1-.1)*5)*(1-op1(s3*5));
-  if(oh>0)o+=header(F,m,oh,false);
-  var oS=op1((s1-.1)*5)*(1-op1(s2*5));
-  if(oS>0){var k=[op1((s1-.15)/.42),op1((s1-.57)/.43)];
-   for(var i=0;i<2;i++){var q=k[i];
-    o+='<g opacity="'+oS.toFixed(2)+'">'+drawScheme(F,i,{op:1,arrows:true,ad:op1(q/.3),cop:op1((q-.3)/.15),circ:F.r[i],au:op1((q-.45)/.3),num:q>.8?F.n[i]:'?'},m,null)+'</g>';}}
-  var oR=op1((s2-.1)*5)*(1-op1(s3*5));
-  if(oR>0)o+='<g opacity="'+oR.toFixed(2)+'">'+row(280,118,[[F.n[0],m,C1],opS,[F.n[1],m,C2],'=',[s2>.9?F.res:'?',m,INK]],34)+'</g>';
-  var oF=op1((s3-.1)*5);
-  if(oF>0){
-   if(F.g>1)o+=hdr('M.C.D.('+F.res+', '+m+') = ',String(F.g),CM,false,oF)+'<g opacity="'+oF.toFixed(2)+'">'+chain([[F.res,m,INK],[F.res/F.g,m/F.g,CM]],[': '+F.g],op1((s3-.15)/.6),120,{gap:200})+'</g>';
-   else o+='<g opacity="'+oF.toFixed(2)+'">'+row(280,105,[[F.res,m,CM]],34)+t(280,182,'già ai minimi termini',{s:20,w:400,c:CM})+'</g>';}
+  var s1=op1(p),s2=op1(p-1),s3=op1(p-2),s4=op1(p-3),k=F.k,o='',i;
+  var L=smLay(F,smSize(F),132);
+  // parte alta, passi 0-2: frazioni, linea lunga, frecce
+  var oTop=1-op1(s3*4);
+  if(oTop>0){
+   o+=smLeft(F,L,oTop);
+   var lo=op1(s1*3);
+   if(lo<1)o+=t(L.mx,L.y+L.s*.33,'?',{s:L.s,op:((1-lo)*oTop).toFixed(2)});
+   var u=[],terms=[];for(i=0;i<k;i++){u.push(op1(s2*k-i));terms.push(u[i]>.8?F.n[i]:'?');}
+   if(lo>0)o+=smLong(F,L,terms,F.m,null,lo*oTop);
+   for(i=0;i<k;i++){var older=(i<k-1&&u[i+1]>0)||s2>=1?.35:1;o+=smArrows(F,L,i,u[i],older*oTop);}
+   if(s2>0)o+=t(L.mx+tw(F.m,L.s)/2+14,L.y+L.s*.95,':',{s:L.s,c:CM,op:(op1(s2*k*4)*oTop).toFixed(2)});
+   var oh=op1(s1*3)*(1-op1(s2*6));
+   if(oh>0)o+=hdr('m.c.m.('+F.b.join(', ')+') = ',String(F.m),CM,false,oh);}
+  // passo 3: linea lunga = risultato
+  var o3=op1((s3-.15)*4)*(1-op1(s4*5));
+  if(o3>0){var L3=smLay({k:k,a:F.n,b:F.n.map(function(){return F.m;}),n:F.n,m:F.m,ops:F.ops},smSize(F),118);
+   var lw=L3.lw,w2=tw('=',L3.s)+L3.s*.8,fwr=Math.max(tw(F.res,L3.s),tw(F.m,L3.s))+12,tot=lw+w2+fwr,x0=280-tot/2;
+   var sh=x0-L3.lx;L3.lx+=sh;L3.mx+=sh;for(i=0;i<k;i++){L3.tx[i]+=sh;if(i>0)L3['to'+i]+=sh;}
+   o+=smLong(F,L3,F.n,F.m,null,o3);
+   o+='<g opacity="'+o3.toFixed(2)+'">'+t(x0+lw+w2/2,118+L3.s*.33,'=',{s:L3.s})+frac(x0+lw+w2+fwr/2,118,s3>.9?F.res:'?',F.m,{s:L3.s,cd:CM})+'</g>';}
+  // passo 4: riduzione
+  var o4=op1((s4-.1)*5);
+  if(o4>0){
+   if(F.g>1)o+=hdr('M.C.D.('+F.res+', '+F.m+') = ',String(F.g),CM,false,o4)+'<g opacity="'+o4.toFixed(2)+'">'+chain([[F.res,F.m,INK],[F.res/F.g,F.m/F.g,CM]],[': '+F.g],op1((s4-.15)/.6),120,{gap:200})+'</g>';
+   else o+='<g opacity="'+o4.toFixed(2)+'">'+row(280,108,[[F.res,F.m,CM]],34)+t(280,186,'già ai minimi termini',{s:20,w:400,c:CM})+'</g>';}
   // barre
-  var k0=op1((s1-.15)/.42),k1=op1((s1-.57)/.43);
-  var cut=[op1((k0-.3)/.45),op1((k1-.3)/.45)],ls=[op1((k0-.75)/.15),op1((k1-.75)/.15)];
-  for(var j=0;j<2;j++){
-   o+=gBar(Y[j],h,U,1,[{x0:0,x1:F.a[j]/F.b[j],col:COLS[j]}],[{d:m,op:cut[j],w:1.5},{d:F.b[j],op:1,w:3.2}]);
-   o+=bLab(Y[j],h,[{n:F.a[j],d:F.b[j],col:COLS[j],op:1-ls[j]},{n:F.n[j],d:m,col:COLS[j],cd:CM,op:ls[j]}],18);}
-  var simp=F.g>1?op1((s3-.3)/.5):0;
-  if(s2<1){o+=gBar(Y[2],h,U,F.units,[],[{d:m,op:op1(s2*3)*.6,w:1.5}]);if(s2>0)o+=smMove(F,s2);}
-  else o+=gBar(Y[2],h,U,F.units,smSegs(F),[{d:m,op:1-simp,w:1.5},{d:m/F.g,op:simp,w:2.4}]);
-  var rl=op1((s2-.85)/.15);
-  o+=bLab(Y[2],h,[{n:null,op:1-rl},{n:F.res,d:m,op:rl*(1-simp)},{n:F.res/F.g,d:m/F.g,cd:CM,op:simp}],18);
+  var cut=[];for(i=0;i<k;i++){var ui=op1(s2*k-i);cut.push(op1((ui-.3)/.45));}
+  o+=smBars(F,{cut:cut,down:op1((s3-.1)/.85),simp:F.g>1?op1((s4-.3)/.5):0,resLab:op1((s3-.85)/.15)});
   return o;},
  text:function(F,k){
-  var a=F.a,b=F.b,m=F.m,n=F.n,opS=F.op==='+'?'+':'−',A=fr(a[0],b[0]),B=fr(a[1],b[1]),plus=F.op==='+';
+  var m=F.m,E=smExpr(F),allP=F.ops.every(function(x){return x==='+';}),allM=F.ops.every(function(x){return x==='−';});
+  var calc=allP?'Somma dei numeratori':(allM?'Differenza dei numeratori':'Calcolo sopra la linea');
+  var steps=[];for(var i=0;i<F.k;i++)steps.push(m+' : '+F.b[i]+' = '+F.r[i]+' e '+F.r[i]+' · '+F.a[i]+' = '+F.n[i]);
   switch(k){
-  case 0:return {h:'Il problema',x:'Bisogna calcolare '+A+' '+opS+' '+B+'. Le due barre sono tagliate in modo diverso, quindi i pezzi non si possono contare insieme.<br>Attenzione, non si '+(plus?'sommano':'sottraggono')+' numeratori e denominatori tra loro!',p:'Prima di tutto, stesso taglio per tutte e due.',mood:'hi'};
-  case 1:return {h:'Denominatore comune',x:'Il denominatore comune è m.c.m.('+b[0]+', '+b[1]+') = '+m+'. Con il metodo delle frecce '+A+' = '+fr(n[0],m)+' e '+B+' = '+fr(n[1],m)+'.',p:'È il lavoro della stazione Denominatore comune.',mood:'idle'};
-  case 2:return {h:smOpWord(F,true)+' dei numeratori',x:'Ora i pezzi sono uguali e si contano. '+(plus?'Si sommano i numeratori, '+n[0]+' + '+n[1]:'Si sottraggono i numeratori, '+n[0]+' − '+n[1])+' = '+F.res+'. Il denominatore resta '+m+', perché la grandezza dei pezzi non cambia.<br>'+A+' '+opS+' '+B+' = '+fr(F.res,m),
+  case 0:return {h:'Il problema',x:'Bisogna calcolare '+E+'. Le barre sono tagliate in modo diverso, quindi i pezzi non si possono contare insieme.<br>Attenzione, numeratori e denominatori non si '+(allP?'sommano':(allM?'sottraggono':'sommano né si sottraggono'))+' tra loro!',p:'Prima di tutto, stesso taglio per tutte.',mood:'hi'};
+  case 1:return {h:'Una sola linea di frazione',x:'Si scrive un’unica linea di frazione, lunga, e sotto il denominatore comune, m.c.m.('+F.b.join(', ')+') = '+m+'. Sopra la linea andranno i nuovi numeratori, ognuno con il suo segno.',p:'Una sola linea, un solo denominatore.',mood:'idle'};
+  case 2:return {h:'Il metodo delle frecce',x:'Per ogni frazione, con la freccia sotto si divide il denominatore comune per il denominatore, con la freccia sopra si moltiplica il risultato per il numeratore. Il prodotto va sopra la linea.<br>'+steps.join('<br>'),p:'Con la freccia sotto <b>divido</b>, con la freccia sopra <b>moltiplico</b>.',mood:'ok'};
+  case 3:return {h:calc,x:'Ora i pezzi sono uguali e si contano. Sopra la linea si calcola '+smNumExpr(F,F.n)+' = '+F.res+'. Il denominatore resta '+m+', perché la grandezza dei pezzi non cambia.<br>'+E+' = '+fr(F.res,m),
    note:F.res>m?'Il risultato è maggiore di 1, perché il numeratore è maggiore del denominatore. La barra del risultato ora mostra due interi.':'',
    p:'Il denominatore dice quanto è grande un pezzo, il numeratore quanti pezzi ci sono.',mood:'ok'};
   default:var r=F.res/F.g,d=m/F.g;
-   return {h:'Si può ridurre?',x:(F.g>1?'M.C.D.('+F.res+', '+m+') = '+F.g+', quindi '+fr(F.res,m)+' = '+fr(r,d)+' ai minimi termini.':F.res+' e '+m+' non hanno divisori comuni (oltre a 1), quindi '+fr(F.res,m)+' è già ai minimi termini.')+'<br>Risultato, '+A+' '+opS+' '+B+' = '+fr(r,d)+'.',
+   return {h:'Si può ridurre?',x:(F.g>1?'M.C.D.('+F.res+', '+m+') = '+F.g+', quindi '+fr(F.res,m)+' = '+fr(r,d)+' ai minimi termini.':F.res+' e '+m+' non hanno divisori comuni (oltre a 1), quindi '+fr(F.res,m)+' è già ai minimi termini.')+'<br>Risultato, '+E+' = '+fr(r,d)+'.',
    note:r>d?'Come numero misto, '+fr(r,d)+' = 1 + '+fr(r-d,d)+'.':'',
    p:'Ultimo controllo, sempre. Si può ridurre?',mood:'ok'};}}});
 var SMT=makeTrainer({id:'sm',
- anchor:'Denominatore comune, poi '+'si sommano o si sottraggono <b>solo i numeratori</b>. Il risultato va ridotto ai minimi termini.',
- newEx:function(prev){
-  var F=smNewF(prev&&prev.F),E={F:F,D:null,intro:'Calcola '+(F.op==='+'?'la somma':'la differenza')+' una casella alla volta.'};
-  var a=F.a,b=F.b,plus=F.op==='+',opS=plus?'+':'−';
+ anchor:'Un’unica linea di frazione con il denominatore comune sotto. Sopra, per ogni frazione, denominatore comune <b>:</b> denominatore <b>·</b> numeratore, con il suo segno. Il risultato va ridotto ai minimi termini.',
+ newEx:function(prev,T){
+  var kk=smK(T.count+1),F=smNewF(prev&&prev.F,kk),E={F:F,D:null};
+  E.intro=kk>2?'Esercizio con '+kk+' frazioni! Una casella alla volta.':'Una casella alla volta, prima il denominatore comune.';
+  var a=F.a,b=F.b,k=F.k;
   function N(i){return a[i]*E.D/b[i];}
-  function R(){return plus?N(0)+N(1):N(0)-N(1);}
+  function NS(){var r=[];for(var i=0;i<k;i++)r.push(N(i));return r;}
+  function R(){var n=NS(),tot=n[0];for(var i=1;i<k;i++)tot+=F.ops[i-1]==='+'?n[i]:-n[i];return tot;}
   function G(){return gcd(R(),E.D);}
   E.N=N;E.R=R;E.G=G;
+  var bl=b.join(', ');
   E.steps=[
-   {key:'D',q:function(){return 'Qual è il denominatore comune di '+fr(a[0],b[0])+' e '+fr(a[1],b[1])+'?';},ans:function(){return F.m;},
+   {key:'D',q:function(){return 'Qual è il denominatore comune di '+b.map(function(d,i){return fr(a[i],d);}).join(', ')+'?';},ans:function(){return F.m;},
     after:function(v){E.D=v;},
     check:function(v){
+     var all=function(x){return b.every(function(d){return x%d===0;});};
      if(v===F.m)return null;
-     if(v%b[0]===0&&v%b[1]===0&&v<=48)return {note:'Va bene, '+v+' è un multiplo comune. Il m.c.m. però è '+F.m+' e i numeri sarebbero più piccoli.'};
-     if(v===b[0]+b[1])return {msg:'Non si sommano i denominatori. Cerca un numero che sia multiplo sia di '+b[0]+' sia di '+b[1]+'.'};
-     if(v%b[0]===0&&v%b[1]===0)return {msg:v+' è un multiplo comune, ma è troppo grande. Cerca il m.c.m.'};
-     if(v<Math.max(b[0],b[1]))return {msg:'Il denominatore comune non può essere più piccolo di '+Math.max(b[0],b[1])+', perché deve essere un suo multiplo.'};
-     var no=v%b[0]!==0?b[0]:b[1];return {msg:v+' non è multiplo di '+no+'.'};}}];
-  [0,1].forEach(function(i){
-   E.steps.push({key:'n'+i,q:function(){return fr(a[i],b[i])+' = '+fr('?',E.D)+'. Qual è il numeratore?';},ans:function(){return N(i);},
-    after:function(v,T){T.anim('c'+i);},
+     if(all(v)&&v<=48)return {note:'Va bene, '+v+' è un multiplo comune. Il m.c.m. però è '+F.m+' e i numeri sarebbero più piccoli.'};
+     if(v===b.reduce(function(s,d){return s+d;},0))return {msg:'Non si sommano i denominatori. Cerca un numero che sia multiplo di '+bl+'.'};
+     if(all(v))return {msg:v+' è un multiplo comune, ma è troppo grande. Cerca il m.c.m.'};
+     var mx=Math.max.apply(null,b);
+     if(v<mx)return {msg:'Il denominatore comune non può essere più piccolo di '+mx+', perché deve essere un suo multiplo.'};
+     var no=b.filter(function(d){return v%d!==0;})[0];return {msg:v+' non è multiplo di '+no+'.'};}}];
+  a.forEach(function(x,i){
+   E.steps.push({key:'n'+i,q:function(){return 'Per '+fr(a[i],b[i])+', che numero va sopra la linea?';},ans:function(){return N(i);},
+    after:function(v,T2){T2.anim('c'+i);},
     check:function(v){var r=E.D/b[i];
      if(v===N(i))return null;
-     if(v===a[i]*E.D)return {msg:'Hai moltiplicato il numeratore per '+E.D+'. Prima calcola '+E.D+' : '+b[i]+' = '+r+', poi '+a[i]+' · '+r+'.'};
-     if(v===a[i]+(E.D-b[i]))return {msg:'Hai aggiunto '+(E.D-b[i])+' anche al numeratore. Si moltiplica, '+a[i]+' · '+r+'.'};
+     if(v===a[i]*E.D)return {msg:'Hai moltiplicato il numeratore per '+E.D+'. Prima calcola '+E.D+' : '+b[i]+' = '+r+', poi '+r+' · '+a[i]+'.'};
+     if(v===a[i]+(E.D-b[i]))return {msg:'Hai aggiunto '+(E.D-b[i])+' al numeratore. Si moltiplica, '+r+' · '+a[i]+'.'};
      if(v===a[i])return {msg:'Se il denominatore cambia, deve cambiare anche il numeratore.'};
      if(v===r)return {msg:r+' è il risultato della divisione, ora moltiplicalo per il numeratore '+a[i]+'.'};
      return {msg:'Calcola '+E.D+' : '+b[i]+', poi moltiplica il risultato per '+a[i]+'.'};}});});
-  E.steps.push({key:'r',q:function(){return fr(N(0),E.D)+' '+opS+' '+fr(N(1),E.D)+' = '+fr('?',E.D)+'. Qual è il numeratore?';},ans:R,
-   after:function(v,T){T.anim('s',1200);},
+  E.steps.push({key:'r',q:function(){return 'Sopra la linea, quanto fa '+smNumExpr(F,NS())+'?';},ans:R,
+   after:function(v,T2){T2.anim('s',900*k);},
    check:function(v){
     if(v===R())return null;
-    var orig=plus?a[0]+a[1]:a[0]-a[1];
-    if(v===orig)return {msg:'Hai usato i numeratori di partenza. Si '+(plus?'sommano':'sottraggono')+' i numeratori nuovi, '+N(0)+' e '+N(1)+'.'};
-    if(v===(plus?N(0)-N(1):N(0)+N(1)))return {msg:'Attenzione all’operazione, qui si '+(plus?'somma':'sottrae')+'.'};
-    if(v===N(0)*N(1))return {msg:'Hai moltiplicato. Si '+(plus?'sommano':'sottraggono')+' i numeratori.'};
-    return {msg:'Ricontrolla il calcolo '+N(0)+' '+opS+' '+N(1)+'.'};}});
+    var orig=a[0];for(var i=1;i<k;i++)orig+=F.ops[i-1]==='+'?a[i]:-a[i];
+    var allPlus=NS().reduce(function(s2,x){return s2+x;},0);
+    if(v===orig)return {msg:'Hai usato i numeratori di partenza. Si calcola con i numeri scritti sopra la linea.'};
+    if(v===allPlus&&F.ops.indexOf('−')>=0)return {msg:'Attenzione ai segni, non sono tutte somme.'};
+    return {msg:'Ricontrolla il calcolo '+smNumExpr(F,NS())+'.'};}});
   E.steps.push({key:'sn',skip:function(){return G()===1;},q:function(){return 'Riduci '+fr(R(),E.D)+' ai minimi termini. Qual è il numeratore?';},ans:function(){return R()/G();},
    check:function(v){var r=R(),g=G();
     if(v===r/g)return null;
@@ -696,31 +775,28 @@ var SMT=makeTrainer({id:'sm',
     if(v>0&&r%v===0&&g%(r/v)===0)return {msg:'Hai diviso per '+(r/v)+', ma si può ridurre ancora. M.C.D.('+r+', '+E.D+') = '+g+'.'};
     return {msg:'Calcola il M.C.D. di '+r+' e '+E.D+', poi dividi '+r+' per il M.C.D.'};}});
   E.steps.push({key:'sd',skip:function(){return G()===1;},q:function(){return fr(R(),E.D)+' = '+fr(E.got.sn,'?')+'. Qual è il denominatore?';},ans:function(){return E.D/G();},
-   after:function(v,T){T.anim('z',1200);},
+   after:function(v,T2){T2.anim('z',1200);},
    check:function(v){var g=G();
     if(v===E.D/g)return null;
     if(v===E.D)return {msg:'Il denominatore va diviso per lo stesso numero del numeratore, '+g+'.'};
     return {msg:'Dividi anche il denominatore per '+g+', '+E.D+' : '+g+'.'};}});
-  E.summary=function(){var r=R(),g=G();return fr(a[0],b[0])+' '+opS+' '+fr(a[1],b[1])+' = '+fr(r,E.D)+(g>1?' = '+fr(r/g,E.D/g):'');};
+  E.summary=function(){var r=R(),g=G();return smExpr(F)+' = '+fr(r,E.D)+(g>1?' = '+fr(r/g,E.D/g):'');};
   E.finish=function(){var r=R(),g=G(),out=g===1?fr(r,E.D)+' è già ai minimi termini.':'';
    if(r/g>E.D/g)out+=(out?' ':'')+'Il risultato è maggiore di 1.';return out;};
   return E;},
  draw:function(T){
-  var E=T.ex,F=E.F,g=E.got,cur=T.done?null:T.cur().key,an=E.an,o='',D=E.D,opS=F.op==='+'?'+':'−',Y=SM_BY,h=SM_H,U=F.U;
-  o+=hdr('denominatore comune = ',D!=null?String(D):'?',CM,cur==='D');
-  for(var i=0;i<2;i++)o+=drawScheme(F,i,{op:1,arrows:false,cy:96,num:g['n'+i]!=null?g['n'+i]:'?'},D!=null?D:'?',cur==='n'+i?'num'+i:null);
-  var parts=[[g.n0!=null?g.n0:'?',D!=null?D:'?',C1],opS,[g.n1!=null?g.n1:'?',D!=null?D:'?',C2],'=',[g.r!=null?g.r:'?',D!=null?D:'?',INK,cur==='r'?'n':null]];
+  var E=T.ex,F=E.F,g=E.got,cur=T.done?null:T.cur().key,an=E.an,o='',k=F.k,D=E.D,i;
+  var L=smLay(F,smSize(F),105),terms=[];for(i=0;i<k;i++)terms.push(g['n'+i]!=null?g['n'+i]:'?');
+  o+=smLeft(F,L,1)+smLong(F,L,terms,D!=null?D:'?',cur);
+  var parts=['=',[g.r!=null?g.r:'?',D!=null?D:'?',INK,cur==='r'?'n':null]];
   if(g.r!=null&&E.G()>1)parts.push('=',[g.sn!=null?g.sn:'?',g.sd!=null?g.sd:'?',CM,cur==='sn'?'n':(cur==='sd'?'d':null)]);
-  o+=row(280,180,parts,24);
-  var Dd=D||F.m,cs=[an.sm_c0||0,an.sm_c1||0],sf=an.sm_s||0,zf=an.sm_z||0,R=g.r!=null?E.R():0,GG=g.r!=null?E.G():1;
-  var units=F.units;
-  for(var j=0;j<2;j++){
-   o+=gBar(Y[j],h,U,1,[{x0:0,x1:F.a[j]/F.b[j],col:COLS[j]}],[{d:Dd,op:cs[j],w:1.5},{d:F.b[j],op:1,w:3.2}]);
-   o+=bLab(Y[j],h,[{n:F.a[j],d:F.b[j],col:COLS[j],op:1-cs[j]},{n:g['n'+j],d:Dd,col:COLS[j],cd:CM,op:cs[j]}],18);}
-  var segs=[];
-  if(g.r!=null){segs=F.op==='+'?[{x0:0,x1:g.n0/Dd,col:C1,op:sf},{x0:g.n0/Dd,x1:R/Dd,col:C2,op:sf}]:[{x0:0,x1:R/Dd,col:C1,op:sf}];}
-  o+=gBar(Y[2],h,U,units,segs,[{d:Dd,op:g.r!=null?(1-zf)*.9:.35,w:1.5},{d:Dd/GG,op:zf,w:2.4}]);
-  o+=bLab(Y[2],h,[{n:null,op:1-sf},{n:R,d:Dd,op:sf*(1-zf)},{n:R/GG,d:Dd/GG,cd:CM,op:zf}],18);
+  o+=row(280,192,parts,26);
+  // barre: con un denominatore comune diverso dal m.c.m. si usa quello scelto
+  var Fd=D&&D!==F.m?smBuild(F.a,F.b,F.ops):F;
+  if(D&&D!==F.m){Fd.m=D;Fd.r=F.b.map(function(d){return D/d;});Fd.n=F.a.map(function(x,j){return x*Fd.r[j];});Fd.res=E.R();Fd.g=gcd(Fd.res,D);}
+  var cut=[];for(i=0;i<k;i++)cut.push(an['sm_c'+i]||0);
+  var sf=an.sm_s||0;
+  o+=smBars(Fd,{cut:cut,down:sf>=1?1:sf*.999,simp:Fd.g>1?(an.sm_z||0):0,resLab:sf});
   $('svg').innerHTML=o;}});
 
 /* ---------- menu ---------- */
