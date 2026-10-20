@@ -5,7 +5,10 @@
 <meta name="author" content="Prof. T">
 <!-- © 2026 Prof. T. Tutti i diritti riservati. -->
 <!--
-  MODELLO DI ANIMAZIONE di Scienza in Movimento.
+  MODELLO DI ANIMAZIONE A PASSI di Scienza in Movimento: per procedure da spiegare passo per passo
+  (matematica, parti di fisica e chimica), con Esplora a passi e Allenati con esercizi numerici.
+  Per le animazioni da esplorare (scena 2D o 3D con elementi da scegliere) c'è modello_scena.html.
+  Le parti facoltative sono tra i commenti "INIZIO FACOLTATIVO" e "FINE FACOLTATIVO": si tolgono intere.
   Come si usa:
   1. Copiare questo file nella cartella della disciplina con il nome nuovo (minuscolo, senza accenti, underscore).
   2. Sostituire tutto ciò che è scritto in MAIUSCOLO tra parentesi quadre, per esempio [TITOLO].
@@ -78,24 +81,27 @@ button,input{font-family:inherit}
 
 <!-- 1 schede: create dallo script (elenco SCHEDE) -->
 <nav class="schede" id="tabs" role="tablist" aria-label="Schede"></nav>
-<!-- 2 modalità -->
+<!-- INIZIO FACOLTATIVO: MODALITÀ (senza Allenati si toglie tutta la capsula) -->
 <div class="modalita" id="modes" role="group" aria-label="Modalità">
  <button data-m="esplora" aria-pressed="true">Esplora</button>
  <button data-m="allenati" aria-pressed="false">Allenati</button>
 </div>
+<!-- FINE FACOLTATIVO: MODALITÀ -->
 
 <div class="layout">
 <section>
  <div class="stage">
   <svg id="svg" viewBox="0 0 560 400" role="img" aria-label="[DESCRIZIONE DEL DISEGNO]"></svg>
-  <!-- comando della vista sulla scena (se serve): -->
+  <!-- INIZIO FACOLTATIVO: COMANDO SULLA SCENA -->
   <button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px">&#10226;</button>
+  <!-- FINE FACOLTATIVO: COMANDO SULLA SCENA -->
  </div>
- <!-- 4 opzioni: chiuse all'apertura -->
+ <!-- INIZIO FACOLTATIVO: OPZIONI (chiuse all'apertura) -->
  <details class="opzioni" style="margin-top:12px">
   <summary><b>Opzioni</b></summary>
   <button class="levetta" role="switch" id="oGriglia" aria-checked="true">Griglia</button>
  </details>
+ <!-- FINE FACOLTATIVO: OPZIONI -->
 </section>
 <aside>
  <div class="prof"><img id="profImg" alt="Prof. T"><div class="bubble" id="bubble"></div></div>
@@ -131,8 +137,10 @@ function disegnaSchede(){
  nav.scrollLeft=x0;centraScheda(nav);
  $('sub').textContent=SCHEDE.filter(function(s){return s.id===S.scheda;})[0].sub;}
 $('tabs').addEventListener('click',function(e){var b=e.target.closest('[data-s]');if(b&&b.dataset.s!==S.scheda){S.scheda=b.dataset.s;S.passo=0;S.p=0;mostra();}});
+/* INIZIO FACOLTATIVO: MODALITÀ */
 $('modes').addEventListener('click',function(e){var b=e.target.closest('[data-m]');if(!b)return;S.modo=b.dataset.m;
  Array.prototype.forEach.call($('modes').children,function(x){x.setAttribute('aria-pressed',x===b);});mostra();});
+/* FINE FACOLTATIVO: MODALITÀ */
 
 /* ---- Esplora: N passi con Indietro, Avanti e "nuovo esempio" ---- */
 var PASSI=[{h:'[PASSO 1]',t:'[TESTO DEL PASSO 1]'},{h:'[PASSO 2]',t:'[TESTO DEL PASSO 2]'},{h:'[PASSO 3]',t:'[TESTO DEL PASSO 3]'}];
@@ -156,11 +164,12 @@ function anima(meta){
   if(u<1)raf=requestAnimationFrame(frame);})(last);}
 
 function disegna(){   /* esempio: un cerchio che avanza di un tratto a ogni passo */
- var x=80+S.p*200,griglia=$('oGriglia').getAttribute('aria-checked')==='true',o='';
+ var x=80+S.p*200,griglia=!$('oGriglia')||$('oGriglia').getAttribute('aria-checked')==='true',o='';
  if(griglia)for(var g=40;g<560;g+=40)o+='<line x1="'+g+'" y1="0" x2="'+g+'" y2="400" stroke="#1b2740"/>';
  o+='<circle cx="'+x+'" cy="200" r="30" fill="var(--disciplina)"/>';
  $('svg').innerHTML=o;}
 
+/* INIZIO FACOLTATIVO: ALLENATI (con la capsula delle modalità) */
 /* ---- Allenati: una domanda con casella, tastierina sugli schermi touch e riscontro ---- */
 function nuovoEsercizio(){var a=2+Math.floor(Math.random()*8),b=2+Math.floor(Math.random()*8);S.es={a:a,b:b,r:a*b,fatto:false};}
 function pannelloAllenati(){
@@ -180,10 +189,11 @@ function verifica(){
  if(+v===E.r){E.fatto=true;$('fb').innerHTML='<div class="ok">Esatto.</div>';say('Perfetto!','ok');
   $('bOk').disabled=true;$('bNx').classList.add('primaria');}
  else{$('fb').innerHTML='<div class="no">Non ancora.</div>[DIAGNOSI DELL\'ERRORE]';say('Riprova con calma.','ko');}}
+/* FINE FACOLTATIVO: ALLENATI */
 
 function mostra(){disegnaSchede();if(S.modo==='esplora'){pannelloEsplora();disegna();}else pannelloAllenati();}
-$('bReset').onclick=function(){S.p=0;S.passo=0;mostra();};
-$('oGriglia').onclick=function(){var on=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',on);disegna();};
+if($('bReset'))$('bReset').onclick=function(){S.p=0;S.passo=0;mostra();};
+if($('oGriglia'))$('oGriglia').onclick=function(){var on=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',on);disegna();};
 mostra();
 say('Ciao, sono Prof. T! Tocca <b>Avanti</b> per vedere il passo successivo.','hi');
 })();

@@ -9,7 +9,7 @@ Sito: https://scienzainmovimento.it/
 - `style.css`: stile condiviso, tema scuro
 - `frasi.js`: rotazione casuale delle frasi nel fumetto della home
 - `animazioni.css`, `animazioni.js`: componenti condivisi dei comandi delle animazioni (vedi "Comandi delle animazioni")
-- `modello/modello.html`: pagina di partenza per ogni nuova animazione (non collegata e non indicizzata)
+- `modello/`: pagine di partenza per le nuove animazioni (non collegate e non indicizzate): `modello_passi.html` (procedure a passi con Esplora e Allenati) e `modello_scena.html` (scena 3D o 2D da esplorare, parti da scegliere, Opzioni, quiz)
 - `favicon.svg`: icona del sito
 - `apple-touch-icon.png`: icona 180x180 px per la schermata Home di iPhone e iPad, indicata da `<link rel="apple-touch-icon">` in tutte le pagine; sorgente in `immagini/apple_touch_icon/`
 - `firma.svg`: firma "Prof. T"
@@ -26,7 +26,7 @@ Il sito è statico: solo HTML e CSS scritti a mano, nessun framework e nessuna b
 Nomi di file e cartelle: minuscolo, senza accenti, parole separate da underscore (es. `vita_stelle.html`).
 
 ## Aggiungere un'animazione
-Una nuova animazione parte da `modello/modello.html`: head, intestazione, linguette, capsula, azioni, Opzioni, tastierina, Prof. T, fondo pagina e collegamenti ai file comuni sono già pronti; si sostituiscono le parti in maiuscolo tra parentesi quadre e si toglie la riga `robots noindex` (le istruzioni sono nel commento iniziale del modello). La cartella `modello/` è esclusa dai motori di ricerca in `robots.txt`.
+Una nuova animazione parte da uno dei due modelli in `modello/`: `modello_passi.html` per le procedure da spiegare passo per passo con esercizi numerici (matematica, parti di fisica e chimica), `modello_scena.html` per le scene da esplorare con parti da scegliere, Opzioni ed eventuale quiz a scelta multipla (biologia, scienze della Terra, astronomia, chimica). Head, intestazione, comandi, Prof. T, fondo pagina e collegamenti ai file comuni sono già pronti; si sostituiscono le parti in maiuscolo tra parentesi quadre e si toglie la riga `robots noindex`. Le parti che non servono (Allenati, tastierina, Opzioni, modalità, quiz, scena 3D) sono tra i commenti "INIZIO FACOLTATIVO" e "FINE FACOLTATIVO" e si tolgono intere. La cartella `modello/` è esclusa dai motori di ricerca in `robots.txt`.
 
 1. Copiare il file `.html` nella cartella della disciplina.
 2. Incollare una card nella pagina `index.html` di quella disciplina e aggiornare la descrizione della card della disciplina in home.
@@ -70,6 +70,8 @@ I comandi hanno quattro livelli, ognuno con una forma e un posto fissi (dall'alt
 4. Opzioni: interruttori `<button class="levetta" role="switch" aria-checked="true">` dentro `<details class="opzioni"><summary><b>Opzioni</b></summary>…</details>`; scelte tra elementi della scena con `<button class="chip">` (colore del pallino con `style="--chip:#…"`, scelto con `attivo`); comandi della vista sopra la scena con `comando-scena`.
 
 Pochi comandi visibili: al massimo tre azioni insieme, il resto nelle Opzioni. Al primo ingresso il fumetto di Prof. T dice quale pulsante toccare. Sugli schermi touch le risposte numeriche si scrivono con la tastierina sullo schermo: `tastierinaHTML({virgola, meno, verifica, idVerifica})` e `tastierinaCollega(pad, casella, {max, alVerifica, nuovoSeEsterno})` di `animazioni.js` (esempi nel modello, in Aree e perimetri e in Celsius e Kelvin). Il Reattore dei numeri ha una tastiera propria, parte della grafica.
+
+Numerazione: sezioni della home "Sezione 01…04", card delle discipline in home A, B, C (ripartono in ogni sezione), card delle animazioni nelle pagine di disciplina α, β, γ, linguette dentro le animazioni 01, 02, 03 (i numeri solo dove l'ordine conta). Tutto automatico in `style.css` e `animazioni.js`.
 
 ## Attivare una nuova disciplina
 1. In `index.html`, sostituire la card spenta (`<div class="card fisica in-arrivo">`) con il link (`<a class="card fisica" href="fisica/">`) e scrivere la descrizione con le animazioni.

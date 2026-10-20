@@ -325,10 +325,12 @@ a { color: inherit; text-decoration: none; }
   font-weight: 500;
   color: var(--colore, var(--testo));
 }
-/* numerazione automatica delle schede: 01, 02, ... */
+/* numerazione automatica delle card: nelle pagine di disciplina lettere greche (α, β, γ…),
+   in home, dentro le sezioni, lettere maiuscole (A, B, C…) che ripartono in ogni sezione.
+   Le sezioni restano "Sezione 01..04" e le linguette nelle animazioni 01, 02…: i numeri solo dove l'ordine conta */
 .card h3::before {
   counter-increment: scheda;
-  content: counter(scheda, decimal-leading-zero);
+  content: counter(scheda, lower-greek);
   display: block;
   margin-bottom: 2px;
   font-family: var(--mono);
@@ -336,6 +338,7 @@ a { color: inherit; text-decoration: none; }
   font-weight: 400;
   color: var(--testo-dim);
 }
+.blocco .card h3::before { content: counter(scheda, upper-alpha); }
 .card p { margin: 0; font-size: 0.95rem; color: var(--testo-soft); }
 
 /* angoli segnati, come un mirino */
