@@ -31,9 +31,6 @@ h1{font-family:Cambria,Georgia,serif;font-size:clamp(20px,3vw,28px);margin:4px 0
 .sub{color:var(--sub);font-size:14px;margin-bottom:14px}
 button{font-family:inherit;cursor:pointer}
 .rowbtns{display:flex;gap:8px;flex-wrap:wrap}
-.pill{padding:8px 14px;border-radius:999px;border:2px solid transparent;font-weight:bold;font-size:14px;color:#2a2a2a;background:#fff}
-.pill:focus-visible,.tool:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
-.tool{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:14px;font-weight:bold}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
 .ctrl{margin:0 0 16px}
 .zonebox{font-weight:bold;font-size:15px;color:var(--acc);margin:0}
@@ -60,13 +57,14 @@ button{font-family:inherit;cursor:pointer}
 .warn{color:#FF8A80;font-weight:bold}
 .anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:8px 12px;margin-top:16px;border-radius:6px;font-style:italic;color:var(--ink)}
 .small{font-size:13px;color:var(--sub);margin-top:8px}
-.pill.on{outline:3px solid var(--acc);outline-offset:1px}
-.seg{display:none;gap:8px;margin-bottom:12px}
-@media (max-width:760px){.seg{display:flex}.duo h3{display:none}.duo[data-show="A"] #cardP,.duo[data-show="P"] #cardA{display:none}}
+.modalita.seg{display:none;margin:0 0 12px}
+.modalita .pt{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px}
+@media (max-width:760px){.modalita.seg{display:flex}.duo h3{display:none}.duo[data-show="A"] #cardP,.duo[data-show="P"] #cardA{display:none}}
 .eyebrow{color:#8ee0a6;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 </style>
+<link rel="stylesheet" href="../animazioni.css">
 </head>
-<body>
+<body style="--area:#6fd08c;--disciplina:#8ee0a6">
 <div class="wrap">
   <div class="eyebrow">Biologia</div>
   <h1>L'osmosi in tre dimensioni</h1>
@@ -75,12 +73,13 @@ button{font-family:inherit;cursor:pointer}
   <div class="card ctrl">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
       <div class="zonebox" id="zoneLbl">Soluzione isotonica</div>
-      <div class="rowbtns">
-        <button class="pill" data-c="10" style="background:#D6E4F5">Ipotonica</button>
-        <button class="pill" data-c="50" style="background:#EDEDED">Isotonica</button>
-        <button class="pill" data-c="85" style="background:#F5D6D6">Ipertonica</button>
-        <button class="pill" id="resetBtn" style="border-color:var(--line)">Reset</button>
-        <button class="tool" id="viewBtn">Reset vista</button>
+      <div class="rowbtns" style="align-items:center">
+        <div class="chips" style="margin:0">
+          <button class="chip" data-c="10" style="--chip:#D6E4F5">Ipotonica</button>
+          <button class="chip" data-c="50" style="--chip:#EDEDED">Isotonica</button>
+          <button class="chip" data-c="85" style="--chip:#F5D6D6">Ipertonica</button>
+        </div>
+        <button class="azione link" id="resetBtn">↻ Reset</button>
       </div>
     </div>
     <div class="bar"><input type="range" id="conc" min="0" max="100" value="50" aria-label="Concentrazione di soluto nella soluzione esterna"></div>
@@ -92,18 +91,19 @@ button{font-family:inherit;cursor:pointer}
     </div>
   </div>
 
-  <div class="seg" id="seg">
-    <button class="pill on" data-v="A" style="background:#FCE4D6">Animali</button>
-    <button class="pill" data-v="P" style="background:#E2F0D9">Piante</button>
+  <div class="modalita seg" id="seg" role="group" aria-label="Vasca da mostrare">
+    <button data-v="A" aria-pressed="true"><span class="pt" style="background:#FCE4D6"></span>Animali</button>
+    <button data-v="P" aria-pressed="false"><span class="pt" style="background:#E2F0D9"></span>Piante</button>
   </div>
   <div class="duo" id="duo" data-show="A">
-    <div class="card" id="cardA"><h3>Animali</h3><div class="view" id="vA"><div class="tint"></div></div><div class="status" id="stA"></div></div>
-    <div class="card" id="cardP"><h3>Piante</h3><div class="view" id="vP"><div class="tint"></div></div><div class="status" id="stP"></div></div>
+    <div class="card" id="cardA"><h3>Animali</h3><div class="view" id="vA"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div><div class="status" id="stA"></div></div>
+    <div class="card" id="cardP"><h3>Piante</h3><div class="view" id="vP"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div><div class="status" id="stP"></div></div>
   </div>
   <div class="small">Trascina sulla vasca per ruotarla (animale e pianta ruotano insieme); pizzica o usa la rotella per ingrandire.</div>
   <div class="anchor">L'acqua si muove dove c'è meno acqua libera, cioè dove c'è più soluto.</div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../animazioni.js"></script>
 <script>
 const $=s=>document.querySelector(s), PI=Math.PI, clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const PX=0.0118, SOLH=0x8E44AD, WATERH=0x5BC8F0;   // PX: unità 3D per pixel del 2D (cellula animale a riposo = 85 px)
@@ -306,7 +306,7 @@ function attachControls(cv){
  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
  cv.addEventListener('wheel',e=>{e.preventDefault();CAM.rad=clamp(CAM.rad*(1+e.deltaY*.001),6.5,15);dirty=1;},{passive:false});
 }
-$('#viewBtn').onclick=()=>{CAM.th=-.65;CAM.ph=1.2;CAM.rad=10.5;dirty=1;};
+document.querySelectorAll('.resetvista').forEach(b=>b.onclick=()=>{CAM.th=-.65;CAM.ph=1.2;CAM.rad=10.5;dirty=1;});
 
 // ---------- stato e animazione (le cellule inseguono la barra con un po' di ritardo) ----------
 let vA,vP;
@@ -323,7 +323,7 @@ function refresh(){
  const tp=TEXT.vegetale[z];if(stP.dataset.t!==tp){stP.innerHTML=tp;stP.dataset.t=tp;}
  zoneLbl.textContent=ZN[z];dirty=1;}
 function step(now){
- const dt=Math.min(.05,(now-S.last)/1000||.016),f=1-Math.exp(-dt/.35);S.last=now;S.xp+=(S.xt-S.xp)*f;
+ const dt=Math.max(0,Math.min(.05,(now-S.last)/1000||.016)),f=1-Math.exp(-dt/.35);S.last=now;S.xp+=(S.xt-S.xp)*f;
  if(S.A==='ok'){S.xa+=(S.xt-S.xa)*f;
   if(S.xa<=-.63){S.A='lysis';S.lt=0;}else if(S.xa>=.78){S.A='cren';S.xa=.8;}}
  else if(S.A==='lysis')S.lt=Math.min(1,S.lt+dt/2);
@@ -339,7 +339,7 @@ function loop(now){requestAnimationFrame(loop);if(S.run)step(now);const t=now/10
  [vA,vP].forEach(v=>{if(!v.el.clientWidth)return;v.animate(t);v.render();});}
 // su schermi stretti si vede una cellula alla volta: i pulsanti scelgono quale
 document.querySelectorAll('#seg [data-v]').forEach(b=>b.addEventListener('click',()=>{
- $('#duo').dataset.show=b.dataset.v;document.querySelectorAll('#seg .pill').forEach(x=>x.classList.toggle('on',x===b));}));
+ $('#duo').dataset.show=b.dataset.v;document.querySelectorAll('#seg button').forEach(x=>x.setAttribute('aria-pressed',x===b));}));
 setC(50);loop(performance.now());
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Il modello 3D mostra che cosa succede, per osmosi, a una cellula animale e a una vegetale in una soluzione ipotonica, isotonica o ipertonica, per vedere le differenze tra i tre casi.</p>
