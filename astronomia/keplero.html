@@ -27,13 +27,7 @@
   --st-bg:#05060A; --st-border:#22304a; --st-orbit:#8A93A6; --st-axis:#4B5263; --st-text:#ECEAE4; --st-muted:#A9B0BF;
   --st-sun:#FFC93C; --st-planet:#5CC8FF; --st-d1:#FF9A4D; --st-focus:#C3A6FF;
 }
-:root[data-theme="light"]{
-  --bg:#F7F5F0; --panel:#FFFFFF; --text:#26282B; --line:#D8D4CA; --stage:#FDFCF9;
-  --accent:#B5530F; --sun:#F2B705; --planet:#2F6F9F; --focus:#7A5BA6; --muted:#6B6A66;
-  --st-border:#1B1F2B;
-}
 *{box-sizing:border-box}
-:root[data-theme="light"] body{background-image:none}
 [hidden]{display:none!important}
 body{margin:0;background-color:var(--bg);background-image:radial-gradient(ellipse at 50% 0%,rgba(74,134,240,.16),transparent 60%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px);background-size:100% 520px,36px 36px,36px 36px;background-repeat:no-repeat,repeat,repeat;background-position:top center,0 0,0 0;color:var(--text);font-family:Calibri,Carlito,"Segoe UI",sans-serif;font-size:16px;line-height:1.4}
 h1,h2,h3{font-family:Cambria,"Noto Serif",Georgia,serif;margin:0;font-weight:700}
@@ -41,16 +35,10 @@ h1,h2,h3{font-family:Cambria,"Noto Serif",Georgia,serif;margin:0;font-weight:700
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
 h1{font-size:1.45rem}
 button{font:inherit;color:var(--text);cursor:pointer}
-.pill{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:6px 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--panel)}
-.pill[aria-pressed="true"]{outline:3px solid var(--accent);outline-offset:1px}
-.pill:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
-.pill.small{min-height:34px;padding:4px 12px;font-size:.9rem}
 .dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.tab{min-height:44px;padding:8px 4px;border:1.5px solid var(--line);border-radius:12px;background:var(--panel);font-weight:600;font-size:.95rem}
-.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#0a0f1a}
-:root[data-theme="light"] .tab[aria-selected="true"]{color:#fff}
 .view{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;align-items:start}
+.view>.modalita{grid-column:1/-1;margin:0}
+.panel .azioni{margin:4px 0 10px}
 .stage{background:var(--st-bg);border:1px solid var(--st-border);border-radius:14px;padding:6px}
 .stage svg{display:block;width:100%;height:auto;touch-action:manipulation}
 .caption{margin:6px 6px 2px;font-size:.85rem;color:var(--muted)}
@@ -64,7 +52,6 @@ button{font:inherit;color:var(--text);cursor:pointer}
 .panel p{margin:0 0 10px}
 .group{margin-top:12px}
 .group h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;font-family:Calibri,Carlito,"Segoe UI",sans-serif}
-.btns{display:flex;flex-wrap:wrap;gap:8px}
 .readout{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 0;margin:8px 0 0}
 .readout .note{font-size:.85rem;color:var(--muted);margin-bottom:4px}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0}
@@ -82,7 +69,6 @@ button{font:inherit;color:var(--text);cursor:pointer}
 .tbl td:first-child,.tbl th:first-child{text-align:left}
 .tbl tr[data-i]{cursor:pointer}
 .tbl tr.on{background:rgba(201,170,255,.18)}
-:root[data-theme="light"] .tbl tr.on{background:rgba(181,83,15,.16)}
 .tbl tr.on td:first-child{font-weight:700}
 /* SVG */
 svg text{fill:var(--st-text);font-family:Calibri,Carlito,"Segoe UI",sans-serif;font-size:18px}
@@ -98,23 +84,22 @@ svg .muted{fill:var(--st-muted)}
   .view>*+*{margin-top:14px}
   .stickycol{position:sticky;top:0;z-index:5;background:var(--bg);padding-bottom:4px}
   h1{font-size:1.2rem}
-  .tab{font-size:.85rem;padding:8px 2px}
 }
 .eyebrow{color:#c9aaff;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 </style>
+<link rel="stylesheet" href="../animazioni.css">
 </head>
-<body>
+<body style="--area:#b38cff;--disciplina:#c9aaff">
 <div class="app">
   <header>
     <div><div class="eyebrow">Astronomia</div><h1>Le leggi di Keplero e la gravitazione</h1></div>
-    <button class="pill small" id="themeBtn" type="button">Tema chiaro/scuro</button>
   </header>
 
-  <nav class="tabs" role="tablist" aria-label="Schede">
-    <button class="tab" role="tab" data-tab="0" aria-selected="true" type="button">I legge</button>
-    <button class="tab" role="tab" data-tab="1" aria-selected="false" type="button">II legge</button>
-    <button class="tab" role="tab" data-tab="2" aria-selected="false" type="button">III legge</button>
-    <button class="tab" role="tab" data-tab="3" aria-selected="false" type="button">Gravitazione</button>
+  <nav class="schede" role="tablist" aria-label="Schede">
+    <button class="scheda" role="tab" data-tab="0" aria-selected="true" type="button"><span class="num">01</span>I legge</button>
+    <button class="scheda" role="tab" data-tab="1" aria-selected="false" type="button"><span class="num">02</span>II legge</button>
+    <button class="scheda" role="tab" data-tab="2" aria-selected="false" type="button"><span class="num">03</span>III legge</button>
+    <button class="scheda" role="tab" data-tab="3" aria-selected="false" type="button"><span class="num">04</span>Gravitazione</button>
   </nav>
 
   <!-- ============ Scheda 1: prima legge ============ -->
@@ -165,6 +150,7 @@ svg .muted{fill:var(--st-muted)}
     <aside class="panel">
       <h2 id="infoTitle"></h2>
       <p id="infoText"></p>
+      <div class="azioni"><button class="azione primaria" type="button" id="playBtn">Pausa</button><button class="azione link" type="button" id="resetBtn">↻ Riavvia</button></div>
 
       <div class="readout">
         <div class="note">Distanze in unità del semiasse maggiore a</div>
@@ -180,11 +166,11 @@ svg .muted{fill:var(--st-muted)}
 
       <div class="group">
         <h3>Orbita</h3>
-        <div class="btns" id="presets">
-          <button class="pill" type="button" data-e="0.017">Terra</button>
-          <button class="pill" type="button" data-e="0.093">Marte</button>
-          <button class="pill" type="button" data-e="0.206">Mercurio</button>
-          <button class="pill" type="button" data-e="0.967">Cometa di Halley</button>
+        <div class="chips" id="presets">
+          <button class="chip" type="button" data-e="0.017">Terra</button>
+          <button class="chip" type="button" data-e="0.093">Marte</button>
+          <button class="chip" type="button" data-e="0.206">Mercurio</button>
+          <button class="chip" type="button" data-e="0.967">Cometa di Halley</button>
         </div>
         <div class="slider">
           <label for="eSlider">Eccentricità</label>
@@ -194,35 +180,30 @@ svg .muted{fill:var(--st-muted)}
       </div>
 
       <div class="group">
-        <h3>Mostra</h3>
-        <div class="btns">
-          <button class="pill" type="button" id="distBtn" aria-pressed="true">Distanze dai fuochi</button>
-        </div>
-      </div>
-
-      <div class="group">
         <h3>Selezione</h3>
-        <div class="btns" id="selBtns">
-          <button class="pill" type="button" data-sel="sun" aria-pressed="false"><i class="dot" style="background:var(--st-sun)"></i>Sole</button>
-          <button class="pill" type="button" data-sel="f2" aria-pressed="false"><i class="dot" style="background:var(--st-focus)"></i>Secondo fuoco</button>
-          <button class="pill" type="button" data-sel="planet" aria-pressed="false"><i class="dot" style="background:var(--st-planet)"></i>Pianeta</button>
-          <button class="pill" type="button" data-sel="peri" aria-pressed="false"><i class="dot" style="background:var(--muted)"></i>Perielio</button>
-          <button class="pill" type="button" data-sel="afe" aria-pressed="false"><i class="dot" style="background:var(--muted)"></i>Afelio</button>
+        <div class="chips" id="selBtns">
+          <button class="chip" type="button" data-sel="sun" aria-pressed="false" style="--chip:var(--st-sun)">Sole</button>
+          <button class="chip" type="button" data-sel="f2" aria-pressed="false" style="--chip:var(--st-focus)">Secondo fuoco</button>
+          <button class="chip" type="button" data-sel="planet" aria-pressed="false" style="--chip:var(--st-planet)">Pianeta</button>
+          <button class="chip" type="button" data-sel="peri" aria-pressed="false" style="--chip:var(--muted)">Perielio</button>
+          <button class="chip" type="button" data-sel="afe" aria-pressed="false" style="--chip:var(--muted)">Afelio</button>
         </div>
       </div>
 
-      <div class="group">
-        <h3>Moto</h3>
-        <div class="btns">
-          <button class="pill" type="button" id="playBtn">Pausa</button>
-          <button class="pill" type="button" id="resetBtn">Riavvia</button>
-        </div>
-      </div>
+      <details class="opzioni">
+        <summary><b>Opzioni</b></summary>
+        <button class="levetta" type="button" role="switch" id="distBtn" aria-checked="true">Distanze dai fuochi</button>
+      </details>
     </aside>
   </section>
 
   <!-- ============ Scheda 2: seconda legge ============ -->
   <section class="view" id="view1" hidden>
+    <div class="modalita" id="modeBtnsB" role="group" aria-label="Cosa mostrare">
+      <button type="button" data-mode="live" aria-pressed="true">Un settore</button>
+      <button type="button" data-mode="all" aria-pressed="false">Tutti i settori</button>
+      <button type="button" data-mode="cmp" aria-pressed="false">Perielio e afelio</button>
+    </div>
     <div class="stickycol">
       <div class="stage">
         <svg id="svgB" viewBox="0 0 600 480" role="img" aria-label="Orbita con settori di area uguale percorsi in tempi uguali">
@@ -254,6 +235,7 @@ svg .muted{fill:var(--st-muted)}
     <aside class="panel">
       <h2 id="infoTitleB"></h2>
       <p id="infoTextB"></p>
+      <div class="azioni"><button class="azione primaria" type="button" id="playBtnB">Pausa</button><button class="azione link" type="button" id="resetBtnB">↻ Riavvia</button></div>
 
       <div class="readout">
         <div class="note">Distanze e archi in unità del semiasse maggiore a</div>
@@ -278,30 +260,11 @@ svg .muted{fill:var(--st-muted)}
       </div>
 
       <div class="group">
-        <h3>Mostra</h3>
-        <div class="btns" id="modeBtnsB">
-          <button class="pill" type="button" data-mode="live" aria-pressed="true">Settore che segue il pianeta</button>
-          <button class="pill" type="button" data-mode="all" aria-pressed="false">Tutti i settori</button>
-          <button class="pill" type="button" data-mode="cmp" aria-pressed="false">Perielio e afelio a confronto</button>
-          <button class="pill" type="button" id="vecBtnB" aria-pressed="true">Freccia della velocità</button>
-        </div>
-      </div>
-
-      <div class="group">
-        <h3>Intervallo di tempo, in frazione del periodo</h3>
-        <div class="btns" id="nBtnsB">
-          <button class="pill" type="button" data-n="12" aria-pressed="true">1/12</button>
-          <button class="pill" type="button" data-n="8" aria-pressed="false">1/8</button>
-          <button class="pill" type="button" data-n="6" aria-pressed="false">1/6</button>
-        </div>
-      </div>
-
-      <div class="group">
         <h3>Orbita</h3>
-        <div class="btns" id="presetsB">
-          <button class="pill" type="button" data-e="0.017">Terra</button>
-          <button class="pill" type="button" data-e="0.206">Mercurio</button>
-          <button class="pill" type="button" data-e="0.967">Cometa di Halley</button>
+        <div class="chips" id="presetsB">
+          <button class="chip" type="button" data-e="0.017">Terra</button>
+          <button class="chip" type="button" data-e="0.206">Mercurio</button>
+          <button class="chip" type="button" data-e="0.967">Cometa di Halley</button>
         </div>
         <div class="slider">
           <label for="eSliderB">Eccentricità</label>
@@ -310,18 +273,26 @@ svg .muted{fill:var(--st-muted)}
         </div>
       </div>
 
-      <div class="group">
-        <h3>Moto</h3>
-        <div class="btns">
-          <button class="pill" type="button" id="playBtnB">Pausa</button>
-          <button class="pill" type="button" id="resetBtnB">Riavvia</button>
+      <details class="opzioni">
+        <summary><b>Opzioni</b></summary>
+        <button class="levetta" type="button" role="switch" id="vecBtnB" aria-checked="true">Freccia della velocità</button>
+        <div class="scelta">Intervallo di tempo, in frazione del periodo
+          <div class="chips" id="nBtnsB">
+            <button class="chip" type="button" data-n="12" aria-pressed="true">1/12</button>
+            <button class="chip" type="button" data-n="8" aria-pressed="false">1/8</button>
+            <button class="chip" type="button" data-n="6" aria-pressed="false">1/6</button>
+          </div>
         </div>
-      </div>
+      </details>
     </aside>
   </section>
 
   <!-- ============ Scheda 3: terza legge ============ -->
   <section class="view" id="view2" hidden>
+    <div class="modalita" id="viewBtnsC" role="group" aria-label="Vista">
+      <button type="button" data-view="orbit" aria-pressed="true">Orbite</button>
+      <button type="button" data-view="graph" aria-pressed="false">Grafico T² e a³</button>
+    </div>
     <div class="stickycol">
       <div class="stage">
         <svg id="svgC" viewBox="0 0 600 480" role="img" aria-label="Orbite dei pianeti in tempo accelerato">
@@ -341,6 +312,7 @@ svg .muted{fill:var(--st-muted)}
     <aside class="panel">
       <h2 id="infoTitleC">Terza legge di Keplero</h2>
       <p id="infoTextC"></p>
+      <div class="azioni" id="azC"><button class="azione primaria" type="button" id="playBtnC">Pausa</button><button class="azione link" type="button" id="resetBtnC">↻ Riavvia</button></div>
 
       <div class="readout">
         <div class="note" id="noteC">1 UA (unità astronomica) è la distanza media Terra–Sole, circa 150 milioni di km</div>
@@ -354,40 +326,11 @@ svg .muted{fill:var(--st-muted)}
 
       <div class="group">
         <h3>Pianeta</h3>
-        <div class="btns" id="plBtnsC"></div>
+        <div class="chips" id="plBtnsC"></div>
         <div class="slider">
           <label for="xSliderC">Pianeta X</label>
           <input id="xSliderC" type="range" min="0.3" max="31" step="0.1" value="4">
           <output id="xOutC" for="xSliderC"></output>
-        </div>
-      </div>
-
-      <div class="group">
-        <h3>Vista</h3>
-        <div class="btns" id="viewBtnsC">
-          <button class="pill" type="button" data-view="orbit" aria-pressed="true">Orbite</button>
-          <button class="pill" type="button" data-view="graph" aria-pressed="false">Grafico T² e a³</button>
-        </div>
-      </div>
-
-      <div class="group" id="scaleGrpC" hidden>
-        <h3>Scala del grafico</h3>
-        <div class="btns" id="scaleBtnsC">
-          <button class="pill" type="button" data-scale="lin" aria-pressed="true">Lineare</button>
-          <button class="pill" type="button" data-scale="log" aria-pressed="false">Logaritmica</button>
-        </div>
-      </div>
-
-      <div class="group" id="timeGrpC">
-        <h3>Tempo accelerato</h3>
-        <div class="btns" id="spyBtnsC">
-          <button class="pill" type="button" data-spy="12" aria-pressed="false">Lento</button>
-          <button class="pill" type="button" data-spy="6" aria-pressed="true">Medio</button>
-          <button class="pill" type="button" data-spy="3" aria-pressed="false">Veloce</button>
-        </div>
-        <div class="btns" style="margin-top:8px">
-          <button class="pill" type="button" id="playBtnC">Pausa</button>
-          <button class="pill" type="button" id="resetBtnC">Riavvia</button>
         </div>
       </div>
 
@@ -398,11 +341,33 @@ svg .muted{fill:var(--st-muted)}
           <tbody></tbody>
         </table>
       </div>
+
+      <details class="opzioni">
+        <summary><b>Opzioni</b></summary>
+        <div class="scelta" id="timeGrpC">Velocità del tempo
+          <div class="chips" id="spyBtnsC">
+            <button class="chip" type="button" data-spy="12" aria-pressed="false">Lento</button>
+            <button class="chip" type="button" data-spy="6" aria-pressed="true">Medio</button>
+            <button class="chip" type="button" data-spy="3" aria-pressed="false">Veloce</button>
+          </div>
+        </div>
+        <div class="scelta" id="scaleGrpC" hidden>Scala del grafico
+          <div class="chips" id="scaleBtnsC">
+            <button class="chip" type="button" data-scale="lin" aria-pressed="true">Lineare</button>
+            <button class="chip" type="button" data-scale="log" aria-pressed="false">Logaritmica</button>
+          </div>
+        </div>
+      </details>
     </aside>
   </section>
 
   <!-- ============ Scheda 4: gravitazione universale ============ -->
   <section class="view" id="view3" hidden>
+    <div class="modalita" id="viewBtnsD" role="group" aria-label="Vista">
+      <button type="button" data-view="scene" aria-pressed="true">Scena</button>
+      <button type="button" data-view="graph" aria-pressed="false">Grafici</button>
+      <button type="button" data-view="why" aria-pressed="false">Perché il quadrato</button>
+    </div>
     <div class="stickycol">
       <div class="stage">
         <div class="formula" id="formulaD">F = G · <span class="fm fm1" id="fm1">m<sub>1</sub></span> · <span class="fm fm2" id="fm2">m<sub>2</sub></span> / <span class="fm fmd" id="fmd">d<sup>2</sup></span></div>
@@ -452,13 +417,13 @@ svg .muted{fill:var(--st-muted)}
 
       <div class="group">
         <h3>Prove rapide</h3>
-        <div class="btns" id="quickD">
-          <button class="pill" type="button" data-q="base">Stato iniziale</button>
-          <button class="pill" type="button" data-q="m1x2"><span>Raddoppia m<sub>1</sub></span></button>
-          <button class="pill" type="button" data-q="mbx2"><span>Raddoppia m<sub>1</sub> e m<sub>2</sub></span></button>
-          <button class="pill" type="button" data-q="dh">Dimezza d</button>
-          <button class="pill" type="button" data-q="dx2">Raddoppia d</button>
-          <button class="pill" type="button" data-q="dx3">Triplica d</button>
+        <div class="chips" id="quickD">
+          <button class="chip" type="button" data-q="base">Stato iniziale</button>
+          <button class="chip" type="button" data-q="m1x2"><span>Raddoppia m<sub>1</sub></span></button>
+          <button class="chip" type="button" data-q="mbx2"><span>Raddoppia m<sub>1</sub> e m<sub>2</sub></span></button>
+          <button class="chip" type="button" data-q="dh">Dimezza d</button>
+          <button class="chip" type="button" data-q="dx2">Raddoppia d</button>
+          <button class="chip" type="button" data-q="dx3">Triplica d</button>
         </div>
       </div>
 
@@ -470,23 +435,15 @@ svg .muted{fill:var(--st-muted)}
       </div>
 
       <div class="group">
-        <h3>Vista</h3>
-        <div class="btns" id="viewBtnsD">
-          <button class="pill" type="button" data-view="scene" aria-pressed="true">Scena</button>
-          <button class="pill" type="button" data-view="graph" aria-pressed="false">Grafici</button>
-          <button class="pill" type="button" data-view="why" aria-pressed="false">Perché il quadrato</button>
-        </div>
-      </div>
-
-      <div class="group">
         <h3>Collegamento con Keplero</h3>
         <p>Al perielio il pianeta è più vicino al Sole, quindi la forza è maggiore e il pianeta è più veloce.</p>
-        <div class="btns"><button class="pill" type="button" id="toKeplerD">Vai alla II legge, perielio e afelio</button></div>
+        <div class="azioni"><button class="azione link" type="button" id="toKeplerD">Vai alla II legge, perielio e afelio ›</button></div>
       </div>
     </aside>
   </section>
 </div>
 
+<script src="../animazioni.js"></script>
 <script>
 (function(){
   'use strict';
@@ -612,14 +569,14 @@ svg .muted{fill:var(--st-muted)}
   }
   function updateInfo1(){const i=infoFor1(S1.sel);$('infoTitle').textContent=i[0];$('infoText').textContent=i[1];}
   function updateButtons1(){
-    document.querySelectorAll('#presets .pill').forEach(b=>{
+    document.querySelectorAll('#presets .chip').forEach(b=>{
       b.setAttribute('aria-pressed',S1.preset!==null&&Math.abs(parseFloat(b.dataset.e)-S1.e)<1e-9?'true':'false');
     });
-    document.querySelectorAll('#selBtns .pill').forEach(b=>{
+    document.querySelectorAll('#selBtns .chip').forEach(b=>{
       b.setAttribute('aria-pressed',S1.sel===b.dataset.sel?'true':'false');
     });
     for(const k in GROUPS1){$(GROUPS1[k]).classList.toggle('sel',S1.sel===k);}
-    $('distBtn').setAttribute('aria-pressed',S1.dist?'true':'false');
+    $('distBtn').setAttribute('aria-checked',S1.dist?'true':'false');
     $('d1').style.display=S1.dist?'':'none';
     $('d2').style.display=S1.dist?'':'none';
     $('distRows').style.display=S1.dist?'':'none';
@@ -627,10 +584,10 @@ svg .muted{fill:var(--st-muted)}
   }
   function toggleSel1(id){S1.sel=(S1.sel===id)?null:id;updateInfo1();updateButtons1();}
 
-  document.querySelectorAll('#presets .pill').forEach(b=>b.addEventListener('click',()=>{S1.e=parseFloat(b.dataset.e);S1.preset=S1.e;layout1();}));
+  document.querySelectorAll('#presets .chip').forEach(b=>b.addEventListener('click',()=>{S1.e=parseFloat(b.dataset.e);S1.preset=S1.e;layout1();}));
   $('eSlider').addEventListener('input',ev=>{S1.e=parseFloat(ev.target.value);S1.preset=null;layout1();});
   $('distBtn').addEventListener('click',()=>{S1.dist=!S1.dist;updateButtons1();});
-  document.querySelectorAll('#selBtns .pill').forEach(b=>b.addEventListener('click',()=>toggleSel1(b.dataset.sel)));
+  document.querySelectorAll('#selBtns .chip').forEach(b=>b.addEventListener('click',()=>toggleSel1(b.dataset.sel)));
   for(const k in GROUPS1){$(GROUPS1[k]).addEventListener('click',()=>toggleSel1(k));}
   $('playBtn').addEventListener('click',()=>{S1.playing=!S1.playing;updateButtons1();});
   $('resetBtn').addEventListener('click',()=>{S1.M=0;drawPlanet1();});
@@ -720,22 +677,22 @@ svg .muted{fill:var(--st-muted)}
   }
   function updateInfo2(){const i=infoFor2();$('infoTitleB').textContent=i[0];$('infoTextB').textContent=i[1];}
   function updateButtons2(){
-    document.querySelectorAll('#presetsB .pill').forEach(b=>{
+    document.querySelectorAll('#presetsB .chip').forEach(b=>{
       b.setAttribute('aria-pressed',S2.preset!==null&&Math.abs(parseFloat(b.dataset.e)-S2.e)<1e-9?'true':'false');
     });
     document.querySelectorAll('#modeBtnsB [data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===S2.mode?'true':'false'));
-    document.querySelectorAll('#nBtnsB .pill').forEach(b=>b.setAttribute('aria-pressed',parseInt(b.dataset.n,10)===S2.n?'true':'false'));
-    $('vecBtnB').setAttribute('aria-pressed',S2.vec?'true':'false');
+    document.querySelectorAll('#nBtnsB .chip').forEach(b=>b.setAttribute('aria-pressed',parseInt(b.dataset.n,10)===S2.n?'true':'false'));
+    $('vecBtnB').setAttribute('aria-checked',S2.vec?'true':'false');
     $('velB').style.display=S2.vec?'':'none';
     $('velHeadB').style.display=S2.vec?'':'none';
     $('playBtnB').textContent=S2.playing?'Pausa':'Avvia';
   }
   function setMode2(m){S2.mode=m;drawStatic2();updateInfo2();updateButtons2();drawPlanet2();}
 
-  document.querySelectorAll('#presetsB .pill').forEach(b=>b.addEventListener('click',()=>{S2.e=parseFloat(b.dataset.e);S2.preset=S2.e;layout2();}));
+  document.querySelectorAll('#presetsB .chip').forEach(b=>b.addEventListener('click',()=>{S2.e=parseFloat(b.dataset.e);S2.preset=S2.e;layout2();}));
   $('eSliderB').addEventListener('input',ev=>{S2.e=parseFloat(ev.target.value);S2.preset=null;layout2();});
   document.querySelectorAll('#modeBtnsB [data-mode]').forEach(b=>b.addEventListener('click',()=>setMode2(b.dataset.mode)));
-  document.querySelectorAll('#nBtnsB .pill').forEach(b=>b.addEventListener('click',()=>{S2.n=parseInt(b.dataset.n,10);drawStatic2();updateInfo2();updateButtons2();drawPlanet2();}));
+  document.querySelectorAll('#nBtnsB .chip').forEach(b=>b.addEventListener('click',()=>{S2.n=parseInt(b.dataset.n,10);drawStatic2();updateInfo2();updateButtons2();drawPlanet2();}));
   $('vecBtnB').addEventListener('click',()=>{S2.vec=!S2.vec;updateButtons2();drawPlanet2();});
   $('playBtnB').addEventListener('click',()=>{S2.playing=!S2.playing;updateButtons2();});
   $('resetBtnB').addEventListener('click',()=>{S2.M=0;drawPlanet2();});
@@ -774,12 +731,12 @@ svg .muted{fill:var(--st-muted)}
   (function(){
     let h='',t='';
     PL.forEach((p,i)=>{
-      h+='<button class="pill" type="button" data-i="'+i+'" aria-pressed="false"><i class="dot" style="background:'+p.col+'"></i>'+p.nome+'</button>';
+      h+='<button class="chip" type="button" data-i="'+i+'" aria-pressed="false" style="--chip:'+p.col+'">'+p.nome+'</button>';
       t+='<tr data-i="'+i+'"><td>'+p.nome+'</td><td></td><td></td><td></td></tr>';
     });
     $('plBtnsC').innerHTML=h;
     $('tblC').querySelector('tbody').innerHTML=t;
-    document.querySelectorAll('#plBtnsC .pill').forEach(b=>b.addEventListener('click',()=>selC(parseInt(b.dataset.i,10))));
+    document.querySelectorAll('#plBtnsC .chip').forEach(b=>b.addEventListener('click',()=>selC(parseInt(b.dataset.i,10))));
     document.querySelectorAll('#tblC tr[data-i]').forEach(r=>r.addEventListener('click',()=>selC(parseInt(r.dataset.i,10))));
   })();
 
@@ -800,7 +757,7 @@ svg .muted{fill:var(--st-muted)}
     $('rT2C').textContent=fmt(d.T2,2,2);
     $('rRC').textContent=fmt(d.r,3,3);
     $('xOutC').textContent=fmt(C.xa,1,1)+' UA';
-    document.querySelectorAll('#plBtnsC .pill').forEach(b=>b.setAttribute('aria-pressed',parseInt(b.dataset.i,10)===C.sel?'true':'false'));
+    document.querySelectorAll('#plBtnsC .chip').forEach(b=>b.setAttribute('aria-pressed',parseInt(b.dataset.i,10)===C.sel?'true':'false'));
   }
   function infoC(){
     if(C.view==='graph')return C.scale==='lin'
@@ -868,26 +825,26 @@ svg .muted{fill:var(--st-muted)}
   });
 
   function updateButtonsC(){
-    document.querySelectorAll('#viewBtnsC .pill').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===C.view?'true':'false'));
-    document.querySelectorAll('#scaleBtnsC .pill').forEach(b=>b.setAttribute('aria-pressed',b.dataset.scale===C.scale?'true':'false'));
-    document.querySelectorAll('#spyBtnsC .pill').forEach(b=>b.setAttribute('aria-pressed',parseInt(b.dataset.spy,10)===C.spy?'true':'false'));
+    document.querySelectorAll('#viewBtnsC button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===C.view?'true':'false'));
+    document.querySelectorAll('#scaleBtnsC .chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.scale===C.scale?'true':'false'));
+    document.querySelectorAll('#spyBtnsC .chip').forEach(b=>b.setAttribute('aria-pressed',parseInt(b.dataset.spy,10)===C.spy?'true':'false'));
     $('playBtnC').textContent=C.playing?'Pausa':'Avvia';
     $('scaleGrpC').hidden=C.view!=='graph';
-    $('timeGrpC').hidden=C.view!=='orbit';
+    $('timeGrpC').hidden=C.view!=='orbit';$('azC').hidden=C.view!=='orbit';
     $('svgC').style.display=C.view==='orbit'?'':'none';
     $('svgCg').style.display=C.view==='graph'?'':'none';
     $('capC').textContent=C.view==='orbit'
       ?'Scala non realistica: i raggi delle orbite sono proporzionali alla radice quadrata di a, le orbite sono disegnate circolari e il tempo è accelerato.'
       :'Valori arrotondati: per questo il rapporto T² / a³ è circa 1 e non esattamente 1.';
   }
-  document.querySelectorAll('#viewBtnsC .pill').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#viewBtnsC button').forEach(b=>b.addEventListener('click',()=>{
     C.view=b.dataset.view;updateButtonsC();updateInfoC();
     if(C.view==='graph')drawChart();
   }));
-  document.querySelectorAll('#scaleBtnsC .pill').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#scaleBtnsC .chip').forEach(b=>b.addEventListener('click',()=>{
     C.scale=b.dataset.scale;updateButtonsC();updateInfoC();drawChart();
   }));
-  document.querySelectorAll('#spyBtnsC .pill').forEach(b=>b.addEventListener('click',()=>{C.spy=parseInt(b.dataset.spy,10);updateButtonsC();}));
+  document.querySelectorAll('#spyBtnsC .chip').forEach(b=>b.addEventListener('click',()=>{C.spy=parseInt(b.dataset.spy,10);updateButtonsC();}));
   $('playBtnC').addEventListener('click',()=>{C.playing=!C.playing;updateButtonsC();});
   $('resetBtnC').addEventListener('click',()=>{C.t=0;drawC();});
   $('xSliderC').addEventListener('input',ev=>{
@@ -950,7 +907,7 @@ svg .muted{fill:var(--st-muted)}
     dx2:[1,1,4,['fmd']],
     dx3:[1,1,6,['fmd']]
   };
-  document.querySelectorAll('#quickD .pill').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#quickD .chip').forEach(b=>b.addEventListener('click',()=>{
     const q=QUICK[b.dataset.q];
     D.m1=q[0];D.m2=q[1];D.d=q[2];updateD();
     if(q[3].length)hl(q[3]);
@@ -969,9 +926,9 @@ svg .muted{fill:var(--st-muted)}
     $('sceneD').style.display=D.view==='scene'?'':'none';
     $('graphD').style.display=D.view==='graph'?'':'none';
     $('whyD').style.display=D.view==='why'?'':'none';
-    document.querySelectorAll('#viewBtnsD .pill').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===D.view?'true':'false'));
+    document.querySelectorAll('#viewBtnsD button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===D.view?'true':'false'));
   }
-  document.querySelectorAll('#viewBtnsD .pill').forEach(b=>b.addEventListener('click',()=>{D.view=b.dataset.view;updateViewD();}));
+  document.querySelectorAll('#viewBtnsD button').forEach(b=>b.addEventListener('click',()=>{D.view=b.dataset.view;updateViewD();}));
 
   function buildGraphD(){
     const plots=[
@@ -1043,22 +1000,17 @@ svg .muted{fill:var(--st-muted)}
   // ======================================================
   function goTab(n){
     cur=n;
-    document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',parseInt(t.dataset.tab,10)===n?'true':'false'));
+    document.querySelectorAll('.scheda').forEach(t=>t.setAttribute('aria-selected',parseInt(t.dataset.tab,10)===n?'true':'false'));
+    centraScheda(document.querySelector('.schede'));
     for(let i=0;i<4;i++)$('view'+i).hidden=(i!==n);
     window.scrollTo(0,0);
   }
-  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>goTab(parseInt(t.dataset.tab,10))));
-
-  $('themeBtn').addEventListener('click',()=>{
-    const r=document.documentElement;
-    const dark=r.dataset.theme?r.dataset.theme==='dark':true;
-    r.dataset.theme=dark?'light':'dark';
-  });
+  document.querySelectorAll('.scheda').forEach(t=>t.addEventListener('click',()=>goTab(parseInt(t.dataset.tab,10))));
 
   let last=null;
   function frame(t){
     if(last===null)last=t;
-    const dt=Math.min(0.05,(t-last)/1000);
+    const dt=Math.max(0,Math.min(0.05,(t-last)/1000));
     last=t;
     if(cur===0&&S1.playing){S1.M=(S1.M+TAU*dt/PERIOD)%TAU;drawPlanet1();}
     else if(cur===1&&S2.playing){S2.M=(S2.M+TAU*dt/PERIOD)%TAU;drawPlanet2();}
