@@ -79,6 +79,14 @@ button,select,input{font-family:inherit}
 .ans{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .ans input,.card select,.card input[type=number]{background:#0d1524;color:var(--txt);border:1px solid #3a4d70;border-radius:8px;padding:8px 10px;font-size:18px;min-width:0}
 .ans input{width:130px}
+.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
+.pad button{font:700 20px Cambria,Georgia,serif;padding:9px 0;border-radius:10px;background:#0f1726;color:var(--txt);border:1px solid var(--line);cursor:pointer;touch-action:manipulation}
+.pad button:active{background:#22304a}
+.pad .del{grid-column:span 2;font:15px Calibri,Carlito,sans-serif}
+.pad .ok{grid-column:span 3;background:var(--acc);color:#0a0f1a;border-color:var(--acc);font:700 16px Calibri,Carlito,sans-serif}
+.pad.virgola .ok{grid-column:span 2}
+.pad .ok:disabled{opacity:.4}
+.ans input[readonly]{caret-color:transparent}
 .stat{color:var(--mut);font-size:14px;margin-bottom:6px}
 .fb{margin-top:10px;font-size:16px}
 .fb .ok{color:#8ee0a6;font-weight:700}
@@ -110,6 +118,21 @@ button,select,input{font-family:inherit}
 </div>
 <script>
 (function(){
+/* tastierina sugli schermi touch (telefono, tablet, LIM): sostituisce la tastiera del telefono.
+   Il tasto Verifica della tastierina ha id bCheck, come il pulsante che compare su PC. */
+var TOUCH=!!(window.matchMedia&&matchMedia('(pointer: coarse)').matches);
+function verificaHTML(){return TOUCH?'':'<button class="btn pri" id="bCheck">Verifica</button>';}
+function padHTML(virgola){if(!TOUCH)return '';var h='<div class="pad'+(virgola?' virgola':'')+'" id="pad">';
+ for(var i=1;i<=9;i++)h+='<button data-k="'+i+'">'+i+'</button>';
+ return h+'<button data-k="0">0</button>'+(virgola?'<button data-k="," aria-label="virgola">,</button>':'')
+  +'<button class="del" data-k="del">Cancella</button><button class="ok" id="bCheck">Verifica</button></div>';}
+function padBind(){
+ var inp=$('ansIn');if(!TOUCH||!inp)return;
+ inp.readOnly=true;inp.setAttribute('inputmode','none');
+ $('pad').onclick=function(e){var b=e.target.closest('button[data-k]');if(!b||inp.disabled)return;var k=b.dataset.k;
+  if(k==='del')inp.value=inp.value.slice(0,-1);
+  else if(k===','){if(inp.value.indexOf(',')<0)inp.value+=(inp.value===''?'0,':',');}
+  else if(inp.value.length<9)inp.value+=k;};}
 'use strict';
 var W=560;
 var $=function(id){return document.getElementById(id);};
@@ -764,9 +787,9 @@ function renderTrain(){
  if(!S.ex||S.ex.fig!==S.tab)newEx();
  var e=S.ex;
  $('panel').innerHTML='<div class="card"><div class="stat" id="stat">'+statLine()+'</div><p class="ex">'+exText(e)+'</p>'
-  +'<div class="ans"><input id="ansIn" inputmode="numeric" autocomplete="off" placeholder="risultato" aria-label="Risultato"><span>'+unitOf(e.kd)+'</span><button class="btn pri" id="bCheck">Verifica</button></div>'
+  +'<div class="ans"><input id="ansIn" inputmode="numeric" autocomplete="off" placeholder="risultato" aria-label="Risultato"><span>'+unitOf(e.kd)+'</span>'+verificaHTML()+'</div>'+padHTML(false)
   +'<div class="fb" id="fb"></div><div class="ctrl"><button class="btn" id="bNew">Nuovo esercizio</button></div></div>';
- $('bCheck').onclick=checkEx;$('bNew').onclick=function(){newEx();renderTrain();drawStage();};
+ $('bCheck').onclick=checkEx;padBind();$('bNew').onclick=function(){newEx();renderTrain();drawStage();};
  $('ansIn').onkeydown=function(ev){if(ev.key==='Enter')checkEx();};
  say('Leggi bene i dati: quali misure ti servono per questa formula?','idle');}
 function checkEx(){
@@ -822,9 +845,9 @@ function renderTrainEq(){
  if(!S.exEq)newExEq();
  var e=S.exEq;
  $('panel').innerHTML='<div class="card"><div class="stat" id="stat">'+statLine()+'</div><p class="ex">Trasforma <b>'+fmtStr(e.v)+' '+sq(e.i)+' = ? '+sq(e.j)+'</b></p>'
-  +'<div class="ans"><input id="ansIn" inputmode="decimal" autocomplete="off" placeholder="risultato" aria-label="Risultato"><span>'+sq(e.j)+'</span><button class="btn pri" id="bCheck">Verifica</button></div>'
+  +'<div class="ans"><input id="ansIn" inputmode="decimal" autocomplete="off" placeholder="risultato" aria-label="Risultato"><span>'+sq(e.j)+'</span>'+verificaHTML()+'</div>'+padHTML(true)
   +'<div class="fb" id="fb"></div><div class="ctrl"><button class="btn" id="bNew">Nuovo esercizio</button></div></div>';
- $('bCheck').onclick=checkEq;$('bNew').onclick=function(){newExEq();renderTrainEq();drawStage();};
+ $('bCheck').onclick=checkEq;padBind();$('bNew').onclick=function(){newExEq();renderTrainEq();drawStage();};
  $('ansIn').onkeydown=function(ev){if(ev.key==='Enter')checkEq();};
  say('Guarda la scala: da che unità parti e dove devi arrivare? Se serve, usa la virgola.','idle');}
 function checkEq(){

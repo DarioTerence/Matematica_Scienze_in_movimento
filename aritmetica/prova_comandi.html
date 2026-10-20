@@ -98,6 +98,11 @@ button,input{font-family:inherit}
 </div>
 <script>
 /* comandi standard (prova): indicatore del passo e azioni di Esplora */
+/* porta la linguetta attiva al centro della striscia, così si vedono le schede vicine */
+function centraScheda(nav){var t=nav.querySelector('.attiva');if(!t)return;
+ var r=t.getBoundingClientRect(),n=nav.getBoundingClientRect();
+ var d=(r.left+r.width/2)-(n.left+nav.clientWidth/2);
+ if(Math.abs(d)>2)nav.scrollBy({left:d,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
 function passoHTML(i,n){var b="";for(var k=0;k<n;k++)b+="<i"+(k<=i?" class=\"fatto\"":"")+"></i>";return "<div class=\"passo\" aria-label=\"Passo "+(i+1)+" di "+n+"\"><span class=\"testo\">Passo "+(i+1)+" di "+n+"</span>"+b+"</div>";}
 function azioniHTML(primo,ultimo,nuovo){return "<div class=\"azioni\"><button class=\"azione icona\" id=\"bPrev\" aria-label=\"Indietro\""+(primo?" disabled":"")+">‹</button>"+(ultimo?"<button class=\"azione primaria\" id=\"bNew\">↻ "+nuovo+"</button><button class=\"azione\" id=\"bNext\" disabled hidden></button>":"<button class=\"azione primaria\" id=\"bNext\">Avanti ›</button><button class=\"azione link\" id=\"bNew\">↻ "+nuovo+"</button>")+"</div>";}
 
@@ -1142,8 +1147,7 @@ function tabs(){
  var h='';
  ST.forEach(function(s,i){var on=s.id===S.st,ok=!!s.sub;
   h+='<button class="scheda'+(on?' attiva':'')+'"'+(on?' aria-current="true"':'')+(ok?'':' disabled title="In arrivo"')+' data-st="'+s.id+'"><span class="num">'+(i<9?'0':'')+(i+1)+'</span>'+s.name+'</button>';});
- $('tabs').innerHTML=h;
- var att=$('tabs').querySelector('.attiva');if(att)att.scrollIntoView({block:'nearest',inline:'nearest'});
+ var nav=$('tabs'),x0=nav.scrollLeft;nav.innerHTML=h;nav.scrollLeft=x0;centraScheda(nav);
  Array.prototype.forEach.call($('tabs').children,function(b){if(!b.disabled)b.onclick=function(){if(S.st===b.dataset.st)return;S.st=b.dataset.st;show();};});
  $('modes').innerHTML=['esplora','allenati'].map(function(m){return '<button class="'+(S.mode===m?'attiva':'')+'" aria-pressed="'+(S.mode===m)+'" data-m="'+m+'">'+(m==='esplora'?'Esplora':'Allenati')+'</button>';}).join('');
  Array.prototype.forEach.call($('modes').children,function(b){b.onclick=function(){if(S.mode===b.dataset.m)return;S.mode=b.dataset.m;show();};});
