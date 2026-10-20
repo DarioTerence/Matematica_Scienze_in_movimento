@@ -41,11 +41,6 @@ h1,h2{font-family:Cambria,Georgia,serif;margin:0}
 h1{color:var(--text);font-size:30px;line-height:1.15}
 .sub{margin:4px 0 14px;color:var(--muted);font-size:18px}
 h2{color:var(--accent);font-size:20px;margin-bottom:10px}
-.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
-.tab{font:inherit;font-size:16px;border-radius:999px;border:1px solid #3a4d70;background:var(--panel);color:var(--text);padding:7px 16px;cursor:pointer}
-.tab:hover{border-color:var(--accent)}
-.tab.sel{outline:3px solid var(--accent);outline-offset:1px;border-color:var(--accent);font-weight:700}
-.tab:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:start}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
 .panel h2:not(:first-child){margin-top:20px}
@@ -57,14 +52,6 @@ h2{color:var(--accent);font-size:20px;margin-bottom:10px}
 .stage svg{display:block;width:100%;height:auto}
 .small{margin:8px 2px 0;color:var(--muted);font-size:14px}
 .controls{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 10px}
-.btn,.pill{font:inherit;font-size:16px;border-radius:999px;border:1px solid #3a4d70;background:var(--panel);color:var(--text);padding:8px 18px;cursor:pointer}
-.btn:hover,.pill:hover{border-color:var(--accent)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--ink);font-weight:700;min-width:104px}
-.btn:focus-visible,.pill:focus-visible{outline:3px solid #fff;outline-offset:2px}
-.speedrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
-.pills{display:flex;flex-wrap:wrap;gap:8px}
-.pill{padding:6px 14px;font-variant-numeric:tabular-nums}
-.pill.sel{outline:3px solid var(--accent);outline-offset:1px;border-color:var(--accent);font-weight:700}
 .wait{margin:8px 2px 12px;color:var(--muted);font-size:15px;min-height:1.4em}
 .anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;border-radius:6px;padding:10px 14px}
 table{width:100%;border-collapse:collapse;font-size:16px}
@@ -86,12 +73,14 @@ details p{margin:8px 0 0}
 .cmp b{text-align:right;color:var(--sun);font-variant-numeric:tabular-nums}
 .cmp .small{margin:6px 0 0}
 .nav{display:flex;gap:10px;margin:14px 0 10px}
+.schede{margin:0 0 14px}
+.controls .azione.primaria{flex:none;min-width:120px}
 .steptxt{margin:12px 0;min-height:3.4em}
-.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:12px 0 14px}
-.chip{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;opacity:.42;transition:opacity .2s,border-color .2s}
-.chip.on{opacity:1;border-color:#ffb454}
-.chip .tm{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
-.chip.on .tm{color:var(--sun);font-weight:700}
+.tappe{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:12px 0 14px}
+.tappa{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;opacity:.42;transition:opacity .2s,border-color .2s}
+.tappa.on{opacity:1;border-color:#ffb454}
+.tappa .tm{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tappa.on .tm{color:var(--sun);font-weight:700}
 @media (max-width:760px){
   .grid{grid-template-columns:1fr}
   h1{font-size:25px}
@@ -106,13 +95,14 @@ details p{margin:8px 0 0}
 @media (prefers-reduced-motion:reduce){.ring.pulse{animation:none}}
 .eyebrow{color:#c9aaff;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 </style>
+<link rel="stylesheet" href="../animazioni.css">
 </head>
-<body>
+<body style="--area:#b38cff;--disciplina:#c9aaff">
 <div class="wrap">
   <div class="eyebrow">Astronomia</div>
   <h1>La velocità della luce</h1>
   <p class="sub" id="sub"></p>
-  <div class="tabs" id="tabs" role="group" aria-label="Schede"></div>
+  <div class="schede" id="tabs" role="tablist" aria-label="Schede"></div>
 
   <div class="grid">
     <section>
@@ -129,26 +119,28 @@ details p{margin:8px 0 0}
           <p class="small">Le due barre sono nella stessa scala: quella Terra-Luna è lunga circa 1/390 di quella Sole-Terra.</p>
         </div>
         <div class="controls">
-          <button id="go" class="btn primary" type="button">Avvia</button>
-          <button id="rs" class="btn" type="button">Riavvia</button>
+          <button id="go" class="azione primaria" type="button">Avvia</button>
+          <button id="rs" class="azione link" type="button">↻ Riavvia</button>
         </div>
-        <div class="speedrow">
-          <span class="lab">Velocità dell'animazione</span>
-          <div id="speeds" class="pills" role="group" aria-label="Velocità dell'animazione"></div>
-        </div>
+        <details class="opzioni">
+          <summary><b>Opzioni</b></summary>
+          <div class="scelta">Velocità dell'animazione
+            <div id="speeds" class="chips" role="group" aria-label="Velocità dell'animazione"></div>
+          </div>
+        </details>
         <p id="wait" class="wait"></p>
       </div>
 
       <div id="sintBox" hidden>
         <div class="stage"><svg id="svg2" viewBox="0 0 1000 150" role="img" aria-label="Scala dei tempi della luce, da 1 secondo a 5 anni"></svg></div>
         <p class="small">Scala a gradini: le distanze tra un gradino e l'altro non sono proporzionali al tempo.</p>
-        <div class="nav">
-          <button id="prev" class="btn" type="button">Indietro</button>
-          <button id="next" class="btn primary" type="button">Avanti</button>
+        <div class="azioni nav">
+          <button id="prev" class="azione icona" type="button" aria-label="Indietro">‹</button>
+          <button id="next" class="azione primaria" type="button">Avanti ›</button>
         </div>
-        <div id="steps" class="pills" role="group" aria-label="Tempo trascorso"></div>
+        <div id="steps" class="chips" role="group" aria-label="Tempo trascorso"></div>
         <div id="steptxt" class="steptxt"></div>
-        <div id="chips" class="chips"></div>
+        <div id="chips" class="tappe"></div>
       </div>
 
       <div class="anchor" id="anchor"></div>
@@ -172,6 +164,7 @@ details p{margin:8px 0 0}
   </div>
 </div>
 
+<script src="../animazioni.js"></script>
 <script>
 (function(){
   /* ---------- costanti fisiche ---------- */
@@ -524,7 +517,7 @@ details p{margin:8px 0 0}
 
   SPEEDS.forEach(function(s){
     var b = document.createElement('button');
-    b.type = 'button'; b.className = 'pill'; b.setAttribute('data-v', s.v);
+    b.type = 'button'; b.className = 'chip'; b.setAttribute('data-v', s.v);
     b.textContent = s.lab;
     b.addEventListener('click', function(){ setSpeed(s.v); });
     speedsBox.appendChild(b);
@@ -538,7 +531,7 @@ details p{margin:8px 0 0}
 
   function frame(ts){
     if (last === null) last = ts;
-    var dt = Math.min(0.1, (ts - last) / 1000); last = ts;
+    var dt = Math.max(0, Math.min(0.1, (ts - last) / 1000)); last = ts;
     if (running && card.kind === 'anim'){
       t = Math.min(card.span, t + dt * speed);
       if (t >= card.span){ running = false; updateBtn(); }
@@ -568,14 +561,14 @@ details p{margin:8px 0 0}
     var pills = document.getElementById('steps'); pills.innerHTML = ''; pillEls = [];
     card.steps.forEach(function(s, i){
       var b = document.createElement('button');
-      b.type = 'button'; b.className = 'pill'; b.textContent = s.l;
+      b.type = 'button'; b.className = 'chip'; b.textContent = s.l;
       b.addEventListener('click', function(){ stepIdx = i; updateSint(); });
       pills.appendChild(b); pillEls.push(b);
     });
 
     var chips = document.getElementById('chips'); chips.innerHTML = ''; chipEls = [];
     card.sb.forEach(function(b){
-      var d = document.createElement('div'); d.className = 'chip';
+      var d = document.createElement('div'); d.className = 'tappa';
       d.innerHTML = '<div><span class="dot" style="background:' + b.col + '"></span>' + b.name + '</div><div class="tm">' + b.lab + '</div>';
       chips.appendChild(d); chipEls.push(d);
     });
@@ -609,7 +602,8 @@ details p{margin:8px 0 0}
   var tabEls = [];
   CARDS.forEach(function(c, i){
     var b = document.createElement('button');
-    b.type = 'button'; b.className = 'tab'; b.textContent = c.tab;
+    b.type = 'button'; b.className = 'scheda'; b.setAttribute('role', 'tab');
+    b.innerHTML = '<span class="num">0' + (i + 1) + '</span>' + c.tab.replace(/^\d+ · /, '');
     b.addEventListener('click', function(){ selectCard(i); });
     tabsBox.appendChild(b); tabEls.push(b);
   });
@@ -617,7 +611,8 @@ details p{margin:8px 0 0}
   function selectCard(i){
     cardIdx = i; card = CARDS[i];
     running = false; t = 0; last = null;
-    tabEls.forEach(function(b, j){ b.classList.toggle('sel', j === i); b.setAttribute('aria-pressed', j === i ? 'true' : 'false'); });
+    tabEls.forEach(function(b, j){ b.setAttribute('aria-selected', j === i ? 'true' : 'false'); });
+    centraScheda(tabsBox);
     document.getElementById('sub').textContent = card.sub;
     document.getElementById('anchor').textContent = card.anchor;
     document.getElementById('q').textContent = card.q;
