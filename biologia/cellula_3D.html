@@ -32,49 +32,41 @@ h1{font-family:Cambria,Georgia,serif;font-size:clamp(20px,3vw,28px);margin:4px 0
 .sub{color:var(--sub);font-size:14px;margin-bottom:14px}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 button{font-family:inherit;cursor:pointer}
-.pill{padding:8px 16px;border-radius:999px;border:2px solid transparent;font-weight:bold;font-size:14px}
-.pill.ani{background:var(--ani-cell);color:var(--ani-text)}
-.pill.veg{background:var(--veg-cell);color:var(--veg-text)}
-.pill.fun{background:var(--fun-cell);color:var(--fun-text)}
-.pill.on{outline:3px solid var(--acc);outline-offset:1px}
 .main{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:12px}
 @media (max-width:760px){.main{grid-template-columns:1fr}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
-#stage{height:clamp(340px,64vh,640px);background:var(--stage);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+#stage{position:relative;height:clamp(340px,64vh,640px);background:var(--stage);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 #stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
-.tool{padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:14px;font-weight:bold}
-.tool.on{background:var(--acc);color:#0a0f1a;border-color:var(--acc)}
 .info{min-height:130px;margin-bottom:12px}
 .info h3{margin:0 0 6px;color:var(--acc);font-size:18px}
 .info p{margin:0;font-size:15px;line-height:1.4}
 .hint{color:var(--sub)}
 .grp+.grp{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.modalita .pt{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:0}
 .gl{font-size:13px;font-weight:bold;color:var(--sub);margin:0 0 6px}
-.chip{display:inline-flex;align-items:center;gap:7px;padding:6px 11px 6px 8px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:13px;font-weight:bold}
-.chip .dot{flex:none;width:12px;height:12px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.28)}
-.chip.on{outline:3px solid var(--acc);outline-offset:1px}
 .small{font-size:13px;color:var(--sub);margin-top:12px}
 .eyebrow{color:#8ee0a6;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 </style>
+<link rel="stylesheet" href="../animazioni.css">
 </head>
-<body>
+<body style="--area:#6fd08c;--disciplina:#8ee0a6">
 <div class="wrap">
   <div class="eyebrow">Biologia</div>
   <h1>La cellula in tre dimensioni</h1>
   <div class="sub" id="sub">La cellula animale</div>
-  <div class="row" id="types">
-    <button class="pill ani on" data-type="animale">Animali</button>
-    <button class="pill veg" data-type="vegetale">Piante</button>
-    <button class="pill fun" data-type="fungina">Funghi</button>
+  <div class="modalita" id="types" role="group" aria-label="Tipo di cellula">
+    <button data-type="animale" aria-pressed="true"><span class="pt" style="background:var(--ani-cell)"></span>Animali</button>
+    <button data-type="vegetale" aria-pressed="false"><span class="pt" style="background:var(--veg-cell)"></span>Piante</button>
+    <button data-type="fungina" aria-pressed="false"><span class="pt" style="background:var(--fun-cell)"></span>Funghi</button>
   </div>
   <div class="main">
     <div>
-      <div id="stage"></div>
-      <div class="row" style="margin-top:10px">
-        <button class="tool on" id="bOpen">Vista aperta</button>
-        <button class="tool" id="bRot">Rotazione automatica</button>
-        <button class="tool" id="bReset">Reset vista</button>
-      </div>
+      <div id="stage"><button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div>
+      <details class="opzioni">
+        <summary><b>Opzioni</b></summary>
+        <button class="levetta" role="switch" id="bOpen" aria-checked="true">Vista aperta</button>
+        <button class="levetta" role="switch" id="bRot" aria-checked="false">Rotazione automatica</button>
+      </details>
     </div>
     <div>
       <div class="card info"><h3 id="t">Tocca una struttura</h3><p id="d" class="hint"></p></div>
@@ -84,6 +76,7 @@ button{font-family:inherit;cursor:pointer}
   </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../animazioni.js"></script>
 <script>
 const $=s=>document.querySelector(s), stage=$('#stage'), PI=Math.PI, clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const MEMB_O=.4;   // opacità della membrana a riposo (0 = invisibile, 1 = opaca)
@@ -242,15 +235,15 @@ const inf=k=>Object.assign({},B[k],TYPES[type].ov[k]);
 // ---------- taglio ("vista aperta") ----------
 const planes=[new THREE.Plane(new THREE.Vector3(1,0,0),0),new THREE.Plane(new THREE.Vector3(0,0,-1),0)];
 function setOpen(b){open=b;shellMats.forEach(m=>{m.clippingPlanes=b?planes:null;m.clipIntersection=true;m.needsUpdate=true;});
- $('#bOpen').classList.toggle('on',b);$('#bOpen').textContent=b?'Vista aperta':'Vista intera';dirty=1;}
+ $('#bOpen').setAttribute('aria-checked',b);dirty=1;}
 
 // ---------- selezione ----------
 function buildChips(){const box=$('#groups');box.innerHTML='';chips=[];
  GROUPS.forEach(([name,ks])=>{const list=ks.filter(k=>TYPES[type].keys.includes(k));if(!list.length)return;
   const gd=document.createElement('div');gd.className='grp';gd.innerHTML='<div class="gl"></div><div class="row"></div>';gd.firstChild.textContent=name;
-  list.forEach(k=>{const o=inf(k),b=document.createElement('button'),d=document.createElement('i');
-   b.className='chip';b.dataset.k=k;b.setAttribute('aria-pressed','false');d.className='dot';
-   d.style.background=k=='citoplasma'?TYPES[type].cyto:o.c;b.append(d,o.l);
+  list.forEach(k=>{const o=inf(k),b=document.createElement('button');
+   b.className='chip';b.dataset.k=k;b.setAttribute('aria-pressed','false');
+   b.style.setProperty('--chip',k=='citoplasma'?TYPES[type].cyto:o.c);b.append(o.l);
    b.onclick=()=>sel(cur==k?null:k);gd.lastChild.appendChild(b);chips.push(b);});
   box.appendChild(gd);});}
 function sel(k){cur=k;const o=k&&inf(k);
@@ -275,10 +268,10 @@ function setType(t){type=t;clear();TYPES[t].build();
  shells=cell.children.filter(g=>['citoplasma','membrana','parete'].includes(g.userData.key));
  orgs=cell.children.filter(g=>!shells.includes(g));
  buildChips();
- document.querySelectorAll('.pill').forEach(p=>{const on=p.dataset.type==t;p.classList.toggle('on',on);p.setAttribute('aria-pressed',on);});
+ document.querySelectorAll('#types button').forEach(p=>{const on=p.dataset.type==t;p.setAttribute('aria-pressed',on);});
  {const st=TYPES[t].sub;$('#sub').textContent=st.charAt(0).toUpperCase()+st.slice(1);}
  rad=TYPES[t].rad;setOpen(open);sel(null);}
-document.querySelectorAll('.pill').forEach(p=>p.onclick=()=>setType(p.dataset.type));
+document.querySelectorAll('#types button').forEach(p=>p.onclick=()=>setType(p.dataset.type));
 
 // ---------- camera e comandi ----------
 let th=-.7,ph=1.25,rad=5.2,fit=1,auto=false;
@@ -296,7 +289,7 @@ cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('wheel',e=>{e.preventDefault();rad=clamp(rad*(1+e.deltaY*.001),3,9);dirty=1;},{passive:false});
 $('#bOpen').onclick=()=>setOpen(!open);
 $('#bReset').onclick=reset;
-$('#bRot').onclick=e=>{auto=!auto;e.currentTarget.classList.toggle('on',auto);};
+$('#bRot').onclick=e=>{auto=!auto;e.currentTarget.setAttribute('aria-checked',auto);};
 new ResizeObserver(()=>{const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();
  fit=Math.max(1,1.15/cam.aspect);dirty=1;}).observe(stage);
 
