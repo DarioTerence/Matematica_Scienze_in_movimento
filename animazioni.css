@@ -246,6 +246,7 @@
   height: 9px;
   border-radius: 50%;
   background: var(--chip, var(--disciplina));
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .35);   /* anello: si vede anche un pallino scuro */
 }
 .chip.attivo, .chip[aria-pressed="true"] {
   color: var(--cmd-testo);
