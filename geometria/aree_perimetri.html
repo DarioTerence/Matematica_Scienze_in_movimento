@@ -66,14 +66,6 @@ button,select,input{font-family:inherit}
 .ans{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .ans input,.card select,.card input[type=number]{background:#0d1524;color:var(--txt);border:1px solid #3a4d70;border-radius:8px;padding:8px 10px;font-size:18px;min-width:0}
 .ans input{width:130px}
-.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
-.pad button{font:700 20px Cambria,Georgia,serif;padding:9px 0;border-radius:10px;background:#0f1726;color:var(--txt);border:1px solid var(--line);cursor:pointer;touch-action:manipulation}
-.pad button:active{background:#22304a}
-.pad .del{grid-column:span 2;font:15px Calibri,Carlito,sans-serif}
-.pad .ok{grid-column:span 3;background:var(--acc);color:#0a0f1a;border-color:var(--acc);font:700 16px Calibri,Carlito,sans-serif}
-.pad.virgola .ok{grid-column:span 2}
-.pad .ok:disabled{opacity:.4}
-.ans input[readonly]{caret-color:transparent}
 .stat{color:var(--mut);font-size:14px;margin-bottom:6px}
 .fb{margin-top:10px;font-size:16px}
 .fb .ok{color:#8ee0a6;font-weight:700}
@@ -107,21 +99,10 @@ button,select,input{font-family:inherit}
 <script src="../animazioni.js"></script>
 <script>
 (function(){
-/* tastierina sugli schermi touch (telefono, tablet, LIM): sostituisce la tastiera del telefono.
-   Il tasto Verifica della tastierina ha id bCheck, come il pulsante che compare su PC. */
-var TOUCH=!!(window.matchMedia&&matchMedia('(pointer: coarse)').matches);
+/* tastierina comune (animazioni.js): il suo tasto Verifica ha id bCheck, come il pulsante che compare su PC */
 function verificaHTML(){return TOUCH?'':'<button class="azione primaria" id="bCheck">Verifica</button>';}
-function padHTML(virgola){if(!TOUCH)return '';var h='<div class="pad'+(virgola?' virgola':'')+'" id="pad">';
- for(var i=1;i<=9;i++)h+='<button data-k="'+i+'">'+i+'</button>';
- return h+'<button data-k="0">0</button>'+(virgola?'<button data-k="," aria-label="virgola">,</button>':'')
-  +'<button class="del" data-k="del">Cancella</button><button class="ok" id="bCheck">Verifica</button></div>';}
-function padBind(){
- var inp=$('ansIn');if(!TOUCH||!inp)return;
- inp.readOnly=true;inp.setAttribute('inputmode','none');
- $('pad').onclick=function(e){var b=e.target.closest('button[data-k]');if(!b||inp.disabled)return;var k=b.dataset.k;
-  if(k==='del')inp.value=inp.value.slice(0,-1);
-  else if(k===','){if(inp.value.indexOf(',')<0)inp.value+=(inp.value===''?'0,':',');}
-  else if(inp.value.length<9)inp.value+=k;};}
+function padHTML(virgola){return tastierinaHTML({virgola:virgola,idVerifica:'bCheck'});}
+function padBind(){if(TOUCH)tastierinaCollega($('pad'),$('ansIn'));}
 'use strict';
 var W=560;
 var $=function(id){return document.getElementById(id);};
@@ -870,7 +851,7 @@ $('tabs').addEventListener('click',function(e){var b=e.target.closest('[data-tab
 $('modes').addEventListener('click',function(e){var b=e.target.closest('[data-mode]');if(b)setMode(b.dataset.mode);});
 $('profImg').src=IMG.hi;S.lastImg='hi';
 render();
-say('Ciao, sono Prof. T! Scegli una figura: vediamo insieme perché funzionano le formule.','hi');
+say('Ciao, sono Prof. T! Tocca <b>Avanti</b> per vedere passo per passo perché funziona la formula, oppure <b>Riproduci</b>.','hi');
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Aree e perimetri di quadrato, rettangolo, parallelogramma, rombo, trapezio e triangolo: come si ricavano le formule con dimostrazioni grafiche, come si usano al contrario con le formule inverse e come si trasformano le unit&agrave; di misura di superficie.</p>

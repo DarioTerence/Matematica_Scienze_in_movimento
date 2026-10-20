@@ -271,6 +271,35 @@
 }
 .comando-scena:hover { color: var(--cmd-testo); border-color: var(--disciplina); }
 
+/* ---------- Tastierina numerica (schermi touch, vedi tastierinaHTML in animazioni.js) ---------- */
+.tastierina {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+.tastierina button {
+  padding: 9px 0;
+  border-radius: 10px;
+  background: #0f1726;
+  color: var(--cmd-testo);
+  border: 1px solid var(--cmd-linea);
+  font: 700 20px Cambria, Georgia, serif;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.tastierina button:active { background: #22304a; }
+.tastierina .del { font: 15px Calibri, Carlito, sans-serif; }
+.tastierina .ok {
+  background: var(--disciplina);
+  border-color: var(--disciplina);
+  color: #0a0f1a;
+  font: 700 16px Calibri, Carlito, sans-serif;
+}
+.tastierina .ok:disabled { opacity: .4; }
+input[readonly][inputmode="none"] { caret-color: transparent; }
+
 /* ---------- Bottone di ritorno: anche al tocco ---------- */
 /* Lo stile di base resta quello di ogni pagina (bordo chiaro); il colore dell'area
    compare al passaggio del mouse e, qui, anche al tocco sugli schermi touch. */
