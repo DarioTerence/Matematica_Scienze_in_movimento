@@ -1,0 +1,270 @@
+/* © 2026 Prof. T. Tutti i diritti riservati. */
+/* Componenti condivisi delle animazioni di Scienza in Movimento.
+   Ogni animazione lo collega con <link rel="stylesheet" href="../animazioni.css">
+   e imposta sul body i due colori:
+     --area        colore dell'area (numeri #6aa5ff, materia #ffb454, viventi #6fd08c, cosmo #b38cff)
+     --disciplina  sfumatura della disciplina (es. aritmetica #9cc5ff)
+   Quattro livelli di comandi, ognuno con una forma propria:
+     1 .schede     linguette numerate per le schede o stazioni
+     2 .modalita   capsula a segmenti (Esplora / Allenati e simili)
+     3 .azioni     pulsanti: uno solo .primaria, gli altri .azione semplici, .link o .icona
+     4 .opzioni    pannello richiudibile con levette on/off; .chip per scegliere tra elementi */
+
+:root {
+  --area: #6aa5ff;
+  --disciplina: #9cc5ff;
+  --cmd-linea: #22304a;
+  --cmd-testo: #e6ecf5;
+  --cmd-tenue: #8fa0b8;
+  --cmd-fondo: #0d1422;
+}
+
+.schede button, .modalita button, .azione, .opzioni summary, .levetta, .chip, .comando-scena {
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.schede button:focus-visible, .modalita button:focus-visible, .azione:focus-visible,
+.opzioni summary:focus-visible, .levetta:focus-visible, .chip:focus-visible, .comando-scena:focus-visible {
+  outline: 2px solid var(--disciplina);
+  outline-offset: 2px;
+}
+
+/* ---------- 1. Schede o stazioni ---------- */
+.schede {
+  display: flex;
+  gap: 22px;
+  margin: 10px 0 0;
+  padding: 0 40px 0 0;          /* spazio finale: l'ultima linguetta esce dalla sfumatura */
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--cmd-linea);
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
+          mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
+}
+.schede::-webkit-scrollbar { display: none; }
+.scheda {
+  flex: none;
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  padding: 9px 0 10px;
+  color: var(--cmd-tenue);
+  font-size: 15.5px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.scheda .num {
+  font: 11px ui-monospace, Consolas, monospace;
+  margin-right: 6px;
+  opacity: .75;
+}
+.scheda:hover { color: var(--cmd-testo); }
+.scheda.attiva {
+  color: #fff;
+  font-weight: 700;
+  border-bottom-color: var(--area);
+}
+.scheda.attiva .num { color: var(--area); opacity: 1; }
+.scheda:disabled { opacity: .4; cursor: default; }
+.scheda:disabled:hover { color: var(--cmd-tenue); }
+
+/* ---------- 2. Modalità ---------- */
+.modalita {
+  display: flex;
+  max-width: 420px;
+  margin: 14px 0 12px;
+  padding: 3px;
+  background: var(--cmd-fondo);
+  border: 1px solid var(--cmd-linea);
+  border-radius: 999px;
+}
+.modalita button {
+  flex: 1;
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: var(--cmd-tenue);
+  font-size: 15.5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.modalita button:hover { color: var(--cmd-testo); }
+.modalita button.attiva {
+  background: #1d2a44;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px #34476b;
+}
+
+/* ---------- 3. Azioni ---------- */
+.azioni {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0 4px;
+}
+.azione {
+  min-height: 44px;
+  padding: 9px 14px;
+  background: transparent;
+  color: var(--cmd-testo);
+  border: 1px solid var(--cmd-linea);
+  border-radius: 12px;
+  font-size: 15.5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.azione:hover { border-color: var(--disciplina); }
+.azione:disabled { opacity: .35; cursor: default; }
+.azione:disabled:hover { border-color: var(--cmd-linea); }
+.azione.primaria {
+  flex: 1 1 auto;
+  background: var(--disciplina);
+  border-color: var(--disciplina);
+  color: #0a0f1a;
+  font-weight: 700;
+  font-size: 16.5px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--disciplina) 22%, transparent);
+}
+.azione.primaria:disabled { box-shadow: none; }
+.azione.link {
+  border-color: transparent;
+  background: none;
+  color: var(--disciplina);
+  padding-left: 4px;
+  padding-right: 4px;
+}
+.azione.link:hover { text-decoration: underline; }
+.azione.icona {
+  width: 44px;
+  padding: 0;
+  font-size: 22px;
+  line-height: 1;
+}
+.azione:active:not(:disabled) { transform: translateY(1px); }
+
+/* Indicatore "Passo n di N" */
+.passo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  color: var(--cmd-tenue);
+  font: 12.5px ui-monospace, Consolas, monospace;
+}
+.passo .testo { margin-right: 4px; white-space: nowrap; }
+.passo i {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--cmd-linea);
+}
+.passo i.fatto { background: var(--disciplina); }
+
+/* ---------- 4. Opzioni ---------- */
+.opzioni {
+  margin-top: 12px;
+  background: var(--cmd-fondo);
+  border: 1px solid var(--cmd-linea);
+  border-radius: 14px;
+}
+.opzioni summary {
+  display: flex;
+  justify-content: space-between;
+  padding: 11px 14px;
+  list-style: none;
+  cursor: pointer;
+  color: var(--cmd-tenue);
+}
+.opzioni summary::-webkit-details-marker { display: none; }
+.opzioni summary b { color: var(--cmd-testo); }
+.opzioni summary::after { content: "▾"; }
+.opzioni[open] summary::after { content: "▴"; }
+.levetta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: 0;
+  border-top: 1px solid #1a2438;
+  color: var(--cmd-testo);
+  font-size: 15.5px;
+  text-align: left;
+  cursor: pointer;
+}
+.levetta::after {             /* la levetta disegnata: binario e pallino */
+  content: "";
+  flex: none;
+  width: 40px;
+  height: 24px;
+  border-radius: 999px;
+  background: radial-gradient(circle 8px at 12px 50%, #8b97ad 98%, transparent) #26324a;
+  transition: background .2s;
+}
+.levetta[aria-checked="true"]::after {
+  background: radial-gradient(circle 8px at 28px 50%, #0a0f1a 98%, transparent) var(--disciplina);
+}
+
+/* Chip: scelta tra elementi della scena (strati, regni, pianeti…) */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px 5px 9px;
+  background: none;
+  border: 1px solid var(--cmd-linea);
+  border-radius: 999px;
+  color: var(--cmd-tenue);
+  font-size: 14px;
+  cursor: pointer;
+}
+.chip::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--chip, var(--disciplina));
+}
+.chip.attivo {
+  color: var(--cmd-testo);
+  border-color: var(--chip, var(--disciplina));
+  background: color-mix(in srgb, var(--chip, var(--disciplina)) 16%, transparent);
+}
+
+/* Comandi della vista sopra la scena (reset, zoom) */
+.comando-scena {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 15, 26, .75);
+  border: 1px solid var(--cmd-linea);
+  border-radius: 10px;
+  color: var(--cmd-tenue);
+  font-size: 18px;
+  cursor: pointer;
+}
+.comando-scena:hover { color: var(--cmd-testo); border-color: var(--disciplina); }
+
+/* ---------- Bottone di ritorno: anche al tocco ---------- */
+/* Lo stile di base resta quello di ogni pagina (bordo chiaro); il colore dell'area
+   compare al passaggio del mouse e, qui, anche al tocco sugli schermi touch. */
+.torna-sito:active {
+  border-color: var(--area) !important;
+  color: #fff !important;
+  box-shadow: 0 0 14px 1px color-mix(in srgb, var(--area) 55%, transparent) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .levetta::after { transition: none; }
+  .azione:active:not(:disabled) { transform: none; }
+}
