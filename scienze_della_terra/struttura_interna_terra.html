@@ -542,7 +542,7 @@ void main(){
  const tmp=new THREE.Vector3();
  function frame(now){
   if(!stage.offsetParent){last=now;requestAnimationFrame(frame);return} /* scheda nascosta: niente disegno */
-  const dt=Math.min(.05,(now-last)/1000);last=now;const k=1-Math.exp(-dt/.35);
+  const dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;const k=1-Math.exp(-dt/.35);
   U.uTime.value+=dt;
   S.open+=(S.openT-S.open)*k;if(Math.abs(S.openT-S.open)<.012)S.open=S.openT;
   S.ex+=(S.exT-S.ex)*k;if(Math.abs(S.exT-S.ex)<.001)S.ex=S.exT;U.uEx.value=S.ex;
@@ -761,8 +761,8 @@ if(window.terra){
   read.innerHTML=`<dt>Profondità</dt><dd>${Math.round(k).toLocaleString('it-IT')} km</dd><dt>Strato</dt><dd>${st}</dd><dt>Stato</dt><dd>${stato}</dd><dt>Temperatura</dt><dd>${fmtT(k)}</dd><dt>Pressione</dt><dd>${fmtP(k)}</dd><dt>Densità</dt><dd>circa ${fmtN(ip(PD,k+(k<RE?.01:0)),1)} g/cm³</dd>`;
   note.innerHTML=tappa!==null?TAPPE[tappa][2]:NOTE.find(n=>k<n[0])[1];
  }
- function loop(now){const dt=Math.min(.2,(now-last)/1000);last=now;let go=false;
-  if(playing){u=Math.min(1,u+dt/26);depth=RE*Math.pow(u,1.8);go=u<1;if(!go){playing=false;play.textContent='Avvia'}}
+ function loop(now){const dt=Math.max(0,Math.min(.2,(now-last)/1000));last=now;let go=false;
+  if(playing){u=Math.max(0,Math.min(1,u+dt/26));depth=RE*Math.pow(u,1.8);go=u<1;if(!go){playing=false;play.textContent='Avvia'}}
   else if(target!==null){const f=1-Math.exp(-dt/.35);depth+=(target-depth)*f;if(Math.abs(target-depth)<.5){depth=target;target=null}else go=true}
   render();raf=go?requestAnimationFrame(loop):0}
  const kick=()=>{if(!raf){last=performance.now();raf=requestAnimationFrame(loop)}};
@@ -855,7 +855,7 @@ window.onde=(function(){
   const [tx,ty]=P(RE*1.12,0,1);ctx.fillStyle='#ffb454';ctx.font='700 12px Calibri,Carlito,sans-serif';ctx.fillText('epicentro',tx,ty+4);
   clock.textContent=Math.floor(S.tA)+' min dal terremoto';
  }
- function loop(now){const dt=Math.min(.2,(now-last)/1000);last=now;S.tA=Math.min(23,S.tA+dt*2.6);draw();if(S.tA<23)raf=requestAnimationFrame(loop);else{raf=0;S.run=false}}
+ function loop(now){const dt=Math.max(0,Math.min(.2,(now-last)/1000));last=now;S.tA=Math.min(23,S.tA+dt*2.6);draw();if(S.tA<23)raf=requestAnimationFrame(loop);else{raf=0;S.run=false}}
  function start(){S.tA=0;S.run=true;if(!raf){last=performance.now();raf=requestAnimationFrame(loop)}}
  /* tocchi sul disegno */
  cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,dist=Math.hypot(x-cx,y-cy);
