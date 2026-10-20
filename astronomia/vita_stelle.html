@@ -34,14 +34,11 @@ canvas{width:100%;height:100%;display:block;touch-action:none}
 .fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:#ddd}
 .fallback[hidden]{display:none}
 .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
-.pill{border:1px solid var(--line);background:var(--panel);color:var(--txt);border-radius:999px;padding:7px 14px;font:inherit;font-size:15px;cursor:pointer}
-.pill.acc{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
-.pill:focus-visible,.ph:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.controls .azione.primaria{flex:none;min-width:110px}
+.fasi{margin-top:10px}
+.schede{margin-bottom:12px}
 input[type=range]{flex:1 1 180px;min-width:140px;accent-color:var(--acc)}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
-.phases{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
-.ph{display:flex;align-items:center;gap:8px;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--txt);border-radius:999px;padding:6px 12px;font:inherit;font-size:15px;cursor:pointer}
-.ph[aria-pressed=true]{outline:3px solid var(--acc);outline-offset:0}
 .dot{flex:0 0 14px;height:14px;border-radius:50%}
 h2{font-family:Cambria,Caladea,Georgia,serif;font-size:21px;margin:4px 0 6px}
 .desc{margin:0 0 12px;line-height:1.4;font-size:16px}
@@ -58,10 +55,6 @@ h2{font-family:Cambria,Caladea,Georgia,serif;font-size:21px;margin:4px 0 6px}
 .note{color:var(--muted);font-size:13px;margin:8px 0 0}
 @media (max-width:760px){.main{grid-template-columns:1fr}.stage{height:min(62vh,420px);min-height:300px}}
 
-.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.tab{border:1px solid var(--line);background:var(--panel);color:var(--txt);border-radius:999px;padding:7px 16px;font:inherit;font-size:15px;cursor:pointer}
-.tab[aria-selected=true]{background:var(--acc);border-color:var(--acc);color:var(--onacc);font-weight:700}
-.tab:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .stage2{background:#080B14;border-radius:10px;overflow:hidden;aspect-ratio:640/420}
 .stage2 svg{width:100%;height:100%;display:block}
 .mass{margin:0 0 10px;font-size:15px;color:var(--muted)}
@@ -78,30 +71,33 @@ h2{font-family:Cambria,Caladea,Georgia,serif;font-size:21px;margin:4px 0 6px}
 @media (max-width:760px){.agrid{grid-template-columns:1fr}.agrid svg{max-width:260px}}
 .eyebrow{color:#c9aaff;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 </style>
+<link rel="stylesheet" href="../animazioni.css">
 </head>
-<body>
+<body style="--area:#b38cff;--disciplina:#c9aaff">
 <div class="app">
   <header><div><div class="eyebrow">Astronomia</div><h1>La vita delle stelle</h1></div></header>
-  <div class="tabs" role="tablist">
-    <button class="tab" role="tab" aria-selected="true">Nascita di una stella</button>
-    <button class="tab" role="tab" aria-selected="false">Massa piccola</button>
-    <button class="tab" role="tab" aria-selected="false">Massa media</button>
-    <button class="tab" role="tab" aria-selected="false">Massa grande</button>
-    <button class="tab" role="tab" aria-selected="false">Massa molto grande</button>
+  <div class="schede" role="tablist">
+    <button class="scheda" role="tab" aria-selected="true"><span class="num">01</span>Nascita di una stella</button>
+    <button class="scheda" role="tab" aria-selected="false"><span class="num">02</span>Massa piccola</button>
+    <button class="scheda" role="tab" aria-selected="false"><span class="num">03</span>Massa media</button>
+    <button class="scheda" role="tab" aria-selected="false"><span class="num">04</span>Massa grande</button>
+    <button class="scheda" role="tab" aria-selected="false"><span class="num">05</span>Massa molto grande</button>
   </div>
   <div id="v0">
   <div class="main">
     <section>
-      <div class="stage" id="stage"><canvas id="c"></canvas><div class="fallback" id="fb" hidden>La visualizzazione 3D non è disponibile su questo dispositivo. Le descrizioni delle fasi restano consultabili a destra.</div></div>
+      <div class="stage" id="stage"><canvas id="c"></canvas><button class="comando-scena" id="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button><div class="fallback" id="fb" hidden>La visualizzazione 3D non è disponibile su questo dispositivo. Le descrizioni delle fasi restano consultabili a destra.</div></div>
       <div class="controls">
-        <button class="pill acc" id="play">Avvia</button>
-        <button class="pill" id="reset">Reset vista</button>
-        <button class="pill" id="rot" aria-pressed="true">Rotazione: sì</button>
+        <button class="azione primaria" id="play">Avvia</button>
         <input type="range" id="time" min="0" max="6" step="0.005" value="0.5" aria-label="Scorri nel tempo">
       </div>
+      <div class="chips fasi" id="phases"></div>
+      <details class="opzioni">
+        <summary><b>Opzioni</b></summary>
+        <button class="levetta" role="switch" id="rot" aria-checked="true">Rotazione automatica</button>
+      </details>
     </section>
     <aside class="panel">
-      <div class="phases" id="phases"></div>
       <h2 id="pt"></h2>
       <p class="desc" id="pd"></p>
       <div class="forces">
@@ -122,13 +118,13 @@ h2{font-family:Cambria,Caladea,Georgia,serif;font-size:21px;margin:4px 0 6px}
       <section>
         <div class="stage2"><svg id="dsvg" viewBox="0 0 640 420" role="img" aria-label="Sezione della stella nelle diverse fasi della sua vita"></svg></div>
         <div class="controls">
-          <button class="pill acc" id="dplay">Avvia</button>
+          <button class="azione primaria" id="dplay">Avvia</button>
           <input type="range" id="dtime" min="0" max="3" step="0.005" value="0" aria-label="Scorri nel tempo">
         </div>
+        <div class="chips fasi" id="dph"></div>
       </section>
       <aside class="panel">
         <p class="mass" id="dmass"></p>
-        <div class="phases" id="dph"></div>
         <h2 id="dpt"></h2>
         <p class="desc" id="dpd"></p>
         <dl class="data">
@@ -148,6 +144,7 @@ h2{font-family:Cambria,Caladea,Georgia,serif;font-size:21px;margin:4px 0 6px}
     </section>
   </div>
 </div>
+<script src="../animazioni.js"></script>
 <script>
 /**
  * @license
@@ -200,8 +197,8 @@ function amp(x){return 0.14*smooth(3.3,3.9,x)*(1-smooth(4.3,5.6,x));}
 /* ---------- pannello ---------- */
 var phEl=$('phases'), btns=[];
 PH.forEach(function(p,i){
-  var b=document.createElement('button');b.className='ph';b.type='button';b.setAttribute('aria-pressed','false');
-  b.innerHTML='<span class="dot" style="background:'+p.c+'"></span><span>'+(i+1)+' '+p.s+'</span>';
+  var b=document.createElement('button');b.className='chip';b.type='button';b.setAttribute('aria-pressed','false');
+  b.style.setProperty('--chip',p.c);b.textContent=(i+1)+' '+p.s;
   b.addEventListener('click',function(){playing=false;tween=i+0.5;syncPlay();});
   phEl.appendChild(b);btns.push(b);
 });
@@ -231,7 +228,7 @@ $('play').addEventListener('click',function(){
   syncPlay();
 });
 $('time').addEventListener('input',function(){s=parseFloat(this.value);playing=false;tween=null;syncPlay();});
-$('rot').addEventListener('click',function(){rotOn=!rotOn;this.setAttribute('aria-pressed',rotOn);this.textContent='Rotazione: '+(rotOn?'sì':'no');});
+$('rot').addEventListener('click',function(){rotOn=!rotOn;this.setAttribute('aria-checked',rotOn);});
 
 /* ---------- 3D ---------- */
 var stage=$('stage'),canvas=$('c'),renderer=null;
@@ -259,7 +256,7 @@ if(!renderer){
   $('fb').hidden=false;
   setPhase(Math.min(5,Math.floor(s)));setBars(anch(Ga,s),anch(Pa,s));syncPlay();
   var last0=performance.now();
-  (function loop0(now){var dt=Math.min(0.05,(now-last0)/1000);last0=now;frameUI(dt);requestAnimationFrame(loop0);})(last0);
+  (function loop0(now){var dt=Math.max(0,Math.min(0.05,(now-last0)/1000));last0=now;frameUI(dt);requestAnimationFrame(loop0);})(last0);
   return;
 }
 
@@ -422,7 +419,7 @@ if(!(window.WebGLRenderingContext)){}
 resize();setPhase(Math.min(5,Math.floor(s)));syncPlay();
 var last=performance.now();
 function loop(now){
-  var dt=Math.min(0.05,(now-last)/1000);last=now;
+  var dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;
   if(stage.offsetParent===null){requestAnimationFrame(loop);return;}
   var x=frameUI(dt);
   if(rotOn&&!dragging)th+=0.12*dt;
@@ -700,8 +697,8 @@ function showDest(idx){
   $('dmass').textContent=D.mass;
   var ph=$('dph');ph.innerHTML='';btns=[];
   stages.forEach(function(S,i){
-    var b=document.createElement('button');b.className='ph';b.type='button';b.setAttribute('aria-pressed','false');
-    b.innerHTML='<span class="dot" style="background:'+S.c+'"></span><span>'+(i+1)+' '+S.s+'</span>';
+    var b=document.createElement('button');b.className='chip';b.type='button';b.setAttribute('aria-pressed','false');
+    b.style.setProperty('--chip',S.c);b.textContent=(i+1)+' '+S.s;
     b.addEventListener('click',function(){playing=false;startTween(i,0.5+0.5*Math.abs(i-s));syncPlay();});
     ph.appendChild(b);btns.push(b);
   });
@@ -718,7 +715,7 @@ $('dtime').addEventListener('input',function(){s=parseFloat(this.value);playing=
 
 var last=performance.now();
 function loop(now){
-  var dt=Math.min(0.05,(now-last)/1000);last=now;
+  var dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;
   if(visible&&stages){
     tclk+=dt;
     if(tw){
@@ -744,9 +741,10 @@ function loop(now){
 requestAnimationFrame(loop);
 
 /* ---------- schede (tab) ---------- */
-var tabs=Array.prototype.slice.call(document.querySelectorAll('.tab'));
+var tabs=Array.prototype.slice.call(document.querySelectorAll('.scheda'));
 function selectTab(n){
   tabs.forEach(function(b,k){b.setAttribute('aria-selected',k===n?'true':'false');});
+  centraScheda(document.querySelector('.schede'));
   $('v0').hidden=n!==0;$('v1').hidden=n===0;
   visible=n!==0;
   document.dispatchEvent(new CustomEvent('tabchange',{detail:n}));
