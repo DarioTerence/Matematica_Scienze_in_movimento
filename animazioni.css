@@ -164,6 +164,12 @@
   background: var(--cmd-linea);
 }
 .passo i.fatto { background: var(--disciplina); }
+.passo input[type=range] {          /* cursore di avanzamento, al posto delle barrette */
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  accent-color: var(--disciplina);
+}
 
 /* ---------- 4. Opzioni ---------- */
 .opzioni {

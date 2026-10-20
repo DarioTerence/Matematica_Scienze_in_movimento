@@ -8,17 +8,18 @@ Sito: https://scienzainmovimento.it/
 - `index.html`: home con le quattro aree (Numeri e forme, Materia ed energia, Viventi, Terra e cosmo) e il fumetto con le frasi
 - `style.css`: stile condiviso, tema scuro
 - `frasi.js`: rotazione casuale delle frasi nel fumetto della home
+- `animazioni.css`, `animazioni.js`: componenti condivisi dei comandi delle animazioni (vedi "Comandi delle animazioni")
 - `favicon.svg`: icona del sito
 - `apple-touch-icon.png`: icona 180x180 px per la schermata Home di iPhone e iPad, indicata da `<link rel="apple-touch-icon">` in tutte le pagine; sorgente in `immagini/apple_touch_icon/`
 - `firma.svg`: firma "Prof. T"
 - `prof_t.webp`, `prof_t_occhiolino.webp`, `bagliore.svg`: caricatura di Prof. T nella home (occhi aperti, occhiolino, bagliore sulla lente), animata solo con CSS
-- `aritmetica/`, `geometria/`, `fisica/`, `biologia/`, `scienze_della_terra/`, `astronomia/`: una cartella per disciplina, con `index.html` (elenco) e un file HTML autonomo per ogni animazione
+- `aritmetica/`, `geometria/`, `fisica/`, `biologia/`, `scienze_della_terra/`, `astronomia/`: una cartella per disciplina, con `index.html` (elenco) e un file HTML per ogni animazione (con `animazioni.css` e `animazioni.js` dalla radice)
 - `CNAME`: dominio personalizzato del sito (non rimuovere)
 - `og_image.jpg`: immagine 1200x630 px per l'anteprima dei link condivisi (WhatsApp, chat, social), indicata da `og:image` in tutte le pagine; sorgente in `immagini/og_image/`
 - `sitemap.xml`, `robots.txt`: elenco delle pagine per i motori di ricerca
 - `LICENSE`: licenza (tutti i diritti riservati)
 
-Il sito è statico: solo HTML e CSS scritti a mano, nessun framework e nessuna build. Uniche eccezioni nelle pagine del sito: `frasi.js` e il contatore anonimo GoatCounter. Le animazioni hanno il loro JavaScript.
+Il sito è statico: solo HTML e CSS scritti a mano, nessun framework e nessuna build. Uniche eccezioni nelle pagine del sito: `frasi.js` e il contatore anonimo GoatCounter. Le animazioni hanno il loro JavaScript e usano i file condivisi `animazioni.css` e `animazioni.js`: non sono più file autonomi, funzionano dentro la loro cartella del sito.
 
 Nomi di file e cartelle: minuscolo, senza accenti, parole separate da underscore (es. `vita_stelle.html`).
 
@@ -54,6 +55,17 @@ Prima di `</body>`, dopo gli script dell'animazione, nell'ordine:
    `<script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>`
 
 Il codice completo di firma e bottone si copia da un'animazione esistente della stessa area, cambiando solo il nome della disciplina.
+
+### Comandi delle animazioni
+Le animazioni collegano i file condivisi: nell'head, dopo il proprio `<style>`, `<link rel="stylesheet" href="../animazioni.css">`; prima dello script dell'animazione `<script src="../animazioni.js"></script>`. Sul `<body>` si impostano i due colori, ad esempio `<body style="--area:#6aa5ff;--disciplina:#9cc5ff">` (area e sfumatura della disciplina, gli stessi valori di `style.css`).
+
+I comandi hanno quattro livelli, ognuno con una forma e un posto fissi (dall'alto in basso):
+1. Schede o stazioni: `<nav class="schede">` con `<button class="scheda">` numerati (`<span class="num">01</span>Nome`); la scheda scelta ha la classe `attiva` e, dopo ogni ridisegno, va chiamata `centraScheda(nav)`, che la porta al centro della striscia.
+2. Modalità (Esplora / Allenati e simili): `<div class="modalita">` con i pulsanti; quello scelto ha la classe `attiva`.
+3. Azioni: `<div class="azioni">` con `<button class="azione">`; uno solo è pieno (`azione primaria`: Avanti, Verifica), gli altri semplici, `azione link` o `azione icona` (Indietro come ‹). Sopra, l'indicatore del passo: `passoHTML(i, n)`; per Esplora `azioniHTML(primo, ultimo, "Nuove frazioni")` crea Indietro, Avanti e l'azione "nuovo", che all'ultimo passo diventa il pulsante pieno.
+4. Opzioni: interruttori `<button class="levetta" role="switch" aria-checked="true">` dentro `<details class="opzioni"><summary><b>Opzioni</b></summary>…</details>`; scelte tra elementi della scena con `<button class="chip">` (colore del pallino con `style="--chip:#…"`, scelto con `attivo`); comandi della vista sopra la scena con `comando-scena`.
+
+Pochi comandi visibili: al massimo tre azioni insieme, il resto nelle Opzioni. Al primo ingresso il fumetto di Prof. T dice quale pulsante toccare. Sugli schermi touch le risposte numeriche si scrivono con la tastierina sullo schermo.
 
 ## Attivare una nuova disciplina
 1. In `index.html`, sostituire la card spenta (`<div class="card fisica in-arrivo">`) con il link (`<a class="card fisica" href="fisica/">`) e scrivere la descrizione con le animazioni.

@@ -29,14 +29,7 @@ body{background:radial-gradient(ellipse at 50% -10%,rgba(74,134,240,.14),transpa
 .eyebrow{color:#4a86f0;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px;color:#fff}
 .sub{color:#8fa0b8;margin:0 0 14px}
-.pills{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
-.pills.scroll{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
 button,select,input{font-family:inherit}
-.pill,.btn{background:#0f1726;color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:15px;cursor:pointer;white-space:nowrap}
-.pill:hover,.btn:hover{border-color:var(--acc)}
-.pill.on,.btn.pri{background:var(--acc);color:#0a0f1a;border-color:var(--acc);font-weight:700}
-.pill.soon{opacity:.55}
-.btn:disabled{opacity:.4;cursor:default}
 .layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:6px}
 .layout>*{min-width:0}
 @media(max-width:760px){.layout{display:flex;flex-direction:column}.layout>section,.layout>aside{display:contents}.stage{order:1}.prof{order:2}#panel{order:3}.sliders{order:4;margin-top:0}}
@@ -61,11 +54,7 @@ button,select,input{font-family:inherit}
 @keyframes fall{to{transform:translateY(200px) rotate(540deg);opacity:0}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
 .card .h{font:700 17px Cambria,Georgia,serif;color:#4a86f0;margin-bottom:6px}
-.ctrl{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
 .card input[type=range]{width:100%;accent-color:var(--acc)}
-.dots{display:flex;gap:6px;margin-top:4px}
-.dot{width:10px;height:10px;border-radius:50%;background:#2a3b5a}
-.dot.on{background:var(--acc)}
 .anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px}
 .f{font-size:17px;margin:4px 0}
 .f b{color:#9cc5ff}
@@ -73,8 +62,6 @@ button,select,input{font-family:inherit}
 .fr{display:inline-block;vertical-align:middle;text-align:center;margin:0 3px;line-height:1.2}.fr .n{display:block;padding:0 4px;border-bottom:1.6px solid currentColor}.fr .d{display:block;padding:0 4px}
 .grp{font-size:13px;color:var(--mut);margin:8px 0 0;letter-spacing:.02em}.grp b{color:var(--txt)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
-.chip{background:#0f1726;color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:14px;cursor:pointer}
-.chip.on{background:var(--acc);color:#0a0f1a;border-color:var(--acc);font-weight:700}
 .ex{font-size:18px;margin:4px 0 10px}
 .ans{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .ans input,.card select,.card input[type=number]{background:#0d1524;color:var(--txt);border:1px solid #3a4d70;border-radius:8px;padding:8px 10px;font-size:18px;min-width:0}
@@ -97,14 +84,15 @@ button,select,input{font-family:inherit}
 .res b{color:#9cc5ff}
 @media(prefers-reduced-motion:reduce){.prof img.pop{animation:none}}
 </style>
+<link rel="stylesheet" href="../animazioni.css">
 </head>
-<body>
+<body style="--area:#6aa5ff;--disciplina:#4a86f0">
 <div class="wrap">
 <div class="eyebrow">Geometria</div>
 <h1>Aree e perimetri dei poligoni</h1>
 <p class="sub">Dimostrazioni grafiche, formule dirette e inverse, esercizi con Prof. T.</p>
-<nav id="tabs" class="pills scroll" aria-label="Figure"></nav>
-<div id="modes" class="pills"></div>
+<nav id="tabs" class="schede" aria-label="Figure"></nav>
+<div id="modes" class="modalita" role="group" aria-label="Modalità"></div>
 <div class="layout">
 <section>
 <div class="stage"><svg id="svg" viewBox="0 0 560 400" role="img" aria-label="Schema geometrico animato"></svg></div>
@@ -116,12 +104,13 @@ button,select,input{font-family:inherit}
 </aside>
 </div>
 </div>
+<script src="../animazioni.js"></script>
 <script>
 (function(){
 /* tastierina sugli schermi touch (telefono, tablet, LIM): sostituisce la tastiera del telefono.
    Il tasto Verifica della tastierina ha id bCheck, come il pulsante che compare su PC. */
 var TOUCH=!!(window.matchMedia&&matchMedia('(pointer: coarse)').matches);
-function verificaHTML(){return TOUCH?'':'<button class="btn pri" id="bCheck">Verifica</button>';}
+function verificaHTML(){return TOUCH?'':'<button class="azione primaria" id="bCheck">Verifica</button>';}
 function padHTML(virgola){if(!TOUCH)return '';var h='<div class="pad'+(virgola?' virgola':'')+'" id="pad">';
  for(var i=1;i<=9;i++)h+='<button data-k="'+i+'">'+i+'</button>';
  return h+'<button data-k="0">0</button>'+(virgola?'<button data-k="," aria-label="virgola">,</button>':'')
@@ -161,7 +150,7 @@ var PRE={
   {n:'acutangolo isoscele',b:6,h:4,x:3,l1:5,l2:5},{n:'isoscele basso',b:8,h:3,x:4,l1:5,l2:5},{n:'acutangolo scaleno',b:14,h:12,x:5,l1:13,l2:15},
   {n:'rettangolo (cateti 4 e 3)',b:4,h:3,x:0,l1:3,l2:5},{n:'rettangolo (cateti 3 e 4)',b:3,h:4,x:0,l1:4,l2:5},{n:'ottusangolo',b:4,h:12,x:-5,l1:13,l2:15}]};
 
-var S={tab:'parallelogramma',mode:'dim',p:0,q:0,inc:'A',ex:null,
+var S={tab:'quadrato',mode:'dim',p:0,q:0,inc:'A',ex:null,
  par:{quadrato:{l:5},rettangolo:{b:8,h:5},parallelogramma:{b:8,h:5,l:6},rombo:{f:0},trapezio:{b:4,f:0},triangolo:{f:0,k:1}},
  eq:{v:'3',i:3,j:5,pair:4},exEq:null,solved:0,streak:0,lastKind:null,lastImg:''};
 
@@ -661,10 +650,12 @@ function drawStage(){
 
 /* ---------- interfaccia ---------- */
 function buildTabs(){
- $('tabs').innerHTML=TABS.map(function(t){return '<button class="pill'+(t.id===S.tab?' on':'')+'" data-tab="'+t.id+'">'+t.name+'</button>';}).join('');}
+ var nav=$('tabs'),x0=nav.scrollLeft;
+ nav.innerHTML=TABS.map(function(t,i){var on=t.id===S.tab;return '<button class="scheda'+(on?' attiva':'')+'"'+(on?' aria-current="true"':'')+' data-tab="'+t.id+'"><span class="num">0'+(i+1)+'</span>'+t.name+'</button>';}).join('');
+ nav.scrollLeft=x0;centraScheda(nav);}
 function buildModes(){
  var L=MODES[S.tab==='equivalenze'?'eq':'poly'];
- $('modes').innerHTML=Object.keys(L).map(function(k){return '<button class="pill'+(k===S.mode?' on':'')+'" data-mode="'+k+'">'+L[k]+'</button>';}).join('');}
+ $('modes').innerHTML=Object.keys(L).map(function(k){return '<button class="'+(k===S.mode?'attiva':'')+'" aria-pressed="'+(k===S.mode)+'" data-mode="'+k+'">'+L[k]+'</button>';}).join('');}
 function sv(x,p){return typeof x==='function'?x(p):x;}
 function buildSliders(){
  var el=$('sliders');
@@ -683,9 +674,10 @@ $('sliders').addEventListener('input',function(e){
  if(S.mode==='form')renderForm();else if(S.mode==='dim')updProof();});
 
 function stepCtrl(){
- var n=pMax(),d='';for(var i=0;i<=n;i++)d+='<span class="dot"></span>';
- return '<div class="card"><div class="ctrl"><button class="btn" id="bPrev">Indietro</button><button class="btn" id="bNext">Avanti</button><button class="btn pri" id="bPlay">Riproduci</button></div>'
- +'<input type="range" id="pRange" min="0" max="'+(n*100)+'" step="1" value="0" aria-label="Avanzamento della dimostrazione"><div class="dots">'+d+'</div></div>';}
+ var n=pMax();
+ return '<div class="card"><div class="passo"><span class="testo" id="pTxt">Passo 1 di '+(n+1)+'</span>'
+ +'<input type="range" id="pRange" min="0" max="'+(n*100)+'" step="1" value="0" aria-label="Avanzamento della dimostrazione"></div>'
+ +'<div class="azioni"><button class="azione icona" id="bPrev" aria-label="Indietro">‹</button><button class="azione primaria" id="bNext">Avanti ›</button><button class="azione link" id="bPlay">▶ Riproduci</button></div></div>';}
 function bindSteps(){
  var n=pMax();
  $('bPrev').onclick=function(){stopAnim();tween('p',Math.max(0,Math.ceil(S.p-0.001)-1),T_STEP);};
@@ -701,9 +693,11 @@ function updProof(){
  var r=$('pRange');if(!r||S.mode!=='dim')return;
  var n=pMax(),st=clamp(Math.round(S.p),0,n);
  r.value=Math.round(S.p*100);
- document.querySelectorAll('.dot').forEach(function(d,i){d.classList.toggle('on',i<=st);});
+ $('pTxt').textContent='Passo '+(st+1)+' di '+(n+1);
  say(caps()[st],st===n?'ok':'idle');
- $('bPrev').disabled=S.p<=0.001;$('bNext').disabled=S.p>=n-0.001;}
+ var fine=S.p>=n-0.001;
+ $('bPrev').disabled=S.p<=0.001;$('bNext').hidden=fine;
+ $('bPlay').className='azione '+(fine?'primaria':'link');}
 
 function renderPanel(){
  var P=$('panel'),t=S.tab,md=S.mode;
@@ -734,7 +728,7 @@ function toStage(cb){
  setTimeout(cb,wait);}
 function grpOf(k){return k.id.charAt(k.id.length-1)==='P'?'P':'A';}
 function shortLab(k){return k.label.replace(/\s+dal(l’area| perimetro)$/,'');}
-function chipRow(list,cur){return '<div class="chips">'+list.map(function(x){return '<button class="chip'+(x.id===cur?' on':'')+'" data-k="'+x.id+'">'+shortLab(x)+'</button>';}).join('')+'</div>';}
+function chipRow(list,cur){return '<div class="chips">'+list.map(function(x){return '<button class="chip'+(x.id===cur?' attivo':'')+'" data-k="'+x.id+'">'+shortLab(x)+'</button>';}).join('')+'</div>';}
 function renderForm(){
  var t=S.tab,M=Mof(t),kd=KD[t],k=curKind(),d=k.f(M),g=grpOf(k),html='<div class="card"><div class="h">Cosa vuoi trovare?</div><div id="chips">';
  [['A','Area'],['P','Perimetro']].forEach(function(G){
@@ -745,7 +739,7 @@ function renderForm(){
    +'<div class="grp">Formule inverse</div>'+chipRow(inv,k.id);});
  html+='</div></div><div class="card"><div class="h">'+(k.id==='A'?'Area, formula diretta':k.id==='P'?'Perimetro, formula diretta':'Formula inversa: '+shortLab(k).toLowerCase())+'</div>'
   +d.f.map(function(x){return '<div class="f">'+fh(x)+'</div>';}).join('')+'<div class="why">'+d.why+'</div>'
-  +(g==='P'?'<div class="ctrl"><button class="btn" id="bUnroll">'+(S.q>.5?'Riavvolgi il perimetro':'Srotola il perimetro')+'</button></div>':'')+'</div>';
+  +(g==='P'?'<div class="azioni"><button class="azione" id="bUnroll">'+(S.q>.5?'Riavvolgi il perimetro':'Srotola il perimetro')+'</button></div>':'')+'</div>';
  $('panel').innerHTML=html;
  $('chips').onclick=function(e){var c=e.target.closest('.chip');if(!c)return;S.inc=c.dataset.k;S.q=0;renderForm();drawStage();};
  if($('bUnroll'))$('bUnroll').onclick=function(){
@@ -782,13 +776,13 @@ function statLine(){return 'Risolti: '+S.solved+' · Di fila al primo colpo: '+S
 function finishOk(){
  $('stat').textContent=statLine();
  say(S.streak>0&&S.streak%3===0?S.streak+' di fila al primo colpo: sei un fenomeno!':pick(OKS),'ok',true);
- $('bNew').classList.add('pri');$('ansIn').disabled=true;$('bCheck').disabled=true;}
+ $('bNew').classList.add('primaria');$('ansIn').disabled=true;$('bCheck').disabled=true;}
 function renderTrain(){
  if(!S.ex||S.ex.fig!==S.tab)newEx();
  var e=S.ex;
  $('panel').innerHTML='<div class="card"><div class="stat" id="stat">'+statLine()+'</div><p class="ex">'+exText(e)+'</p>'
   +'<div class="ans"><input id="ansIn" inputmode="numeric" autocomplete="off" placeholder="risultato" aria-label="Risultato"><span>'+unitOf(e.kd)+'</span>'+verificaHTML()+'</div>'+padHTML(false)
-  +'<div class="fb" id="fb"></div><div class="ctrl"><button class="btn" id="bNew">Nuovo esercizio</button></div></div>';
+  +'<div class="fb" id="fb"></div><div class="azioni"><button class="azione" id="bNew">Nuovo esercizio</button></div></div>';
  $('bCheck').onclick=checkEx;padBind();$('bNew').onclick=function(){newEx();renderTrain();drawStage();};
  $('ansIn').onkeydown=function(ev){if(ev.key==='Enter')checkEx();};
  say('Leggi bene i dati: quali misure ti servono per questa formula?','idle');}
@@ -810,7 +804,7 @@ function checkEx(){
   else{e.done=true;var d2=e.kd.f(e.M);
    fb.innerHTML='<div class="no">Ecco il procedimento:</div>'+d2.f.map(function(x){return '<div class="f">'+fh(x)+'</div>';}).join('');
    say('Guarda i passaggi, poi provane un altro: capita a tutti!','ko');
-   $('bNew').classList.add('pri');$('ansIn').disabled=true;$('bCheck').disabled=true;}}}
+   $('bNew').classList.add('primaria');$('ansIn').disabled=true;$('bCheck').disabled=true;}}}
 
 /* --- Equivalenze: convertitore (anche con decimali) --- */
 function convText(v,i,j){
@@ -846,7 +840,7 @@ function renderTrainEq(){
  var e=S.exEq;
  $('panel').innerHTML='<div class="card"><div class="stat" id="stat">'+statLine()+'</div><p class="ex">Trasforma <b>'+fmtStr(e.v)+' '+sq(e.i)+' = ? '+sq(e.j)+'</b></p>'
   +'<div class="ans"><input id="ansIn" inputmode="decimal" autocomplete="off" placeholder="risultato" aria-label="Risultato"><span>'+sq(e.j)+'</span>'+verificaHTML()+'</div>'+padHTML(true)
-  +'<div class="fb" id="fb"></div><div class="ctrl"><button class="btn" id="bNew">Nuovo esercizio</button></div></div>';
+  +'<div class="fb" id="fb"></div><div class="azioni"><button class="azione" id="bNew">Nuovo esercizio</button></div></div>';
  $('bCheck').onclick=checkEq;padBind();$('bNew').onclick=function(){newExEq();renderTrainEq();drawStage();};
  $('ansIn').onkeydown=function(ev){if(ev.key==='Enter')checkEq();};
  say('Guarda la scala: da che unità parti e dove devi arrivare? Se serve, usa la virgola.','idle');}
@@ -866,7 +860,7 @@ function checkEq(){
  if(e.tries===1){fb.innerHTML='<div class="no">Non è corretto.</div><div class="f">'+(msg||hint)+'</div>';say(msg||pick(KOS),'ko');}
  else if(e.tries===2){fb.innerHTML='<div class="no">Ancora no.</div><div class="f">'+hint+'</div>';say('Conta i salti sulla scala e riprova.','ko');}
  else{e.done=true;fb.innerHTML='<div class="no">Ecco il procedimento:</div><div class="f">'+convText(e.v,e.i,e.j).html+'</div>';say('Guarda i passaggi, poi provane un altro.','ko');
-  $('bNew').classList.add('pri');$('ansIn').disabled=true;$('bCheck').disabled=true;}}
+  $('bNew').classList.add('primaria');$('ansIn').disabled=true;$('bCheck').disabled=true;}}
 
 /* ---------- eventi globali ---------- */
 function setTab(id){stopAnim();S.tab=id;S.mode='dim';S.p=0;S.q=0;S.inc='A';S.ex=null;render();}

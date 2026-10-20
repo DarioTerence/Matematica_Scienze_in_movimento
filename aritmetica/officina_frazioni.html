@@ -29,15 +29,7 @@ body{background:radial-gradient(ellipse at 50% -10%,rgba(106,165,255,.14),transp
 .eyebrow{color:#9cc5ff;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px;color:#fff}
 .sub{color:#8fa0b8;margin:0 0 14px}
-.pills{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
-.pills.scroll{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
 button,input{font-family:inherit}
-.pill,.btn{background:#0f1726;color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:15px;cursor:pointer;white-space:nowrap}
-.pill:hover,.btn:hover{border-color:var(--acc)}
-.pill.on,.btn.pri{background:var(--acc);color:#0a0f1a;border-color:var(--acc);font-weight:700}
-.pill.soon{opacity:.45;cursor:default;border-style:dashed}
-.pill.soon:hover{border-color:var(--line)}
-.btn:disabled{opacity:.4;cursor:default}
 .layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:6px}
 .layout>*{min-width:0}
 @media(max-width:760px){.layout{display:flex;flex-direction:column}.layout>section,.layout>aside{display:contents}.stage{order:1}#panel{order:2;display:flex;flex-direction:column;margin-top:12px}#panel .anchor{order:2}.prof{order:3}}
@@ -54,10 +46,6 @@ button,input{font-family:inherit}
 @keyframes fall{to{transform:translateY(200px) rotate(540deg);opacity:0}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
 .card .h{font:700 17px Cambria,Georgia,serif;color:#9cc5ff;margin-bottom:6px}
-.ctrl{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
-.dots{display:flex;gap:6px;margin-top:6px}
-.dot{width:10px;height:10px;border-radius:50%;background:#2a3b5a}
-.dot.on{background:var(--acc)}
 .anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;line-height:1.45}
 .txt{font-size:16px;line-height:1.45}
 .note{color:var(--mut);font-size:15px;margin-top:8px;line-height:1.4}
@@ -77,14 +65,15 @@ button,input{font-family:inherit}
 .ans input[readonly]{caret-color:transparent}
 @media(prefers-reduced-motion:reduce){.prof img.pop{animation:none}}
 </style>
+<link rel="stylesheet" href="../animazioni.css">
 </head>
-<body>
+<body style="--area:#6aa5ff;--disciplina:#9cc5ff">
 <div class="wrap">
 <div class="eyebrow">Aritmetica</div>
 <h1>L'Officina delle frazioni</h1>
 <p class="sub" id="sub"></p>
-<nav id="tabs" class="pills scroll" aria-label="Stazioni"></nav>
-<div id="modes" class="pills"></div>
+<nav id="tabs" class="schede" aria-label="Stazioni"></nav>
+<div id="modes" class="modalita" role="group" aria-label="Modalità"></div>
 <div class="layout">
 <section>
 <div class="stage"><svg id="svg" viewBox="0 0 560 400" role="img" aria-label="Barre delle frazioni e schema delle frecce"></svg></div>
@@ -95,6 +84,7 @@ button,input{font-family:inherit}
 </aside>
 </div>
 </div>
+<script src="../animazioni.js"></script>
 <script>
 (function(){
 'use strict';
@@ -119,7 +109,7 @@ function padBind(onCheck,redraw){
    if(k==='ok'){onCheck();return;}
    if(k==='del')inp.value=inp.value.slice(0,-1);else if(inp.value.length<4)inp.value+=k;
    upd();};}}
-function ansHTML(){return '<div class="ans"><input id="inA" inputmode="numeric" autocomplete="off" aria-label="Risposta">'+(TOUCH?'':'<button class="btn pri" id="bOk">Verifica</button>')+'</div>'+padHTML();}
+function ansHTML(){return '<div class="ans"><input id="inA" inputmode="numeric" autocomplete="off" aria-label="Risposta">'+(TOUCH?'':'<button class="azione primaria" id="bOk">Verifica</button>')+'</div>'+padHTML();}
 /* TEMPI UNIFORMI per tutte le stazioni: ogni freccia, ogni spostamento e ogni scritta dura sempre lo stesso tempo */
 var T_ARROW=1600,   // disegno di una freccia o di una linea (ms)
     T_MOVE=1400,    // spostamento di un pezzo, ritaglio o comparsa di una barra (ms)
@@ -301,11 +291,9 @@ function explText(F,k){
   p:'Stessa parte colorata, numeri diversi. Sono frazioni equivalenti!',mood:'ok'};}}
 function explPanel(){
  var tx=explText(S.F,S.step),d='';
- for(var i=0;i<5;i++)d+='<span class="dot'+(i===S.step?' on':'')+'"></span>';
  $('panel').innerHTML='<div class="anchor">Denominatore comune = <b>m.c.m.</b> dei denominatori. Poi, per ogni frazione, si divide il denominatore comune per il denominatore (<b>:</b>) e si moltiplica il risultato per il numeratore (<b>·</b>).</div>'
   +'<div class="card"><div class="h">'+tx.h+'</div><div class="txt">'+fh(tx.x)+'</div>'+(tx.note?'<div class="note">'+tx.note+'</div>':'')
-  +'<div class="ctrl"><button class="btn" id="bPrev"'+(S.step===0?' disabled':'')+'>Indietro</button><button class="btn pri" id="bNext"'+(S.step===4?' disabled':'')+'>Avanti</button><button class="btn" id="bNew">Nuove frazioni</button></div>'
-  +'<div class="dots" aria-hidden="true">'+d+'</div></div>';
+  +passoHTML(S.step,5)+azioniHTML(S.step===0,S.step===4,'Nuove frazioni')+'</div>';
  $('bPrev').onclick=function(){goStep(S.step-1);};
  $('bNext').onclick=function(){goStep(S.step+1);};
  $('bNew').onclick=function(){S.F=newPair(S.F);S.step=0;cancelAnimationFrame(tws.p);S.p=0;explPanel();render(explV());say(explText(S.F,0).p,'hi');};
@@ -384,7 +372,7 @@ function accept(c,shown){
 function trainPanel(){
  var E=S.E,body;
  if(E.done){body='<div class="q">'+fh(fr(E.F.a[0],E.F.b[0])+' = '+fr(E.F.n[0],E.F.m)+' e '+fr(E.F.a[1],E.F.b[1])+' = '+fr(E.F.n[1],E.F.m))+'</div>'
-  +'<div class="ctrl"><button class="btn pri" id="bNx">Nuovo esercizio</button></div>';}
+  +'<div class="azioni"><button class="azione primaria" id="bNx">Nuovo esercizio</button></div>';}
  else body='<div class="q">'+fh(qText(E))+'</div>'+ansHTML();
  $('panel').innerHTML='<div class="anchor">'+(S.level===1?'Con la freccia sotto si divide il denominatore comune per il denominatore (<b>:</b>), con la freccia sopra si moltiplica il risultato per il numeratore (<b>·</b>).':'Si divide il denominatore comune per il denominatore (<b>:</b>), poi si moltiplica il risultato per il numeratore (<b>·</b>).')+'</div>'
   +'<div class="card"><div class="stat">'+(S.done===1?'1 esercizio completato':S.done+' esercizi completati')+' · '+(S.level===1?'con le frecce':'senza aiuti')+'</div>'+body+(E.fb?'<div class="fb">'+E.fb+'</div>':'')+'</div>';
@@ -446,11 +434,9 @@ function makeExplorer(cfg){
  X.draw=function(){$('svg').innerHTML=cfg.render(X.F,X[X.pk]);};
  X.panel=function(){
   var tx=cfg.text(X.F,X.step),d='';
-  for(var i=0;i<cfg.n;i++)d+='<span class="dot'+(i===X.step?' on':'')+'"></span>';
   $('panel').innerHTML='<div class="anchor">'+cfg.anchor+'</div>'
    +'<div class="card"><div class="h">'+tx.h+'</div><div class="txt">'+fh(tx.x)+'</div>'+(tx.note?'<div class="note">'+fh(tx.note)+'</div>':'')
-   +'<div class="ctrl"><button class="btn" id="bPrev"'+(X.step===0?' disabled':'')+'>Indietro</button><button class="btn pri" id="bNext"'+(X.step===cfg.n-1?' disabled':'')+'>Avanti</button><button class="btn" id="bNew">'+cfg.newLabel+'</button></div>'
-   +'<div class="dots" aria-hidden="true">'+d+'</div></div>';
+   +passoHTML(X.step,cfg.n)+azioniHTML(X.step===0,X.step===cfg.n-1,cfg.newLabel)+'</div>';
   $('bPrev').onclick=function(){X.go(X.step-1);};
   $('bNext').onclick=function(){X.go(X.step+1);};
   $('bNew').onclick=function(){X.F=cfg.newF(X.F,X);X.step=0;cancelAnimationFrame(tws[X.pk]);X[X.pk]=0;X.panel();X.draw();};
@@ -486,7 +472,7 @@ function makeTrainer(cfg){
   T.panel();T.draw();};
  T.panel=function(){
   var body;
-  if(T.done)body='<div class="q">'+fh(T.ex.summary())+'</div><div class="ctrl"><button class="btn pri" id="bNx">Nuovo esercizio</button></div>';
+  if(T.done)body='<div class="q">'+fh(T.ex.summary())+'</div><div class="azioni"><button class="azione primaria" id="bNx">Nuovo esercizio</button></div>';
   else body='<div class="q">'+fh(T.cur().q())+'</div>'+ansHTML();
   $('panel').innerHTML='<div class="anchor">'+cfg.anchor+'</div>'
    +'<div class="card"><div class="stat">'+(T.count===1?'1 esercizio completato':T.count+' esercizi completati')+'</div>'+body+(T.fb?'<div class="fb">'+T.fb+'</div>':'')+'</div>';
@@ -1137,11 +1123,11 @@ var POT=makeTrainer({id:'po',
 /* ---------- menu ---------- */
 function tabs(){
  var h='';
- ST.forEach(function(s){var on=s.id===S.st,ok=!!s.sub;
-  h+='<button class="pill'+(on?' on':'')+(ok?'':' soon')+'"'+(ok?'':' disabled title="In arrivo"')+' data-st="'+s.id+'">'+s.name+'</button>';});
- $('tabs').innerHTML=h;
+ ST.forEach(function(s,i){var on=s.id===S.st,ok=!!s.sub;
+  h+='<button class="scheda'+(on?' attiva':'')+'"'+(on?' aria-current="true"':'')+(ok?'':' disabled title="In arrivo"')+' data-st="'+s.id+'"><span class="num">'+(i<9?'0':'')+(i+1)+'</span>'+s.name+'</button>';});
+ var nav=$('tabs'),x0=nav.scrollLeft;nav.innerHTML=h;nav.scrollLeft=x0;centraScheda(nav);
  Array.prototype.forEach.call($('tabs').children,function(b){if(!b.disabled)b.onclick=function(){if(S.st===b.dataset.st)return;S.st=b.dataset.st;show();};});
- $('modes').innerHTML=['esplora','allenati'].map(function(m){return '<button class="pill'+(S.mode===m?' on':'')+'" data-m="'+m+'">'+(m==='esplora'?'Esplora':'Allenati')+'</button>';}).join('');
+ $('modes').innerHTML=['esplora','allenati'].map(function(m){return '<button class="'+(S.mode===m?'attiva':'')+'" aria-pressed="'+(S.mode===m)+'" data-m="'+m+'">'+(m==='esplora'?'Esplora':'Allenati')+'</button>';}).join('');
  Array.prototype.forEach.call($('modes').children,function(b){b.onclick=function(){if(S.mode===b.dataset.m)return;S.mode=b.dataset.m;show();};});
  $('sub').textContent=ST.filter(function(s){return s.id===S.st;})[0].sub;}
 function show(){
@@ -1151,7 +1137,7 @@ function show(){
  else{if(!S.E)newEx();else{trainPanel();drawTrain();}}}
 S.F={a:[3,5],b:[4,6],m:12,r:[3,2],n:[9,10]};
 show();
-say('Benvenuti in officina! Qui le frazioni si tagliano e si ricompongono.','hi');
+say('Benvenuti in officina! Tocca <b>Avanti</b> per vedere il passo successivo.','hi');
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Le frazioni con i modelli a barre e ad area, in sei stazioni. Frazioni equivalenti, denominatore comune con il minimo comune multiplo e il metodo delle frecce, somma e differenza, prodotto, quoziente e potenze, con esercizi guidati e suggerimenti sugli errori. Per le frazioni con il segno c'è il <a href="reattore_relativi.html" style="color:#9cc5ff">Reattore dei numeri</a>.</p>
