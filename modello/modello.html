@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Prof. T">
+<!-- © 2026 Prof. T. Tutti i diritti riservati. -->
+<!--
+  MODELLO DI ANIMAZIONE di Scienza in Movimento.
+  Come si usa:
+  1. Copiare questo file nella cartella della disciplina con il nome nuovo (minuscolo, senza accenti, underscore).
+  2. Sostituire tutto ciò che è scritto in MAIUSCOLO tra parentesi quadre, per esempio [TITOLO].
+  3. Togliere la riga <meta name="robots" ...> qui sotto (serve solo a non far indicizzare il modello).
+  4. Colori: in <body> --area (numeri #6aa5ff, materia #ffb454, viventi #6fd08c, cosmo #b38cff)
+     e --disciplina (sfumatura della disciplina, vedi style.css); gli stessi valori in .eyebrow e nel bottone di ritorno.
+  5. Comandi: quattro livelli (schede, modalità, azioni, opzioni), regole nel README, sezione "Comandi delle animazioni".
+  Il codice di esempio (un cerchio che si sposta in tre passi e una domanda di Allenati) va sostituito con l'animazione vera.
+-->
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>[TITOLO] - Scienza in Movimento</title>
+<meta name="description" content="[UNA FRASE SUI CONTENUTI, MASSIMO 160 CARATTERI]">
+<link rel="canonical" href="https://scienzainmovimento.it/[CARTELLA]/[FILE].html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Scienza in Movimento">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="[TITOLO] - Scienza in Movimento">
+<meta property="og:description" content="[UNA FRASE SUI CONTENUTI, MASSIMO 160 CARATTERI]">
+<meta property="og:url" content="https://scienzainmovimento.it/[CARTELLA]/[FILE].html">
+<meta property="og:image" content="https://scienzainmovimento.it/og_image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Prof. T - La Matematica e le Scienze in Movimento">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+/* ---- base della pagina (uguale in tutte le animazioni) ---- */
+:root{--bg:#0a0f1a;--panel:#111a2b;--line:#22304a;--txt:#e6ecf5;--mut:#8fa0b8;--warn:#FF8A80}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at 50% -10%,rgba(106,165,255,.14),transparent 60%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px),#0a0f1a;background-size:auto,36px 36px,36px 36px;color:var(--txt);font-family:Calibri,Carlito,"Segoe UI",system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 8px}
+.eyebrow{color:var(--disciplina);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px;color:#fff}
+.sub{color:var(--mut);margin:0 0 4px}
+button,input{font-family:inherit}
+/* riquadro a sinistra, pannello a destra; sotto 760 px colonna unica: riquadro, pannello, Prof. T */
+.layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+.layout>*{min-width:0}
+@media(max-width:760px){.layout{display:flex;flex-direction:column}.layout>section,.layout>aside{display:contents}.stage{order:1}#panel{order:2;margin-top:12px}.prof{order:3}}
+.stage{position:relative;background:linear-gradient(#0d1628,#080d18);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.card .h{font:700 17px Cambria,Georgia,serif;color:var(--disciplina);margin-bottom:6px}
+.txt{font-size:16px;line-height:1.45}
+.anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;line-height:1.45}
+/* Prof. T con il fumetto */
+.prof{display:flex;gap:12px;align-items:flex-end;margin-bottom:12px}
+.prof img{height:150px;width:auto;flex:none}
+@media(max-width:760px){.prof{margin-top:12px}.prof img{height:110px}}
+.bubble{position:relative;flex:1;background:#17233a;border:1px solid var(--line);border-radius:14px;padding:11px 14px;font-size:16px;line-height:1.4;min-height:56px;margin-bottom:22px}
+.bubble::before{content:"";position:absolute;left:-8px;bottom:22px;border:8px solid transparent;border-left:0;border-right-color:#17233a}
+/* Allenati */
+.q{font-size:18px;margin:4px 0 10px}
+.ans{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ans input{background:#0d1524;color:var(--txt);border:1px solid #3a4d70;border-radius:8px;padding:8px 10px;font-size:18px;width:110px}
+.fb{margin-top:10px;font-size:16px;line-height:1.4}
+.fb .ok{color:#8ee0a6;font-weight:700}
+.fb .no{color:var(--warn);font-weight:700}
+/* ---- stili propri dell'animazione: qui sotto ---- */
+</style>
+<link rel="stylesheet" href="../animazioni.css">
+</head>
+<body style="--area:#6aa5ff;--disciplina:#9cc5ff">
+<div class="wrap">
+<div class="eyebrow">[DISCIPLINA]</div>
+<h1>[TITOLO]</h1>
+<p class="sub" id="sub"></p>
+
+<!-- 1 schede: create dallo script (elenco SCHEDE) -->
+<nav class="schede" id="tabs" role="tablist" aria-label="Schede"></nav>
+<!-- 2 modalità -->
+<div class="modalita" id="modes" role="group" aria-label="Modalità">
+ <button data-m="esplora" aria-pressed="true">Esplora</button>
+ <button data-m="allenati" aria-pressed="false">Allenati</button>
+</div>
+
+<div class="layout">
+<section>
+ <div class="stage">
+  <svg id="svg" viewBox="0 0 560 400" role="img" aria-label="[DESCRIZIONE DEL DISEGNO]"></svg>
+  <!-- comando della vista sulla scena (se serve): -->
+  <button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px">&#10226;</button>
+ </div>
+ <!-- 4 opzioni: chiuse all'apertura -->
+ <details class="opzioni" style="margin-top:12px">
+  <summary><b>Opzioni</b></summary>
+  <button class="levetta" role="switch" id="oGriglia" aria-checked="true">Griglia</button>
+ </details>
+</section>
+<aside>
+ <div class="prof"><img id="profImg" alt="Prof. T"><div class="bubble" id="bubble"></div></div>
+ <div id="panel"></div>
+</aside>
+</div>
+</div>
+
+<script src="../animazioni.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Tempi uniformi: azioni analoghe sempre alla stessa velocità (millisecondi) */
+var T_ARROW=1600, T_MOVE=1400, T_SHOW=1200;
+
+/* Prof. T: le quattro pose (file in immagini/prof_t/) */
+var IMG={hi:'../immagini/prof_t/prof_t_maglietta_verde_saluto.webp',idle:'../immagini/prof_t/prof_t_maglietta_verde_mani_in_tasca.webp',
+ ok:'../immagini/prof_t/prof_t_maglietta_verde_occhiolino_indica.webp',ko:'../immagini/prof_t/prof_t_maglietta_verde_braccia_conserte.webp'};
+precarica(IMG);
+function say(testo,posa){$('profImg').src=IMG[posa||'idle'];$('bubble').innerHTML=testo;}
+
+/* Schede: nome e riga sotto il titolo */
+var SCHEDE=[{id:'a',nome:'[PRIMA SCHEDA]',sub:'[RIGA SOTTO IL TITOLO]'},{id:'b',nome:'[SECONDA SCHEDA]',sub:'[RIGA SOTTO IL TITOLO]'}];
+var S={scheda:'a',modo:'esplora',passo:0,p:0,es:null};
+
+function disegnaSchede(){
+ var nav=$('tabs'),x0=nav.scrollLeft;
+ nav.innerHTML=SCHEDE.map(function(s,i){var on=s.id===S.scheda;
+  return '<button class="scheda" role="tab" aria-selected="'+on+'" data-s="'+s.id+'"><span class="num">'+(i<9?'0':'')+(i+1)+'</span>'+s.nome+'</button>';}).join('');
+ nav.scrollLeft=x0;centraScheda(nav);
+ $('sub').textContent=SCHEDE.filter(function(s){return s.id===S.scheda;})[0].sub;}
+$('tabs').addEventListener('click',function(e){var b=e.target.closest('[data-s]');if(b&&b.dataset.s!==S.scheda){S.scheda=b.dataset.s;S.passo=0;S.p=0;mostra();}});
+$('modes').addEventListener('click',function(e){var b=e.target.closest('[data-m]');if(!b)return;S.modo=b.dataset.m;
+ Array.prototype.forEach.call($('modes').children,function(x){x.setAttribute('aria-pressed',x===b);});mostra();});
+
+/* ---- Esplora: N passi con Indietro, Avanti e "nuovo esempio" ---- */
+var PASSI=[{h:'[PASSO 1]',t:'[TESTO DEL PASSO 1]'},{h:'[PASSO 2]',t:'[TESTO DEL PASSO 2]'},{h:'[PASSO 3]',t:'[TESTO DEL PASSO 3]'}];
+function pannelloEsplora(){
+ var n=PASSI.length,i=S.passo,P=PASSI[i];
+ $('panel').innerHTML='<div class="card"><div class="h">'+P.h+'</div><div class="txt">'+P.t+'</div>'
+  +passoHTML(i,n)+azioniHTML(i===0,i===n-1,'Nuovo esempio')+'</div><div class="anchor">[FRASE ANCORA: LA REGOLA DA RICORDARE]</div>';
+ $('bPrev').onclick=function(){vai(i-1);};
+ $('bNext').onclick=function(){vai(i+1);};
+ $('bNew').onclick=function(){vai(0);};}
+function vai(i){S.passo=Math.max(0,Math.min(PASSI.length-1,i));pannelloEsplora();anima(S.passo);}
+
+/* animazione verso il passo scelto: progresso u sempre tra 0 e 1, intervallo mai negativo */
+var raf=0;
+function anima(meta){
+ cancelAnimationFrame(raf);var da=S.p,last=performance.now(),u=0,dur=reduce?0:T_MOVE;
+ (function frame(now){
+  var dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;
+  u=dur?Math.max(0,Math.min(1,u+dt*1000/dur)):1;
+  S.p=da+(meta-da)*u;disegna();
+  if(u<1)raf=requestAnimationFrame(frame);})(last);}
+
+function disegna(){   /* esempio: un cerchio che avanza di un tratto a ogni passo */
+ var x=80+S.p*200,griglia=$('oGriglia').getAttribute('aria-checked')==='true',o='';
+ if(griglia)for(var g=40;g<560;g+=40)o+='<line x1="'+g+'" y1="0" x2="'+g+'" y2="400" stroke="#1b2740"/>';
+ o+='<circle cx="'+x+'" cy="200" r="30" fill="var(--disciplina)"/>';
+ $('svg').innerHTML=o;}
+
+/* ---- Allenati: una domanda con casella, tastierina sugli schermi touch e riscontro ---- */
+function nuovoEsercizio(){var a=2+Math.floor(Math.random()*8),b=2+Math.floor(Math.random()*8);S.es={a:a,b:b,r:a*b,fatto:false};}
+function pannelloAllenati(){
+ if(!S.es)nuovoEsercizio();
+ var E=S.es;
+ $('panel').innerHTML='<div class="card"><div class="q">Quanto fa '+E.a+' · '+E.b+'?</div>'
+  +'<div class="ans"><input id="inA" inputmode="numeric" autocomplete="off" aria-label="Risposta">'
+  +(TOUCH?'':'<button class="azione primaria" id="bOk">Verifica</button>')+'</div>'
+  +tastierinaHTML({idVerifica:'bOk'})
+  +'<div class="fb" id="fb"></div><div class="azioni"><button class="azione" id="bNx">Nuovo esercizio</button></div></div>';
+ $('bOk').onclick=verifica;
+ $('inA').onkeydown=function(e){if(e.key==='Enter')verifica();};
+ if(TOUCH)tastierinaCollega($('pad'),$('inA'),{max:4});
+ $('bNx').onclick=function(){nuovoEsercizio();pannelloAllenati();};}
+function verifica(){
+ var E=S.es,v=$('inA').value.trim();if(E.fatto||v==='')return;
+ if(+v===E.r){E.fatto=true;$('fb').innerHTML='<div class="ok">Esatto.</div>';say('Perfetto!','ok');
+  $('bOk').disabled=true;$('bNx').classList.add('primaria');}
+ else{$('fb').innerHTML='<div class="no">Non ancora.</div>[DIAGNOSI DELL\'ERRORE]';say('Riprova con calma.','ko');}}
+
+function mostra(){disegnaSchede();if(S.modo==='esplora'){pannelloEsplora();disegna();}else pannelloAllenati();}
+$('bReset').onclick=function(){S.p=0;S.passo=0;mostra();};
+$('oGriglia').onclick=function(){var on=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',on);disegna();};
+mostra();
+say('Ciao, sono Prof. T! Tocca <b>Avanti</b> per vedere il passo successivo.','hi');
+})();
+</script>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">[UNA O DUE FRASI SUGLI ARGOMENTI TRATTATI]</p>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T</div></div>
+<!-- bottone di ritorno: colore dell'area in border-color e rgba (numeri 106,165,255; materia 255,180,84; viventi 111,208,140; cosmo 179,140,255) e nome della disciplina -->
+<style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6aa5ff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(106,165,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
+<a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; [DISCIPLINA]</a>
+<script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>

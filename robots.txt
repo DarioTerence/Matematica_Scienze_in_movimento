@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /modello/
 
 Sitemap: https://scienzainmovimento.it/sitemap.xml

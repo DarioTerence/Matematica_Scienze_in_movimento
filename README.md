@@ -9,6 +9,7 @@ Sito: https://scienzainmovimento.it/
 - `style.css`: stile condiviso, tema scuro
 - `frasi.js`: rotazione casuale delle frasi nel fumetto della home
 - `animazioni.css`, `animazioni.js`: componenti condivisi dei comandi delle animazioni (vedi "Comandi delle animazioni")
+- `modello/modello.html`: pagina di partenza per ogni nuova animazione (non collegata e non indicizzata)
 - `favicon.svg`: icona del sito
 - `apple-touch-icon.png`: icona 180x180 px per la schermata Home di iPhone e iPad, indicata da `<link rel="apple-touch-icon">` in tutte le pagine; sorgente in `immagini/apple_touch_icon/`
 - `firma.svg`: firma "Prof. T"
@@ -25,6 +26,8 @@ Il sito è statico: solo HTML e CSS scritti a mano, nessun framework e nessuna b
 Nomi di file e cartelle: minuscolo, senza accenti, parole separate da underscore (es. `vita_stelle.html`).
 
 ## Aggiungere un'animazione
+Una nuova animazione parte da `modello/modello.html`: head, intestazione, linguette, capsula, azioni, Opzioni, tastierina, Prof. T, fondo pagina e collegamenti ai file comuni sono già pronti; si sostituiscono le parti in maiuscolo tra parentesi quadre e si toglie la riga `robots noindex` (le istruzioni sono nel commento iniziale del modello). La cartella `modello/` è esclusa dai motori di ricerca in `robots.txt`.
+
 1. Copiare il file `.html` nella cartella della disciplina.
 2. Incollare una card nella pagina `index.html` di quella disciplina e aggiornare la descrizione della card della disciplina in home.
 3. Aggiungere l'indirizzo della nuova pagina in `sitemap.xml` (indirizzo completo, senza barra finale per le animazioni).
@@ -66,7 +69,7 @@ I comandi hanno quattro livelli, ognuno con una forma e un posto fissi (dall'alt
 3. Azioni: `<div class="azioni">` con `<button class="azione">`; uno solo è pieno (`azione primaria`: Avanti, Verifica), gli altri semplici, `azione link` o `azione icona` (Indietro come ‹). Sopra, l'indicatore del passo: `passoHTML(i, n)`; per Esplora `azioniHTML(primo, ultimo, "Nuove frazioni")` crea Indietro, Avanti e l'azione "nuovo", che all'ultimo passo diventa il pulsante pieno.
 4. Opzioni: interruttori `<button class="levetta" role="switch" aria-checked="true">` dentro `<details class="opzioni"><summary><b>Opzioni</b></summary>…</details>`; scelte tra elementi della scena con `<button class="chip">` (colore del pallino con `style="--chip:#…"`, scelto con `attivo`); comandi della vista sopra la scena con `comando-scena`.
 
-Pochi comandi visibili: al massimo tre azioni insieme, il resto nelle Opzioni. Al primo ingresso il fumetto di Prof. T dice quale pulsante toccare. Sugli schermi touch le risposte numeriche si scrivono con la tastierina sullo schermo.
+Pochi comandi visibili: al massimo tre azioni insieme, il resto nelle Opzioni. Al primo ingresso il fumetto di Prof. T dice quale pulsante toccare. Sugli schermi touch le risposte numeriche si scrivono con la tastierina sullo schermo: `tastierinaHTML({virgola, meno, verifica, idVerifica})` e `tastierinaCollega(pad, casella, {max, alVerifica, nuovoSeEsterno})` di `animazioni.js` (esempi nel modello, in Aree e perimetri e in Celsius e Kelvin). Il Reattore dei numeri ha una tastiera propria, parte della grafica.
 
 ## Attivare una nuova disciplina
 1. In `index.html`, sostituire la card spenta (`<div class="card fisica in-arrivo">`) con il link (`<a class="card fisica" href="fisica/">`) e scrivere la descrizione con le animazioni.
