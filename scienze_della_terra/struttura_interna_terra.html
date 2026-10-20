@@ -21,6 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <style>
+section>.modalita{margin:0 0 12px}
+.grid .azioni{margin-top:10px}
 :root{--bg:#0a0f1a;--panel:#111a2b;--line:#22304a;--text:#e6ecf5;--muted:#8fa0b8;--acc:#9a6fe8;--area:#b38cff;--warn:#FF8A80}
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -29,12 +31,7 @@ body{background-color:#0a0f1a;background-image:radial-gradient(ellipse 80% 40% a
 .eyebrow{color:var(--acc);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px}
 .sub{color:var(--muted);margin:0 0 14px}
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;margin-bottom:10px}
-.tab,.btn{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 16px;border-radius:999px;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap}
-.btn{padding:6px 13px;font-size:14px}
-.tab:hover,.btn:hover{border-color:var(--acc)}
-.tab[aria-selected=true],.btn.on{background:var(--acc);color:#0a0f1a;border-color:var(--acc)}
-.tab:focus-visible,.btn:focus-visible,.lbl:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.lbl:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .grid{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;align-items:start}
 .grid>*{min-width:0}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
@@ -42,11 +39,7 @@ h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px}
 .row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
 .sect{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
 .sect:first-child{margin-top:0}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:0 0 10px}
-.seg .btn{border:0;border-radius:0}
-.part{display:flex;align-items:center;gap:8px}
 .dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;border:1px solid rgba(255,255,255,.4)}
-.btn.on .dot{border-color:#0a0f1a}
 .stage{position:relative;background:#05060A;border:1px solid var(--line);border-radius:14px;overflow:hidden;aspect-ratio:4/3;min-height:300px;touch-action:none}
 .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .lbls{position:absolute;inset:0;pointer-events:none;overflow:hidden}
@@ -56,8 +49,9 @@ h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px}
 .badge{position:absolute;right:10px;top:8px;font-size:12px;color:#e6ecf5;background:rgba(17,26,43,.85);border:1px dashed #3a4d70;border-radius:999px;padding:1px 10px;pointer-events:none;transition:opacity .3s}
 .fail{padding:24px;color:#e6ecf5}
 .ctl{position:absolute;left:10px;top:8px;display:flex;gap:6px;z-index:3}
-.cb{min-width:34px;height:32px;padding:0 10px;border:1px solid #3a4d70;background:rgba(17,26,43,.9);color:#e6ecf5;border-radius:999px;font:700 14px Calibri,Carlito,sans-serif;cursor:pointer}
-.cb.on{background:var(--acc);border-color:var(--acc);color:#0a0f1a}
+.cb{min-width:36px;height:36px;padding:0 10px;border:1px solid var(--line);background:rgba(10,15,26,.75);color:var(--muted);border-radius:10px;font:700 15px Calibri,Carlito,sans-serif;cursor:pointer}
+.cb:hover{color:var(--text);border-color:var(--acc)}
+.cb.on{border-color:var(--acc);color:#fff;background:rgba(154,111,232,.25)}
 .cb:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .card h2{font:700 24px/1.2 Cambria,Georgia,serif;margin:0 0 6px}
 .pill{display:inline-block;border:1px solid;border-radius:999px;padding:0 10px;font-size:13px;margin:0 6px 8px 0}
@@ -96,7 +90,6 @@ input[type=range]{accent-color:var(--acc);height:28px}
 #q-intro,#q-end{min-height:340px}
 .qtext{max-width:calc(100% - 220px)}
 .qtext h2{font:700 26px/1.2 Cambria,Georgia,serif;margin:0 0 8px}
-.bigbtn{font-size:17px;padding:9px 26px}
 .geo{position:absolute;right:0;bottom:0;height:330px;width:auto;pointer-events:none}
 #q-geo2{right:12px}
 .qhead{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--muted);font-size:14px;margin-bottom:8px}
@@ -145,48 +138,45 @@ input[type=range]{accent-color:var(--acc);height:28px}
 }
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
+<link rel="stylesheet" href="../animazioni.css">
 </head>
-<body>
+<body style="--area:#b38cff;--disciplina:#9a6fe8">
 <div class="wrap">
  <div class="eyebrow">Scienze della Terra</div>
  <h1>La struttura interna della Terra</h1>
  <p class="sub" id="sub">Apri la Terra come un frutto e tocca uno strato per scoprire com'è fatto.</p>
- <div class="tabs" role="tablist" aria-label="Sezioni">
-  <button class="tab" role="tab" id="t-spicchi" aria-selected="true" aria-controls="p-spicchi">La Terra a spicchi</button>
-  <button class="tab" role="tab" id="t-viaggio" aria-selected="false" aria-controls="p-viaggio">Viaggio al centro</button>
-  <button class="tab" role="tab" id="t-onde" aria-selected="false" aria-controls="p-onde">Le onde sismiche</button>
-  <button class="tab" role="tab" id="t-allenati" aria-selected="false" aria-controls="p-allenati">Allenati</button>
+ <div class="schede" role="tablist" aria-label="Sezioni">
+  <button class="scheda" role="tab" id="t-spicchi" aria-selected="true" aria-controls="p-spicchi"><span class="num">01</span>La Terra a spicchi</button>
+  <button class="scheda" role="tab" id="t-viaggio" aria-selected="false" aria-controls="p-viaggio"><span class="num">02</span>Viaggio al centro</button>
+  <button class="scheda" role="tab" id="t-onde" aria-selected="false" aria-controls="p-onde"><span class="num">03</span>Le onde sismiche</button>
+  <button class="scheda" role="tab" id="t-allenati" aria-selected="false" aria-controls="p-allenati"><span class="num">04</span>Allenati</button>
  </div>
 
  <section id="p-spicchi" role="tabpanel" aria-labelledby="t-spicchi">
+  <div class="modalita" role="group" aria-label="Tipo di suddivisione">
+   <button id="mComp" class="on" aria-pressed="true">Per composizione</button>
+   <button id="mRig" aria-pressed="false">Per rigidità</button>
+  </div>
   <div class="grid">
    <div>
     <div class="stage" id="stage">
      <div class="lbls" id="lbls"></div>
-     <div class="ctl" role="group" aria-label="Comandi della vista"><button class="cb on" id="cRuota" aria-pressed="true">Ruota</button><button class="cb" id="cSposta" aria-pressed="false">Sposta</button><button class="cb" id="cPiu" aria-label="Avvicina">+</button><button class="cb" id="cMeno" aria-label="Allontana">&minus;</button></div>
+     <div class="ctl" role="group" aria-label="Comandi della vista"><button class="cb on" id="cRuota" aria-pressed="true">Ruota</button><button class="cb" id="cSposta" aria-pressed="false">Sposta</button><button class="cb" id="cPiu" aria-label="Avvicina">+</button><button class="cb" id="cMeno" aria-label="Allontana">&minus;</button><button class="cb" id="bReset" aria-label="Reset vista" title="Reset vista">&#10226;</button></div>
      <div class="badge" id="badge">crosta e mantello superiore ingranditi</div>
      <div class="cap" id="cap1">trascina per ruotare · tasto destro o due dita per spostare · doppio clic o doppio tocco per avvicinarti</div>
     </div>
    </div>
    <aside class="panel">
-    <div class="sect">Vista</div>
-    <div class="row">
-     <button class="btn on" id="bOpen" aria-pressed="true">Spicchio aperto</button>
-     <button class="btn" id="bRot" aria-pressed="false">Rotazione</button>
-     <button class="btn" id="bReset">Reset vista</button>
-    </div>
     <div class="sect">Strati</div>
-    <div class="seg" role="group" aria-label="Tipo di suddivisione">
-     <button class="btn on" id="mComp" aria-pressed="true">Per composizione</button>
-     <button class="btn" id="mRig" aria-pressed="false">Per rigidità</button>
-    </div>
-    <div class="row" id="layerBtns"></div>
-    <div class="sect">Mostra anche</div>
-    <div class="row">
-     <button class="btn" id="bConv" aria-pressed="false">Moti convettivi</button>
-     <button class="btn" id="bScale" aria-pressed="false">Scala reale</button>
-    </div>
+    <div class="chips" id="layerBtns" style="margin:0 0 12px"></div>
     <div class="card" id="info" aria-live="polite"></div>
+    <details class="opzioni">
+     <summary><b>Opzioni</b></summary>
+     <button class="levetta on" role="switch" id="bOpen" aria-checked="true">Spicchio aperto</button>
+     <button class="levetta" role="switch" id="bRot" aria-checked="false">Rotazione automatica</button>
+     <button class="levetta" role="switch" id="bConv" aria-checked="false">Moti convettivi</button>
+     <button class="levetta" role="switch" id="bScale" aria-checked="false">Scala reale</button>
+    </details>
    </aside>
   </div>
  </section>
@@ -197,19 +187,19 @@ input[type=range]{accent-color:var(--acc);height:28px}
     <div class="stage2"><svg id="v-svg" viewBox="0 0 460 440" role="img" aria-label="Sezione della Terra dalla superficie al centro, con la sonda che scende"></svg></div>
     <div class="panel" style="margin-top:10px">
      <div class="row" style="align-items:center;flex-wrap:nowrap">
-      <button class="btn" id="v-play">Avvia</button>
+      <button class="azione primaria" id="v-play" style="flex:none">Avvia</button>
       <input type="range" id="v-depth" min="0" max="6371" step="1" value="0" aria-label="Profondità della sonda in km" style="flex:1;min-width:0">
       <span class="kmv" id="v-km">0 km</span>
      </div>
      <div class="sect">Tappe</div>
-     <div class="row" id="v-tappe" style="margin:0"></div>
+     <div class="chips" id="v-tappe" style="margin:0"></div>
     </div>
    </div>
    <aside class="panel">
     <dl class="dati" id="v-read"></dl>
     <svg id="v-charts" viewBox="0 0 320 324" role="img" aria-label="Grafici di temperatura, pressione e densità in funzione della profondità"></svg>
     <div class="vnote" id="v-note" aria-live="polite"></div>
-    <button class="btn" id="v-why" aria-expanded="false">Perché il nucleo interno è solido?</button>
+    <div class="azioni" style="margin:0"><button class="azione link" id="v-why" aria-expanded="false">Perché il nucleo interno è solido? ›</button></div>
     <div class="whybox hide" id="v-whybox">
      <svg id="v-whysvg" viewBox="0 0 300 170" role="img" aria-label="Grafico schematico: temperatura reale e temperatura di fusione del ferro nel nucleo"></svg>
      <p>Più si scende, più la pressione schiaccia gli atomi di ferro: per fonderli serve una temperatura sempre più alta (linea tratteggiata).</p>
@@ -225,17 +215,18 @@ input[type=range]{accent-color:var(--acc);height:28px}
   <div class="grid">
    <div>
     <div class="stage3" id="o-stage"><canvas id="o-cv" aria-label="Sezione della Terra con le onde sismiche che partono dall'epicentro"></canvas><div class="oclock" id="o-clock">0 min dal terremoto</div><div class="cap" style="top:8px;bottom:auto">tocca la superficie per spostare l'epicentro<br>tocca un sismografo</div></div>
-    <div class="row" style="margin-top:10px">
-     <button class="btn on" id="o-go">Fai partire il terremoto</button>
-     <button class="btn" id="o-l" aria-label="Sposta l'epicentro a sinistra">&larr; Epicentro</button>
-     <button class="btn" id="o-r" aria-label="Sposta l'epicentro a destra">Epicentro &rarr;</button>
+    <div class="azioni">
+     <button class="azione icona" id="o-l" aria-label="Sposta l'epicentro a sinistra" title="Sposta l'epicentro a sinistra">&lsaquo;</button>
+     <button class="azione primaria" id="o-go">Fai partire il terremoto</button>
+     <button class="azione icona" id="o-r" aria-label="Sposta l'epicentro a destra" title="Sposta l'epicentro a destra">&rsaquo;</button>
     </div>
-    <div class="row">
-     <button class="btn on" id="o-P" aria-pressed="true">Onde P</button>
-     <button class="btn on" id="o-S" aria-pressed="true">Onde S</button>
-     <button class="btn" id="o-leh" aria-pressed="false">Onde di Lehmann</button>
-    </div>
-    <div class="legend">
+    <details class="opzioni" open>
+     <summary><b>Onde da mostrare</b></summary>
+     <button class="levetta on" role="switch" id="o-P" aria-checked="true">Onde P</button>
+     <button class="levetta on" role="switch" id="o-S" aria-checked="true">Onde S</button>
+     <button class="levetta" role="switch" id="o-leh" aria-checked="false">Onde di Lehmann</button>
+    </details>
+    <div class="legend" style="margin-top:10px">
      <span><i style="border-color:#5BC8F0"></i>onde P</span>
      <span><i style="border-color:#ff8fc8;border-top-style:dashed"></i>onde S</span>
      <span><i style="border-color:#6fd08c;border-top-width:6px"></i>arrivano P e S</span>
@@ -249,12 +240,12 @@ input[type=range]{accent-color:var(--acc);height:28px}
     <div class="wcard"><b style="color:#ff8fc8">Onde S</b> (seconde): scuotono la roccia di lato, come una corda agitata. Sono più lente e attraversano solo i solidi.</div>
     <div class="ancora"><b>Che cosa ci dicono</b>Le onde S non arrivano oltre circa 104° dall'epicentro: nel nucleo esterno si fermano, quindi è liquido. Tra circa 104° e 140° c'è una zona d'ombra senza onde dirette: anche le P, entrando nel nucleo, vengono deviate.</div>
     <div class="sect">Sismografi</div>
-    <div class="row" id="o-stations"></div>
+    <div class="chips" id="o-stations" style="margin:0 0 10px"></div>
     <div class="pdesc" id="o-st"><span class="hint" style="margin:0">Tocca un sismografo (i triangoli sulla superficie) per vedere che cosa registra.</span></div>
     <canvas id="o-seis" class="hide" aria-label="Tracciato del sismografo"></canvas>
     <div class="sect">Inge Lehmann, 1936</div>
     <p style="margin:0 0 6px">La sismologa danese Inge Lehmann notò deboli onde P arrivate proprio dentro la zona d'ombra, dove secondo le idee del tempo non dovevano esserci. Le spiegò così: dentro il nucleo liquido c'è un <b>nucleo interno solido</b>, che le devia.</p>
-    <p class="hint" style="margin:0">Attiva «Onde di Lehmann» per vederle. Distanze in gradi lungo la superficie: 180° è il punto opposto all'epicentro. Modello semplificato, con velocità delle onde arrotondate.</p>
+    <p class="hint" style="margin:0">Attiva «Onde di Lehmann» sotto la sezione per vederle. Distanze in gradi lungo la superficie: 180° è il punto opposto all'epicentro. Modello semplificato, con velocità delle onde arrotondate.</p>
    </aside>
   </div>
  </section>
@@ -264,12 +255,12 @@ input[type=range]{accent-color:var(--acc);height:28px}
    <div class="qtext">
     <h2>Allenati</h2>
     <p>Dieci domande sulla struttura interna della Terra, scelte a caso ogni volta. Se sbagli, Prof. T ti spiega dove sta l'errore.</p>
-    <button class="btn on bigbtn" id="q-start">Inizia</button>
+    <div class="azioni"><button class="azione primaria" id="q-start" style="flex:none;padding:10px 34px">Inizia</button></div>
    </div>
    <img class="geo" id="q-geo" alt="Prof. T con l'elmetto da geologo osserva un cristallo con la lente">
   </div>
   <div class="panel quiz hide" id="q-game">
-   <div class="qhead"><span id="q-n"></span><span class="qright"><span id="q-score"></span><button class="btn" id="q-restart">Ricomincia</button></span></div>
+   <div class="qhead"><span id="q-n"></span><span class="qright"><span id="q-score"></span><button class="azione link" id="q-restart" style="min-height:0">↻ Ricomincia</button></span></div>
    <div class="qwrap">
     <div class="qmain">
      <div id="q-fig"></div>
@@ -277,7 +268,7 @@ input[type=range]{accent-color:var(--acc);height:28px}
      <div class="seq hide" id="q-seq"></div>
      <div class="opts" id="q-opts"></div>
      <div class="fb" id="q-fb" aria-live="polite"></div>
-     <button class="btn on hide" id="q-next">Avanti</button>
+     <div class="azioni"><button class="azione primaria hide" id="q-next" style="flex:none;padding:10px 34px">Avanti</button></div>
     </div>
     <img class="pose" id="q-pose" alt="Prof. T">
    </div>
@@ -287,7 +278,7 @@ input[type=range]{accent-color:var(--acc);height:28px}
     <h2 id="q-endt"></h2>
     <div class="big" id="q-endn"></div>
     <p id="q-endm"></p>
-    <button class="btn on bigbtn" id="q-again">Ricomincia</button>
+    <div class="azioni"><button class="azione primaria" id="q-again" style="flex:none;padding:10px 34px">↻ Ricomincia</button></div>
    </div>
    <img class="geo" id="q-geo2" alt="Prof. T saluta">
   </div>
@@ -295,6 +286,7 @@ input[type=range]{accent-color:var(--acc);height:28px}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../animazioni.js"></script>
 <script>
 "use strict";
 /* Immagini della superficie terrestre: NASA Visible Earth (Blue Marble, rilievi e fondali). */
@@ -305,8 +297,9 @@ window.PROF={geo:"data:image/webp;base64,UklGRkK1AABXRUJQVlA4WAoAAAAQAAAAKwEAVwI
 
 /* ---------- Schede (tab) ---------- */
 const SUBS={spicchi:"Apri la Terra come un frutto e tocca uno strato per scoprire com'è fatto.",viaggio:"Scendi con una sonda dalla superficie al centro della Terra.",onde:"Come sappiamo cosa c'è là sotto? Ce lo dicono i terremoti.",allenati:"Metti alla prova quello che hai scoperto."};
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
- document.querySelectorAll('.tab').forEach(x=>{const on=x===t;x.setAttribute('aria-selected',on);document.getElementById(x.getAttribute('aria-controls')).classList.toggle('hide',!on)});
+document.querySelectorAll('.scheda').forEach(t=>t.addEventListener('click',()=>{
+ document.querySelectorAll('.scheda').forEach(x=>{const on=x===t;x.setAttribute('aria-selected',on);document.getElementById(x.getAttribute('aria-controls')).classList.toggle('hide',!on)});
+ centraScheda(document.querySelector('.schede'));
  const k=t.id.slice(2);document.getElementById('sub').textContent=SUBS[k];
  if(k==='spicchi'&&window.terra)window.terra.resize();
  if(k==='onde'&&window.onde)window.onde.show();
@@ -622,16 +615,16 @@ function showInfo(k){
   (L.a?`<div class="ancora"><b>Attenzione</b>${L.a}</div>`:'');
 }
 let mode=0,cur=-1;
-function buildBtns(){lb.innerHTML='';for(const k of (mode===0?SET_COMP:SET_RIG)){const b=document.createElement('button');b.className='btn part'+(k===cur?' on':'');b.dataset.k=k;
- b.innerHTML=`<span class="dot" style="background:${LAYERS[k].c}"></span>${LAYERS[k].n}`;b.addEventListener('click',()=>window.terra&&window.terra.select(cur===k?-1:k));lb.appendChild(b)}}
-function tog(b,on){b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)}
+function buildBtns(){lb.innerHTML='';for(const k of (mode===0?SET_COMP:SET_RIG)){const b=document.createElement('button');b.className='chip'+(k===cur?' attivo':'');b.dataset.k=k;b.style.setProperty('--chip',LAYERS[k].c);
+ b.textContent=LAYERS[k].n;b.addEventListener('click',()=>window.terra&&window.terra.select(cur===k?-1:k));lb.appendChild(b)}}
+function tog(b,on){b.classList.toggle('on',on);b.setAttribute(b.getAttribute('role')==='switch'?'aria-checked':'aria-pressed',on)}
 const bOpen=document.getElementById('bOpen'),bRot=document.getElementById('bRot'),bConv=document.getElementById('bConv'),bScale=document.getElementById('bScale'),mComp=document.getElementById('mComp'),mRig=document.getElementById('mRig'),badge=document.getElementById('badge');
 buildBtns();showInfo(-1);
 window.terra=Terra(document.getElementById('stage'));
 if(window.terra){
  const T=window.terra;
- T.onSelect(k=>{cur=k;lb.querySelectorAll('.btn').forEach(b=>b.classList.toggle('on',+b.dataset.k===k));showInfo(k)});
- T.onOpen(v=>{tog(bOpen,v);bOpen.textContent=v?'Spicchio aperto':'Spicchio chiuso'});
+ T.onSelect(k=>{cur=k;lb.querySelectorAll('.chip').forEach(b=>b.classList.toggle('attivo',+b.dataset.k===k));showInfo(k)});
+ T.onOpen(v=>{tog(bOpen,v)});
  bOpen.addEventListener('click',()=>{const v=!bOpen.classList.contains('on');if(!v){T.select(-1);tog(bConv,false);T.setConv(false)}T.setOpen(v)});
  bRot.addEventListener('click',()=>{const v=!bRot.classList.contains('on');tog(bRot,v);T.setRot(v)});
  document.getElementById('bReset').addEventListener('click',()=>T.reset());
@@ -770,9 +763,9 @@ if(window.terra){
   if(depth>=RE-1)depth=0;u=Math.pow(depth/RE,1/1.8);tappa=null;target=null;playing=true;play.textContent='Pausa';kick()});
  range.addEventListener('input',()=>{playing=false;play.textContent='Avvia';target=null;tappa=null;depth=+range.value;render()});
  const tb=document.getElementById('v-tappe');
- TAPPE.forEach((t,i)=>{const b=document.createElement('button');b.className='btn';b.textContent=t[1];b.addEventListener('click',()=>{playing=false;play.textContent='Avvia';tappa=i;target=t[0];
-  tb.querySelectorAll('.btn').forEach(x=>x.classList.toggle('on',x===b));if(t[0]===5150)openWhy(true);kick()});tb.appendChild(b)});
- range.addEventListener('input',()=>tb.querySelectorAll('.btn').forEach(x=>x.classList.remove('on')));
+ TAPPE.forEach((t,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=t[1];b.addEventListener('click',()=>{playing=false;play.textContent='Avvia';tappa=i;target=t[0];
+  tb.querySelectorAll('.chip').forEach(x=>x.classList.toggle('attivo',x===b));if(t[0]===5150)openWhy(true);kick()});tb.appendChild(b)});
+ range.addEventListener('input',()=>tb.querySelectorAll('.chip').forEach(x=>x.classList.remove('attivo')));
  function openWhy(v){whyBox.classList.toggle('hide',!v);why.setAttribute('aria-expanded',v);why.classList.toggle('on',v)}
  why.addEventListener('click',()=>openWhy(whyBox.classList.contains('hide')));
  render();
@@ -863,8 +856,8 @@ window.onde=(function(){
   if(Math.abs(dist-Rp)<26){S.E=Math.atan2(x-cx,-(y-cy));start()}});
  /* tracciato del sismografo */
  const box=document.getElementById('o-st'),seis=document.getElementById('o-seis'),sb=document.getElementById('o-stations');
- ST.forEach((d,i)=>{const b=document.createElement('button');b.className='btn';b.textContent=d+'°';b.setAttribute('aria-label','Sismografo a '+d+' gradi');b.addEventListener('click',()=>selStation(i));sb.appendChild(b)});
- function selStation(i){S.sel=i;sb.querySelectorAll('.btn').forEach((b,j)=>b.classList.toggle('on',j===i));draw();
+ ST.forEach((d,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=d+'°';b.setAttribute('aria-label','Sismografo a '+d+' gradi');b.addEventListener('click',()=>selStation(i));sb.appendChild(b)});
+ function selStation(i){S.sel=i;sb.querySelectorAll('.chip').forEach((b,j)=>b.classList.toggle('attivo',j===i));draw();
   const d=ST[i],shadow=d>=104&&d<140,tP=arrival(1,d,S.leh),tS=d<104?arrival(2,d):null;
   let txt=`<b>Sismografo a ${d}° dall'epicentro</b><br>`;
   if(d<104)txt+=`Registra le onde P e poi le onde S. Le P arrivano dopo circa ${Math.round(tP)} minuti, le S dopo circa ${Math.round(tS)}.`;
@@ -886,7 +879,7 @@ window.onde=(function(){
   if(tS!==null){c.fillStyle='#ff8fc8';c.fillText('S',X(tS),12)}
   if(tP===null&&tS===null){c.fillStyle='#8fa0b8';c.fillText('nessuna onda diretta',w/2,14)}}
  /* pulsanti */
- const tg=(b,v)=>{b.classList.toggle('on',v);b.setAttribute('aria-pressed',v)};
+ const tg=(b,v)=>{b.classList.toggle('on',v);b.setAttribute('aria-checked',v)};
  document.getElementById('o-go').addEventListener('click',start);
  document.getElementById('o-l').addEventListener('click',()=>{S.E-=Math.PI/12;start()});
  document.getElementById('o-r').addEventListener('click',()=>{S.E+=Math.PI/12;start()});
@@ -967,7 +960,7 @@ window.onde=(function(){
  $('q-start').addEventListener('click',start);$('q-again').addEventListener('click',start);
  /* Ricomincia durante il giro: al primo tocco chiede conferma, al secondo parte un giro nuovo */
  const rb=$('q-restart');let rbT=0;
- const rbReset=()=>{clearTimeout(rbT);rb.classList.remove('conf');rb.textContent='Ricomincia'};
+ const rbReset=()=>{clearTimeout(rbT);rb.classList.remove('conf');rb.textContent='↻ Ricomincia'};
  rb.addEventListener('click',()=>{if(rb.classList.contains('conf')){rbReset();start();return}
   rb.classList.add('conf');rb.textContent='Tocca di nuovo';rbT=setTimeout(rbReset,3000)});
 })();
