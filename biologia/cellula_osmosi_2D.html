@@ -40,24 +40,12 @@
   .wrap{max-width:1000px; margin:0 auto; padding:18px 18px 28px;}
   h1{font-family:Cambria,Georgia,serif; font-size:clamp(20px,3vw,28px); margin:4px 0 2px; color:var(--ink);}
   .sub{color:var(--sub); font-size:14px; margin-bottom:14px;}
-  .tabs{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
-  .tab{
-    padding:9px 16px; border-radius:10px; border:1px solid var(--line); background:var(--panel);
-    color:var(--ink); font-size:15px; font-weight:bold; cursor:pointer;
-  }
-  .tab.active{background:var(--accent); color:#0a0f1a; border-color:var(--accent);}
   .panel{display:none;}
   .panel.active{display:block;}
   .card{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  .schede{margin-bottom:14px;}
+  .modalita .pt{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px}
   .rowbtns{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
-  .pill{
-    padding:8px 14px; border-radius:999px; border:2px solid transparent; cursor:pointer;
-    font-weight:bold; font-size:14px; color:#2a2a2a;
-  }
-  .pill.on{outline:3px solid var(--accent); outline-offset:1px;}
-  .pill.ani{background:var(--ani-cell); color:var(--ani-text);}
-  .pill.veg{background:var(--veg-cell); color:var(--veg-text);}
-  .pill.fun{background:var(--fun-cell); color:var(--fun-text);}
   .grid{display:grid; grid-template-columns: 1.3fr 1fr; gap:16px;}
   @media (max-width:680px){ .grid{grid-template-columns:1fr;} }
   svg{width:100%; height:auto; display:block; background:#fdfcf9; border-radius:10px; border:1px solid var(--line);}
@@ -92,24 +80,25 @@
   .zonebox{font-weight:bold;font-size:15px;color:var(--accent);margin:0 0 6px;}
 .eyebrow{color:#8ee0a6;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 </style>
+<link rel="stylesheet" href="../animazioni.css">
 </head>
-<body>
+<body style="--area:#6fd08c;--disciplina:#8ee0a6">
 <div class="wrap">
   <div class="eyebrow">Biologia</div>
   <h1>La cellula e l'osmosi</h1>
   <div class="sub">Cellule a confronto e osmosi</div>
 
-  <div class="tabs">
-    <button class="tab active" data-tab="cell">Cellule a confronto</button>
-    <button class="tab" data-tab="osmo">Osmosi</button>
+  <div class="schede" role="tablist">
+    <button class="scheda" role="tab" aria-selected="true" data-tab="cell"><span class="num">01</span>Cellule a confronto</button>
+    <button class="scheda" role="tab" aria-selected="false" data-tab="osmo"><span class="num">02</span>Osmosi</button>
   </div>
 
   <!-- TAB 1: CONFRONTO CELLULE -->
   <div class="panel active" id="panel-cell">
-    <div class="rowbtns">
-      <button class="pill ani on" data-type="animale">Animali</button>
-      <button class="pill veg" data-type="vegetale">Piante</button>
-      <button class="pill fun" data-type="fungina">Funghi</button>
+    <div class="modalita" role="group" aria-label="Tipo di cellula" style="margin-top:0">
+      <button data-type="animale" aria-pressed="true"><span class="pt" style="background:var(--ani-cell)"></span>Animali</button>
+      <button data-type="vegetale" aria-pressed="false"><span class="pt" style="background:var(--veg-cell)"></span>Piante</button>
+      <button data-type="fungina" aria-pressed="false"><span class="pt" style="background:var(--fun-cell)"></span>Funghi</button>
     </div>
     <div class="grid">
       <div class="card"><svg id="cellsvg" viewBox="0 0 400 360"></svg></div>
@@ -126,10 +115,12 @@
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
         <div class="zonebox" id="zoneLbl" style="margin:0">Soluzione isotonica</div>
         <div class="rowbtns" style="margin:0">
-          <button class="pill" data-c="10" style="background:#D6E4F5">Ipotonica</button>
-          <button class="pill" data-c="50" style="background:#EDEDED">Isotonica</button>
-          <button class="pill" data-c="85" style="background:#F5D6D6">Ipertonica</button>
-          <button class="pill" id="resetBtn" style="background:#fff;border-color:var(--line)">Reset</button>
+          <div class="chips" style="margin:0">
+            <button class="chip" data-c="10" style="--chip:#D6E4F5">Ipotonica</button>
+            <button class="chip" data-c="50" style="--chip:#EDEDED">Isotonica</button>
+            <button class="chip" data-c="85" style="--chip:#F5D6D6">Ipertonica</button>
+          </div>
+          <button class="azione link" id="resetBtn">↻ Reset</button>
         </div>
       </div>
       <div class="bar"><input type="range" id="conc" min="0" max="100" value="50" aria-label="Concentrazione di soluto nella soluzione esterna"></div>
@@ -147,6 +138,7 @@
   </div>
 </div>
 
+<script src="../animazioni.js"></script>
 <script>
 // ---------- FUNZIONI DI DISEGNO ----------
 function ring(tag,attrs,col,sw,extra){
@@ -323,19 +315,20 @@ function renderCell(type){
 }
 renderCell('animale');
 
-document.querySelectorAll('#panel-cell .pill').forEach(btn=>{
+document.querySelectorAll('#panel-cell .modalita button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
-    document.querySelectorAll('#panel-cell .pill').forEach(b=>b.classList.remove('on'));
-    btn.classList.add('on');
+    document.querySelectorAll('#panel-cell .modalita button').forEach(b=>b.setAttribute('aria-pressed','false'));
+    btn.setAttribute('aria-pressed','true');
     renderCell(btn.dataset.type);
   });
 });
 
-document.querySelectorAll('.tab[data-tab]').forEach(t=>{
+document.querySelectorAll('.scheda[data-tab]').forEach(t=>{
   t.addEventListener('click', ()=>{
-    document.querySelectorAll('.tab[data-tab]').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.scheda[data-tab]').forEach(x=>x.setAttribute('aria-selected','false'));
     document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
+    t.setAttribute('aria-selected','true');
+    centraScheda(document.querySelector('.schede'));
     document.getElementById('panel-'+t.dataset.tab).classList.add('active');
   });
 });
@@ -493,7 +486,7 @@ function draw(){
   zoneLbl.textContent=ZN[z];
 }
 function frame(now){
-  const dt=Math.min(0.05,(now-S.last)/1000||0.016), f=1-Math.exp(-dt/0.35);
+  const dt=Math.max(0,Math.min(0.05,(now-S.last)/1000||0.016)), f=1-Math.exp(-dt/0.35);
   S.last=now; S.xp+=(S.xt-S.xp)*f;
   if(S.A==='ok'){
     S.xa+=(S.xt-S.xa)*f;
