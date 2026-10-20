@@ -41,3 +41,10 @@ function azioniHTML(primo, ultimo, nuovo) {
   }
   return h + '</div>';
 }
+
+/* Scarica in anticipo le immagini indicate (es. le pose di Prof. T), così il cambio
+   di posa è immediato anche la prima volta. Accetta un elenco o un oggetto di percorsi. */
+function precarica(lista) {
+  var v = Array.isArray(lista) ? lista : Object.keys(lista).map(function (k) { return lista[k]; });
+  v.forEach(function (src) { var i = new Image(); i.src = src; });
+}

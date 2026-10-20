@@ -15,6 +15,7 @@ Sito: https://scienzainmovimento.it/
 - `prof_t.webp`, `prof_t_occhiolino.webp`, `bagliore.svg`: caricatura di Prof. T nella home (occhi aperti, occhiolino, bagliore sulla lente), animata solo con CSS
 - `aritmetica/`, `geometria/`, `fisica/`, `biologia/`, `scienze_della_terra/`, `astronomia/`: una cartella per disciplina, con `index.html` (elenco) e un file HTML per ogni animazione (con `animazioni.css` e `animazioni.js` dalla radice)
 - `CNAME`: dominio personalizzato del sito (non rimuovere)
+- `immagini/prof_t/`: pose di Prof. T usate nelle animazioni (WebP trasparenti, per esempio `prof_t_maglietta_verde_saluto.webp`); `immagini/terra/`: superficie e rilievo della Terra (NASA Visible Earth) per La struttura interna della Terra. Le animazioni le richiamano con un percorso (`../immagini/prof_t/…`), non incorporate in base64; `precarica()` di `animazioni.js` le scarica in anticipo
 - `og_image.jpg`: immagine 1200x630 px per l'anteprima dei link condivisi (WhatsApp, chat, social), indicata da `og:image` in tutte le pagine; sorgente in `immagini/og_image/`
 - `sitemap.xml`, `robots.txt`: elenco delle pagine per i motori di ricerca
 - `LICENSE`: licenza (tutti i diritti riservati)
@@ -49,7 +50,7 @@ Sopra il titolo il nome della disciplina in maiuscolo piccolo (classe `.eyebrow`
 ### Fondo pagina
 Prima di `</body>`, dopo gli script dell'animazione, nell'ordine:
 1. il paragrafo `<p class="di-cosa-parla">` (stile in linea: larghezza massima 640 px, centrato, 13 px Calibri, colore #8fa0b8, margine superiore 32 px) con una o due frasi sugli argomenti trattati;
-2. la firma: `<div>` centrato con il link `class="firma-home"` verso `../index.html` che contiene `firma.svg` incorporata come data URI (base64 del file), e sotto la riga "© 2026 Prof. T" (12 px, #6f819c);
+2. la firma: `<div>` centrato con il link `class="firma-home"` verso `../index.html` che contiene `<img src="../firma.svg">` (dal 20 ott 2026 non più incorporata in base64), e sotto la riga "© 2026 Prof. T" (12 px, #6f819c);
 3. il bottone di ritorno `class="torna-sito"` verso `index.html` della disciplina ("← Fisica", "← Biologia", ...), fisso in basso a sinistra, con il colore dell'area al passaggio del mouse: numeri #6aa5ff, materia #ffb454, viventi #6fd08c, cosmo #b38cff;
 4. come ultima riga lo script di GoatCounter:
    `<script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>`
