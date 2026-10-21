@@ -6,13 +6,13 @@
 <!-- © 2026 Prof. T. Tutti i diritti riservati. -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>L'osmosi in tre dimensioni - Scienza in Movimento</title>
-<meta name="description" content="Osmosi in 3D: cosa succede a una cellula animale o vegetale in soluzione ipotonica, isotonica e ipertonica.">
+<meta name="description" content="Osmosi in 3D: cellula animale, globulo rosso e cellula vegetale in soluzione ipotonica, isotonica e ipertonica, con lisi, crenatura e plasmolisi.">
 <link rel="canonical" href="https://scienzainmovimento.it/biologia/osmosi_3D.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Scienza in Movimento">
 <meta property="og:locale" content="it_IT">
 <meta property="og:title" content="L'osmosi in tre dimensioni - Scienza in Movimento">
-<meta property="og:description" content="Osmosi in 3D: cosa succede a una cellula animale o vegetale in soluzione ipotonica, isotonica e ipertonica.">
+<meta property="og:description" content="Osmosi in 3D: cellula animale, globulo rosso e cellula vegetale in soluzione ipotonica, isotonica e ipertonica, con lisi, crenatura e plasmolisi.">
 <meta property="og:url" content="https://scienzainmovimento.it/biologia/osmosi_3D.html">
 <meta property="og:image" content="https://scienzainmovimento.it/og_image.jpg">
 <meta property="og:image:width" content="1200">
@@ -96,7 +96,7 @@ button{font-family:inherit;cursor:pointer}
     <button data-v="P" aria-pressed="false"><span class="pt" style="background:#E2F0D9"></span>Piante</button>
   </div>
   <div class="duo" id="duo" data-show="A">
-    <div class="card" id="cardA"><h3>Animali</h3><div class="view" id="vA"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div><div class="status" id="stA"></div></div>
+    <div class="card" id="cardA"><h3>Animali</h3><div class="chips" id="tipoA" role="group" aria-label="Cellula animale da osservare" style="margin:0 0 10px"><button class="chip attivo" data-a="cell" aria-pressed="true" style="--chip:#FCE4D6">Cellula animale</button><button class="chip" data-a="rbc" aria-pressed="false" style="--chip:#C0392B">Globulo rosso</button></div><div class="view" id="vA"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div><div class="status" id="stA"></div></div>
     <div class="card" id="cardP"><h3>Piante</h3><div class="view" id="vP"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div><div class="status" id="stP"></div></div>
   </div>
   <div class="small">Trascina sulla vasca per ruotarla (animale e pianta ruotano insieme); pizzica o usa la rotella per ingrandire.</div>
@@ -104,6 +104,7 @@ button{font-family:inherit;cursor:pointer}
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="../animazioni.js"></script>
+<script src="organuli_3d.js"></script>
 <script>
 const $=s=>document.querySelector(s), PI=Math.PI, clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const PX=0.0118, SOLH=0x8E44AD, WATERH=0x5BC8F0;   // PX: unità 3D per pixel del 2D (cellula animale a riposo = 85 px)
@@ -116,10 +117,15 @@ const TEXT={
   ipo:"L'acqua <b>entra</b> nella cellula (fuori c'è meno soluto): si gonfia e, senza parete, può <span class='warn'>scoppiare (lisi)</span>.",
   iso:"L'acqua entra ed esce in ugual misura: la cellula mantiene la sua forma.",
   iper:"L'acqua <b>esce</b> dalla cellula (fuori c'è più soluto): si <b>raggrinzisce</b> (crenatura). Se è moderata, tornando in isotonica si riprende."},
+ rbc:{
+  ipo:"L'acqua <b>entra</b> nel globulo rosso. Perde la forma a disco, si gonfia fino a diventare una sfera e può <span class='warn'>scoppiare (emolisi)</span>.",
+  iso:"L'acqua entra ed esce in ugual misura. Il globulo rosso mantiene la sua forma a disco, più sottile al centro. Da maturo non ha nucleo né mitocondri.",
+  iper:"L'acqua <b>esce</b> dal globulo rosso. Si <b>raggrinzisce</b> e si copre di punte (crenatura). Se è moderata, tornando in isotonica si riprende."},
  vegetale:{
   ipo:"L'acqua <b>entra</b>, ma la <b>parete</b> impedisce lo scoppio: la cellula diventa <b>turgida</b>.",
   iso:"L'acqua entra ed esce in ugual misura: la cellula mantiene la sua forma.",
-  iper:"L'acqua <b>esce</b> e il citoplasma si stacca dalla parete (<b>plasmolisi</b>), restando attaccato in pochi punti. Tornando in isotonica la cellula recupera."}
+  iper:"L'acqua <b>esce</b> e il citoplasma si stacca dalla parete (<b>plasmolisi</b>), restando attaccato in pochi punti. Tornando in isotonica la cellula recupera."},
+ plasmo:"Il <b>vacuolo</b> perde acqua e si restringe; il citoplasma si stacca dalla parete prima negli angoli, poi resta attaccato solo con sottili filamenti. Tornando in isotonica la cellula recupera."
 };
 const ZN={ipo:'Soluzione ipotonica',iso:'Soluzione isotonica',iper:'Soluzione ipertonica'};
 const zoneOf=c=>c<44?'ipo':(c<=56?'iso':'iper');
@@ -208,9 +214,20 @@ class View{
   this.cam.position.set(d*s*Math.sin(CAM.th),d*Math.cos(CAM.ph),d*s*Math.cos(CAM.th));this.cam.lookAt(0,0,0);this.R.render(this.scene,this.cam);}
 }
 
-// ---------- cellula animale ----------
+// ---------- organuli (file condiviso organuli_3d.js) ----------
+const ORG=OrganuliCellula(THREE,M);
+const CAMDIR=V3(-.56,.36,.74).normalize();     // direzione della camera all'apertura: le parti tagliate guardano da lì
+const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+const smin=(a,b,k)=>{const h=clamp(.5+.5*(b-a)/k,0,1);return b+(a-b)*h-k*h*(1-h);};
+
+// ---------- cellula animale e globulo rosso ----------
+// Globulo rosso: disco biconcavo (più sottile al centro); in ipotonica diventa una sfera, poi emolisi;
+// in ipertonica si raggrinzisce e si copre di punte (crenatura).
+const RBC_R=1.05, RBC_S=.8;                       // raggio del disco e della sfera
+const rbcH=r=>Math.sqrt(Math.max(0,1-r*r))*(.05+1.1*r*r-.7*r*r*r*r);   // mezzo spessore del disco alla distanza r dal centro
+const SPIKES=Array.from({length:34},(_,i)=>ORG.fibo(34,i));
 class AnimalView extends View{
- constructor(el){super(el);
+ constructor(el){super(el);this.tipo='cell';
   this.geo=makeSphere(48,32);this.mat=M(0xFCE4D6,.66,{side:D2,depthWrite:false,shininess:60});
   this.mesh=new THREE.Mesh(this.geo,this.mat);this.mesh.frustumCulled=false;this.mesh.renderOrder=1;this.scene.add(this.mesh);
   this.plane=new THREE.Plane(V3(1,0,0),0);
@@ -218,77 +235,140 @@ class AnimalView extends View{
   this.ves=[0,1,2,3].map(()=>{const m=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),M(0xFCE4D6,.8,{depthWrite:false}));m.visible=false;m.renderOrder=1;this.scene.add(m);return m;});
   this.ring=new THREE.Mesh(new THREE.TorusGeometry(1,.025,8,56),M(0x843C0C));this.ring.visible=false;this.ring.renderOrder=2;this.scene.add(this.ring);
   this.c1=new THREE.Color(0xFCE4D6);this.c2=new THREE.Color(0xF4CDB4);
+  // organuli semplificati della cellula animale
+  this.org=new THREE.Group();this.scene.add(this.org);
+  const nu=new THREE.Group();nu.position.set(-.22,.1,0);nu.quaternion.copy(ORG.verso(CAMDIR,V3(1,.35,1).normalize()));
+  nu.add(ORG.nucleo(.27,{pori:70}));this.org.add(nu);
+  const nl=ORG.nucleolo(.08);nl.position.copy(nu.position);this.org.add(nl);
+  [[[.42,-.22,.18],.4],[[.38,.28,-.25],-.9]].forEach(([p,a])=>{const m=ORG.mitocondrio({L:.3,R:.1});m.position.set(...p);
+   m.quaternion.copy(ORG.verso(CAMDIR,V3(0,0,1))).multiply(new THREE.Quaternion().setFromAxisAngle(V3(0,0,1),a));this.org.add(m);});
+  // globulo rosso: forma, punte della crenatura, emoglobina che esce nell'emolisi
+  this.rgeo=makeSphere(72,48);this.rmat=M(0xC0392B,.82,{side:D2,depthWrite:false,shininess:70,vertexColors:true});
+  this.rgeo.setAttribute('color',new THREE.Float32BufferAttribute(new Float32Array(this.rgeo.attributes.position.count*3).fill(1),3));
+  this.rmesh=new THREE.Mesh(this.rgeo,this.rmat);this.rmesh.frustumCulled=false;this.rmesh.renderOrder=1;this.rmesh.visible=false;this.scene.add(this.rmesh);
+  const d=this.rgeo.userData.dirs;this.spk=new Float32Array(d.length/3);
+  for(let i=0;i<this.spk.length;i++){let m=0;SPIKES.forEach(a=>{m=Math.max(m,Math.pow(Math.max(0,a.x*d[3*i]+a.y*d[3*i+1]+a.z*d[3*i+2]),160));});this.spk[i]=m;}
+  // asse del disco inclinato verso chi guarda, così si vede l'incavo centrale
+  this.qR=new THREE.Quaternion().setFromUnitVectors(UP,V3(-.15,1,.3).normalize());this.qI=this.qR.clone().invert();this.tv=V3(0,0,0);
+  this.r1=new THREE.Color(0xC0392B);this.r2=new THREE.Color(0xF2C4BD);
+  this.hb=[];const hg=new THREE.SphereGeometry(1,8,6),hm=M(0xB0281C,.85,{depthWrite:false});
+  for(let i=0;i<36;i++){const m=new THREE.Mesh(hg,hm);m.visible=false;m.userData.d=ORG.fibo(36,i);this.scene.add(m);this.hb.push(m);}
  }
- setClip(pl){if(!!pl!==!!this.mat.clippingPlanes)this.mat.needsUpdate=true;this.mat.clippingPlanes=pl;}
- update(S){
+ setTipo(t){this.tipo=t;const r=t==='rbc';this.mesh.visible=!r;this.org.visible=!r;this.rmesh.visible=r;if(!r)this.hb.forEach(m=>m.visible=false);}
+ setClip(mat,pl){if(!!pl!==!!mat.clippingPlanes)mat.needsUpdate=true;mat.clippingPlanes=pl;}
+ // foro della lisi (comune alle due cellule): piano di taglio, anello sul bordo, vescicole che escono
+ foro(S,rd,mat,ves){const u=this.u,lt=S.lt,q=Math.min(1,(.55*lt)/.3),ang=(8+42*q)*PI/180,t1=V3(0,1,0).cross(u).normalize(),t2=u.clone().cross(t1);
+  const dA=u.clone().multiplyScalar(Math.cos(ang)).addScaledVector(t1,Math.sin(ang)),dB=u.clone().multiplyScalar(Math.cos(ang)).addScaledVector(t2,Math.sin(ang));
+  const rm=(rd(dA)+rd(dB))/2,c=rm*Math.cos(ang);
+  this.plane.normal.copy(u).negate();this.plane.constant=c;this.setClip(mat,[this.plane]);
+  this.ring.visible=true;this.ring.position.copy(u).multiplyScalar(c);this.ring.quaternion.setFromUnitVectors(V3(0,0,1),u);this.ring.scale.setScalar(rm*Math.sin(ang));
+  return {q,c,t1,t2};}
+ update(S){if(this.tipo==='rbc'){this.updateRBC(S);return;}
   const st=S.A,xd=S.xa;let rx,ry,rz,a=0,dead=false,drift=0,lt=0;
   if(st==='lysis'){lt=S.lt;const p=.45+.55*lt,d=Math.min(1,(p-.45)/.55);rx=(108-10*d)*PX;ry=rz=rx*.8;dead=true;drift=d;}
   else{let k=1;if(xd<0){k=1+.27*Math.min(1,-xd/.64);}else{a=Math.min(1,xd/.8);k=1-.32*a;}rx=k;ry=rz=.8*k;dead=st==='cren';}
   if(a<.04)a=0;
   setEllipsoid(this.geo,rx,ry,rz,a);
   this.mat.color.copy(this.c1).lerp(this.c2,a);
-  // rottura della membrana (lisi): apertura che si allarga e contenuto che esce
-  const u=this.u;
-  if(st==='lysis'){
-   const q=Math.min(1,(.55*lt)/.3),ang=(8+42*q)*PI/180,t1=V3(0,1,0).cross(u).normalize(),t2=u.clone().cross(t1);
-   const rd=d=>1/Math.sqrt((d.x/rx)**2+(d.y/ry)**2+(d.z/rz)**2);
-   const dA=u.clone().multiplyScalar(Math.cos(ang)).addScaledVector(t1,Math.sin(ang)),dB=u.clone().multiplyScalar(Math.cos(ang)).addScaledVector(t2,Math.sin(ang));
-   const rm=(rd(dA)+rd(dB))/2,c=rm*Math.cos(ang);
-   this.plane.normal.copy(u).negate();this.plane.constant=c;this.setClip([this.plane]);
-   this.ring.visible=true;this.ring.position.copy(u).multiplyScalar(c);this.ring.quaternion.setFromUnitVectors(V3(0,0,1),u);this.ring.scale.setScalar(rm*Math.sin(ang));
+  const u=this.u,rd=d=>1/Math.sqrt((d.x/rx)**2+(d.y/ry)**2+(d.z/rz)**2);
+  if(st==='lysis'){const {q,t1,t2}=this.foro(S,rd,this.mat);
    this.ves.forEach((v,k)=>{const an=(k-1.5)*10*PI/180*1.6,dr=u.clone().multiplyScalar(Math.cos(an)).addScaledVector(t1,Math.sin(an)*Math.cos(k)).addScaledVector(t2,Math.sin(an)*Math.sin(k)).normalize();
     const m=(14+14*k)*drift*PX;
     v.position.copy(dr).multiplyScalar(rd(dr)).addScaledVector(u,m);v.scale.setScalar((13-2.5*k)*(.3+.7*q)*PX*1.6);v.visible=true;});
-  }else{this.setClip(null);this.ring.visible=false;this.ves.forEach(v=>v.visible=false);}
+  }else{this.setClip(this.mat,null);this.ring.visible=false;this.ves.forEach(v=>v.visible=false);}
+  // gli organuli si gonfiano e si raggrinziscono con la cellula; nella lisi escono in parte dal foro
+  this.org.scale.set(rx*.95,ry/.8*.95,rz/.8*.95);this.org.position.copy(u).multiplyScalar(drift*.35);
   // soluto dentro: sempre 12 sfere, in scala con la cellula
   this.inn.forEach((m,i)=>{m.userData.base.set(IN_PTS[i].x*rx,IN_PTS[i].y*ry,IN_PTS[i].z*rz);
    if(st==='lysis'&&[2,3,4,7,8,9].includes(i))m.userData.base.addScaledVector(u,drift*(35+(i%5)*18)*PX);});
   this.common(S);
-  const rd0=d=>1/Math.sqrt((d.x/rx)**2+(d.y/ry)**2+(d.z/rz)**2);
-  this.flow.show=!dead;this.flow.rOut=rd0;this.flow.rIn=d=>rd0(d)*.55;
+  this.flow.show=!dead;this.flow.rOut=rd;this.flow.rIn=d=>rd(d)*.55;
+ }
+ updateRBC(S){
+  const st=S.A,xd=S.xa;let s=0,a=0,dead=false,lt=0;
+  if(st==='lysis'){s=1;lt=S.lt;dead=true;}
+  else if(xd<0)s=Math.min(1,-xd/.6);else{a=Math.min(1,xd/.8);dead=st==='cren';}
+  const e=Math.max(s*s*(3-2*s),.6*a),k=1-.12*a,p=this.rgeo.attributes.position,dd=this.rgeo.userData.dirs,cl=this.rgeo.attributes.color;
+  for(let i=0;i<p.count;i++){const x=dd[3*i],y=dd[3*i+1],z=dd[3*i+2],r=Math.hypot(x,z),h=Math.sign(y)*rbcH(r);
+   let X=(x*RBC_R)*(1-e)+x*RBC_S*e,Y=(h*RBC_R)*(1-e)+y*RBC_S*e,Z=(z*RBC_R)*(1-e)+z*RBC_S*e;
+   const sp=.28*a*this.spk[i];this.tv.set((X+x*sp)*k,(Y+y*sp)*k,(Z+z*sp)*k).applyQuaternion(this.qR);p.setXYZ(i,this.tv.x,this.tv.y,this.tv.z);
+   // incavo centrale più scuro, bordo più chiaro: come nei disegni dei libri
+   const g=1-(1-e)*(.38*(1-smooth(0,.62,r))-.1*smooth(.6,.85,r));cl.setXYZ(i,g,g,g);}
+  cl.needsUpdate=true;
+  p.needsUpdate=true;this.rgeo.computeVertexNormals();fixNormals(this.rgeo);
+  // raggi dell'ellissoide che approssima la forma (per le gocce d'acqua e il soluto)
+  const ex=(RBC_R*(1-e)+RBC_S*e)*k,ey=(.33*(1-e)+RBC_S*e)*k,rd=d0=>{const d=d0.clone().applyQuaternion(this.qI);return 1/Math.sqrt((d.x/ex)**2+(d.y/ey)**2+(d.z/ex)**2);};
+  const u=this.u;
+  if(st==='lysis'){this.foro(S,d=>RBC_S,this.rmat);
+   // l'emoglobina esce dal foro e si disperde; il globulo resta pallido ("fantasma")
+   this.rmat.color.copy(this.r1).lerp(this.r2,lt);this.rmat.opacity=.82-.4*lt;
+   const t1=V3(0,1,0).cross(u).normalize(),t2=u.clone().cross(t1);
+   this.hb.forEach((m,j)=>{const f=m.userData.d,dir=u.clone().addScaledVector(t1,f.x*.9).addScaledVector(t2,f.z*.9).normalize(),dist=RBC_S*.6+lt*(.3+.9*((j*.37)%1));
+    m.position.copy(dir).multiplyScalar(dist);m.scale.setScalar(.035*(1-.5*lt)+.005);m.visible=lt>.05;});
+  }else{this.setClip(this.rmat,null);this.ring.visible=false;this.rmat.color.copy(this.r1);this.rmat.opacity=.82;this.hb.forEach(m=>m.visible=false);}
+  this.ves.forEach(v=>v.visible=false);
+  this.inn.forEach((m,i)=>{const b=IN_PTS[i];m.userData.base.set(b.x*ex*.8,b.y*ey*.7,b.z*ex*.8).applyQuaternion(this.qR);
+   if(st==='lysis'&&[2,3,4,7,8,9].includes(i))m.userData.base.addScaledVector(u,lt*(.4+(i%5)*.2));});
+  this.common(S);
+  this.flow.show=!dead;this.flow.rOut=rd;this.flow.rIn=d=>rd(d)*.5;
  }
 }
 
 // ---------- cellula vegetale ----------
+// Parete ferma. Dentro: protoplasto (strato sottile di citoplasma) attorno al grande vacuolo.
+// Nella plasmolisi il vacuolo perde acqua: il protoplasto si stacca prima negli angoli, poi tra i punti
+// in cui resta legato alla parete da sottili filamenti (contorni concavi), infine si arrotonda.
+const WALL_IN=[1.19,.94,.94,.32];   // superficie interna della parete (semiassi e raggio degli spigoli)
+const sdfBox=(p,[hx,hy,hz,r])=>{const qx=Math.abs(p.x)-(hx-r),qy=Math.abs(p.y)-(hy-r),qz=Math.abs(p.z)-(hz-r);
+ return Math.hypot(Math.max(qx,0),Math.max(qy,0),Math.max(qz,0))+Math.min(Math.max(qx,qy,qz),0)-r;};
+const wallR=d=>{let a=0,b=3;for(let i=0;i<22;i++){const m=(a+b)/2;if(sdfBox(d.clone().multiplyScalar(m),WALL_IN)>0)b=m;else a=m;}return a;};
+const ANCORE=[[1,.45,.35],[-1,.35,-.3],[.25,1,.45],[-.35,-1,.25],[.45,-.35,1],[-.5,.3,-1],[.95,-.55,-.45],[-.6,-.4,.9]].map(v=>V3(...v).normalize());
+const ancora=d=>{let m=0;ANCORE.forEach(a=>{m=Math.max(m,Math.exp(-(1-d.dot(a))/.035));});return m;};
+// distanza del bordo del protoplasto dal centro, nella direzione d (rw: parete, an: vicinanza a un filamento)
+function protoR(rw,an,p,s){if(p<=0)return rw*(.985+.012*s);
+ const Rmax=1.62-1.02*Math.pow(p,.8),r=smin(rw*.985,Rmax,.14);return r*(1-.26*smooth(.2,.75,p)*(1-an));}
 class PlantView extends View{
  constructor(el){super(el);
-  this.geo=makeSphere(64,48);this.mat=M(0xE2F0D9,.7,{side:D2,depthWrite:false,shininess:60});
-  this.proto=new THREE.Mesh(this.geo,this.mat);this.proto.frustumCulled=false;this.proto.renderOrder=1;this.scene.add(this.proto);
-  const wm=M(0x6B8F47,.3,{side:D2,depthWrite:false});
+  const wm=M(0x6B8F47,.22,{side:D2,depthWrite:false});
   this.wallO=new THREE.Mesh(rbox(1.3,1.05,1.05,.4,28),wm);this.wallI=new THREE.Mesh(rbox(1.2,.95,.95,.33,28),wm);
-  this.wallO.renderOrder=2;this.wallI.renderOrder=2;this.scene.add(this.wallO,this.wallI);
-  // soluzione esterna che riempie lo spazio tra parete e protoplasto quando questo si ritira (plasmolisi)
-  this.gap=new THREE.Mesh(rbox(1.19,.94,.94,.32,24),M(SOLH,.55,{side:D2,depthWrite:false}));this.gap.visible=false;this.scene.add(this.gap);
+  this.wallO.renderOrder=3;this.wallI.renderOrder=3;this.scene.add(this.wallO,this.wallI);
+  // soluzione esterna che riempie lo spazio tra parete e protoplasto quando questo si ritira
+  this.gap=new THREE.Mesh(rbox(1.19,.94,.94,.32,24),M(SOLH,.25,{side:D2,depthWrite:false}));this.gap.visible=false;this.gap.renderOrder=2;this.scene.add(this.gap);
+  const prep=g=>{const d=g.userData.dirs,n=d.length/3,rw=new Float32Array(n),an=new Float32Array(n),v=V3(0,0,0);
+   for(let i=0;i<n;i++){v.set(d[3*i],d[3*i+1],d[3*i+2]);rw[i]=wallR(v);an[i]=ancora(v);}g.userData.rw=rw;g.userData.an=an;};
+  this.geo=makeSphere(72,54);prep(this.geo);this.mat=M(0xE2F0D9,.38,{side:D2,depthWrite:false,shininess:50});
+  this.proto=new THREE.Mesh(this.geo,this.mat);this.proto.frustumCulled=false;this.proto.renderOrder=1;this.scene.add(this.proto);
+  this.vgeo=makeSphere(56,42);prep(this.vgeo);
+  this.vac=new THREE.Mesh(this.vgeo,M(0x5FAEE3,.92,{shininess:90}));this.vac.frustumCulled=false;this.scene.add(this.vac);
   this.c1=new THREE.Color(0xE2F0D9);this.c2=new THREE.Color(0x7FBF4D);
-  const sm=M(0x2F5A1E);this.strands=[[.6,.3],[2.5,-.3],[3.7,.4],[5.4,-.2],[1.6,.9],[4.6,-.9]].map(([u,v])=>{
-   const c=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,8),sm),e=new THREE.Mesh(new THREE.SphereGeometry(.05,8,6),sm);
-   c.visible=e.visible=false;this.scene.add(c,e);return {u,v,c,e};});
+  // cloroplasti e nucleo nello strato di citoplasma
+  const cg=new THREE.SphereGeometry(1,14,10),cm=M(0x3E8E2E,1,{shininess:40}),r=ORG.rng(77);
+  this.clo=Array.from({length:18},(_,i)=>{const d=ORG.fibo(18,i).add(V3(r()-.5,r()-.5,r()-.5).multiplyScalar(.25)).normalize(),m=new THREE.Mesh(cg,cm);
+   m.scale.set(.1,.04,.065);m.quaternion.copy(ORG.verso(d)).multiply(new THREE.Quaternion().setFromAxisAngle(V3(0,1,0),r()*PI));
+   m.userData={d,rw:wallR(d),an:ancora(d)};this.scene.add(m);return m;});
+  {const d=V3(.55,.55,.65).normalize();this.nuc=new THREE.Mesh(new THREE.SphereGeometry(.13,20,16),M(0x8A78C9,1,{shininess:50}));this.nuc.userData={d,rw:wallR(d),an:ancora(d)};this.scene.add(this.nuc);}
+  // filamenti tesi tra protoplasto e parete, nei punti di ancoraggio
+  const sm=M(0x4E7A35);this.strands=ANCORE.map(d=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(.009,.014,1,8),sm);c.visible=false;this.scene.add(c);return {d,rw:wallR(d),c};});
  }
+ forma(g,f,p,s,k){const P=g.attributes.position,d=g.userData.dirs,rw=g.userData.rw,an=g.userData.an;
+  for(let i=0;i<rw.length;i++){const r=f(protoR(rw[i],an[i],p,s));P.setXYZ(i,d[3*i]*r*k,d[3*i+1]*r*k,d[3*i+2]*r*k);}
+  P.needsUpdate=true;g.computeVertexNormals();fixNormals(g);}
  update(S){
-  const xd=S.xp;let n=6,a=89,b=68,wp=0,p=0;
-  if(xd<=0){const s=Math.min(1,-xd/.5);n=6+2*s;a=89+10*s;b=68+10*s;wp=s;}
-  else{p=Math.min(1,xd/.9);n=6-4*Math.min(1,p/.6);a=89-33*Math.pow(p,.85);b=68-32*Math.pow(p,.85);}
-  a*=PX;b*=PX;setSuper(this.geo,a,b,b,n);
-  const sc=1+.012*wp;this.wallO.scale.setScalar(sc);this.wallI.scale.setScalar(sc);this.gap.scale.setScalar(sc);
-  const gp=Math.min(1,p*2.5);this.gap.visible=gp>.01;this.gap.material.opacity=.55*gp;
+  const xd=S.xp,s=xd<=0?Math.min(1,-xd/.5):0,p=xd>0?Math.min(1,xd/.9):0,sc=1+.012*s;
+  this.wallO.scale.setScalar(sc);this.wallI.scale.setScalar(sc);this.gap.scale.setScalar(sc);
+  const gp=Math.min(1,p*3);this.gap.visible=gp>.01;this.gap.material.opacity=.25*gp;
+  // spessore dello strato di citoplasma attorno al vacuolo (più sottile nel turgore)
+  const layer=.13-.04*s,vac=r=>Math.max(.12,r-layer);
+  this.forma(this.geo,r=>r,p,s,sc);this.forma(this.vgeo,vac,p,s,sc);
   this.mat.color.copy(this.c1).lerp(this.c2,Math.min(1,p));
-  // filamenti che trattengono il protoplasto alla parete (plasmolisi)
-  const show=p>.3,op=Math.min(1,(p-.3)/.3),P=V3(0,0,0),W=V3(0,0,0);
-  this.strands.forEach((s,k)=>{s.c.visible=s.e.visible=show;if(!show)return;
-   superPoint(s.u,s.v,a,b,b,n,P);const dv=P.clone().normalize(),t=.97*Math.min(1.2/Math.abs(dv.x||1e-6),.95/Math.abs(dv.y||1e-6),.95/Math.abs(dv.z||1e-6));
-   W.copy(dv).multiplyScalar(t);
-   // filo sinuoso: ancorato alle due estremità, con ondulazioni che si smorzano verso i punti di attacco
-   const Dv=W.clone().sub(P),L=Dv.length(),ax=Dv.clone().normalize(),n1=ax.clone().cross(Math.abs(ax.y)<.9?UP:V3(1,0,0)).normalize(),n2=ax.clone().cross(n1),pts=[];
-   for(let i=0;i<=14;i++){const f=i/14,env=Math.pow(Math.sin(PI*f),.7),w=2*PI*(1.5+.25*(k%3))*f+k*1.7,A=.09*env*Math.min(1,L/.6);
-    pts.push(P.clone().addScaledVector(Dv,f).addScaledVector(n1,A*Math.sin(w)).addScaledVector(n2,A*.6*Math.cos(w)));}
-   if(s.c.geometry)s.c.geometry.dispose();
-   s.c.geometry=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),28,.012+.009*op,6,false);
-   s.c.position.set(0,0,0);s.c.quaternion.identity();s.c.scale.set(1,1,1);
-   s.e.position.copy(W);s.e.scale.setScalar(.6+op*.4);});
-  this.inn.forEach((m,i)=>m.userData.base.set(IN_PTS[i].x*a*.95,IN_PTS[i].y*b*.95,IN_PTS[i].z*b*.95));
+  const place=(m,f)=>{const u=m.userData,r=protoR(u.rw,u.an,p,s)*sc;m.position.copy(u.d).multiplyScalar(f(r));};
+  this.clo.forEach(m=>place(m,r=>r-layer*.5));place(this.nuc,r=>r-layer*.55);
+  this.strands.forEach(st=>{const rp=protoR(st.rw,1,p,s)*sc,rwl=st.rw*sc,gapL=rwl-rp,c=st.c;c.visible=gapL>.03;if(!c.visible)return;
+   c.position.copy(st.d).multiplyScalar((rp+rwl)/2);c.scale.y=gapL;c.quaternion.setFromUnitVectors(UP,st.d);});
+  // soluto dentro il vacuolo
+  this.inn.forEach((m,i)=>{const b=IN_PTS[i],d=b.clone().normalize(),k=b.length()/.62;m.userData.base.copy(d).multiplyScalar(k*vac(protoR(wallR(d),ancora(d),p,s))*.8*sc);});
   this.common(S);
-  const wr=d=>Math.min(1.28/(Math.abs(d.x)||1e-6),1.03/(Math.abs(d.y)||1e-6),1.03/(Math.abs(d.z)||1e-6));
-  this.flow.show=true;this.flow.rOut=wr;this.flow.rIn=d=>wr(d)*.4;
+  this.flow.show=true;this.flow.rOut=d=>wallR(d)*sc+.05;this.flow.rIn=d=>protoR(wallR(d),ancora(d),p,s)*.6;
  }
 }
 
@@ -316,11 +396,11 @@ const S={c:50,xt:0,xa:0,xp:0,A:'ok',lt:0,last:0,run:false};
 const stA=$('#stA'),stP=$('#stP'),conc=$('#conc'),zoneLbl=$('#zoneLbl');
 function refresh(){
  const z=zoneOf(S.c);vA.update(S);vP.update(S);
- let ta=TEXT.animale[z];
- if(S.A==='lysis')ta="<span class='warn'>Lisi: la membrana si è rotta e la cellula non è recuperabile.</span> Premi Reset per una nuova cellula.";
+ const rb=vA.tipo==='rbc';let ta=(rb?TEXT.rbc:TEXT.animale)[z];
+ if(S.A==='lysis')ta=rb?"<span class='warn'>Emolisi.</span> La membrana si è rotta e l'emoglobina è uscita. Il globulo rosso non è recuperabile. Premi Reset per una nuova cellula.":"<span class='warn'>Lisi: la membrana si è rotta e la cellula non è recuperabile.</span> Premi Reset per una nuova cellula.";
  if(S.A==='cren')ta="<span class='warn'>Crenatura irreversibile:</span> la disidratazione è stata troppo forte e la cellula non si riprende. Premi Reset per una nuova cellula.";
  if(stA.dataset.t!==ta){stA.innerHTML=ta;stA.dataset.t=ta;}
- const tp=TEXT.vegetale[z];if(stP.dataset.t!==tp){stP.innerHTML=tp;stP.dataset.t=tp;}
+ const tp=z==='iper'&&S.xp>.35?TEXT.plasmo:TEXT.vegetale[z];if(stP.dataset.t!==tp){stP.innerHTML=tp;stP.dataset.t=tp;}
  zoneLbl.textContent=ZN[z];dirty=1;}
 function step(now){
  const dt=Math.max(0,Math.min(.05,(now-S.last)/1000||.016)),f=1-Math.exp(-dt/.35);S.last=now;S.xp+=(S.xt-S.xp)*f;
@@ -340,9 +420,12 @@ function loop(now){requestAnimationFrame(loop);if(S.run)step(now);const t=now/10
 // su schermi stretti si vede una cellula alla volta: i pulsanti scelgono quale
 document.querySelectorAll('#seg [data-v]').forEach(b=>b.addEventListener('click',()=>{
  $('#duo').dataset.show=b.dataset.v;document.querySelectorAll('#seg button').forEach(x=>x.setAttribute('aria-pressed',x===b));}));
+document.querySelectorAll('#tipoA [data-a]').forEach(b=>b.addEventListener('click',()=>{
+ document.querySelectorAll('#tipoA [data-a]').forEach(x=>{const on=x===b;x.classList.toggle('attivo',on);x.setAttribute('aria-pressed',on);});
+ vA.setTipo(b.dataset.a);S.A='ok';S.lt=0;S.xa=0;kick();refresh();}));
 setC(50);loop(performance.now());
 </script>
-<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Il modello 3D mostra che cosa succede, per osmosi, a una cellula animale e a una vegetale in una soluzione ipotonica, isotonica o ipertonica, per vedere le differenze tra i tre casi.</p>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Il modello 3D mostra che cosa succede, per osmosi, a una cellula animale, a un globulo rosso e a una cellula vegetale in soluzione ipotonica, isotonica o ipertonica, dalla lisi e dalla crenatura fino alla plasmolisi con il vacuolo che si restringe.</p>
 <div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T</div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6fd08c!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(111,208,140,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Biologia

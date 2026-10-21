@@ -6,13 +6,13 @@
 <!-- © 2026 Prof. T. Tutti i diritti riservati. -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>La cellula in tre dimensioni - Scienza in Movimento</title>
-<meta name="description" content="Modelli 3D interattivi della cellula animale, della cellula vegetale e di quella dei funghi, con le loro strutture da osservare.">
+<meta name="description" content="Modelli 3D della cellula animale, vegetale e dei funghi con organuli come nei libri: nucleo, RER, Golgi, mitocondri, cloroplasti, e la cellula al lavoro.">
 <link rel="canonical" href="https://scienzainmovimento.it/biologia/cellula_3D.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Scienza in Movimento">
 <meta property="og:locale" content="it_IT">
 <meta property="og:title" content="La cellula in tre dimensioni - Scienza in Movimento">
-<meta property="og:description" content="Modelli 3D interattivi della cellula animale, della cellula vegetale e di quella dei funghi, con le loro strutture da osservare.">
+<meta property="og:description" content="Modelli 3D della cellula animale, vegetale e dei funghi con organuli come nei libri: nucleo, RER, Golgi, mitocondri, cloroplasti, e la cellula al lavoro.">
 <meta property="og:url" content="https://scienzainmovimento.it/biologia/cellula_3D.html">
 <meta property="og:image" content="https://scienzainmovimento.it/og_image.jpg">
 <meta property="og:image:width" content="1200">
@@ -45,6 +45,11 @@ button{font-family:inherit;cursor:pointer}
 .modalita .pt{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:0}
 .gl{font-size:13px;font-weight:bold;color:var(--sub);margin:0 0 6px}
 .small{font-size:13px;color:var(--sub);margin-top:12px}
+.lav{margin:8px 0 0;font-size:14px;line-height:1.4;color:var(--acc)}
+.legenda{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 2px 0;font-size:13px;color:var(--sub)}
+.legenda[hidden]{display:none}
+.legenda span{display:inline-flex;align-items:center;gap:6px}
+.legenda i{display:inline-block;width:12px;height:12px;border-radius:50%}
 .eyebrow{color:#8ee0a6;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
@@ -62,14 +67,16 @@ button{font-family:inherit;cursor:pointer}
   <div class="main">
     <div>
       <div id="stage"><button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div>
+      <div class="legenda" id="leg" hidden></div>
       <details class="opzioni">
         <summary><b>Opzioni</b></summary>
+        <button class="levetta" role="switch" id="bLav" aria-checked="false">Cellula al lavoro</button>
         <button class="levetta" role="switch" id="bOpen" aria-checked="true">Vista aperta</button>
         <button class="levetta" role="switch" id="bRot" aria-checked="false">Rotazione automatica</button>
       </details>
     </div>
     <div>
-      <div class="card info"><h3 id="t">Tocca una struttura</h3><p id="d" class="hint"></p></div>
+      <div class="card info"><h3 id="t">Tocca una struttura</h3><p id="d" class="hint"></p><p id="d2" class="lav" hidden></p></div>
       <div class="card"><div id="groups"></div>
         <div class="small">Trascina per ruotare, pizzica o usa la rotella per ingrandire. Tocca di nuovo la stessa struttura per deselezionarla.</div></div>
     </div>
@@ -77,6 +84,7 @@ button{font-family:inherit;cursor:pointer}
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="../animazioni.js"></script>
+<script src="organuli_3d.js"></script>
 <script>
 const $=s=>document.querySelector(s), stage=$('#stage'), PI=Math.PI, clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const MEMB_O=.4;   // opacità della membrana a riposo (0 = invisibile, 1 = opaca)
@@ -105,16 +113,18 @@ const B={
  ribosomi:{l:'Ribosomi',n:'Ribosomi',d:D.rib,c:'#843C0C'},
  rer:{l:'Reticolo rugoso (RER)',n:'Reticolo endoplasmatico rugoso (RER)',d:D.rer,c:'#5578A8'},
  rel:{l:'Reticolo liscio (REL)',n:'Reticolo endoplasmatico liscio (REL)',d:D.rel,c:'#7FA6C9'},
- golgi:{l:'Apparato di Golgi',n:'Apparato di Golgi',d:D.golgi,c:'#B8860B'},
+ golgi:{l:'Apparato di Golgi',n:'Apparato di Golgi',d:D.golgi,c:'#C06A8C'},
  mito:{l:'Mitocondri',n:'Mitocondri',d:D.mito,c:'#E08A4F'},
  cloro:{l:'Cloroplasti',n:'Cloroplasti',d:"Contengono la clorofilla: qui avviene la fotosintesi. All'interno si distinguono i grani, pile di sacchetti dove viene catturata la luce.",c:'#4C8C3C'},
- glicogeno:{l:'Glicogeno',n:'Glicogeno',d:"Granuli di riserva di glucosio, sparsi nel citoplasma: come nella cellula animale, non amido come nelle piante.",c:'#6A4C9C'},
+ glicogeno:{l:'Glicogeno',n:'Glicogeno',d:"Granuli di riserva di glucosio, sparsi nel citoplasma: come nella cellula animale, non amido come nelle piante.",c:'#D9A62E'},
  lisosomi:{l:'Lisosomi',n:'Lisosomi',d:"Digeriscono i rifiuti e le sostanze di scarto della cellula.",c:'#B25E2A'},
- vacuolo:{l:'Vacuolo',n:'Vacuolo',d:'',c:'#6FA8C9'}
+ vacuolo:{l:'Vacuolo',n:'Vacuolo',d:'',c:'#6FA8C9'},
+ citoscheletro:{l:'Citoscheletro',n:'Citoscheletro',d:"Rete di tubuli e filamenti sottilissimi che sostiene la cellula e le dà forma. Fa anche da binario per gli spostamenti di organuli e vescicole.",c:'#6FA89A'},
+ centrioli:{l:'Centrioli',n:'Centrioli',d:"Due piccoli cilindri disposti ad angolo retto, vicino al nucleo. Ognuno è formato da nove gruppi di tre microtubuli. Organizzano il citoscheletro e guidano la divisione della cellula.",c:'#D4A62A'}
 };
 // gruppi dei pulsanti: stesso ordine in tutti i tipi di cellula
 const GROUPS=[
- ['Struttura',['parete','membrana','citoplasma']],
+ ['Struttura',['parete','membrana','citoplasma','citoscheletro','centrioli']],
  ['Controllo',['nucleo','nucleolo']],
  ['Produzione e trasporto',['ribosomi','rer','rel','golgi']],
  ['Energia e riserve',['mito','cloro','glicogeno']],
@@ -145,77 +155,85 @@ function rbox(hx,hy,hz,r,seg){seg=seg||36;
   v.sub(q).normalize();n.setXYZ(i,v.x,v.y,v.z);p.setXYZ(i,q.x+v.x*r,q.y+v.y*r,q.z+v.z*r);}
  return g;}
 
-// ---------- organuli ----------
-function nucleus(p,Rn){G('nucleo',p).add(S(sp(Rn,32),M(0x8A78C9,.5,{side:D2,depthWrite:false}),null,null,1));
- const k=Rn/.5;G('nucleolo',[p[0]+.12*k,p[1]+.1*k,p[2]+.15*k]).add(S(sp(.16*k,20),M(0x5A47A0)));}
-function rer(p,r,k){const g=G('rer',p,r),m=M(0x5578A8),rb=M(0x2C4870);g.scale.setScalar(k);
- for(let i=0;i<4;i++){const y=(i-1.5)*.11;g.add(S(new THREE.CylinderGeometry(.42,.42,.04,28),m,[0,y,0],[1,1,.6]));
-  for(let j=0;j<7;j++){const a=j*.9+i;g.add(S(sp(.03,8),rb,[Math.cos(a)*.3,y+.03,Math.sin(a)*.18]));}}}
-function rel(p,r,k){const g=G('rel',p,r),m=M(0x7FA6C9),v=M(0xA9C6DF);g.scale.setScalar(k);
- for(let i=0;i<4;i++){const y=(i-1.5)*.1;g.add(S(new THREE.CylinderGeometry(.28,.28,.035,24),m,[0,y,0],[1,1,.6]));
-  g.add(S(sp(.04,10),v,[i%2?.3:-.3,y,0]));}}
-function golgi(p,r,k){const g=G('golgi',p,r),m=M(0xB8860B,1,{side:D2});g.scale.setScalar(k);
- for(let i=0;i<5;i++){const s=.9-i*.06;g.add(S(new THREE.SphereGeometry(1,20,6,0,PI*2,0,.45),m,[0,(i-2)*.1,0],[s,s*.6,s]));}
- [[-.42,-.2,0],[.4,.25,.1],[.38,-.15,-.1]].forEach(q=>g.add(S(sp(.05,10),M(0xE0B356),q)));}
-function mito(p,r,k){const g=G('mito',p,r);g.scale.setScalar(k||1);
- g.add(S(sp(1,24),M(0xF7B27A,.5,{depthWrite:false}),null,[.4,.2,.2],1));
- const c=M(0xE08A4F);for(let i=-3;i<=3;i++){const o=S(new THREE.CylinderGeometry(.13,.13,.025,14),c,[i*.1,0,0],[1,1,i%2?.6:1]);o.rotation.z=PI/2;g.add(o);}}
-function ribos(list,col){const g=G('ribosomi'),m=M(col);list.forEach(q=>g.add(S(sp(.05,8),m,q)));}
-function vacuole(p,rad,col){G('vacuolo',p).add(S(sp(1,32),M(col,.72,{side:D2,depthWrite:false,shininess:80}),null,rad,1));}
-function chloros(list){const g=G('cloro'),gm=M(0x2F6B24);
- list.forEach(([p,r])=>{const o=new THREE.Group();o.position.set(...p);o.rotation.set(...r);o.scale.setScalar(1.3);
-  o.add(S(sp(1,20),M(0x4C8C3C,.6,{depthWrite:false}),null,[.3,.17,.17],1));
-  [-.45,0,.45].forEach(f=>{for(let j=0;j<3;j++)o.add(S(new THREE.CylinderGeometry(.05,.05,.025,10),gm,[f*.3,(j-1)*.05,0]));});
-  g.add(o);});}
-function glyco(p,rad){const g=G('glicogeno',p),m=M(0x6A4C9C),N=16;
- for(let i=0;i<N;i++){const y=1-2*(i+.5)/N,r=Math.sqrt(1-y*y),a=i*2.4,k=rad*(.45+.55*((i*7)%5)/4);
-  g.add(S(sp(.045,8),m,[k*r*Math.cos(a),k*y,k*r*Math.sin(a)]));}}
-
 // ---------- i tre tipi di cellula ----------
+// forme nuove degli organuli (file condiviso organuli_3d.js)
+const ORG=OrganuliCellula(THREE,M), V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+// direzione da cui guarda la camera all'apertura: le parti tagliate degli organuli si rivolgono da quella parte
+const CAM=V3(-.61,.32,.73);
+const verso=(dir,asse)=>ORG.verso(dir,asse||V3(0,1,0));
+const ruota=(q,asse,ang)=>q.multiply(new THREE.Quaternion().setFromAxisAngle(asse,ang));
+function put(k,obj,p,q){const g=G(k,p);if(q)g.quaternion.copy(q);g.add(obj);return g;}
 function buildAnimal(){
  G('citoplasma').add(shell(sp(1.55,48),0xFCE4D6,.4,0));
- G('membrana').add(shell(sp(1.6,48),0xE0A070,MEMB_O,2,null,{shininess:90}));
- nucleus([-.4,.3,-.1],.5);
- rer([-.1,-.25,-.85],[0,0,0],1);
- rel([.75,-.5,-.55],[0,.5,.2],1);
- golgi([.8,.5,.2],[.3,0,-.5],1);
- mito([.5,-.2,.7],[0,0,.4]);mito([-.9,-.5,.6],[0,.6,-.2]);
- {const g=G('lisosomi'),m=M(0xB25E2A);g.add(S(sp(.11,14),m,[-1,.1,-.7]),S(sp(.08,14),m,[-.9,.6,.3]));}
- {let s=7;const rnd=()=>(s=s*16807%2147483647)/2147483647,l=[];
-  for(let i=0;i<12;i++){const a=rnd()*PI*2,b=Math.acos(rnd()*2-1),r=.5+rnd()*.8;l.push([r*Math.sin(b)*Math.cos(a),r*Math.cos(b),r*Math.sin(b)*Math.sin(a)]);}
-  ribos(l,0x843C0C);}
+ put('membrana',ORG.membrana(1.6)).add(shell(sp(1.6,48),0xE0A070,MEMB_O,2,null,{shininess:90}));
+ const N=V3(-.3,.25,.05),rn=.5;
+ INFO={N,rn,gs:.75,mem:d=>d.clone().normalize().multiplyScalar(1.6)};
+ // lo spicchio aperto del nucleo (bisettrice x=z nel suo sistema) guarda verso la camera
+ const qN=verso(CAM,V3(1,.35,1).normalize());
+ put('nucleo',ORG.nucleo(rn),N.toArray(),qN);
+ put('nucleolo',ORG.nucleolo(.15),N.clone().add(V3(.04,.02,.04).applyQuaternion(qN)).toArray());
+ put('rer',ORG.rer(rn),N.toArray(),verso(V3(.7,-.45,.55)));
+ put('golgi',ORG.golgi({s:.75}),[.95,.62,.1],verso(V3(.8,.6,.1)));
+ put('rel',ORG.rel(.5),[.45,-.85,-.35],ruota(new THREE.Quaternion(),V3(0,1,0),.6));
+ [[[-.85,-.6,.7],.3],[[.75,.05,.9],-.5],[[-.1,-.95,-.75],1],[[.15,.9,-.75],2.2]].forEach(([p,a],i)=>
+  put('mito',ORG.mitocondrio({seed:23+i}),p,ruota(verso(CAM,V3(0,0,1)),V3(0,0,1),a)));
+ put('lisosomi',ORG.lisosoma(.12),[-1.05,.35,-.6]);put('lisosomi',ORG.lisosoma(.09,{seed:4}),[.1,.55,1.05]);
+ // centrosoma: nel citoplasma, vicino al nucleo ma lontano dal RER
+ const C=V3(-.78,-.28,-.2);
+ put('centrioli',ORG.centrioli({s:1.3}),C.toArray(),verso(V3(.3,1,.2)));
+ put('citoscheletro',ORG.citoscheletro(C,1.5).translateX(0));
+ put('ribosomi',ORG.ribosomi(1.45,{evita:[[N,rn*1.75],[V3(.95,.62,.1),.4]]}));
 }
+// punto della superficie di un parallelepipedo arrotondato nella direzione d (per bisezione)
+function puntoRbox(hx,hy,hz,r){const bx=V3(hx-r,hy-r,hz-r),q=V3(0,0,0),sdf=p=>{q.set(Math.abs(p.x)-bx.x,Math.abs(p.y)-bx.y,Math.abs(p.z)-bx.z);
+  const o=V3(Math.max(q.x,0),Math.max(q.y,0),Math.max(q.z,0)).length();return o+Math.min(Math.max(q.x,q.y,q.z),0)-r;};
+ return d=>{let a=0,b=5;for(let i=0;i<24;i++){const m=(a+b)/2;if(sdf(d.clone().multiplyScalar(m))>0)b=m;else a=m;}
+  const p=d.clone().multiplyScalar(a),c=V3(clamp(p.x,-bx.x,bx.x),clamp(p.y,-bx.y,bx.y),clamp(p.z,-bx.z,bx.z)),n=p.clone().sub(c);
+  return {p,n:n.lengthSq()>1e-9?n.normalize():d.clone()};};}
+const versoCam=a=>ruota(verso(CAM,V3(0,0,1)),V3(0,0,1),a);
 function buildPlant(){
  G('citoplasma').add(shell(rbox(1.68,1.28,1.28,.3),0xE2F0D9,.4,0));
- G('membrana').add(shell(rbox(1.72,1.32,1.32,.32),0x5B8A3E,MEMB_O,2,null,{shininess:90}));
- G('parete').add(shell(rbox(1.86,1.46,1.46,.42),0x6B8F47,WALL_O,3));
- vacuole([.45,-.2,-.1],[.95,.62,.68],0x9CCDE8);
- nucleus([-1,.4,.3],.36);
- rer([-1.05,-.05,-.55],[0,.4,0],.8);
- rel([-.2,.7,-.85],[0,0,0],.75);
- golgi([1,.65,-.55],[.2,0,-.3],.85);
- mito([1.3,.35,.75],[0,.3,.5],1);mito([-.9,-.75,-.4],[0,.6,-.2],1);
- chloros([[[-.1,.95,.5],[0,.3,.2]],[[.9,.9,.35],[0,-.4,-.2]],[[1.35,-.35,.8],[0,.5,.6]],[[-.5,-.9,.7],[0,.2,-.2]],[[.45,-1,.65],[0,-.3,.1]]]);
- ribos([[-.55,.8,.6],[-.4,.95,.4],[-.7,.65,.8],[1,.2,-.8]],0x375623);
+ put('membrana',ORG.membrana(1,{col:0x5B8A3E,prot:0x3F6E2A,n:60,oi:.1,interna:rbox(1.69,1.29,1.29,.29),punto:puntoRbox(1.72,1.32,1.32,.32)}))
+  .add(shell(rbox(1.72,1.32,1.32,.32),0x5B8A3E,MEMB_O,2,null,{shininess:90}));
+ // parete con il suo spessore: superficie esterna e interna
+ {const g=G('parete');g.add(shell(rbox(1.86,1.46,1.46,.42),0x6B8F47,WALL_O,3),shell(rbox(1.77,1.37,1.37,.35),0xB5D196,WALL_O*.3,3));}
+ put('vacuolo',ORG.vacuolo([.95,.62,.68],{col:0x8EC6EA,o:.8}),[.45,-.2,-.1]);
+ const N=V3(-1,.4,.3),rn=.36,qN=verso(CAM,V3(1,.35,1).normalize());
+ {const pr=puntoRbox(1.72,1.32,1.32,.32);INFO={N,rn,gs:.6,mem:d=>pr(d.clone().normalize()).p};}
+ put('nucleo',ORG.nucleo(rn),N.toArray(),qN);
+ put('nucleolo',ORG.nucleolo(.11),N.clone().add(V3(.03,.015,.03).applyQuaternion(qN)).toArray());
+ put('rer',ORG.rer(rn,{n:3,ribo:120}),N.toArray(),verso(V3(0,-.55,-.85)));
+ put('golgi',ORG.golgi({s:.6}),[1.05,.75,-.6],verso(V3(.5,.7,-.5)));
+ put('rel',ORG.rel(.4,{seed:12}),[-.3,.85,-.75]);
+ [[[1.25,.45,.8],.4],[[-.95,-.75,-.45],1.2]].forEach(([p,a],i)=>{const m=ORG.mitocondrio({seed:30+i});m.scale.setScalar(.9);put('mito',m,p,versoCam(a));});
+ [[[-.1,.95,.55],.2],[[.9,.92,.4],-.3],[[1.3,-.45,.8],.6],[[-.5,-.95,.75],-.2],[[.45,-1,.7],.15],[[-1.25,-.5,.55],1.1]].forEach(([p,a],i)=>{
+  const c=ORG.cloroplasto({seed:51+i});c.scale.setScalar(1.15);put('cloro',c,p,versoCam(a));});
+ const C=V3(-.55,0,.35);put('citoscheletro',ORG.citoscheletro(C,1.2,{seed:41}));
+ put('ribosomi',ORG.ribosomi(1.25,{col:0x375623,n:45,catene:3,evita:[[V3(.45,-.2,-.1),.95],[N,rn*1.7]]}));
 }
 function buildFungus(){
  G('citoplasma').add(shell(sp(1,48),0xEAE1F4,.4,0,[1.5,1.12,1.12]));
- G('membrana').add(shell(sp(1,48),0x9B7FC6,MEMB_O,2,[1.54,1.16,1.16],{shininess:90}));
- G('parete').add(shell(sp(1,48),0x5B4688,WALL_O,3,[1.67,1.29,1.29]));
- vacuole([.5,-.2,-.15],[.52,.42,.44],0xC2AEE6);
- nucleus([-.65,.3,.1],.4);
- rer([-.5,-.45,-.45],[0,.3,0],.8);
- rel([.35,.62,-.5],[0,0,0],.75);
- golgi([.85,.25,.4],[.2,0,-.3],.85);
- mito([-.1,-.5,.65],[0,.2,.3],1);mito([.15,.6,.55],[0,-.3,-.2],1);
- glyco([-.9,-.3,.45],.18);glyco([.9,-.45,.3],.18);
- ribos([[-.15,.15,.85],[.05,.3,.75],[-.3,.3,.85],[.3,-.7,.4],[.45,-.55,.55]],0x3F2A63);
+ {const m=ORG.membrana(1,{col:0x9B7FC6,prot:0x6E54A0,n:50});m.scale.set(1.54,1.16,1.16);
+  put('membrana',m).add(shell(sp(1,48),0x9B7FC6,MEMB_O,2,[1.54,1.16,1.16],{shininess:90}));}
+ {const g=G('parete');g.add(shell(sp(1,48),0x5B4688,WALL_O,3,[1.67,1.29,1.29]),shell(sp(1,48),0x7D67AA,WALL_O*.6,3,[1.6,1.22,1.22]));}
+ put('vacuolo',ORG.vacuolo([.52,.42,.44],{col:0xC2AEE6,ton:0x8E76C2,dentro:0x8E76C2}),[.5,-.2,-.15]);
+ const N=V3(-.65,.3,.1),rn=.4,qN=verso(CAM,V3(1,.35,1).normalize());
+ INFO={N,rn,gs:.5,mem:d=>{d=d.clone().normalize();return d.multiplyScalar(1/Math.hypot(d.x/1.54,d.y/1.16,d.z/1.16));}};
+ put('nucleo',ORG.nucleo(rn),N.toArray(),qN);
+ put('nucleolo',ORG.nucleolo(.12),N.clone().add(V3(.03,.015,.03).applyQuaternion(qN)).toArray());
+ put('rer',ORG.rer(rn,{n:3,ribo:110}),N.toArray(),verso(V3(.1,-.6,-.75)));
+ put('rel',ORG.rel(.38,{seed:14}),[.35,.62,-.5]);
+ put('golgi',ORG.golgi({s:.5,n:5}),[.9,.35,.35],verso(V3(.6,.5,.4)));
+ [[[-.1,-.6,.6],.3],[[.25,.62,.5],-.6]].forEach(([p,a],i)=>{const m=ORG.mitocondrio({seed:40+i});m.scale.setScalar(.85);put('mito',m,p,versoCam(a));});
+ put('glicogeno',ORG.glicogeno(.2),[-.95,-.3,.4]);put('glicogeno',ORG.glicogeno(.2,{seed:9}),[.9,-.45,.3]);
+ put('citoscheletro',ORG.citoscheletro(V3(-.2,-.1,.25),1.05,{seed:43}));
+ put('ribosomi',ORG.ribosomi(1.0,{col:0x3F2A63,n:40,catene:3,evita:[[V3(.5,-.2,-.15),.55],[N,rn*1.7]]}));
 }
 const TYPES={
  animale:{sub:'la cellula animale',cyto:'#FCE4D6',rad:5.2,build:buildAnimal,ov:{},
-  keys:['membrana','citoplasma','nucleo','nucleolo','ribosomi','rer','rel','golgi','mito','lisosomi']},
+  keys:['membrana','citoplasma','citoscheletro','centrioli','nucleo','nucleolo','ribosomi','rer','rel','golgi','mito','lisosomi']},
  vegetale:{sub:'la cellula vegetale',cyto:'#E2F0D9',rad:6.2,build:buildPlant,
-  keys:['parete','membrana','citoplasma','nucleo','nucleolo','ribosomi','rer','rel','golgi','mito','cloro','vacuolo'],
+  keys:['parete','membrana','citoplasma','citoscheletro','nucleo','nucleolo','ribosomi','rer','rel','golgi','mito','cloro','vacuolo'],
   ov:{parete:{d:"Involucro rigido di cellulosa: dà forma e sostegno, protegge dagli shock osmotici.",c:'#6B8F47'},
    membrana:{d:D.memb2,c:'#5B8A3E'},
    nucleo:{d:D.nucleo+" Nelle cellule mature può essere spinto verso il bordo dal vacuolo."},
@@ -223,13 +241,13 @@ const TYPES={
    mito:{d:D.mito+" Presenti anche nelle piante."},
    vacuolo:{l:'Vacuolo centrale',n:'Vacuolo centrale',d:"Grande sacca piena d'acqua: regola la pressione interna (turgore) e accumula sostanze. Svolge anche funzioni digestive, come i lisosomi nella cellula animale.",c:'#6FA8C9'}}},
  fungina:{sub:'la cellula fungina',cyto:'#EAE1F4',rad:5.6,build:buildFungus,
-  keys:['parete','membrana','citoplasma','nucleo','nucleolo','ribosomi','rer','rel','golgi','mito','glicogeno','vacuolo'],
+  keys:['parete','membrana','citoplasma','citoscheletro','nucleo','nucleolo','ribosomi','rer','rel','golgi','mito','glicogeno','vacuolo'],
   ov:{parete:{l:'Parete (chitina)',n:'Parete cellulare (chitina)',d:"Involucro rigido come nelle piante, ma fatto di chitina, non di cellulosa.",c:'#5B4688'},
    membrana:{d:D.memb2,c:'#7B5FA8'},
    ribosomi:{c:'#3F2A63'},
    vacuolo:{d:"Presente anche nel fungo, in genere più piccolo che nelle piante: accumula sostanze e svolge anche funzioni digestive.",c:'#8E76C2'}}}
 };
-let type='animale',cur=null,dirty=1,open=true,shells=[],orgs=[],chips=[];
+let INFO=null,type='animale',cur=null,dirty=1,open=true,shells=[],orgs=[],chips=[];
 const inf=k=>Object.assign({},B[k],TYPES[type].ov[k]);
 
 // ---------- taglio ("vista aperta") ----------
@@ -248,6 +266,7 @@ function buildChips(){const box=$('#groups');box.innerHTML='';chips=[];
   box.appendChild(gd);});}
 function sel(k){cur=k;const o=k&&inf(k);
  $('#t').textContent=o?o.n:'Tocca una struttura';$('#d').textContent=o?o.d:HINT;$('#d').className=o?'':'hint';
+ lavTesto();
  chips.forEach(c=>{const on=c.dataset.k==k;c.classList.toggle('on',on);c.setAttribute('aria-pressed',on);});
  cell.children.forEach(g=>{const on=g.userData.key==k;g.traverse(m=>{if(!m.isMesh)return;const mt=m.material,u=mt.userData,fade=k&&!on;
   mt.transparent=fade?true:u.t;mt.opacity=fade?u.o*.18:u.o;if(on)mt.emissive.copy(mt.color).multiplyScalar(.38);else mt.emissive.setHex(0);mt.needsUpdate=true;});});
@@ -255,7 +274,7 @@ function sel(k){cur=k;const o=k&&inf(k);
 const rc=new THREE.Raycaster(), keyOf=o=>{while(o&&!o.userData.key)o=o.parent;return o&&o.userData.key;};
 function pick(e){const r=cv.getBoundingClientRect();
  rc.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),cam);
- let k=null;const h=rc.intersectObjects(orgs,true);
+ let k=null;const h=rc.intersectObjects(orgs,true).filter(x=>!(open&&x.object.material.userData.clip&&x.point.x<0&&x.point.z>0));
  if(h.length){k=keyOf(h[0].object);if(k=='nucleo'&&h.some(x=>keyOf(x.object)=='nucleolo'))k='nucleolo';}
  else{const s=rc.intersectObjects(shells,true).filter(x=>!(open&&x.point.x<0&&x.point.z>0));
   if(s.length)k=keyOf(s[0].object);}
@@ -265,13 +284,98 @@ function pick(e){const r=cv.getBoundingClientRect();
 function clear(){while(cell.children.length){const c=cell.children[0];cell.remove(c);
  c.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});}shellMats.length=0;}
 function setType(t){type=t;clear();TYPES[t].build();
+ cell.traverse(o=>{if(o.isMesh&&o.material.userData.clip&&!shellMats.includes(o.material))shellMats.push(o.material);});
  shells=cell.children.filter(g=>['citoplasma','membrana','parete'].includes(g.userData.key));
  orgs=cell.children.filter(g=>!shells.includes(g));
  buildChips();
  document.querySelectorAll('#types button').forEach(p=>{const on=p.dataset.type==t;p.setAttribute('aria-pressed',on);});
  {const st=TYPES[t].sub;$('#sub').textContent=st.charAt(0).toUpperCase()+st.slice(1);}
- rad=TYPES[t].rad;setOpen(open);sel(null);}
+ rad=TYPES[t].rad;setOpen(open);lavCostruisci();sel(null);}
 document.querySelectorAll('#types button').forEach(p=>p.onclick=()=>setType(p.dataset.type));
+
+// ---------- cellula al lavoro ----------
+// Molecole e vescicole che viaggiano tra gli organuli. Velocità uniformi (unità della scena al secondo):
+// tutte le molecole alla stessa velocità, tutte le vescicole alla stessa velocità.
+const V_MOL=.32, V_VES=.24, PAUSA=1.6;
+const LAV={on:false,g:null,flussi:[]};
+const T_LAV={
+ nucleo:"Dai pori esce l'mRNA (filamento magenta), una copia delle istruzioni del DNA, diretta ai ribosomi.",
+ nucleolo:"Dai pori del nucleo esce l'mRNA (filamento magenta), diretto ai ribosomi preparati dal nucleolo.",
+ ribosomi:"I ribosomi ricevono l'mRNA arrivato dal nucleo e, seguendo le sue istruzioni, costruiscono le proteine.",
+ rer:"L'mRNA arriva ai ribosomi del RER. Le proteine prodotte partono chiuse in vescicole verso l'apparato di Golgi.",
+ golgi:"Le vescicole del RER arrivano sul lato di entrata. Dal lato di uscita partono nuove vescicole verso la membrana.",
+ membrana:"Entrano glucosio e ossigeno ed esce l'anidride carbonica. Le vescicole del Golgi si fondono con la membrana e versano il loro contenuto all'esterno.",
+ mito:"Glucosio e ossigeno arrivano ai mitocondri. Con la respirazione cellulare se ne ricava energia e si libera anidride carbonica.",
+ cloro:"Con l'energia della luce, l'anidride carbonica e l'acqua il cloroplasto produce glucosio e libera ossigeno. È la fotosintesi.",
+ citoscheletro:"Le vescicole si spostano scorrendo lungo i microtubuli, come su binari."
+};
+const HINT_LAV="La cellula è al lavoro. Tocca una struttura per seguire solo il traffico che la riguarda.";
+function lavTesto(){const e=$('#d2'),t=LAV.on&&(cur?T_LAV[cur]:HINT_LAV);e.hidden=!t;e.textContent=t||'';}
+// forme delle molecole
+const LM={};const lmat=(c,o)=>LM[c+'_'+(o||1)]||(LM[c+'_'+(o||1)]=new THREE.MeshPhongMaterial({color:c,shininess:60,emissive:new THREE.Color(c).multiplyScalar(.18),transparent:!!o,opacity:o||1}));
+function molecola(tipo,col){const g=new THREE.Group(),A=(r,c,p)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,12,9),lmat(c));if(p)m.position.set(...p);g.add(m);};
+ if(tipo=='o2'){A(.028,0xE0453A,[-.022,0,0]);A(.028,0xE0453A,[.022,0,0]);}
+ else if(tipo=='co2'){A(.03,0x4A4A4A);A(.024,0xE0453A,[-.045,0,0]);A(.024,0xE0453A,[.045,0,0]);}
+ else if(tipo=='h2o'){A(.032,0x3F8FD8);A(.019,0xF4F4F4,[-.03,.022,0]);A(.019,0xF4F4F4,[.03,.022,0]);}
+ else if(tipo=='glu'){const m=new THREE.Mesh(new THREE.CylinderGeometry(.048,.048,.02,6),lmat(0xF2C94C));m.rotation.x=PI/2;g.add(m);}
+ else if(tipo=='ves')A(.04,col);
+ else if(tipo=='mrna'){const p=[];for(let i=0;i<=8;i++)p.push(V3(.012*Math.sin(i*1.7),.01*Math.cos(i*1.3),-.11+.22*i/8));
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(p),24,.009,6,false),lmat(0xC2185B)));}
+ else if(tipo=='luce'){const m=new THREE.Mesh(new THREE.CylinderGeometry(.007,.007,.22,6),lmat(0xFFD23F,.85));m.rotation.x=PI/2;g.add(m);}
+ return g;}
+// i percorsi dipendono dalla cellula: si ricostruiscono a ogni cambio di tipo
+function lavCostruisci(){
+ if(LAV.g){scene.remove(LAV.g);LAV.g.traverse(o=>{if(o.isMesh)o.geometry.dispose();});}
+ LAV.g=new THREE.Group();LAV.g.visible=LAV.on;scene.add(LAV.g);LAV.flussi=[];
+ cell.updateMatrixWorld(true);
+ const r=ORG.rng(97),I=INFO,gr=k=>cell.children.filter(g=>g.userData.key==k),pick=a=>a[Math.floor(r()*a.length)];
+ const posizioni=k=>{const out=[],m=new THREE.Matrix4();gr(k).forEach(g=>g.traverse(o=>{if(o.isInstancedMesh)for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);out.push(o.localToWorld(V3(0,0,0).setFromMatrixPosition(m)));}}));return out;};
+ const centri=k=>gr(k).map(g=>g.position.clone());
+ const dirCasuale=()=>V3(r()-.5,(r()-.5)*.8,r()-.5).normalize();
+ const add=(tipo,pts,v,keys,o={})=>{const obj=molecola(tipo,o.col),curve=new THREE.CatmullRomCurve3(pts),dur=curve.getLength()/v;LAV.g.add(obj);
+  LAV.flussi.push({obj,curve,dur,dim:tipo=='ves'?1.3:tipo=='luce'?1.2:1.7,per:dur+PAUSA*(1+r()),off:r()*12,keys,orient:tipo=='mrna'||tipo=='luce',fondi:!!o.fondi});};
+ const curva=(a,b,h)=>a.clone().lerp(b,.5).add(V3(r()-.5,r()-.5,r()-.5).multiplyScalar(h));
+ // mRNA: dal nucleo, attraverso un poro, ai ribosomi (del RER o liberi)
+ const ribR=posizioni('rer'),ribL=posizioni('ribosomi');
+ for(let i=0;i<6;i++){const t=(i<3&&ribR.length)?pick(ribR):pick(ribL.length?ribL:ribR),d=t.clone().sub(I.N).normalize();
+  add('mrna',[I.N.clone().addScaledVector(d,I.rn*.35),I.N.clone().addScaledVector(d,I.rn*1.05),curva(I.N.clone().addScaledVector(d,I.rn*1.05),t,.15),t],V_MOL,['nucleo','nucleolo','ribosomi','rer']);}
+ // vescicole: dal RER al Golgi e dal Golgi alla membrana
+ const G0=gr('golgi')[0];
+ if(G0&&ribR.length){const cis=G0.localToWorld(V3(0,-.34*I.gs,0)),tr=G0.localToWorld(V3(0,.36*I.gs,0));
+  for(let i=0;i<3;i++){const a=pick(ribR);add('ves',[a,curva(a,cis,.25),cis],V_VES,['rer','golgi','citoscheletro'],{col:0x8FB3D9});}
+  for(let i=0;i<3;i++){const d=tr.clone().normalize().add(V3(r()-.5,r()-.5,r()-.5).multiplyScalar(.7)).normalize(),e=I.mem(d).multiplyScalar(.985);
+   add('ves',[tr,curva(tr,e,.2),e],V_VES,['golgi','membrana','citoscheletro'],{col:0xD99AB2,fondi:true});}}
+ // respirazione: glucosio e ossigeno entrano e vanno ai mitocondri, l'anidride carbonica esce
+ const mit=centri('mito');
+ if(mit.length){
+  const entra=(tipo,n)=>{for(let i=0;i<n;i++){const m=pick(mit),d=m.clone().normalize().add(dirCasuale().multiplyScalar(.8)).normalize(),p=I.mem(d);
+   add(tipo,[p.clone().multiplyScalar(1.22),p,curva(p,m,.2),m],V_MOL,['membrana','mito']);}};
+  entra('glu',3);entra('o2',3);
+  for(let i=0;i<3;i++){const m=pick(mit),d=m.clone().normalize().add(dirCasuale().multiplyScalar(.8)).normalize(),p=I.mem(d);
+   add('co2',[m,curva(m,p,.2),p,p.clone().multiplyScalar(1.22)],V_MOL,['membrana','mito']);}}
+ // fotosintesi: luce, anidride carbonica e acqua entrano nel cloroplasto; escono glucosio e ossigeno
+ const clo=centri('cloro');
+ if(clo.length){for(let i=0;i<4;i++){const c=clo[i%clo.length],d=c.clone().normalize().add(V3(0,.6,0)).normalize(),p=I.mem(d);
+   add('luce',[p.clone().multiplyScalar(1.5),c],V_MOL*3,['cloro']);
+   const d2=c.clone().normalize().add(dirCasuale().multiplyScalar(.7)).normalize(),p2=I.mem(d2);
+   add(i%2?'co2':'h2o',[p2.clone().multiplyScalar(1.22),p2,c],V_MOL,['cloro','membrana']);
+   if(mit.length)add('glu',[c,curva(c,pick(mit),.3),pick(mit)],V_MOL,['cloro','mito']);
+   const d3=c.clone().normalize().add(dirCasuale().multiplyScalar(.7)).normalize(),p3=I.mem(d3);
+   add('o2',[c,p3,p3.clone().multiplyScalar(1.22)],V_MOL,['cloro','membrana']);}}
+ // legenda
+ const voci=[['#C2185B','mRNA'],['#8FB3D9','vescicola dal RER'],['#D99AB2','vescicola dal Golgi'],['#F2C94C','glucosio'],['#E0453A','ossigeno'],['#4A4A4A','anidride carbonica']];
+ if(clo.length)voci.push(['#3F8FD8','acqua'],['#FFD23F','luce']);
+ $('#leg').innerHTML=voci.map(([c,t])=>'<span><i style="background:'+c+'"></i>'+t+'</span>').join('');
+}
+const tg=V3(0,0,0),ZZ=V3(0,0,1);
+function lavAggiorna(now){const s=now/1000;
+ LAV.flussi.forEach(f=>{let u=((s+f.off)%f.per)/f.dur;const vis=(!cur||f.keys.includes(cur))&&u<=1;f.obj.visible=vis;if(!vis)return;
+  u=Math.max(0,Math.min(1,u));f.curve.getPointAt(u,f.obj.position);
+  if(f.orient){f.curve.getTangentAt(u,tg);f.obj.quaternion.setFromUnitVectors(ZZ,tg);}else f.obj.rotation.set(s*.9+f.off,s*.7,0);
+  // compare e scompare dolcemente; le vescicole che arrivano alla membrana si fondono (si rimpiccioliscono)
+  let k=Math.min(1,u/.06,(1-u)/.06);if(f.fondi)k=Math.min(Math.min(1,u/.06),u>.85?(1-u)/.15:1);f.obj.scale.setScalar(Math.max(.01,k)*f.dim);});}
+function setLav(b){LAV.on=b;$('#bLav').setAttribute('aria-checked',b);if(LAV.g)LAV.g.visible=b;$('#leg').hidden=!b;lavTesto();dirty=1;}
+$('#bLav').onclick=()=>setLav(!LAV.on);
 
 // ---------- camera e comandi ----------
 let th=-.7,ph=1.25,rad=5.2,fit=1,auto=false;
@@ -293,11 +397,11 @@ $('#bRot').onclick=e=>{auto=!auto;e.currentTarget.setAttribute('aria-checked',au
 new ResizeObserver(()=>{const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();
  fit=Math.max(1,1.15/cam.aspect);dirty=1;}).observe(stage);
 
-function loop(){requestAnimationFrame(loop);if(auto){th+=.004;dirty=1;}if(!dirty)return;dirty=0;
+function loop(now){requestAnimationFrame(loop);if(auto){th+=.004;dirty=1;}if(LAV.on){lavAggiorna(now||performance.now());dirty=1;}if(!dirty)return;dirty=0;
  const d=rad*fit;cam.position.set(d*Math.sin(ph)*Math.sin(th),d*Math.cos(ph),d*Math.sin(ph)*Math.cos(th));cam.lookAt(0,0,0);R.render(scene,cam);}
 setType('animale');loop();
 </script>
-<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Tre modelli 3D da osservare, per cellule animali, piante e funghi: si passa dall'uno all'altro con un pulsante e si confrontano le strutture presenti.</p>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Tre modelli 3D da osservare, per cellule animali, piante e funghi, con gli organuli rappresentati come nei libri di biologia. Con la cellula al lavoro si seguono l\'mRNA che esce dal nucleo, le vescicole tra RER, Golgi e membrana, la respirazione cellulare e la fotosintesi.</p>
 <div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T</div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6fd08c!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(111,208,140,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Biologia
