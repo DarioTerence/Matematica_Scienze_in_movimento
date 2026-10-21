@@ -60,6 +60,8 @@ button{font-family:inherit;cursor:pointer}
 .modalita.seg{display:none;margin:0 0 12px}
 .modalita .pt{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px}
 @media (max-width:760px){.modalita.seg{display:flex}.duo h3{display:none}.duo[data-show="A"] #cardP,.duo[data-show="P"] #cardA{display:none}}
+/* spazio vuoto sopra la vasca delle piante, alto quanto i chip degli animali: le due vasche restano allineate */
+@media (max-width:760px){.chips.spaziatore{display:none}}
 .eyebrow{color:#8ee0a6;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
@@ -97,7 +99,7 @@ button{font-family:inherit;cursor:pointer}
   </div>
   <div class="duo" id="duo" data-show="A">
     <div class="card" id="cardA"><h3>Animali</h3><div class="chips" id="tipoA" role="group" aria-label="Cellula animale da osservare" style="margin:0 0 10px"><button class="chip attivo" data-a="cell" aria-pressed="true" style="--chip:#FCE4D6">Cellula animale</button><button class="chip" data-a="rbc" aria-pressed="false" style="--chip:#C0392B">Globulo rosso</button></div><div class="view" id="vA"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div><div class="status" id="stA"></div></div>
-    <div class="card" id="cardP"><h3>Piante</h3><div class="view" id="vP"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div><div class="status" id="stP"></div></div>
+    <div class="card" id="cardP"><h3>Piante</h3><div class="chips spaziatore" aria-hidden="true" style="margin:0 0 10px;visibility:hidden"><button class="chip" tabindex="-1" disabled>Cellula vegetale</button></div><div class="view" id="vP"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div><div class="status" id="stP"></div></div>
   </div>
   <div class="small">Trascina sulla vasca per ruotarla (animale e pianta ruotano insieme); pizzica o usa la rotella per ingrandire.</div>
   <div class="anchor">L'acqua si muove dove c'è meno acqua libera, cioè dove c'è più soluto.</div>
