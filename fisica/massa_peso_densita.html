@@ -119,7 +119,7 @@ const IMG_R="../immagini/prof_t/prof_t_massa_in_piedi.webp", IMG_L="../immagini/
   {id:'luna',n:'Luna',g:1.6,col:'#b7bac2',sky:['#05060A','#05060A'],sx:1,sy:1,say:'Che leggerezza!',
    d:'Su un corpo piccolo come la Luna g è circa un sesto di quello terrestre: Prof. T pesa molto meno, ma ha la stessa quantità di materia.'},
   {id:'marte',n:'Marte',g:3.7,col:'#c4593b',sky:['#05060A','#2a1510'],sx:1,sy:1,say:'Qui si salta bene!',
-   d:'Su Marte g è circa il 38% di quello terrestre: il peso di Prof. T è circa un terzo di quello sulla Terra.'},
+   d:'Su Marte g è circa il 38% di quello terrestre, il peso di Prof. T è circa un terzo di quello sulla Terra.'},
   {id:'terra',n:'Terra',g:9.8,col:'#3f8f5a',sky:['#0b1f3d','#2a6aa8'],sx:1,sy:1,say:'Casa, dolce casa.',
    d:'Sulla Terra g vale circa 9,8 m/s²: è il valore di riferimento con cui di solito pensiamo al nostro peso.'},
   {id:'giove',n:'Giove',g:23.1,col:'#c9a27a',sky:['#05060A','#33261a'],sx:1.03,sy:.94,say:'Uff, che peso!',
@@ -235,11 +235,11 @@ const IMG_R="../immagini/prof_t/prof_t_massa_in_piedi.webp", IMG_L="../immagini/
  /* liquidi: rho in g/cm3 (valori indicativi) */
  const LIQ={
   lago:{n:'Lago',sub:'acqua dolce',rho:1.00,col:0x4fbfb4,op:.36,amp:.03,bank:0x3f8a46,dot:'#4fbfb4',in:'nel lago',
-   d:'Acqua dolce: densità circa 1,00 g/cm³.'},
+   d:'Acqua dolce, densità circa 1,00 g/cm³.'},
   morto:{n:'Mar Morto',sub:'acqua molto salata',rho:1.24,col:0x2a62d0,op:.52,amp:.012,bank:0xbfa874,dot:'#2a62d0',in:'nel Mar Morto',
-   d:'Circa il 34% di sali disciolti: densità circa 1,24 g/cm³. Acqua pesante e quasi ferma.'},
+   d:'Circa il 34% di sali disciolti, densità circa 1,24 g/cm³. Acqua pesante e quasi ferma.'},
   mare:{n:'Mare',sub:'acqua salata',rho:1.025,col:0x2e92d8,op:.44,amp:.09,bank:0xd2c08a,dot:'#2e92d8',in:'in mare',
-   d:'Circa il 3,5% di sali disciolti: densità circa 1,025 g/cm³. Onde più alte.'}};
+   d:'Circa il 3,5% di sali disciolti, densità circa 1,025 g/cm³. Onde più alte.'}};
  /* oggetti: d = massa / volume (g/cm3); h = altezza usata per l'immersione nella scena */
  const ITEMS=[
   {id:'poli',n:'Polistirolo',m:'30 g',V:'1000 cm³',eq:'30 g : 1000 cm³ = 0,03 g/cm³',d:.03,h:.9,spin:3},
@@ -250,7 +250,7 @@ const IMG_R="../immagini/prof_t/prof_t_massa_in_piedi.webp", IMG_L="../immagini/
   {id:'ghi',n:'Ghiaccio',m:'920 g',V:'1000 cm³',eq:'920 g : 1000 cm³ = 0,92 g/cm³',d:.92,h:.9,spin:3,
    note:'Il ghiaccio è meno denso dell\'acqua liquida: galleggia con la maggior parte del volume sotto la superficie.'},
   {id:'tuf',n:'Prof. T (tuffo)',m:'75 kg',V:'74,3 L',eq:'75 kg : 74,3 L = 1,01 kg/L = 1,01 g/cm³',d:1.01,h:3,self:true,spin:0,
-   note:'La densità del corpo cambia con l\'aria nei polmoni (circa 0,98 – 1,05 g/cm³): in acqua dolce si galleggia a stento, nell\'acqua molto salata molto meglio. Prof. T è mostrato in piedi per semplicità.'},
+   note:'La densità del corpo cambia con l\'aria nei polmoni (circa 0,98 – 1,05 g/cm³), in acqua dolce si galleggia a stento, nell\'acqua molto salata molto meglio. Prof. T è mostrato in piedi per semplicità.'},
   {id:'ebo',n:'Legno di ebano',m:'1100 g',V:'1000 cm³',eq:'1100 g : 1000 cm³ = 1,10 g/cm³',d:1.1,h:.9,spin:3,
    note:'L\'ebano è un legno molto denso (valore indicativo): non tutti i legni galleggiano.'},
   {id:'gra',n:'Granito',m:'2700 g',V:'1000 cm³',eq:'2700 g : 1000 cm³ = 2,70 g/cm³',d:2.7,h:.9,spin:3},

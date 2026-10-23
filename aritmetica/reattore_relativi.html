@@ -276,7 +276,7 @@ function gen2(){
   var sign=neg%2?MINUS:"+";
   return {kind:"int",html:html,value:cur,f:f,ops:ops,neg:neg,
    steps:mkSteps([plain,sign+"("+absx+")",fmt(cur,true)]),
-   note:"Fattori negativi: "+neg+(neg%2?" (numero dispari): il risultato è negativo.":" (numero pari): il risultato è positivo.")+" Il valore assoluto si calcola da sinistra a destra."};
+   note:"Fattori negativi "+neg+(neg%2?" (numero dispari), il risultato è negativo.":" (numero pari), il risultato è positivo.")+" Il valore assoluto si calcola da sinistra a destra."};
  }
 }
 function hint2(e,a,tries){
@@ -291,7 +291,7 @@ function hint2(e,a,tries){
  if(Math.abs(a)===Math.abs(v))return SIGNMSG;
  return genericHint(["Separa i due problemi: prima decidi il segno con la regola dei segni, poi calcola il valore assoluto.",
   "Calcola solo il valore assoluto: ignora i segni e svolgi le operazioni da sinistra a destra.",
-  "Regola dei segni: (+)(+)=+, (−)(−)=+, (+)(−)=−. Per le divisioni vale la stessa regola."],tries);
+  "Regola dei segni, (+)(+)=+, (−)(−)=+, (+)(−)=−. Per le divisioni vale la stessa regola."],tries);
 }
 
 /* ======================================================
@@ -465,7 +465,7 @@ function gen5(){
    L.push(frac(numStr,m));
    if(P===0){L.push("0")}else if(V.p===P&&V.q===m){L.push(sfrac(P,m))}else{L.push(sfrac(P,m));L.push(sfrac(V.p,V.q))}
    o={kind:"frac",type:"add",html:item(tfrac(a,b))+opSpan(sy)+item(tfrac(c,d)),value:V,a:a,b:b,c:c,d:d,op:op,steps:mkSteps(L),
-      note:b===d?"Le frazioni hanno lo stesso denominatore: si sommano i numeratori con il loro segno.":"Denominatore comune: mcm("+b+", "+d+") = "+m+". Ogni numeratore si moltiplica per il fattore che porta il denominatore a "+m+"."};
+      note:b===d?"Le frazioni hanno lo stesso denominatore: si sommano i numeratori con il loro segno.":"Denominatore comune, mcm("+b+", "+d+") = "+m+". Ogni numeratore si moltiplica per il fattore che porta il denominatore a "+m+"."};
   }else if(r<0.75){
    if(a>0&&c>0)continue;
    var P2=a*c,Q2=b*d,V2=reduce(P2,Q2);
@@ -502,7 +502,7 @@ function hint5(e,a,tries){
  if(e.type==="mul"){
   return genericHint(["Non ci siamo. Prima decidi il segno, poi moltiplica i numeratori tra loro e i denominatori tra loro.",
    "Dopo il prodotto controlla se la frazione si può semplificare: il risultato è corretto anche non semplificato, ma si può ridurre.",
-   "Segno: (+)(+)=+, (−)(−)=+, (+)(−)=−."],tries);
+   "Il segno segue la regola (+)(+)=+, (−)(−)=+, (+)(−)=−."],tries);
  }
  if(a.q>0&&eqv(a,reduce(e.a*e.c,e.b*e.d)))return "Hai moltiplicato le due frazioni. Dividere per una frazione equivale a moltiplicare per la sua inversa: l'hai invertita?";
  return genericHint(["Non ci siamo. Trasforma la divisione in moltiplicazione per la frazione inversa del secondo termine.",

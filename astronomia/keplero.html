@@ -400,7 +400,7 @@ svg .muted{fill:var(--st-muted)}
           <g id="whyD" style="display:none"></g>
         </svg>
       </div>
-      <p class="caption" id="capD">Unità relative: il riferimento è m<sub>1</sub> = m<sub>2</sub> = 1 e d = 2. La lunghezza delle frecce si adatta, ma il rapporto tra attuale e riferimento è esatto.</p>
+      <p class="caption" id="capD">Unità relative, il riferimento è m<sub>1</sub> = m<sub>2</sub> = 1 e d = 2. La lunghezza delle frecce si adatta, ma il rapporto tra attuale e riferimento è esatto.</p>
     </div>
 
     <aside class="panel">
@@ -408,7 +408,7 @@ svg .muted{fill:var(--st-muted)}
       <p id="infoTextD"></p>
 
       <div class="readout">
-        <div class="note">Riferimento: m<sub>1</sub> = 1, m<sub>2</sub> = 1, d = 2</div>
+        <div class="note">Riferimento, m<sub>1</sub> = 1, m<sub>2</sub> = 1, d = 2</div>
         <div class="row"><span>m<sub>1</sub></span><b id="rM1D"></b></div>
         <div class="row"><span>m<sub>2</sub></span><b id="rM2D"></b></div>
         <div class="row"><span>d</span><b id="rDD"></b></div>
@@ -562,8 +562,8 @@ svg .muted{fill:var(--st-muted)}
       case 'sun': return ['Sole','Occupa uno dei due fuochi dell\'ellisse, non il centro: per questo il pianeta è ora più vicino, ora più lontano.'];
       case 'f2': return ['Secondo fuoco','È solo un punto geometrico, non c\'è nessun corpo. Con e = 0 i due fuochi coincidono al centro e l\'orbita è una circonferenza.'];
       case 'planet': return ['Pianeta','Si muove più veloce vicino al Sole e più lento lontano: lo vedremo nella seconda legge.'];
-      case 'peri': return ['Perielio','Punto dell\'orbita più vicino al Sole. Distanza dal Sole: 1 − e = '+fmt(1-e)+' (in unità del semiasse a).'];
-      case 'afe': return ['Afelio','Punto dell\'orbita più lontano dal Sole. Distanza dal Sole: 1 + e = '+fmt(1+e)+' (in unità del semiasse a).'];
+      case 'peri': return ['Perielio','Punto dell\'orbita più vicino al Sole. Distanza dal Sole, cioè 1 − e = '+fmt(1-e)+' (in unità del semiasse a).'];
+      case 'afe': return ['Afelio','Punto dell\'orbita più lontano dal Sole. Distanza dal Sole, cioè 1 + e = '+fmt(1+e)+' (in unità del semiasse a).'];
       default: return ['Prima legge di Keplero','L\'orbita di ogni pianeta è un\'ellisse e il Sole occupa uno dei due fuochi. Cambia l\'eccentricità o scegli un pianeta; attiva le distanze dai fuochi per vedere che la loro somma resta costante.'];
     }
   }
@@ -918,7 +918,7 @@ svg .muted{fill:var(--st-muted)}
 
   function infoD(){
     if(D.view==='graph')return['Massa e distanza a confronto','A sinistra la forza cresce in linea retta con la massa; a destra crolla con il quadrato della distanza. Moltiplicare la massa per 2 raddoppia F; moltiplicare la distanza per 2 la divide per 4, per 3 la divide per 9.'];
-    if(D.view==='why')return['Perché il quadrato','Immagina l\'attrazione come una quantità che si diffonde dal corpo in tutte le direzioni, come la luce di una lampadina. A distanza doppia si distribuisce su una superficie 4 volte più grande, a distanza tripla su una 9 volte più grande: ogni quadretto ne riceve 1/4, poi 1/9. È un\'analogia, non una misura.'];
+    if(D.view==='why')return['Perché il quadrato','Immagina l\'attrazione come una quantità che si diffonde dal corpo in tutte le direzioni, come la luce di una lampadina. A distanza doppia si distribuisce su una superficie 4 volte più grande, a distanza tripla su una 9 volte più grande, ogni quadretto ne riceve 1/4, poi 1/9. È un\'analogia, non una misura.'];
     return['Gravitazione universale','Due corpi si attraggono con una forza che cresce con le masse e diminuisce con il quadrato della distanza. Le masse compaiono una volta sola, la distanza compare al quadrato: a parità di variazione, la distanza pesa di più. G è una costante, sempre uguale.'];
   }
   function updateViewD(){
@@ -981,7 +981,7 @@ svg .muted{fill:var(--st-muted)}
       s+='<line x1="'+x+'" y1="'+(150-h)+'" x2="'+x+'" y2="'+(150+h)+'" stroke="var(--st-text)" stroke-width="4"/>';
       s+='<text class="small" x="'+x+'" y="244" text-anchor="middle">'+(k===1?'d':k+'d')+'</text>';
     });
-    s+='<text class="small muted" x="418" y="156">superficie: ×1, ×4, ×9</text>';
+    s+='<text class="small muted" x="418" y="156">superficie ×1, ×4, ×9</text>';
     [1,2,3].forEach(k=>{
       const cx=[130,300,470][k-1],size=34*k,x0=cx-size/2,y0=410-size;
       for(let r=0;r<k;r++)for(let c=0;c<k;c++){
