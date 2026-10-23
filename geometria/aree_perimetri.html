@@ -314,7 +314,7 @@ FIG.parallelogramma={name:'parallelogramma',noun:'Un parallelogramma',legacy:tru
  M:function(p){return {b:p.b,h:p.h,l:p.l,A:p.b*p.h,P:2*(p.b+p.l)};},
  rand:function(){var b=ri(4,12),h=ri(2,7),lmax=Math.min(14,Math.floor(Math.sqrt(h*h+b*b)));return {b:b,h:h,l:ri(h+1,lmax)};},
  W:{b:'la base',h:'l’altezza',l:'il lato obliquo'},
- anchor:'Area del parallelogramma: <b>A = b · h</b>. Attenzione: h è l’altezza (perpendicolare alla base), non il lato obliquo.'};
+ anchor:'Area del parallelogramma, <b>A = b · h</b>. Attenzione. h è l’altezza (perpendicolare alla base), non il lato obliquo.'};
 FIG.rombo={name:'rombo',noun:'Un rombo',def:{f:0},
  sl:[{k:'f',label:'forma (D e d)',min:0,max:4,fmt:function(p){var r=PRE.rombo[p.f];return r.d1+' e '+r.d2+' cm';}}],
  M:function(p){var r=PRE.rombo[p.f];return {d1:r.d1,d2:r.d2,l:r.l,A:r.d1*r.d2/2,P:4*r.l};},
@@ -417,7 +417,7 @@ function proofTri(M,p){
  o+=tx(pb[0],pb[1]+26,'b = '+b+' cm',{c:COL.blue,w:700,s:20});
  o+=tx(pt2[0],pt2[1]-12,'b = '+b+' cm',{c:COL.blue,w:700,s:20,op:t2.toFixed(2)});
  o+=tx(ph[0]+10,ph[1]+5,'h = '+h+' cm',{a:'start',c:COL.red,w:700,s:20});
- o+=tx(W/2,316,'parallelogramma: A = b · h (il doppio del triangolo)',{s:21,w:700,op:(t2*(1-t3)).toFixed(2)});
+ o+=tx(W/2,316,'parallelogramma, A = b · h (il doppio del triangolo)',{s:21,w:700,op:(t2*(1-t3)).toFixed(2)});
  o+=tx(W/2,316,'A = {b · h|2}',{s:24,w:700,op:t3.toFixed(2)});
  o+=tx(W/2,372,'= {'+b+' · '+h+'|2} = {'+(b*h)+'|2} = '+M.A+' cm²',{s:22,w:700,c:COL.blue,op:t3.toFixed(2)});
  return o;}
@@ -440,7 +440,7 @@ function proofTrap(M,p){
  o+=tx(ph[0]+8,ph[1]+5,'h = '+h+' cm',{a:'start',c:COL.red,w:700,s:20});
  var yd=yb+40,dim=ln([A[0],yd],[D2[0],yd],COL.ink,2)+ln([A[0],yd-6],[A[0],yd+6],COL.ink,2)+ln([D2[0],yd-6],[D2[0],yd+6],COL.ink,2);
  o+='<g opacity="'+t2.toFixed(2)+'">'+dim+tx((A[0]+D2[0])/2,yd+22,'B + b = '+B+' + '+b+' = '+(B+b)+' cm',{c:COL.ink,w:700,s:20})+'</g>';
- o+=tx(W/2,316,'parallelogramma: A = (B + b) · h',{s:21,w:700,op:(t2*(1-t3)).toFixed(2)});
+ o+=tx(W/2,316,'parallelogramma, A = (B + b) · h',{s:21,w:700,op:(t2*(1-t3)).toFixed(2)});
  o+=tx(W/2,316,'A = {(B + b) · h|2}',{s:24,w:700,op:t3.toFixed(2)});
  o+=tx(W/2,372,'= {'+(B+b)+' · '+h+'|2} = {'+((B+b)*h)+'|2} = '+M.A+' cm²',{s:22,w:700,c:COL.blue,op:t3.toFixed(2)});
  return o;}
@@ -508,35 +508,35 @@ function whySquares(pair,p){
 /* ---------- didascalie ---------- */
 var CAPS={
  quadrato:[
-  'Il quadrato è un rettangolo con base e altezza uguali: tutti i lati misurano l.',
-  'Lo riempio con quadratini di lato 1 cm: in una riga ne entrano l. Ho colorato la prima riga.',
-  'Le righe sono ancora l, tutte uguali: ho colorato tutti i quadratini.',
-  'l righe da l quadratini: in tutto l · l quadratini, quindi A = l · l.'],
+  'Il quadrato è un rettangolo con base e altezza uguali, quindi tutti i lati misurano l.',
+  'Lo riempio con quadratini di lato 1 cm. In una riga ne entrano l. Ho colorato la prima riga.',
+  'Le righe sono ancora l, tutte uguali. Ho colorato tutti i quadratini.',
+  'l righe da l quadratini, quindi in tutto l · l quadratini, quindi A = l · l.'],
  rettangolo:[
   'Questo rettangolo ha base b e altezza h. Per misurare l’area conto i quadratini che lo riempiono.',
   'Con quadratini di lato 1 cm, in una riga ne entrano b. Ho colorato la prima riga.',
-  'Le righe sono h, tutte uguali, e ognuna ha b quadratini: ho colorato tutti i quadratini.',
-  'Come in una tabella: righe per colonne. I quadratini sono b · h, quindi A = b · h.'],
+  'Le righe sono h, tutte uguali, e ognuna ha b quadratini. Ho colorato tutti i quadratini.',
+  'Come in una tabella, righe per colonne. I quadratini sono b · h, quindi A = b · h.'],
  parallelogramma:[
-  'Questo parallelogramma ha base b e altezza h. L’altezza è la distanza tra le due basi, in linea retta: non è il lato obliquo.',
-  'Traccio l’altezza dal vertice in alto a sinistra: stacca un triangolo rettangolo, che ho colorato.',
-  'Taglio il triangolo e lo sposto a destra, di quanto è lunga la base: il suo lato obliquo combacia con quello del parallelogramma.',
-  'Ho ottenuto un rettangolo con la stessa base e la stessa altezza: h righe da b quadratini, quindi A = b · h. Non ho perso nessun pezzo: l’area è la stessa.'],
+  'Questo parallelogramma ha base b e altezza h. L’altezza è la distanza tra le due basi, in linea retta, e non è il lato obliquo.',
+  'Traccio l’altezza dal vertice in alto a sinistra. Stacca un triangolo rettangolo, che ho colorato.',
+  'Taglio il triangolo e lo sposto a destra, di quanto è lunga la base. Il suo lato obliquo combacia con quello del parallelogramma.',
+  'Ho ottenuto un rettangolo con la stessa base e la stessa altezza, h righe da b quadratini, quindi A = b · h. Non ho perso nessun pezzo e l’area è la stessa.'],
  rombo:[
   'Questo rombo ha diagonale maggiore D e diagonale minore d. Le diagonali si incontrano al centro formando angoli retti.',
-  'Costruisco il rettangolo di lati D e d: i vertici del rombo toccano i suoi lati. I 4 angoli rimasti fuori sono triangoli (in arancione).',
-  'Ruoto di mezzo giro ogni triangolo attorno al punto medio del lato del rombo: i 4 triangoli coprono esattamente il rombo.',
-  'Il rombo è quindi la metà del rettangolo D · d: A = {D · d|2}.'],
+  'Costruisco il rettangolo di lati D e d. I vertici del rombo toccano i suoi lati. I 4 angoli rimasti fuori sono triangoli (in arancione).',
+  'Ruoto di mezzo giro ogni triangolo attorno al punto medio del lato del rombo. I 4 triangoli coprono esattamente il rombo.',
+  'Il rombo è quindi la metà del rettangolo D · d, quindi A = {D · d|2}.'],
  trapezio:[
   'Questo trapezio ha base maggiore B, base minore b e altezza h.',
   'Ne faccio una copia (in arancione) e la ruoto di mezzo giro attorno al punto medio di un lato obliquo.',
-  'Le due figure unite formano un parallelogramma: la base è B + b, l’altezza è sempre h.',
-  'Il parallelogramma ha area (B + b) · h; il trapezio ne è la metà: A = {(B + b) · h|2}.'],
+  'Le due figure unite formano un parallelogramma, la base è B + b e l’altezza è sempre h.',
+  'Il parallelogramma ha area (B + b) · h; il trapezio ne è la metà, quindi A = {(B + b) · h|2}.'],
  triangolo:[
-  'Questo triangolo ha base b e altezza h: l’altezza è la distanza del vertice dalla base, in linea retta.',
+  'Questo triangolo ha base b e altezza h. L’altezza è la distanza del vertice dalla base, in linea retta.',
   'Ne faccio una copia (in arancione) e la ruoto di mezzo giro attorno al punto medio di un lato.',
   'Le due figure unite formano un parallelogramma con la stessa base b e la stessa altezza h.',
-  'Il parallelogramma ha area b · h; il triangolo ne è la metà: A = {b · h|2}.']};
+  'Il parallelogramma ha area b · h; il triangolo ne è la metà, quindi A = {b · h|2}.']};
 function caps(){
  var t=S.tab;
  if(t==='equivalenze'){
@@ -553,44 +553,44 @@ function b_(s){return '<b>'+s+'</b>';}
 // le frazioni si scrivono {numeratore|denominatore}
 function fr(n,d){return '{'+n+'|'+d+'}';}
 KD.quadrato=[
- K('A','Area',['l'],'A',function(M){return {f:['A = l · l','A = '+M.l+' · '+M.l+' = '+b_(M.A+' cm²')],why:'l righe da l quadratini: in tutto l · l quadratini.'};},'Area = lato · lato.',function(M){return [[M.P,'Hai calcolato il perimetro: l’area si trova con lato · lato.'],[2*M.l,'Hai fatto lato + lato: l’area è lato · lato.']];}),
- K('P','Perimetro',['l'],'P',function(M){return {f:['P = 4 · l','P = 4 · '+M.l+' = '+b_(M.P+' cm')],why:'Il quadrato ha 4 lati uguali: il perimetro è 4 volte il lato.'};},'Perimetro = 4 · lato.',function(M){return [[M.A,'Hai calcolato l’area: il perimetro è la somma dei 4 lati.']];}),
- K('l_A','Lato dall’area',['A'],'l',function(M){return {f:['A = l · l','l = √A   (il numero che moltiplicato per sé stesso dà A)','l = √'+M.A+' = '+b_(M.l+' cm')],why:'Cerco il numero che, moltiplicato per sé stesso, dà l’area: '+M.l+' · '+M.l+' = '+M.A+'.'};},'Quale numero moltiplicato per sé stesso dà l’area?',function(M){return [[M.A/2,'Hai diviso l’area per 2: serve la radice quadrata.']];}),
+ K('A','Area',['l'],'A',function(M){return {f:['A = l · l','A = '+M.l+' · '+M.l+' = '+b_(M.A+' cm²')],why:'l righe da l quadratini, in tutto l · l quadratini.'};},'Area = lato · lato.',function(M){return [[M.P,'Hai calcolato il perimetro: l’area si trova con lato · lato.'],[2*M.l,'Hai fatto lato + lato: l’area è lato · lato.']];}),
+ K('P','Perimetro',['l'],'P',function(M){return {f:['P = 4 · l','P = 4 · '+M.l+' = '+b_(M.P+' cm')],why:'Il quadrato ha 4 lati uguali, quindi il perimetro è 4 volte il lato.'};},'Perimetro = 4 · lato.',function(M){return [[M.A,'Hai calcolato l’area: il perimetro è la somma dei 4 lati.']];}),
+ K('l_A','Lato dall’area',['A'],'l',function(M){return {f:['A = l · l','l = √A   (il numero che moltiplicato per sé stesso dà A)','l = √'+M.A+' = '+b_(M.l+' cm')],why:'Cerco il numero che, moltiplicato per sé stesso, dà l’area, cioè '+M.l+' · '+M.l+' = '+M.A+'.'};},'Quale numero moltiplicato per sé stesso dà l’area?',function(M){return [[M.A/2,'Hai diviso l’area per 2: serve la radice quadrata.']];}),
  K('l_P','Lato dal perimetro',['P'],'l',function(M){return {f:['P = 4 · l','l = '+fr('P',4),'l = '+fr(M.P,4)+' = '+b_(M.l+' cm')],why:'Se 4 lati uguali misurano in tutto P, un lato è P diviso 4.'};},'Il lato è il perimetro diviso 4.',function(M){return [[M.P/2,'Hai diviso per 2: i lati sono 4, non 2.']];})];
 KD.rettangolo=[
- K('A','Area',['b','h'],'A',function(M){return {f:['A = b · h','A = '+M.b+' · '+M.h+' = '+b_(M.A+' cm²')],why:'h righe da b quadratini: in tutto b · h quadratini.'};},'Area = base · altezza.',function(M){return [[M.P,'Hai calcolato il perimetro: l’area si trova moltiplicando base e altezza.'],[M.b+M.h,'Hai sommato base e altezza: per l’area si moltiplica.']];}),
- K('P','Perimetro',['b','h'],'P',function(M){return {f:['P = 2 · (b + h)','P = 2 · ('+M.b+' + '+M.h+') = 2 · '+(M.b+M.h)+' = '+b_(M.P+' cm')],why:'Il perimetro è la somma dei quattro lati: due basi e due altezze.'};},'Perimetro = 2 · (base + altezza).',function(M){return [[M.b+M.h,'Hai calcolato il semiperimetro: manca la moltiplicazione per 2.'],[M.A,'Hai calcolato l’area: il perimetro è la somma dei lati.']];}),
+ K('A','Area',['b','h'],'A',function(M){return {f:['A = b · h','A = '+M.b+' · '+M.h+' = '+b_(M.A+' cm²')],why:'h righe da b quadratini, in tutto b · h quadratini.'};},'Area = base · altezza.',function(M){return [[M.P,'Hai calcolato il perimetro: l’area si trova moltiplicando base e altezza.'],[M.b+M.h,'Hai sommato base e altezza: per l’area si moltiplica.']];}),
+ K('P','Perimetro',['b','h'],'P',function(M){return {f:['P = 2 · (b + h)','P = 2 · ('+M.b+' + '+M.h+') = 2 · '+(M.b+M.h)+' = '+b_(M.P+' cm')],why:'Il perimetro è la somma dei quattro lati, due basi e due altezze.'};},'Perimetro = 2 · (base + altezza).',function(M){return [[M.b+M.h,'Hai calcolato il semiperimetro: manca la moltiplicazione per 2.'],[M.A,'Hai calcolato l’area: il perimetro è la somma dei lati.']];}),
  K('b_A','Base dall’area',['A','h'],'b',function(M){return {f:['A = b · h','b = '+fr('A','h'),'b = '+fr(M.A,M.h)+' = '+b_(M.b+' cm')],why:'Se h righe da b quadratini fanno A quadratini, dividendo A per le righe trovo i quadratini di ogni riga.'};},'Se A = b · h, la base si trova con l’operazione inversa: si divide l’area per l’altezza.',function(M){return [[M.A*M.h,'Hai moltiplicato: per tornare indietro serve la divisione.']];}),
  K('h_A','Altezza dall’area',['A','b'],'h',function(M){return {f:['A = b · h','h = '+fr('A','b'),'h = '+fr(M.A,M.b)+' = '+b_(M.h+' cm')],why:'Se b colonne da h quadratini fanno A quadratini, dividendo A per le colonne trovo i quadratini di ogni colonna.'};},'Se A = b · h, l’altezza si trova con l’operazione inversa: si divide l’area per la base.',function(M){return [[M.A*M.b,'Hai moltiplicato: per tornare indietro serve la divisione.']];}),
  K('b_P','Base dal perimetro',['P','h'],'b',function(M){return {f:['P = 2 · (b + h)','b + h = '+fr('P',2)+'   (semiperimetro)','b = '+fr('P',2)+' '+MINUS+' h','b = '+fr(M.P,2)+' '+MINUS+' '+M.h+' = '+(M.b+M.h)+' '+MINUS+' '+M.h+' = '+b_(M.b+' cm')],why:'Dividendo il perimetro per 2 ottengo base + altezza; tolgo l’altezza e resta la base.'};},'Prima trova il semiperimetro (perimetro diviso 2), poi togli l’altezza.',function(M){return [[M.P/2,'Hai trovato il semiperimetro: ora togli l’altezza.']];}),
  K('h_P','Altezza dal perimetro',['P','b'],'h',function(M){return {f:['P = 2 · (b + h)','b + h = '+fr('P',2)+'   (semiperimetro)','h = '+fr('P',2)+' '+MINUS+' b','h = '+fr(M.P,2)+' '+MINUS+' '+M.b+' = '+(M.b+M.h)+' '+MINUS+' '+M.b+' = '+b_(M.h+' cm')],why:'Dividendo il perimetro per 2 ottengo base + altezza; tolgo la base e resta l’altezza.'};},'Prima trova il semiperimetro (perimetro diviso 2), poi togli la base.',function(M){return [[M.P/2,'Hai trovato il semiperimetro: ora togli la base.']];})];
 KD.parallelogramma=[
  K('A','Area',['b','h'],'A',function(M){return {f:['A = b · h','A = '+M.b+' · '+M.h+' = '+b_(M.A+' cm²')],why:'Il parallelogramma, tagliato e ricomposto, diventa un rettangolo b · h.'};},'Area = base · altezza. Usa l’altezza, non il lato obliquo.',function(M){return [[M.b*M.l,'Hai usato il lato obliquo: nell’area serve l’altezza.'],[M.P,'Hai calcolato il perimetro.']];}),
- K('P','Perimetro',['b','l'],'P',function(M){return {f:['P = 2 · (b + l)','P = 2 · ('+M.b+' + '+M.l+') = 2 · '+(M.b+M.l)+' = '+b_(M.P+' cm')],why:'Il perimetro è la somma dei quattro lati: due basi e due lati obliqui.'};},'Perimetro = 2 · (base + lato obliquo): somma tutti e quattro i lati.',function(M){return [[M.b+M.l,'Hai calcolato il semiperimetro: manca la moltiplicazione per 2.'],[2*M.b+2*M.h,'Nel perimetro si usa il lato obliquo, non l’altezza.'],[M.A,'Hai calcolato l’area.']];}),
+ K('P','Perimetro',['b','l'],'P',function(M){return {f:['P = 2 · (b + l)','P = 2 · ('+M.b+' + '+M.l+') = 2 · '+(M.b+M.l)+' = '+b_(M.P+' cm')],why:'Il perimetro è la somma dei quattro lati, due basi e due lati obliqui.'};},'Perimetro = 2 · (base + lato obliquo): somma tutti e quattro i lati.',function(M){return [[M.b+M.l,'Hai calcolato il semiperimetro: manca la moltiplicazione per 2.'],[2*M.b+2*M.h,'Nel perimetro si usa il lato obliquo, non l’altezza.'],[M.A,'Hai calcolato l’area.']];}),
  K('b_A','Base dall’area',['A','h'],'b',function(M){return {f:['A = b · h','b = '+fr('A','h'),'b = '+fr(M.A,M.h)+' = '+b_(M.b+' cm')],why:'Se h righe da b quadratini fanno A quadratini, dividendo A per le righe trovo i quadratini di ogni riga.'};},'Se A = b · h, la base si trova con l’operazione inversa: si divide l’area per l’altezza.',function(M){return [[M.A*M.h,'Hai moltiplicato: per tornare indietro serve la divisione.']];}),
  K('h_A','Altezza dall’area',['A','b'],'h',function(M){return {f:['A = b · h','h = '+fr('A','b'),'h = '+fr(M.A,M.b)+' = '+b_(M.h+' cm')],why:'Se b colonne da h quadratini fanno A quadratini, dividendo A per le colonne trovo i quadratini di ogni colonna.'};},'Se A = b · h, l’altezza si trova con l’operazione inversa: si divide l’area per la base.',function(M){return [[M.A*M.b,'Hai moltiplicato: per tornare indietro serve la divisione.']];}),
  K('b_P','Base dal perimetro',['P','l'],'b',function(M){return {f:['P = 2 · (b + l)','b + l = '+fr('P',2)+'   (semiperimetro)','b = '+fr('P',2)+' '+MINUS+' l','b = '+fr(M.P,2)+' '+MINUS+' '+M.l+' = '+(M.b+M.l)+' '+MINUS+' '+M.l+' = '+b_(M.b+' cm')],why:'Dividendo il perimetro per 2 ottengo base + lato obliquo; tolgo il lato obliquo e resta la base.'};},'Prima trova il semiperimetro (perimetro diviso 2), poi togli il lato obliquo.',function(M){return [[M.P/2,'Hai trovato il semiperimetro: ora togli il lato obliquo.']];}),
  K('l_P','Lato obliquo dal perimetro',['P','b'],'l',function(M){return {f:['P = 2 · (b + l)','b + l = '+fr('P',2)+'   (semiperimetro)','l = '+fr('P',2)+' '+MINUS+' b','l = '+fr(M.P,2)+' '+MINUS+' '+M.b+' = '+(M.b+M.l)+' '+MINUS+' '+M.b+' = '+b_(M.l+' cm')],why:'Dividendo il perimetro per 2 ottengo base + lato obliquo; tolgo la base e resta il lato obliquo.'};},'Prima trova il semiperimetro (perimetro diviso 2), poi togli la base.',function(M){return [[M.P/2,'Hai trovato il semiperimetro: ora togli la base.']];})];
 KD.rombo=[
  K('A','Area',['d1','d2'],'A',function(M){return {f:['A = '+fr('D · d',2),'A = '+fr(M.d1+' · '+M.d2,2)+' = '+fr(M.d1*M.d2,2)+' = '+b_(M.A+' cm²')],why:'Il rombo è la metà del rettangolo che ha per lati le due diagonali.'};},'Area = diagonale maggiore · diagonale minore, diviso 2.',function(M){return [[M.d1*M.d2,'Hai dimenticato di dividere per 2: il rombo è metà del rettangolo D · d.'],[M.P,'Hai calcolato il perimetro.']];}),
- K('P','Perimetro',['l'],'P',function(M){return {f:['P = 4 · l','P = 4 · '+M.l+' = '+b_(M.P+' cm')],why:'Il rombo ha 4 lati uguali: il perimetro è 4 volte il lato.'};},'Perimetro = 4 · lato.',function(M){return [[M.A,'Hai calcolato l’area.']];}),
- K('d1_A','Diagonale maggiore dall’area',['A','d2'],'d1',function(M){return {f:['A = '+fr('D · d',2),'D = '+fr('2 · A','d'),'D = '+fr('2 · '+M.A,M.d2)+' = '+fr(2*M.A,M.d2)+' = '+b_(M.d1+' cm')],why:'A è la metà di D · d: raddoppio A e divido per d.'};},'Raddoppia l’area e dividi per l’altra diagonale.',function(M){return [[M.A/M.d2,'Hai dimenticato di raddoppiare l’area: A è la metà di D · d.'],[M.A*M.d2,'Hai moltiplicato: per tornare indietro serve la divisione.']];}),
- K('d2_A','Diagonale minore dall’area',['A','d1'],'d2',function(M){return {f:['A = '+fr('D · d',2),'d = '+fr('2 · A','D'),'d = '+fr('2 · '+M.A,M.d1)+' = '+fr(2*M.A,M.d1)+' = '+b_(M.d2+' cm')],why:'A è la metà di D · d: raddoppio A e divido per D.'};},'Raddoppia l’area e dividi per l’altra diagonale.',function(M){return [[M.A/M.d1,'Hai dimenticato di raddoppiare l’area: A è la metà di D · d.'],[M.A*M.d1,'Hai moltiplicato: per tornare indietro serve la divisione.']];}),
+ K('P','Perimetro',['l'],'P',function(M){return {f:['P = 4 · l','P = 4 · '+M.l+' = '+b_(M.P+' cm')],why:'Il rombo ha 4 lati uguali, quindi il perimetro è 4 volte il lato.'};},'Perimetro = 4 · lato.',function(M){return [[M.A,'Hai calcolato l’area.']];}),
+ K('d1_A','Diagonale maggiore dall’area',['A','d2'],'d1',function(M){return {f:['A = '+fr('D · d',2),'D = '+fr('2 · A','d'),'D = '+fr('2 · '+M.A,M.d2)+' = '+fr(2*M.A,M.d2)+' = '+b_(M.d1+' cm')],why:'A è la metà di D · d, raddoppio A e divido per d.'};},'Raddoppia l’area e dividi per l’altra diagonale.',function(M){return [[M.A/M.d2,'Hai dimenticato di raddoppiare l’area: A è la metà di D · d.'],[M.A*M.d2,'Hai moltiplicato: per tornare indietro serve la divisione.']];}),
+ K('d2_A','Diagonale minore dall’area',['A','d1'],'d2',function(M){return {f:['A = '+fr('D · d',2),'d = '+fr('2 · A','D'),'d = '+fr('2 · '+M.A,M.d1)+' = '+fr(2*M.A,M.d1)+' = '+b_(M.d2+' cm')],why:'A è la metà di D · d, raddoppio A e divido per D.'};},'Raddoppia l’area e dividi per l’altra diagonale.',function(M){return [[M.A/M.d1,'Hai dimenticato di raddoppiare l’area: A è la metà di D · d.'],[M.A*M.d1,'Hai moltiplicato: per tornare indietro serve la divisione.']];}),
  K('l_P','Lato dal perimetro',['P'],'l',function(M){return {f:['P = 4 · l','l = '+fr('P',4),'l = '+fr(M.P,4)+' = '+b_(M.l+' cm')],why:'Se 4 lati uguali misurano in tutto P, un lato è P diviso 4.'};},'Il lato è il perimetro diviso 4.',function(M){return [[M.P/2,'Hai diviso per 2: i lati sono 4, non 2.']];})];
 KD.trapezio=[
- K('A','Area',['B','b','h'],'A',function(M){return {f:['A = '+fr('(B + b) · h',2),'A = '+fr('('+M.B+' + '+M.b+') · '+M.h,2)+' = '+fr((M.B+M.b)+' · '+M.h,2)+' = '+fr((M.B+M.b)*M.h,2)+' = '+b_(M.A+' cm²')],why:'Due trapezi uguali, uno ruotato di mezzo giro, formano un parallelogramma di base B + b e altezza h: il trapezio ne è la metà.'};},'Area = (base maggiore + base minore) · altezza, diviso 2.',function(M){return [[(M.B+M.b)*M.h,'Hai dimenticato di dividere per 2.'],[M.P,'Hai calcolato il perimetro.']];}),
+ K('A','Area',['B','b','h'],'A',function(M){return {f:['A = '+fr('(B + b) · h',2),'A = '+fr('('+M.B+' + '+M.b+') · '+M.h,2)+' = '+fr((M.B+M.b)+' · '+M.h,2)+' = '+fr((M.B+M.b)*M.h,2)+' = '+b_(M.A+' cm²')],why:'Due trapezi uguali, uno ruotato di mezzo giro, formano un parallelogramma di base B + b e altezza h, il trapezio ne è la metà.'};},'Area = (base maggiore + base minore) · altezza, diviso 2.',function(M){return [[(M.B+M.b)*M.h,'Hai dimenticato di dividere per 2.'],[M.P,'Hai calcolato il perimetro.']];}),
  K('P','Perimetro',['B','b','l1','l2'],'P',function(M){return {f:['P = B + b + l₁ + l₂','P = '+M.B+' + '+M.b+' + '+M.l1+' + '+M.l2+' = '+b_(M.P+' cm')],why:'Il perimetro è la somma dei quattro lati.'};},'Perimetro = somma dei quattro lati (non l’altezza).',function(M){return [[M.A,'Hai calcolato l’area.'],[M.B+M.b+2*M.h,'Nel perimetro servono i lati obliqui, non l’altezza.']];}),
- K('B_A','Base maggiore dall’area',['A','b','h'],'B',function(M){return {f:['A = '+fr('(B + b) · h',2),'B + b = '+fr('2 · A','h'),'B = '+fr('2 · A','h')+' '+MINUS+' b','B = '+fr('2 · '+M.A,M.h)+' '+MINUS+' '+M.b+' = '+fr(2*M.A,M.h)+' '+MINUS+' '+M.b+' = '+(M.B+M.b)+' '+MINUS+' '+M.b+' = '+b_(M.B+' cm')],why:'Raddoppio l’area e divido per h: ottengo la somma delle basi; tolgo la base minore.'};},'Raddoppia l’area, dividi per l’altezza, poi togli la base minore.',function(M){return [[M.B+M.b,'Hai trovato B + b: ora togli la base minore.'],[M.A/M.h-M.b,'Hai dimenticato di raddoppiare l’area.']];}),
- K('b_A','Base minore dall’area',['A','B','h'],'b',function(M){return {f:['A = '+fr('(B + b) · h',2),'B + b = '+fr('2 · A','h'),'b = '+fr('2 · A','h')+' '+MINUS+' B','b = '+fr('2 · '+M.A,M.h)+' '+MINUS+' '+M.B+' = '+fr(2*M.A,M.h)+' '+MINUS+' '+M.B+' = '+(M.B+M.b)+' '+MINUS+' '+M.B+' = '+b_(M.b+' cm')],why:'Raddoppio l’area e divido per h: ottengo la somma delle basi; tolgo la base maggiore.'};},'Raddoppia l’area, dividi per l’altezza, poi togli la base maggiore.',function(M){return [[M.B+M.b,'Hai trovato B + b: ora togli la base maggiore.']];}),
+ K('B_A','Base maggiore dall’area',['A','b','h'],'B',function(M){return {f:['A = '+fr('(B + b) · h',2),'B + b = '+fr('2 · A','h'),'B = '+fr('2 · A','h')+' '+MINUS+' b','B = '+fr('2 · '+M.A,M.h)+' '+MINUS+' '+M.b+' = '+fr(2*M.A,M.h)+' '+MINUS+' '+M.b+' = '+(M.B+M.b)+' '+MINUS+' '+M.b+' = '+b_(M.B+' cm')],why:'Raddoppio l’area e divido per h, ottengo la somma delle basi; tolgo la base minore.'};},'Raddoppia l’area, dividi per l’altezza, poi togli la base minore.',function(M){return [[M.B+M.b,'Hai trovato B + b: ora togli la base minore.'],[M.A/M.h-M.b,'Hai dimenticato di raddoppiare l’area.']];}),
+ K('b_A','Base minore dall’area',['A','B','h'],'b',function(M){return {f:['A = '+fr('(B + b) · h',2),'B + b = '+fr('2 · A','h'),'b = '+fr('2 · A','h')+' '+MINUS+' B','b = '+fr('2 · '+M.A,M.h)+' '+MINUS+' '+M.B+' = '+fr(2*M.A,M.h)+' '+MINUS+' '+M.B+' = '+(M.B+M.b)+' '+MINUS+' '+M.B+' = '+b_(M.b+' cm')],why:'Raddoppio l’area e divido per h, ottengo la somma delle basi; tolgo la base maggiore.'};},'Raddoppia l’area, dividi per l’altezza, poi togli la base maggiore.',function(M){return [[M.B+M.b,'Hai trovato B + b: ora togli la base maggiore.']];}),
  K('h_A','Altezza dall’area',['A','B','b'],'h',function(M){return {f:['A = '+fr('(B + b) · h',2),'h = '+fr('2 · A','B + b'),'h = '+fr('2 · '+M.A,M.B+' + '+M.b)+' = '+fr(2*M.A,M.B+M.b)+' = '+b_(M.h+' cm')],why:'Raddoppio l’area e divido per la somma delle basi.'};},'Raddoppia l’area e dividi per la somma delle basi.',function(M){return [[M.A/(M.B+M.b),'Hai dimenticato di raddoppiare l’area.']];}),
  K('B_P','Base maggiore dal perimetro',['P','b','l1','l2'],'B',function(M){return {f:['P = B + b + l₁ + l₂','B = P '+MINUS+' b '+MINUS+' l₁ '+MINUS+' l₂','B = '+M.P+' '+MINUS+' '+M.b+' '+MINUS+' '+M.l1+' '+MINUS+' '+M.l2+' = '+b_(M.B+' cm')],why:'Tolgo dal perimetro la somma degli altri tre lati.'};},'Togli dal perimetro gli altri tre lati.'),
  K('b_P','Base minore dal perimetro',['P','B','l1','l2'],'b',function(M){return {f:['P = B + b + l₁ + l₂','b = P '+MINUS+' B '+MINUS+' l₁ '+MINUS+' l₂','b = '+M.P+' '+MINUS+' '+M.B+' '+MINUS+' '+M.l1+' '+MINUS+' '+M.l2+' = '+b_(M.b+' cm')],why:'Tolgo dal perimetro la somma degli altri tre lati.'};},'Togli dal perimetro gli altri tre lati.'),
  K('l1_P','Lato obliquo dal perimetro',['P','B','b','l2'],'l1',function(M){return {f:['P = B + b + l₁ + l₂','l₁ = P '+MINUS+' B '+MINUS+' b '+MINUS+' l₂','l₁ = '+M.P+' '+MINUS+' '+M.B+' '+MINUS+' '+M.b+' '+MINUS+' '+M.l2+' = '+b_(M.l1+' cm')],why:'Tolgo dal perimetro la somma degli altri tre lati.'};},'Togli dal perimetro gli altri tre lati.')];
 KD.triangolo=[
- K('A','Area',['b','h'],'A',function(M){return {f:['A = '+fr('b · h',2),'A = '+fr(M.b+' · '+M.h,2)+' = '+fr(M.b*M.h,2)+' = '+b_(M.A+' cm²')],why:'Due triangoli uguali, uno ruotato di mezzo giro, formano un parallelogramma b · h: il triangolo ne è la metà.'};},'Area = base · altezza, diviso 2.',function(M){return [[M.b*M.h,'Hai dimenticato di dividere per 2.'],[M.P,'Hai calcolato il perimetro.']];}),
+ K('A','Area',['b','h'],'A',function(M){return {f:['A = '+fr('b · h',2),'A = '+fr(M.b+' · '+M.h,2)+' = '+fr(M.b*M.h,2)+' = '+b_(M.A+' cm²')],why:'Due triangoli uguali, uno ruotato di mezzo giro, formano un parallelogramma b · h, il triangolo ne è la metà.'};},'Area = base · altezza, diviso 2.',function(M){return [[M.b*M.h,'Hai dimenticato di dividere per 2.'],[M.P,'Hai calcolato il perimetro.']];}),
  K('P','Perimetro',['b','l1','l2'],'P',function(M){return {f:['P = b + l₁ + l₂','P = '+M.b+' + '+M.l1+' + '+M.l2+' = '+b_(M.P+' cm')],why:'Il perimetro è la somma dei tre lati.'};},'Perimetro = somma dei tre lati (non l’altezza).',function(M){return [[M.A,'Hai calcolato l’area.']];}),
- K('b_A','Base dall’area',['A','h'],'b',function(M){return {f:['A = '+fr('b · h',2),'b = '+fr('2 · A','h'),'b = '+fr('2 · '+M.A,M.h)+' = '+fr(2*M.A,M.h)+' = '+b_(M.b+' cm')],why:'A è la metà di b · h: raddoppio A e divido per h.'};},'Raddoppia l’area e dividi per l’altezza.',function(M){return [[M.A/M.h,'Hai dimenticato di raddoppiare l’area: A è la metà di b · h.'],[M.A*M.h,'Hai moltiplicato: per tornare indietro serve la divisione.']];}),
- K('h_A','Altezza dall’area',['A','b'],'h',function(M){return {f:['A = '+fr('b · h',2),'h = '+fr('2 · A','b'),'h = '+fr('2 · '+M.A,M.b)+' = '+fr(2*M.A,M.b)+' = '+b_(M.h+' cm')],why:'A è la metà di b · h: raddoppio A e divido per b.'};},'Raddoppia l’area e dividi per la base.',function(M){return [[M.A/M.b,'Hai dimenticato di raddoppiare l’area: A è la metà di b · h.'],[M.A*M.b,'Hai moltiplicato: per tornare indietro serve la divisione.']];}),
+ K('b_A','Base dall’area',['A','h'],'b',function(M){return {f:['A = '+fr('b · h',2),'b = '+fr('2 · A','h'),'b = '+fr('2 · '+M.A,M.h)+' = '+fr(2*M.A,M.h)+' = '+b_(M.b+' cm')],why:'A è la metà di b · h, raddoppio A e divido per h.'};},'Raddoppia l’area e dividi per l’altezza.',function(M){return [[M.A/M.h,'Hai dimenticato di raddoppiare l’area: A è la metà di b · h.'],[M.A*M.h,'Hai moltiplicato: per tornare indietro serve la divisione.']];}),
+ K('h_A','Altezza dall’area',['A','b'],'h',function(M){return {f:['A = '+fr('b · h',2),'h = '+fr('2 · A','b'),'h = '+fr('2 · '+M.A,M.b)+' = '+fr(2*M.A,M.b)+' = '+b_(M.h+' cm')],why:'A è la metà di b · h, raddoppio A e divido per b.'};},'Raddoppia l’area e dividi per la base.',function(M){return [[M.A/M.b,'Hai dimenticato di raddoppiare l’area: A è la metà di b · h.'],[M.A*M.b,'Hai moltiplicato: per tornare indietro serve la divisione.']];}),
  K('b_P','Base dal perimetro',['P','l1','l2'],'b',function(M){return {f:['P = b + l₁ + l₂','b = P '+MINUS+' l₁ '+MINUS+' l₂','b = '+M.P+' '+MINUS+' '+M.l1+' '+MINUS+' '+M.l2+' = '+b_(M.b+' cm')],why:'Tolgo dal perimetro gli altri due lati.'};},'Togli dal perimetro gli altri due lati.'),
  K('l1_P','Lato l₁ dal perimetro',['P','b','l2'],'l1',function(M){return {f:['P = b + l₁ + l₂','l₁ = P '+MINUS+' b '+MINUS+' l₂','l₁ = '+M.P+' '+MINUS+' '+M.b+' '+MINUS+' '+M.l2+' = '+b_(M.l1+' cm')],why:'Tolgo dal perimetro gli altri due lati.'};},'Togli dal perimetro gli altri due lati.')];
 
@@ -726,7 +726,7 @@ function renderForm(){
  if($('bUnroll'))$('bUnroll').onclick=function(){
   var btn=this,target=S.q>.5?0:1;btn.disabled=true;
   toStage(function(){tween('q',target,T_UNROLL);setTimeout(renderForm,reduce?0:T_UNROLL+50);});};
- say(k.u==='A'||k.u==='P'?k.hint:'Operazione inversa: parti dalla formula diretta e ricava il dato che manca. '+k.hint,'idle');}
+ say(k.u==='A'||k.u==='P'?k.hint:'Operazione inversa. Parti dalla formula diretta e ricava il dato che manca. '+k.hint,'idle');}
 
 /* --- Allenati (poligoni) --- */
 function newEx(){
@@ -751,12 +751,12 @@ function diagnose(e,a){
  var k=e.kd,M=e.M,l=k.diag(M);
  for(var i=0;i<l.length;i++)if(l[i][0]===a)return l[i][1];
  return '';}
-var OKS=['Esatto!','Perfetto, vai avanti così!','Giusto: bel ragionamento!','Bravissimo, un altro?','Centrato!'];
-var KOS=['Quasi. Riprova con calma.','Non ancora: ricontrolla i dati del testo.','Ci sei vicino, rileggi il problema.'];
+var OKS=['Esatto!','Perfetto, vai avanti così!','Giusto, bel ragionamento!','Bravissimo, un altro?','Centrato!'];
+var KOS=['Quasi. Riprova con calma.','Non ancora. Ricontrolla i dati del testo.','Ci sei vicino, rileggi il problema.'];
 function statLine(){return 'Risolti: '+S.solved+' · Di fila al primo colpo: '+S.streak;}
 function finishOk(){
  $('stat').textContent=statLine();
- say(S.streak>0&&S.streak%3===0?S.streak+' di fila al primo colpo: sei un fenomeno!':pick(OKS),'ok',true);
+ say(S.streak>0&&S.streak%3===0?S.streak+' di fila al primo colpo. Sei un fenomeno!':pick(OKS),'ok',true);
  $('bNew').classList.add('primaria');$('ansIn').disabled=true;$('bCheck').disabled=true;}
 function renderTrain(){
  if(!S.ex||S.ex.fig!==S.tab)newEx();
@@ -766,7 +766,7 @@ function renderTrain(){
   +'<div class="fb" id="fb"></div><div class="azioni"><button class="azione" id="bNew">Nuovo esercizio</button></div></div>';
  $('bCheck').onclick=checkEx;padBind();$('bNew').onclick=function(){newEx();renderTrain();drawStage();};
  $('ansIn').onkeydown=function(ev){if(ev.key==='Enter')checkEx();};
- say('Leggi bene i dati: quali misure ti servono per questa formula?','idle');}
+ say('Leggi bene i dati. Quali misure ti servono per questa formula?','idle');}
 function checkEx(){
  var e=S.ex;if(e.done)return;
  var raw=$('ansIn').value,c=candidates(raw);
@@ -781,10 +781,10 @@ function checkEx(){
   e.tries++;S.streak=0;$('stat').textContent=statLine();
   var a=parseInt(c[0],10),dg=c[0].indexOf(',')<0?diagnose(e,a):'';
   if(e.tries===1){fb.innerHTML='<div class="no">Non è corretto.</div><div class="f">'+(dg||e.kd.hint)+'</div>';say(dg||pick(KOS),'ko');}
-  else if(e.tries===2){fb.innerHTML='<div class="no">Ancora no.</div><div class="f">'+e.kd.hint+'</div>';say('Suggerimento: guarda la formula qui sotto e riprova.','ko');}
+  else if(e.tries===2){fb.innerHTML='<div class="no">Ancora no.</div><div class="f">'+e.kd.hint+'</div>';say('Suggerimento. Guarda la formula qui sotto e riprova.','ko');}
   else{e.done=true;var d2=e.kd.f(e.M);
    fb.innerHTML='<div class="no">Ecco il procedimento:</div>'+d2.f.map(function(x){return '<div class="f">'+fh(x)+'</div>';}).join('');
-   say('Guarda i passaggi, poi provane un altro: capita a tutti!','ko');
+   say('Guarda i passaggi, poi provane un altro. Capita a tutti!','ko');
    $('bNew').classList.add('primaria');$('ansIn').disabled=true;$('bCheck').disabled=true;}}}
 
 /* --- Equivalenze: convertitore (anche con decimali) --- */
@@ -824,7 +824,7 @@ function renderTrainEq(){
   +'<div class="fb" id="fb"></div><div class="azioni"><button class="azione" id="bNew">Nuovo esercizio</button></div></div>';
  $('bCheck').onclick=checkEq;padBind();$('bNew').onclick=function(){newExEq();renderTrainEq();drawStage();};
  $('ansIn').onkeydown=function(ev){if(ev.key==='Enter')checkEq();};
- say('Guarda la scala: da che unità parti e dove devi arrivare? Se serve, usa la virgola.','idle');}
+ say('Guarda la scala. Da che unità parti e dove devi arrivare? Se serve, usa la virgola.','idle');}
 function checkEq(){
  var e=S.exEq;if(e.done)return;
  var raw=$('ansIn').value,c=candidates(raw),fb=$('fb');
@@ -836,7 +836,7 @@ function checkEq(){
  e.tries++;S.streak=0;$('stat').textContent=statLine();
  var down=e.j>e.i,msg='',has=function(x){return c.indexOf(x)>=0;};
  if(has(shiftDec(e.v,(down?1:-1)*e.k)))msg='Ogni salto vale 100 e non 10, perché le aree hanno due dimensioni.';
- else if(has(shiftDec(e.v,(down?-2:2)*e.k)))msg=down?'Direzione sbagliata: andando verso un’unità più piccola il numero cresce.':'Direzione sbagliata: andando verso un’unità più grande il numero diminuisce.';
+ else if(has(shiftDec(e.v,(down?-2:2)*e.k)))msg=down?'Direzione sbagliata. Andando verso un’unità più piccola il numero cresce.':'Direzione sbagliata. Andando verso un’unità più grande il numero diminuisce.';
  var hint='Da '+sq(e.i)+' a '+sq(e.j)+(e.k>1?' ci sono '+e.k+' salti':' c’è 1 salto')+'. '+(down?'Vai verso un’unità più piccola, quindi moltiplica per 100 a ogni salto (la virgola va a destra di 2 posti per salto).':'Vai verso un’unità più grande, quindi dividi per 100 a ogni salto (la virgola va a sinistra di 2 posti per salto).');
  if(e.tries===1){fb.innerHTML='<div class="no">Non è corretto.</div><div class="f">'+(msg||hint)+'</div>';say(msg||pick(KOS),'ko');}
  else if(e.tries===2){fb.innerHTML='<div class="no">Ancora no.</div><div class="f">'+hint+'</div>';say('Conta i salti sulla scala e riprova.','ko');}
