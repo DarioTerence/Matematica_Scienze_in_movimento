@@ -164,7 +164,7 @@ const IMG_R="../immagini/prof_t/prof_t_massa_in_piedi.webp", IMG_L="../immagini/
  }
  function loop(now){
   if(!anim) return;
-  const t=(now-anim.t0)/1000; let dy, done=false;
+  const t=Math.max(0,(now-anim.t0)/1000); let dy, done=false;
   if(anim.k==='drop'){dy=HDROP-.5*cur.g*PX*t*t; if(dy<=0){dy=0;done=true}}
   else{dy=(V0*t-.5*cur.g*t*t)*PX; if(t>0&&dy<=0){dy=0;done=true}}
   place(Math.max(dy,0),done?'R':'L');

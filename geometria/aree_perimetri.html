@@ -220,7 +220,7 @@ function tween(key,target,ms,done){
  cancelAnimationFrame(tw[key]);var from=S[key];
  if(reduce||ms<=0||from===target){S[key]=target;tick(key);if(done)done();return;}
  var t0=performance.now();
- var f=function(now){var k=Math.min(1,(now-t0)/ms);var e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+ var f=function(now){var k=Math.max(0,Math.min(1,(now-t0)/ms));var e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
   S[key]=from+(target-from)*e;tick(key);if(k<1)tw[key]=requestAnimationFrame(f);else if(done)done();};
  tw[key]=requestAnimationFrame(f);}
 var playT=0;

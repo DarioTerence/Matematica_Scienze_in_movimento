@@ -279,7 +279,7 @@ function draw(){
 
 /* ---------- animazione ---------- */
 function loop(t){
-  var dt=Math.min(.25,(t-last)/1000||.016); last=t;
+  var dt=Math.max(0,Math.min(.25,(t-last)/1000)); last=t;
   var d=tgt-cur;
   if(reduce||Math.abs(d)<0.005) cur=tgt;
   else{

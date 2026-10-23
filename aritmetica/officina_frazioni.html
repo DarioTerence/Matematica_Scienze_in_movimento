@@ -249,7 +249,7 @@ function tween(obj,key,to,ms,step,done,lin){
  cancelAnimationFrame(tws[key]);var from=obj[key];
  if(reduce||ms<=0||from===to){obj[key]=to;step();if(done)done();return;}
  var t0=performance.now();
- var f=function(now){var k=Math.min(1,(now-t0)/ms),e=lin?k:(k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2);
+ var f=function(now){var k=Math.max(0,Math.min(1,(now-t0)/ms)),e=lin?k:(k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2);
   obj[key]=from+(to-from)*e;step();if(k<1)tws[key]=requestAnimationFrame(f);else if(done)done();};
  tws[key]=requestAnimationFrame(f);}
 /* =========================================================
