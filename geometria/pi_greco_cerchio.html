@@ -89,7 +89,7 @@ table.mis td:last-child{color:#fff;font-weight:700}
    <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
    <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
   </div>
-  <svg id="svg" class="hide" viewBox="0 0 560 400" role="img" aria-label="Disegno della scheda"></svg>
+  <svg id="svg" class="hide" viewBox="0 0 560 400" role="img" aria-label="Poligono regolare inscritto nel cerchio"></svg>
  </div>
  <p class="hint" id="hint">Trascina per ruotare la vista, pizzica o usa la rotella per avvicinarti.</p>
 </section>
@@ -112,7 +112,7 @@ var liscio=function(u){u=clamp(u,0,1);return u*u*(3-2*u);};
 var TAU=2*Math.PI;
 
 /* Tempi uniformi (millisecondi): un giro completo, uno spostamento, una scritta. Si cambiano solo qui. */
-var T_ROLL=4000, T_MOVE=1400, T_SHOW=1200, T_BACK=500;
+var T_ROLL=4000, T_MOVE=1400, T_SHOW=1200, T_TRI=450, T_BACK=500;   /* T_TRI = un triangolo che si accende */
 
 /* Prof. T in versione greca: cinque pose (file in immagini/prof_t/) */
 var IMG={hi:'../immagini/prof_t/prof_t_greco_saluto.webp',idle:'../immagini/prof_t/prof_t_greco_pensieroso.webp',
@@ -194,7 +194,7 @@ function vai(i){
  i=clamp(i,0,3);var avanti=i>S.passo;S.passo=i;
  if(i===3)S.misure[OGGETTI[S.obj].id]=true;
  pannelloRapporto();var f=frasePasso(i);say(f[0],f[1],i===3&&f[1]==='fine');
- anima(i,avanti?durPasso(i):T_BACK);}
+ anima(S,i,avanti?durPasso(i):T_BACK,function(){if(scena)scena.mostra(S.p);});}
 function scegliOggetto(k){S.obj=k;S.passo=0;S.p=0;cancelAnimationFrame(raf);if(scena){scena.oggetto(OGGETTI[k]);scena.mostra(0);}
  pannelloRapporto();var f=frasePasso(0);say(f[0],f[1]);}
 function altroOggetto(){   /* il primo oggetto non ancora misurato, altrimenti il successivo */
@@ -203,12 +203,13 @@ function altroOggetto(){   /* il primo oggetto non ancora misurato, altrimenti i
 
 /* animazione verso il passo scelto: avanzamento lineare, progresso sempre tra 0 e 1, intervallo mai negativo */
 var raf=0;
-function anima(meta,dur){
- cancelAnimationFrame(raf);var da=S.p,last=performance.now(),u=0;if(reduce)dur=0;
+/* st è lo stato della scheda ({passo, p}), disegna la funzione che ridisegna con st.p */
+function anima(st,meta,dur,disegna){
+ cancelAnimationFrame(raf);var da=st.p,last=performance.now(),u=0;if(reduce)dur=0;
  (function frame(now){
   var dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;
   u=dur?clamp(u+dt*1000/dur,0,1):1;
-  S.p=da+(meta-da)*u;if(scena)scena.mostra(S.p);
+  st.p=da+(meta-da)*u;disegna();
   if(u<1)raf=requestAnimationFrame(frame);})(last);}
 
 /* ---------------- scena 3D ----------------
@@ -374,7 +375,99 @@ $('bReset').onclick=function(){if(scena)scena.reset();};
 $('bPiu').onclick=function(){if(scena)scena.zoom(.8);};
 $('bMeno').onclick=function(){if(scena)scena.zoom(1.25);};
 
-/* ================= schede 02-05: in preparazione ================= */
+/* ================= 02 DAI POLIGONI AL CERCHIO =================
+   Come la dispensa: il poligono regolare inscritto è fatto di n triangoli uguali di base ℓ e altezza a,
+   quindi A = n · (ℓ · a / 2) = p · a / 2. Aumentando i lati p tende a 2πr e a tende a r, quindi Ac = πr².
+   Passi: 0 il poligono, 1 l'area (i triangoli si accendono uno alla volta), 2 aumentano i lati, 3 l'area del cerchio. */
+var LATI=[4,5,6,8,10,12,24,48,96];
+var P2={passo:0,p:0,n:96};   /* n = poligono scelto con i chip alla fine del passo 2 */
+var CX=205,CY=200,RR=165;    /* centro e raggio del cerchio nel disegno (viewBox 560 x 400) */
+function apotema(n){return Math.cos(Math.PI/n);}          /* a / r */
+function semiper(n){return n*Math.sin(Math.PI/n);}        /* p / 2r */
+function apoTesto(n){return num(apotema(n),n<24?2:3);}
+function durPasso2(i){return i===1?6*T_TRI+T_SHOW:i===2?LATI.length*T_MOVE:i===3?T_MOVE:0;}
+function vert(n,k,R){var t=Math.PI/2+Math.PI/n+TAU*k/n;return [CX+(R||RR)*Math.cos(t),CY+(R||RR)*Math.sin(t)];}
+function pt(v){return v[0].toFixed(1)+','+v[1].toFixed(1);}
+
+function testoPasso2(i){
+ if(i===0)return {h:'Il poligono regolare',t:'Un poligono regolare inscritto in un cerchio di raggio <b>r</b> si divide in triangoli uguali, tanti quanti sono i lati. Ognuno ha per base il lato <b>ℓ</b> e per altezza l\'apotema <span class="cC">a</span> (triangolo evidenziato).'};
+ if(i===1)return {h:'L\'area del poligono',t:'Un triangolo ha area ℓ · a / 2. I triangoli sono n, quindi<br>A = n · (ℓ · a / 2) = (n · ℓ) · a / 2 = <b>p · a / 2</b><br>con p = n · ℓ perimetro del poligono. Vale per ogni poligono regolare, anche inscritto.'};
+ if(i===2)return {h:'Aumentano i lati',t:'Con più lati il poligono copre sempre più cerchio. Il perimetro si avvicina alla circonferenza (p → 2πr) e l\'apotema al raggio (a → r). In <span class="cR">rosso</span> la parte di cerchio ancora scoperta.'};
+ return {h:'L\'area del cerchio',t:'Al limite i lati sono punti della circonferenza. Nella formula del poligono p diventa 2πr e a diventa r, quindi<br>A<sub>c</sub> = 2πr · r / 2 = <b>πr²</b>'};}
+function frasePasso2(i){
+ if(i===0)return ['Un esagono è fatto di sei triangoli uguali. Tocca <b>Avanti</b>.','idle'];
+ if(i===1)return ['Tanti triangoli, una sola formula, p · a / 2.','ok'];
+ if(i===2)return ['Con 96 lati il poligono quasi non si distingue dal cerchio. È lo stesso numero di lati usato da Archimede.','idle'];
+ return ['Ecco l\'area del cerchio, πr².','fine'];}
+
+/* indice del poligono mostrato durante il passo 2 (uno ogni T_MOVE) */
+function latiAl(p){if(p<=1)return 6;if(p>2)return 96;if(p>=2)return P2.n;return LATI[Math.min(LATI.length-1,Math.floor((p-1)*LATI.length))];}
+
+function tabella2(nOra){
+ return '<table class="mis"><tr><th>lati n</th><th>a</th><th>p : 2r</th></tr>'
+  +LATI.map(function(n){var on=n===nOra;return '<tr'+(on?' style="background:rgba(74,134,240,.18)"':'')+'><td>'+n+'</td><td>'+apoTesto(n)+' r</td><td>'+num(semiper(n),3)+'</td></tr>';}).join('')
+  +'</table><div class="pi">p : 2r si avvicina a <b>π = 3,14159…</b> e l\'apotema al raggio.</div>';}
+
+function pannelloPoligoni(){
+ var n=4,i=P2.passo,P=testoPasso2(i);
+ $('panel').innerHTML='<div class="card"><div class="h">'+P.h+'</div><div class="txt">'+P.t+'</div>'
+  +passoHTML(i,n)+azioniHTML(i===0,i===n-1,'Riproduci')+'</div>'
+  +(i===2?'<div class="card"><div class="sect">Scegli il numero di lati</div><div class="chips" id="lati" style="margin-top:6px">'
+   +LATI.map(function(k){return '<button class="chip'+(k===P2.n?' attivo':'')+'" data-n="'+k+'" style="--chip:#4a86f0">'+k+'</button>';}).join('')+'</div>'
+   +'<div id="tab2">'+tabella2(i===2&&P2.p<2?null:P2.n)+'</div></div>':'')
+  +'<div class="anchor">Poligono regolare <b>A = p · a / 2</b>. Per il cerchio p diventa 2πr e a diventa r, quindi <b>A<sub>c</sub> = πr²</b>.</div>';
+ $('bPrev').onclick=function(){vai2(i-1);};
+ $('bNext').onclick=function(){vai2(i+1);};
+ $('bNew').onclick=function(){P2.passo=0;P2.p=0;P2.n=96;pannelloPoligoni();disegnaPoligoni();vai2(1);};
+ if($('lati'))$('lati').onclick=function(e){var b=e.target.closest('[data-n]');if(!b)return;
+  cancelAnimationFrame(raf);P2.n=+b.dataset.n;P2.passo=2;P2.p=2;pannelloPoligoni();disegnaPoligoni();
+  say(P2.n<12?'Con pochi lati resta fuori molto cerchio.':'Con '+P2.n+' lati p : 2r vale già '+num(semiper(P2.n),3)+'.','idle');};}
+
+function vai2(i){
+ i=clamp(i,0,3);var avanti=i>P2.passo;if(avanti&&i===2)P2.n=96;P2.passo=i;
+ pannelloPoligoni();var f=frasePasso2(i);say(f[0],f[1],i===3);
+ anima(P2,i,avanti?durPasso2(i):T_BACK,function(){disegnaPoligoni();
+  var t=$('tab2');if(t&&P2.passo===2)t.innerHTML=tabella2(latiAl(P2.p));});}
+
+function disegnaPoligoni(){
+ var p=P2.p,n=latiAl(p),o='',a=apotema(n)*RR,u3=clamp(p-2,0,1);
+ var ink='#1d2433',blu='#2f6fd6',ara='#d9731c';
+ var poly=[];for(var k=0;k<n;k++)poly.push(pt(vert(n,k)));
+ o+='<rect width="560" height="400" fill="#f6f3ea"/>';
+ /* parte di cerchio non coperta (rossa) dal passo 2 */
+ if(p>1){var gap='M'+(CX+RR)+','+CY+' A'+RR+','+RR+' 0 1,0 '+(CX-RR)+','+CY+' A'+RR+','+RR+' 0 1,0 '+(CX+RR)+','+CY+' Z M'+poly.join(' L')+' Z';
+  o+='<path d="'+gap+'" fill="#d64545" fill-opacity="'+(0.35*(1-u3))+'" fill-rule="evenodd"/>';}
+ /* passo 1: i triangoli si accendono uno alla volta */
+ var acc=p<=1?clamp(p,0,1)*(6*T_TRI+T_SHOW)/T_TRI:(p>=1?99:0);
+ for(var k=0;k<n;k++){var v1=vert(n,k-1),v2=vert(n,k),on=k===0?1:clamp(acc-k,0,1);
+  if(p>1)on=k===0?1:.55;
+  o+='<polygon points="'+CX+','+CY+' '+pt(v1)+' '+pt(v2)+'" fill="#4a86f0" fill-opacity="'+(k===0?.42:.2*on)+'" stroke="'+blu+'" stroke-opacity="'+(k===0?.6:n>24?0:.6)+'" stroke-width="1"/>';
+  if(p>0&&p<=1&&on>0&&n<=12){var c=[(CX+v1[0]+v2[0])/3,(CY+v1[1]+v2[1])/3];
+   if(k===0)c[0]-=24;
+   o+='<text x="'+c[0].toFixed(1)+'" y="'+(c[1]+6).toFixed(1)+'" text-anchor="middle" font-size="18" font-weight="700" fill="'+blu+'" opacity="'+on+'">'+(k+1)+'</text>';}}
+ /* cerchio, poligono e, al passo 3, il cerchio pieno */
+ o+='<circle cx="'+CX+'" cy="'+CY+'" r="'+RR+'" fill="#4a86f0" fill-opacity="'+(.42*u3)+'" stroke="#5c6572" stroke-width="2"/>';
+ o+='<polygon points="'+poly.join(' ')+'" fill="none" stroke="'+blu+'" stroke-width="'+(n>24?1.5:2.5)+'" stroke-opacity="'+(1-u3)+'"/>';
+ /* raggio, apotema e lato del triangolo evidenziato */
+ var v0=vert(n,0),vm=vert(n,-1),A=[CX,CY+a+(RR-a)*u3];
+ o+='<line x1="'+CX+'" y1="'+CY+'" x2="'+pt(v0).replace(',','" y2="')+'" stroke="'+ink+'" stroke-width="2.2"/>';
+ o+='<line x1="'+CX+'" y1="'+CY+'" x2="'+A[0]+'" y2="'+A[1].toFixed(1)+'" stroke="'+ara+'" stroke-width="3"/>';
+ if(u3<.5){o+='<rect x="'+(CX-9)+'" y="'+(CY+a-9).toFixed(1)+'" width="9" height="9" fill="none" stroke="'+ara+'" stroke-width="1.5"/>';
+  if(n<=12)o+='<text x="'+((v0[0]+vm[0])/2)+'" y="'+(CY+a+24).toFixed(1)+'" text-anchor="middle" font-size="20" font-style="italic" font-weight="700" fill="'+blu+'">ℓ</text>';}
+ o+='<circle cx="'+CX+'" cy="'+CY+'" r="3.5" fill="'+ink+'"/><text x="'+(CX-16)+'" y="'+(CY-6)+'" font-size="18" fill="'+ink+'">O</text>';
+ var rm=[(CX+v0[0])/2,(CY+v0[1])/2];
+ o+='<text x="'+(rm[0]+(n>24?-22:8)).toFixed(1)+'" y="'+(rm[1]-2).toFixed(1)+'" font-size="20" font-style="italic" font-weight="700" fill="'+ink+'">r</text>';
+ o+='<text x="'+(CX+8)+'" y="'+(CY+a*.62).toFixed(1)+'" font-size="20" font-style="italic" font-weight="700" fill="'+ara+'" opacity="'+clamp(1-2*u3,0,1)+'">a</text>';
+ /* lettura a destra */
+ var L=function(y,t,c,sz){return '<text x="395" y="'+y+'" font-size="'+(sz||22)+'" fill="'+(c||ink)+'">'+t+'</text>';};
+ if(u3<1){var op=1-u3;o+='<g opacity="'+op+'">'+L(80,'n = <tspan font-weight="700">'+n+'</tspan>')
+  +L(118,'a = <tspan font-weight="700" fill="'+ara+'">'+apoTesto(n)+' r</tspan>')
+  +(p>1?L(156,'p : 2r = <tspan font-weight="700">'+num(semiper(n),3)+'</tspan>'):'')
+  +(p>0?L(330,'A = p · a / 2','#2f6fd6',24):'')+'</g>';}
+ if(u3>0)o+='<g opacity="'+u3+'">'+L(80,'p → 2πr')+L(118,'a → r')+L(330,'A<tspan dy="6" font-size="15">c</tspan><tspan dy="-6"> = 2πr · r / 2</tspan>','#2f6fd6',22)+L(366,'A<tspan dy="6" font-size="17">c</tspan><tspan dy="-6"> = </tspan><tspan font-weight="700">πr²</tspan>','#2f6fd6',26)+'</g>';
+ $('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';}
+
+/* ================= schede 03-05: in preparazione ================= */
 function pannelloAttesa(){
  var s=SCHEDE.filter(function(x){return x.id===S.scheda;})[0];
  $('svg').innerHTML='<rect width="560" height="400" fill="#f3f0e8"/><circle cx="280" cy="190" r="110" fill="none" stroke="#4a86f0" stroke-width="4"/><line x1="170" y1="190" x2="390" y2="190" stroke="#2f6fd6" stroke-width="3"/><text x="280" y="345" text-anchor="middle" font-family="Calibri,Carlito,sans-serif" font-size="22" fill="#5c6572">Scheda in preparazione</text>';
@@ -382,10 +475,13 @@ function pannelloAttesa(){
  say('Ci sto lavorando con il compasso. Torna presto!','idle');}
 
 function mostra(){
+ cancelAnimationFrame(raf);
+ if(S.p!==S.passo)S.p=S.passo;if(P2.p!==P2.passo)P2.p=P2.passo;   /* un'animazione interrotta va alla fine del passo */
  disegnaSchede();var tre=S.scheda==='rapporto';
  $('scena3d').classList.toggle('hide',!tre);$('hint').classList.toggle('hide',!tre);$('svg').classList.toggle('hide',tre);
  if(tre){if(scena){scena.resize();scena.mostra(S.p);}pannelloRapporto();var f=frasePasso(S.passo);say(f[0],f[1]);}
- else{cancelAnimationFrame(raf);if(S.passo===1||S.passo===2)S.p=S.passo;pannelloAttesa();}}
+ else if(S.scheda==='poligoni'){pannelloPoligoni();disegnaPoligoni();var g=frasePasso2(P2.passo);say(g[0],g[1]);}
+ else pannelloAttesa();}
 
 if(scena)scena.oggetto(OGGETTI[0]);
 mostra();
