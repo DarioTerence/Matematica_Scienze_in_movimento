@@ -112,7 +112,7 @@ var liscio=function(u){u=clamp(u,0,1);return u*u*(3-2*u);};
 var TAU=2*Math.PI;
 
 /* Tempi uniformi (millisecondi): un giro completo, uno spostamento, una scritta. Si cambiano solo qui. */
-var T_ROLL=4000, T_MOVE=1400, T_SHOW=1200, T_TRI=450, T_BACK=500;   /* T_TRI = un triangolo che si accende */
+var T_ROLL=4000, T_MOVE=1400, T_SHOW=1200, T_TRI=450, T_BACK=500, T_PAUSE=1500;   /* T_TRI = un triangolo che si accende; T_PAUSE = pausa tra i passi di Riproduci */
 
 /* Prof. T in versione greca: cinque pose (file in immagini/prof_t/) */
 var IMG={hi:'../immagini/prof_t/prof_t_greco_saluto.webp',idle:'../immagini/prof_t/prof_t_greco_pensieroso.webp',
@@ -204,13 +204,13 @@ function altroOggetto(){   /* il primo oggetto non ancora misurato, altrimenti i
 /* animazione verso il passo scelto: avanzamento lineare, progresso sempre tra 0 e 1, intervallo mai negativo */
 var raf=0;
 /* st è lo stato della scheda ({passo, p}), disegna la funzione che ridisegna con st.p */
-function anima(st,meta,dur,disegna){
+function anima(st,meta,dur,disegna,fine){
  cancelAnimationFrame(raf);var da=st.p,last=performance.now(),u=0;if(reduce)dur=0;
  (function frame(now){
   var dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;
   u=dur?clamp(u+dt*1000/dur,0,1):1;
   st.p=da+(meta-da)*u;disegna();
-  if(u<1)raf=requestAnimationFrame(frame);})(last);}
+  if(u<1)raf=requestAnimationFrame(frame);else if(fine)fine();})(last);}
 
 /* ---------------- scena 3D ----------------
    Unità della scena: il raggio di ogni oggetto vale 1, quindi la circonferenza stesa è lunga 2π ≈ 6,28.
@@ -418,19 +418,35 @@ function pannelloPoligoni(){
   +'<div class="anchor">Poligono regolare <b>A = p · a / 2</b>. Per il cerchio p diventa 2πr e a diventa r, quindi <b>A<sub>c</sub> = πr²</b>.</div>';
  $('bPrev').onclick=function(){vai2(i-1);};
  $('bNext').onclick=function(){vai2(i+1);};
- $('bNew').onclick=function(){P2.passo=0;P2.p=0;P2.n=96;pannelloPoligoni();disegnaPoligoni();vai2(1);};
+ $('bNew').onclick=riproduci2;
  if($('lati'))$('lati').onclick=function(e){var b=e.target.closest('[data-n]');if(!b)return;
-  cancelAnimationFrame(raf);P2.n=+b.dataset.n;P2.passo=2;P2.p=2;pannelloPoligoni();disegnaPoligoni();
+  ferma2();cancelAnimationFrame(raf);P2.n=+b.dataset.n;P2.passo=2;P2.p=2;pannelloPoligoni();disegnaPoligoni();
   say(P2.n<12?'Con pochi lati resta fuori molto cerchio.':'Con '+P2.n+' lati p : 2r vale già '+num(semiper(P2.n),3)+'.','idle');};}
 
-function vai2(i){
+/* Riproduci: dall'inizio fino al passo 4, un passo dopo l'altro con una pausa; si ferma se si tocca un altro comando */
+var gioco=0,inGioco=false;
+function ferma2(){inGioco=false;clearTimeout(gioco);}
+function riproduci2(){
+ ferma2();cancelAnimationFrame(raf);inGioco=true;
+ P2.passo=0;P2.p=0;P2.n=96;pannelloPoligoni();disegnaPoligoni();var f=frasePasso2(0);say(f[0],f[1]);
+ gioco=setTimeout(function(){avanzaGioco(1);},reduce?0:T_PAUSE);}
+function avanzaGioco(i){
+ if(!inGioco)return;
+ vai2(i,function(){if(!inGioco)return;if(i<3)gioco=setTimeout(function(){avanzaGioco(i+1);},reduce?0:T_PAUSE);else inGioco=false;});}
+
+function vai2(i,fine){
+ if(!fine)ferma2();   /* un comando toccato a mano ferma Riproduci */
  i=clamp(i,0,3);var avanti=i>P2.passo;if(avanti&&i===2)P2.n=96;P2.passo=i;
  pannelloPoligoni();var f=frasePasso2(i);say(f[0],f[1],i===3);
  anima(P2,i,avanti?durPasso2(i):T_BACK,function(){disegnaPoligoni();
-  var t=$('tab2');if(t&&P2.passo===2)t.innerHTML=tabella2(latiAl(P2.p));});}
+  var t=$('tab2'),nn=latiAl(P2.p);if(t&&P2.passo===2&&t.dataset.n!=nn){t.dataset.n=nn;t.innerHTML=tabella2(nn);}},fine);}
 
+var ultimo='';
 function disegnaPoligoni(){
  var p=P2.p,n=latiAl(p),o='',a=apotema(n)*RR,u3=clamp(p-2,0,1);
+ /* durante il passo 3 il disegno cambia solo quando cambia il numero di lati: niente lavoro inutile a ogni fotogramma */
+ var chiave=(p>1&&p<=2)?'L'+n:'P'+p.toFixed(3)+'|'+n;
+ if(chiave===ultimo)return;ultimo=chiave;
  var ink='#1d2433',blu='#2f6fd6',ara='#d9731c';
  var poly=[];for(var k=0;k<n;k++)poly.push(pt(vert(n,k)));
  o+='<rect width="560" height="400" fill="#f6f3ea"/>';
@@ -475,7 +491,7 @@ function pannelloAttesa(){
  say('Ci sto lavorando con il compasso. Torna presto!','idle');}
 
 function mostra(){
- cancelAnimationFrame(raf);
+ cancelAnimationFrame(raf);ferma2();
  if(S.p!==S.passo)S.p=S.passo;if(P2.p!==P2.passo)P2.p=P2.passo;   /* un'animazione interrotta va alla fine del passo */
  disegnaSchede();var tre=S.scheda==='rapporto';
  $('scena3d').classList.toggle('hide',!tre);$('hint').classList.toggle('hide',!tre);$('svg').classList.toggle('hide',tre);
