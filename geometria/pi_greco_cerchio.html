@@ -35,7 +35,7 @@ button,input{font-family:inherit}
 /* riquadro a sinistra, pannello a destra; sotto 760 px colonna unica: riquadro, pannello, Prof. T */
 .layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:6px}
 .layout>*{min-width:0}
-@media(max-width:760px){.layout{display:flex;flex-direction:column}.layout>section,.layout>aside{display:contents}.stage,.hint{order:1}#panel{order:2;margin-top:12px}.prof{order:3}}
+@media(max-width:760px){.layout{display:flex;flex-direction:column}.layout>section,.layout>aside{display:contents}.stage,.hint,#cur{order:1}#panel{order:2;margin-top:12px}.prof{order:3}}
 .stage{position:relative;background:linear-gradient(#fbfaf6,#ece8dd);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .stage svg{display:block;width:100%;height:auto}
 #scena3d{position:relative;height:clamp(280px,44vh,410px);touch-action:none}
@@ -60,6 +60,16 @@ button,input{font-family:inherit}
 .bubble::before{content:"";position:absolute;left:-8px;bottom:22px;border:8px solid transparent;border-left:0;border-right-color:#17233a}
 /* ---- stili propri dell'animazione ---- */
 .cC{color:#ffa94d;font-weight:700}.cD{color:#7fb0ff;font-weight:700}.cR{color:#ff8a80;font-weight:700}
+/* cursore sotto il disegno (scheda 03) */
+.sliders{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-top:10px}
+.sliders label{display:flex;flex-direction:column;font-size:14px;color:var(--mut)}
+.sliders .lh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sliders output{color:var(--txt);font-size:15px;white-space:nowrap}
+.sliders input[type=range]{width:100%;accent-color:#4a86f0}
+.form{font-size:17px;margin:6px 0;line-height:1.5}
+.form b{color:#9cc5ff}
+.inv{margin:6px 0 0;padding-left:18px;line-height:1.7;font-size:16px}
+.nota{color:var(--mut);font-size:14px;margin-top:6px;line-height:1.4}
 table.mis{width:100%;border-collapse:collapse;font-size:15px;margin-top:4px}
 table.mis th{color:var(--mut);font-weight:400;text-align:right;padding:3px 4px;border-bottom:1px solid var(--line)}
 table.mis th:first-child,table.mis td:first-child{text-align:left}
@@ -89,8 +99,9 @@ table.mis td:last-child{color:#fff;font-weight:700}
    <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
    <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
   </div>
-  <svg id="svg" class="hide" viewBox="0 0 560 400" role="img" aria-label="Poligono regolare inscritto nel cerchio"></svg>
+  <svg id="svg" class="hide" viewBox="0 0 560 400" role="img" aria-label="Disegno del cerchio"></svg>
  </div>
+ <div class="sliders hide" id="cur"><label><span class="lh"><span id="curNome">angolo al centro α</span><output id="curVal"></output></span><input type="range" id="curR" min="10" max="350" step="5" value="60"></label></div>
  <p class="hint" id="hint">Trascina per ruotare la vista, pizzica o usa la rotella per avvicinarti.</p>
 </section>
 <aside>
@@ -483,7 +494,144 @@ function disegnaPoligoni(){
  if(u3>0)o+='<g opacity="'+u3+'">'+L(80,'p → 2πr')+L(118,'a → r')+L(330,'A<tspan dy="6" font-size="15">c</tspan><tspan dy="-6"> = 2πr · r / 2</tspan>','#2f6fd6',22)+L(366,'A<tspan dy="6" font-size="17">c</tspan><tspan dy="-6"> = </tspan><tspan font-weight="700">πr²</tspan>','#2f6fd6',26)+'</g>';
  $('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';}
 
-/* ================= schede 03-05: in preparazione ================= */
+/* ================= 03 PARTI DEL CERCHIO =================
+   Arco e settore sono proporzionali all'angolo al centro; corona e segmento si ottengono per differenza.
+   Raggio fisso 6 cm (per la corona R = 6 cm e r interno sul cursore). Calcoli con π esatto; nel testo anche con 3,14.
+   Passi: 0 che cos'è, 1 proporzione (o idea della differenza), 2 formula con i numeri, 3 formule inverse.
+   P3.p parte da -1 quando si sceglie una parte: da -1 a 0 la figura si disegna. */
+var PARTI=[
+ {id:'arco',n:'Arco',c:'#f08c2e'},{id:'settore',n:'Settore',c:'#4a86f0'},
+ {id:'corona',n:'Corona',c:'#2fae8f'},{id:'segmento',n:'Segmento',c:'#b866d9'}];
+var P3={parte:0,passo:0,p:0,alfa:{arco:60,settore:60,segmento:90},ri:3};
+var RAG=6;                       /* raggio in cm */
+var CX3=200,CY3=210,R3=160;      /* il cerchio nel disegno */
+function dec2(x){return num(Math.round(x*100)/100,2);}
+
+function valori(){   /* tutti i numeri della parte scelta, con π esatto (e) e con 3,14 (a) */
+ var id=PARTI[P3.parte].id,al=P3.alfa[id]||0,r=RAG,v={al:al,r:r};
+ [['e',Math.PI],['a',3.14]].forEach(function(z){var k=z[0],P=z[1];
+  v['C'+k]=2*P*r;v['Ac'+k]=P*r*r;v['l'+k]=2*P*r*al/360;v['Asc'+k]=P*r*r*al/360;
+  v['Acc'+k]=P*(r*r-P3.ri*P3.ri);});
+ v.c=2*r*Math.sin(al*Math.PI/360);v.h=r*Math.cos(al*Math.PI/360);v.At=v.c*v.h/2;
+ v.Asge=v.Asce-v.At;v.Asga=v.Asca-v.At;return v;}
+
+function testoPasso3(i){
+ var id=PARTI[P3.parte].id,v=valori(),al=v.al;
+ if(id==='arco'){
+  if(i===0)return {h:'L\'arco',t:'L\'<b>arco</b> è la parte di circonferenza compresa tra due punti A e B. L\'<b>angolo al centro</b> α ha il vertice nel centro O e i lati che passano per A e B.'};
+  if(i===1)return {h:'La proporzione',t:'Arco e angolo al centro sono direttamente proporzionali. Se l\'angolo raddoppia raddoppia anche l\'arco, e all\'angolo giro di 360° corrisponde tutta la circonferenza.<div class="form"><b>l : C = α : 360°</b></div>'};
+  if(i===2)return {h:'La formula',t:'Dalla proporzione<div class="form"><b>l = C · α / 360°</b> = 2πr · α / 360°</div>Con r = 6 cm e α = '+al+'°<br>l = 2 · 3,14 · 6 · '+al+' / 360 = <b>'+dec2(v.la)+' cm</b>'};
+  return {h:'Le formule inverse',t:'Dalla stessa proporzione<ul class="inv"><li>α = l · 360° / C</li><li>C = l · 360° / α</li><li>poi r = C / 2π</li></ul>'};}
+ if(id==='settore'){
+  if(i===0)return {h:'Il settore circolare',t:'Il <b>settore circolare</b> è la parte di cerchio compresa tra due raggi e l\'arco che li unisce. Sembra una fetta di torta.'};
+  if(i===1)return {h:'La proporzione',t:'Anche il settore è proporzionale all\'angolo al centro. All\'angolo giro corrisponde tutto il cerchio.<div class="form"><b>A<sub>sc</sub> : A<sub>c</sub> = α : 360°</b></div>'};
+  if(i===2)return {h:'La formula',t:'Dalla proporzione<div class="form"><b>A<sub>sc</sub> = A<sub>c</sub> · α / 360°</b> = πr² · α / 360°</div>Con r = 6 cm e α = '+al+'°<br>A<sub>sc</sub> = 3,14 · 36 · '+al+' / 360 = <b>'+dec2(v.Asca)+' cm²</b>'
+   +'<div class="nota">Vale anche <b>A<sub>sc</sub> = l · r / 2</b>, come un triangolo con base l\'arco e altezza il raggio. Ricordi i poligoni?</div>'};
+  return {h:'Le formule inverse',t:'Dalla proporzione<ul class="inv"><li>α = A<sub>sc</sub> · 360° / A<sub>c</sub></li><li>A<sub>c</sub> = A<sub>sc</sub> · 360° / α</li></ul>Da A<sub>sc</sub> = l · r / 2<ul class="inv"><li>r = 2 · A<sub>sc</sub> / l</li><li>l = 2 · A<sub>sc</sub> / r</li></ul>'};}
+ if(id==='corona'){
+  if(i===0)return {h:'La corona circolare',t:'La <b>corona circolare</b> è la parte di piano compresa tra due circonferenze con lo stesso centro (concentriche), di raggi R e r. Ha la forma di un anello.'};
+  if(i===1)return {h:'L\'idea',t:'La corona è il cerchio grande a cui si toglie il cerchio piccolo.<div class="form"><b>A<sub>cc</sub> = πR² − πr²</b></div>'};
+  if(i===2)return {h:'La formula',t:'Raccogliendo π<div class="form"><b>A<sub>cc</sub> = π · (R² − r²)</b></div>Con R = 6 cm e r = '+num(P3.ri)+' cm<br>A<sub>cc</sub> = 3,14 · (36 − '+num(P3.ri*P3.ri)+') = <b>'+dec2(v.Acca)+' cm²</b>'
+   +'<div class="nota">Attenzione, si fa prima la differenza dei quadrati. R² − r² non è (R − r)².</div>'};
+  return {h:'Le formule inverse',t:'Da A<sub>cc</sub> = π · (R² − r²)<ul class="inv"><li>R² = A<sub>cc</sub> / π + r², poi R con la radice quadrata</li><li>r² = R² − A<sub>cc</sub> / π, poi r con la radice quadrata</li></ul>'};}
+ /* segmento */
+ if(i===0)return {h:'Il segmento circolare',t:'Il <b>segmento circolare</b> è la parte di cerchio compresa tra un arco e la <b>corda</b> AB che ne unisce gli estremi.'};
+ if(i===1)return {h:'L\'idea',t:'Il segmento è il settore a cui si toglie il triangolo OAB.<div class="form"><b>A<sub>sg</sub> = A<sub>sc</sub> − A<sub>t</sub></b></div>'};
+ if(i===2)return {h:'La formula',t:'<div class="form"><b>A<sub>sg</sub> = πr² · α / 360° − c · h / 2</b></div>con c la corda e h l\'altezza del triangolo OAB'
+  +(al===90?' (con α = 90° il triangolo è rettangolo e A<sub>t</sub> = r · r / 2)':al===180?' (con α = 180° il triangolo non c\'è e il segmento è mezzo cerchio)':', che si ricavano con il teorema di Pitagora')+'.'
+  +'<br>Con r = 6 cm e α = '+al+'°, c = '+dec2(v.c)+' cm e h = '+dec2(v.h)+' cm<br>A<sub>sg</sub> = '+dec2(v.Asca)+' − '+dec2(v.At)+' = <b>'+dec2(v.Asga)+' cm²</b>'};
+ return {h:'Le formule inverse',t:'Da A<sub>sg</sub> = A<sub>sc</sub> − A<sub>t</sub><ul class="inv"><li>A<sub>sc</sub> = A<sub>sg</sub> + A<sub>t</sub></li><li>A<sub>t</sub> = A<sub>sc</sub> − A<sub>sg</sub></li></ul>Poi dal settore si ricavano α o r con le formule del settore.'};}
+
+function frasePasso3(i){
+ var id=PARTI[P3.parte].id;
+ if(i===0)return ['Muovi il cursore e guarda come cambia la figura. Poi tocca <b>Avanti</b>.','idle'];
+ if(i===1)return [id==='arco'||id==='settore'?'Doppio angolo, doppio '+(id==='arco'?'arco':'settore')+'. È una proporzionalità diretta.':'Qui non serve una proporzione, basta una sottrazione.','ok'];
+ if(i===2)return [id==='corona'?'Prima i quadrati, poi la sottrazione!':'Prova a cambiare l\'angolo, i numeri si aggiornano da soli.','idle'];
+ return ['Con le formule inverse si torna indietro, dal risultato al dato mancante.','ok'];}
+
+function cursore(){
+ var id=PARTI[P3.parte].id,r=$('curR'),cor=id==='corona';
+ $('curNome').textContent=cor?'raggio interno r':'angolo al centro α';
+ r.min=cor?.5:(id==='segmento'?20:10);r.max=cor?5.5:(id==='segmento'?180:350);r.step=cor?.5:5;
+ r.value=cor?P3.ri:P3.alfa[id];$('curVal').textContent=cor?num(P3.ri)+' cm':P3.alfa[id]+'°';}
+$('curR').addEventListener('input',function(){
+ var id=PARTI[P3.parte].id;if(id==='corona')P3.ri=+this.value;else P3.alfa[id]=+this.value;
+ cursore();if(P3.p<0){cancelAnimationFrame(raf);P3.p=0;}disegnaParti();
+ if(P3.passo===2){var P=testoPasso3(2);$('t3').innerHTML=P.t;}});
+
+function pannelloParti(){
+ var n=4,i=P3.passo,P=testoPasso3(i);
+ $('panel').innerHTML='<div class="card"><div class="h">'+P.h+'</div><div class="txt" id="t3">'+P.t+'</div>'
+  +passoHTML(i,n)+azioniHTML(i===0,i===n-1,'Altra parte')+'</div>'
+  +'<div class="card"><div class="sect">Scegli la parte</div><div class="chips" id="parti" style="margin-top:6px">'
+  +PARTI.map(function(q,k){return '<button class="chip'+(k===P3.parte?' attivo':'')+'" data-k="'+k+'" style="--chip:'+q.c+'">'+q.n+'</button>';}).join('')+'</div></div>'
+  +'<div class="anchor">Arco e settore sono proporzionali all\'angolo al centro, <b>l : C = A<sub>sc</sub> : A<sub>c</sub> = α : 360°</b>. Corona e segmento si trovano per differenza.</div>';
+ $('bPrev').onclick=function(){vai3(i-1);};
+ $('bNext').onclick=function(){vai3(i+1);};
+ $('bNew').onclick=function(){scegliParte((P3.parte+1)%PARTI.length);};
+ $('parti').onclick=function(e){var b=e.target.closest('[data-k]');if(b)scegliParte(+b.dataset.k);};}
+
+function vai3(i){
+ i=clamp(i,0,3);var avanti=i>P3.passo;P3.passo=i;
+ pannelloParti();var f=frasePasso3(i);say(f[0],f[1]);
+ anima(P3,i,avanti?T_SHOW:T_BACK,disegnaParti);}
+function scegliParte(k){
+ P3.parte=k;P3.passo=0;P3.p=-1;cursore();pannelloParti();var f=frasePasso3(0);say(f[0],f[1]);
+ anima(P3,0,T_MOVE,disegnaParti);}
+
+function pc(fi,R){return [CX3+R*Math.cos(fi),CY3-R*Math.sin(fi)];}   /* punto del cerchio, angolo in radianti da destra in senso antiorario */
+function arcoD(f1,f2,R){var a=pc(f1,R),b=pc(f2,R),big=(f2-f1)>Math.PI?1:0;
+ return 'M'+a[0].toFixed(1)+','+a[1].toFixed(1)+' A'+R+','+R+' 0 '+big+',0 '+b[0].toFixed(1)+','+b[1].toFixed(1);}
+
+function disegnaParti(){
+ var id=PARTI[P3.parte].id,v=valori(),p=P3.p,cr=PARTI[P3.parte].c;
+ var g=liscio(p+1),w=clamp(p,0,1),q=clamp(p-1,0,1);   /* disegno, proporzione o differenza, numeri */
+ var ink='#1d2433',o='<rect width="560" height="400" fill="#f6f3ea"/>';
+ var T=function(x,y,t,c,sz,an,st){return '<text x="'+x+'" y="'+y+'" font-size="'+(sz||20)+'" fill="'+(c||ink)+'"'+(an?' text-anchor="'+an+'"':'')+(st?' '+st:'')+'>'+t+'</text>';};
+ var al=(v.al||0)*g,f1=Math.PI/2-al*Math.PI/360,f2=Math.PI/2+al*Math.PI/360,A=pc(f1,R3),B=pc(f2,R3);
+ if(id==='corona'){
+  var ri=P3.ri/RAG*R3;
+  o+='<circle cx="'+CX3+'" cy="'+CY3+'" r="'+R3+'" fill="'+cr+'" fill-opacity="'+(.35*g)+'" stroke="#5c6572" stroke-width="2"/>';
+  o+='<circle cx="'+CX3+'" cy="'+CY3+'" r="'+ri+'" fill="#f6f3ea" fill-opacity="'+(g)+'" stroke="#5c6572" stroke-width="2" stroke-dasharray="'+(w>0?'7 5':'0')+'"/>';
+  if(w>0)o+='<circle cx="'+CX3+'" cy="'+CY3+'" r="'+ri+'" fill="#d64545" fill-opacity="'+(.25*w)+'"/>'+T(CX3,CY3-ri*.45+6,'− πr²','#c43c3c',18,'middle','opacity="'+w+'"');
+  o+='<line x1="'+CX3+'" y1="'+CY3+'" x2="'+(CX3+R3*.707)+'" y2="'+(CY3-R3*.707)+'" stroke="'+ink+'" stroke-width="2"/>'+T(CX3+R3*.42,CY3-R3*.42-8,'R',ink,20,'',"font-style=\"italic\" font-weight=\"700\"");
+  o+='<line x1="'+CX3+'" y1="'+CY3+'" x2="'+(CX3-ri*.707)+'" y2="'+(CY3+ri*.707)+'" stroke="'+ink+'" stroke-width="2"/>'+T(CX3-ri*.42-16,CY3+ri*.42+4,'r',ink,20,'',"font-style=\"italic\" font-weight=\"700\"");
+ }else{
+  o+='<circle cx="'+CX3+'" cy="'+CY3+'" r="'+R3+'" fill="'+(id==='arco'?'none':'#4a86f0')+'" fill-opacity="'+(id==='settore'?.12*w:0)+'" stroke="#5c6572" stroke-width="2"'+(id==='arco'&&w>0?' stroke-dasharray="8 6"':'')+'/>';
+  if(id==='arco'&&w>0)o+='<circle cx="'+CX3+'" cy="'+CY3+'" r="'+R3+'" fill="none" stroke="'+cr+'" stroke-opacity="'+(.35*w)+'" stroke-width="6"/>'+T(CX3,CY3+R3-16,'C, angolo giro 360°','#b8641c',17,'middle','opacity="'+w+'"');
+  if(id==='settore'&&w>0)o+=T(CX3,CY3+R3*.55,'A<tspan dy="5" font-size="13">c</tspan><tspan dy="-5">, 360°</tspan>','#2f6fd6',17,'middle','opacity="'+w+'"');
+  if(al>0.5){
+   if(id==='settore')o+='<path d="M'+CX3+','+CY3+' L'+A[0].toFixed(1)+','+A[1].toFixed(1)+' '+arcoD(f1,f2,R3).replace(/^M[^A]*/,'')+' Z" fill="'+cr+'" fill-opacity=".45" stroke="'+cr+'" stroke-width="2"/>';
+   if(id==='segmento'){
+    o+='<path d="'+arcoD(f1,f2,R3)+' Z" fill="'+cr+'" fill-opacity=".45" stroke="'+cr+'" stroke-width="2"/>';
+    o+='<path d="M'+CX3+','+CY3+' L'+A[0].toFixed(1)+','+A[1].toFixed(1)+' L'+B[0].toFixed(1)+','+B[1].toFixed(1)+' Z" fill="#d64545" fill-opacity="'+(.22*w)+'" stroke="#5c6572" stroke-width="1.5" stroke-dasharray="6 4"/>';
+    if(w>0)o+='<path d="M'+CX3+','+CY3+' L'+A[0].toFixed(1)+','+A[1].toFixed(1)+' '+arcoD(f1,f2,R3).replace(/^M[^A]*/,'')+' Z" fill="none" stroke="#4a86f0" stroke-opacity="'+w+'" stroke-width="1.5"/>';
+    var M=[(A[0]+B[0])/2,(A[1]+B[1])/2];
+    if(q>0&&v.al<180){o+='<line x1="'+CX3+'" y1="'+CY3+'" x2="'+M[0].toFixed(1)+'" y2="'+M[1].toFixed(1)+'" stroke="#d9731c" stroke-width="2.5" opacity="'+q+'"/>'+T(CX3+8,(CY3+M[1])/2+6,'h','#d9731c',19,'',"font-style=\"italic\" font-weight=\"700\" opacity=\""+q+"\"");
+     o+=T(M[0]+26,M[1]-8,'c','#7a3fa0',19,'middle',"font-style=\"italic\" font-weight=\"700\" opacity=\""+q+"\"");}}
+   if(id==='arco')o+='<path d="'+arcoD(f1,f2,R3)+'" fill="none" stroke="'+cr+'" stroke-width="7" stroke-linecap="round"/>';
+   /* raggi, angolo al centro, punti A e B */
+   o+='<line x1="'+CX3+'" y1="'+CY3+'" x2="'+A[0].toFixed(1)+'" y2="'+A[1].toFixed(1)+'" stroke="'+ink+'" stroke-width="2"/><line x1="'+CX3+'" y1="'+CY3+'" x2="'+B[0].toFixed(1)+'" y2="'+B[1].toFixed(1)+'" stroke="'+ink+'" stroke-width="2"/>';
+   o+='<path d="'+arcoD(f1,f2,34)+'" fill="none" stroke="'+ink+'" stroke-width="1.5"/>'+T(CX3-(id==='segmento'?14:0),CY3-44,'α',ink,20,'middle','font-style="italic"');
+   o+='<circle cx="'+A[0].toFixed(1)+'" cy="'+A[1].toFixed(1)+'" r="4" fill="'+ink+'"/><circle cx="'+B[0].toFixed(1)+'" cy="'+B[1].toFixed(1)+'" r="4" fill="'+ink+'"/>';
+   var eA=pc(f1,R3+20),eB=pc(f2,R3+20);o+=T(eA[0],eA[1]+6,'B',ink,18,'middle')+T(eB[0],eB[1]+6,'A',ink,18,'middle');
+   var lab=pc(Math.PI/2,R3+(id==='arco'?24:-30));
+   if(id==='arco')o+=T(lab[0],lab[1]+(v.al>300?40:0),'l','#b8641c',22,'middle','font-style="italic" font-weight="700"');}
+  if(al>0.5){var mr=[(CX3+A[0])/2,(CY3+A[1])/2];o+=T(mr[0]+14,mr[1]+12,'r',ink,20,'middle','font-style="italic" font-weight="700"');}
+ }
+ o+='<circle cx="'+CX3+'" cy="'+CY3+'" r="3.5" fill="'+ink+'"/>'+T(CX3-8,CY3+22,'O',ink,18,'middle');
+ /* lettura dei valori a destra, con π esatto */
+ var L=[],y=60;
+ if(id==='corona'){L=[['R = 6 cm'],['r = '+num(P3.ri)+' cm'],['A<tspan dy="5" font-size="14">cc</tspan><tspan dy="-5"> ≈ '+dec2(v.Acce)+' cm²</tspan>',cr]];}
+ else{L=[['r = 6 cm'],['α = '+v.al+'°']];
+  if(id==='arco')L.push(['C ≈ '+dec2(v.Ce)+' cm'],['l ≈ '+dec2(v.le)+' cm','#b8641c']);
+  if(id==='settore')L.push(['A<tspan dy="5" font-size="14">c</tspan><tspan dy="-5"> ≈ '+dec2(v.Ace)+' cm²</tspan>'],['A<tspan dy="5" font-size="14">sc</tspan><tspan dy="-5"> ≈ '+dec2(v.Asce)+' cm²</tspan>',cr]);
+  if(id==='segmento')L.push(['c ≈ '+dec2(v.c)+' cm'],['h ≈ '+dec2(v.h)+' cm'],['A<tspan dy="5" font-size="14">sc</tspan><tspan dy="-5"> ≈ '+dec2(v.Asce)+' cm²</tspan>'],['A<tspan dy="5" font-size="14">t</tspan><tspan dy="-5"> ≈ '+dec2(v.At)+' cm²</tspan>'],['A<tspan dy="5" font-size="14">sg</tspan><tspan dy="-5"> ≈ '+dec2(v.Asge)+' cm²</tspan>',cr]);}
+ L.forEach(function(r,k){var vis=k<2||id==='corona'&&k<2?1:q;if(id==='corona'&&k===2)vis=q;o+='<g opacity="'+vis+'">'+T(392,y+k*34,r[0],r[1]||ink,19,'','font-weight="'+(r[1]?700:400)+'"')+'</g>';});
+ if(q>0)o+=T(392,385,'valori con π esatto','#5c6572',14,'','opacity="'+q+'"');
+ $('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';}
+
+/* ================= schede 04-05: in preparazione ================= */
 function pannelloAttesa(){
  var s=SCHEDE.filter(function(x){return x.id===S.scheda;})[0];
  $('svg').innerHTML='<rect width="560" height="400" fill="#f3f0e8"/><circle cx="280" cy="190" r="110" fill="none" stroke="#4a86f0" stroke-width="4"/><line x1="170" y1="190" x2="390" y2="190" stroke="#2f6fd6" stroke-width="3"/><text x="280" y="345" text-anchor="middle" font-family="Calibri,Carlito,sans-serif" font-size="22" fill="#5c6572">Scheda in preparazione</text>';
@@ -492,11 +640,12 @@ function pannelloAttesa(){
 
 function mostra(){
  cancelAnimationFrame(raf);ferma2();
- if(S.p!==S.passo)S.p=S.passo;if(P2.p!==P2.passo)P2.p=P2.passo;   /* un'animazione interrotta va alla fine del passo */
+ if(S.p!==S.passo)S.p=S.passo;if(P2.p!==P2.passo)P2.p=P2.passo;if(P3.p!==P3.passo)P3.p=P3.passo;   /* un'animazione interrotta va alla fine del passo */
  disegnaSchede();var tre=S.scheda==='rapporto';
- $('scena3d').classList.toggle('hide',!tre);$('hint').classList.toggle('hide',!tre);$('svg').classList.toggle('hide',tre);
+ $('scena3d').classList.toggle('hide',!tre);$('hint').classList.toggle('hide',!tre);$('svg').classList.toggle('hide',tre);$('cur').classList.toggle('hide',S.scheda!=='parti');
  if(tre){if(scena){scena.resize();scena.mostra(S.p);}pannelloRapporto();var f=frasePasso(S.passo);say(f[0],f[1]);}
  else if(S.scheda==='poligoni'){pannelloPoligoni();disegnaPoligoni();var g=frasePasso2(P2.passo);say(g[0],g[1]);}
+ else if(S.scheda==='parti'){cursore();pannelloParti();disegnaParti();var h=frasePasso3(P3.passo);say(h[0],h[1]);}
  else pannelloAttesa();}
 
 if(scena)scena.oggetto(OGGETTI[0]);
