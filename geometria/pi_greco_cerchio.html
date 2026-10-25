@@ -70,6 +70,15 @@ button,input{font-family:inherit}
 .form b{color:#9cc5ff}
 .inv{margin:6px 0 0;padding-left:18px;line-height:1.7;font-size:16px}
 .nota{color:var(--mut);font-size:14px;margin-top:6px;line-height:1.4}
+/* calcolatrice (scheda 04) */
+.calc{display:grid;grid-template-columns:auto 1fr auto;gap:8px 10px;align-items:center;margin-top:4px}
+.calc label{font-size:16px;color:var(--mut);white-space:nowrap}
+.calc label b{color:var(--txt);font-size:18px}
+.calc input{background:#0d1524;color:var(--txt);border:1px solid #3a4d70;border-radius:8px;padding:8px 10px;font-size:18px;width:100%;min-width:0}
+.calc input.dato{border-color:#4a86f0;box-shadow:0 0 0 2px rgba(74,134,240,.35)}
+.calc .u{color:var(--mut);font-size:15px}
+.calc .a{grid-column:2/4;color:var(--mut);font-size:13px;margin:-6px 0 2px}
+.passi3{margin:4px 0 0;padding-left:18px;line-height:1.7}
 table.mis{width:100%;border-collapse:collapse;font-size:15px;margin-top:4px}
 table.mis th{color:var(--mut);font-weight:400;text-align:right;padding:3px 4px;border-bottom:1px solid var(--line)}
 table.mis th:first-child,table.mis td:first-child{text-align:left}
@@ -138,10 +147,10 @@ function num(x,dec){return (dec==null?String(x):x.toFixed(dec)).replace('.',',')
 
 /* ---- schede ---- */
 var SCHEDE=[
- {id:'rapporto',nome:'Il rapporto costante',sub:'Misura la circonferenza di oggetti veri e confrontala con il diametro.'},
- {id:'poligoni',nome:'Dai poligoni al cerchio',sub:'L\'area del cerchio come limite dei poligoni regolari inscritti.'},
- {id:'parti',nome:'Parti del cerchio',sub:'Arco, settore, corona e segmento circolare.'},
- {id:'calcolatrice',nome:'Calcolatrice',sub:'Da un dato del cerchio a tutti gli altri.'},
+ {id:'rapporto',nome:'La costante π',sub:'Misura la circonferenza di oggetti veri e confrontala con il diametro.'},
+ {id:'poligoni',nome:'L\'area del cerchio',sub:'L\'area del cerchio come limite dei poligoni regolari inscritti.'},
+ {id:'parti',nome:'Archi, settori e corone',sub:'Arco, settore, corona e segmento circolare.'},
+ {id:'calcolatrice',nome:'Calcolatrice del cerchio',sub:'Scrivi un dato del cerchio e trova tutti gli altri.'},
  {id:'allenati',nome:'Allenati',sub:'Esercizi su circonferenza, cerchio e sue parti.'}];
 var S={scheda:'rapporto',obj:0,passo:0,p:0,misure:{}};
 
@@ -562,8 +571,8 @@ $('curR').addEventListener('input',function(){
 function pannelloParti(){
  var n=4,i=P3.passo,P=testoPasso3(i);
  $('panel').innerHTML='<div class="card"><div class="h">'+P.h+'</div><div class="txt" id="t3">'+P.t+'</div>'
-  +passoHTML(i,n)+azioniHTML(i===0,i===n-1,'Altra parte')+'</div>'
-  +'<div class="card"><div class="sect">Scegli la parte</div><div class="chips" id="parti" style="margin-top:6px">'
+  +passoHTML(i,n)+azioniHTML(i===0,i===n-1,'Cambia elemento')+'</div>'
+  +'<div class="card"><div class="sect">Scegli l\'elemento</div><div class="chips" id="parti" style="margin-top:6px">'
   +PARTI.map(function(q,k){return '<button class="chip'+(k===P3.parte?' attivo':'')+'" data-k="'+k+'" style="--chip:'+q.c+'">'+q.n+'</button>';}).join('')+'</div></div>'
   +'<div class="anchor">Arco e settore sono proporzionali all\'angolo al centro, <b>l : C = A<sub>sc</sub> : A<sub>c</sub> = α : 360°</b>. Corona e segmento si trovano per differenza.</div>';
  $('bPrev').onclick=function(){vai3(i-1);};
@@ -631,7 +640,69 @@ function disegnaParti(){
  if(q>0)o+=T(392,385,'valori con π esatto','#5c6572',14,'','opacity="'+q+'"');
  $('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';}
 
-/* ================= schede 04-05: in preparazione ================= */
+/* ================= 04 CALCOLATRICE DEL CERCHIO =================
+   Si scrive un dato in una casella qualunque (raggio, diametro, circonferenza, area) e gli altri si calcolano subito.
+   Calcoli con π esatto; sotto ogni risultato lo stesso conto con 3,14. Il dato scritto ha il bordo blu. */
+var GRAND=[
+ {id:'r',lab:'raggio <b>r</b>',u:'cm'},{id:'d',lab:'diametro <b>d</b>',u:'cm'},
+ {id:'C',lab:'circonferenza <b>C</b>',u:'cm'},{id:'Ac',lab:'area <b>A<sub>c</sub></b>',u:'cm²'}];
+var P4={dato:'r',val:5};
+function daDato(id,x,P){   /* tutte le grandezze a partire da un dato, con π = P */
+ var r=id==='r'?x:id==='d'?x/2:id==='C'?x/(2*P):Math.sqrt(x/P);
+ return {r:r,d:2*r,C:2*P*r,Ac:P*r*r};}
+var COME={   /* i passaggi per ogni dato */
+ r:['d = 2 · r','C = 2πr','A<sub>c</sub> = πr²'],
+ d:['r = d / 2','C = πd','A<sub>c</sub> = πr²'],
+ C:['r = C / 2π','d = C / π','A<sub>c</sub> = πr²'],
+ Ac:['r = √(A<sub>c</sub> / π)','d = 2 · r','C = 2πr']};
+function leggi(v){v=String(v).replace(',','.').trim();return v===''||isNaN(+v)?NaN:+v;}
+
+function pannelloCalc(){
+ $('panel').innerHTML='<div class="card"><div class="h">Scrivi un dato</div><div class="txt">Tocca una casella e scrivi un numero, le altre si calcolano da sole.</div>'
+  +'<div class="calc">'+GRAND.map(function(g){return '<label for="c_'+g.id+'">'+g.lab+'</label><input id="c_'+g.id+'" data-g="'+g.id+'" inputmode="decimal" autocomplete="off"><span class="u">'+g.u+'</span><div class="a" id="a_'+g.id+'"></div>';}).join('')+'</div>'
+  +tastierinaHTML({virgola:true,verifica:false,id:'pad4'})+'</div>'
+  +'<div class="card"><div class="sect">Come si calcola</div><div id="come4"></div></div>'
+  +'<div class="anchor"><b>C = 2πr = πd</b> e <b>A<sub>c</sub> = πr²</b>. Dall\'area si torna al raggio con la radice quadrata, <b>r = √(A<sub>c</sub> / π)</b>.</div>';
+ var caselle=GRAND.map(function(g){return $('c_'+g.id);}),attiva=$('c_'+P4.dato);
+ caselle.forEach(function(c){
+  if(TOUCH)tastierinaCampo(c);
+  c.addEventListener('focus',function(){attiva=c;});
+  c.addEventListener('click',function(){attiva=c;segna(c.dataset.g,false);});
+  c.addEventListener('input',function(){P4.dato=c.dataset.g;P4.val=leggi(c.value);calcola(true);});});
+ if(TOUCH)tastierinaCollega($('pad4'),function(){return attiva;},{max:9,nuovoSeEsterno:true});
+ $('c_'+P4.dato).value=isNaN(P4.val)?'':num(P4.val);calcola(false);}
+
+function segna(id,scrivi){GRAND.forEach(function(g){$('c_'+g.id).classList.toggle('dato',g.id===id);});}
+
+function calcola(daUtente){
+ var id=P4.dato,x=P4.val;segna(id);
+ if(!(x>0)){GRAND.forEach(function(g){if(g.id!==id)$('c_'+g.id).value='';$('a_'+g.id).textContent='';});
+  $('come4').innerHTML='<div class="vuoto">Scrivi un numero maggiore di zero.</div>';disegnaCalc(null);
+  if(daUtente)say('Mi serve un numero maggiore di zero.','ko');return;}
+ var E=daDato(id,x,Math.PI),A=daDato(id,x,3.14);
+ GRAND.forEach(function(g){if(g.id===id){$('a_'+g.id).textContent='dato';return;}
+  $('c_'+g.id).value=dec2(E[g.id]);$('a_'+g.id).textContent='con π ≈ 3,14 viene '+dec2(A[g.id])+' '+g.u;});
+ $('come4').innerHTML='<ol class="passi3">'+COME[id].map(function(t){return '<li>'+t+'</li>';}).join('')+'</ol>'
+  +'<div class="pi">Valori nelle caselle calcolati con π esatto e arrotondati al centesimo.</div>';
+ disegnaCalc(E);
+ if(daUtente)say(id==='Ac'?'Dall\'area si torna al raggio con la radice quadrata.':id==='C'?'Dalla circonferenza si divide per 2π e si trova il raggio.':'Fatto! Prova a scrivere in un\'altra casella.',id==='Ac'?'idle':'ok');}
+
+function disegnaCalc(E){
+ var ink='#1d2433',X=200,Y=205,R=150,o='<rect width="560" height="400" fill="#f6f3ea"/>',id=P4.dato;
+ var col=function(g){return g===id?'#2f6fd6':ink;},pes=function(g){return g===id?700:400;};
+ var T=function(x,y,t,g,sz,an){return '<text x="'+x+'" y="'+y+'" font-size="'+(sz||19)+'" fill="'+col(g)+'" font-weight="'+pes(g)+'"'+(an?' text-anchor="'+an+'"':'')+'>'+t+'</text>';};
+ var v=function(g,u){return E?' = '+dec2(E[g])+' '+u:'';};
+ o+='<circle cx="'+X+'" cy="'+Y+'" r="'+R+'" fill="#4a86f0" fill-opacity="'+(id==='Ac'?.3:.14)+'" stroke="'+(id==='C'?'#2f6fd6':'#5c6572')+'" stroke-width="'+(id==='C'?5:2)+'"/>';
+ o+='<line x1="'+(X-R)+'" y1="'+Y+'" x2="'+(X+R)+'" y2="'+Y+'" stroke="'+col('d')+'" stroke-width="'+(id==='d'?4:2)+'" stroke-dasharray="8 5"/>';   /* diametro */
+ o+='<line x1="'+X+'" y1="'+Y+'" x2="'+(X+R*.6)+'" y2="'+(Y-R*.8)+'" stroke="'+col('r')+'" stroke-width="'+(id==='r'?4:2.5)+'"/>';
+ o+='<circle cx="'+X+'" cy="'+Y+'" r="4" fill="'+ink+'"/>';
+ o+=T(X+R*.3+10,Y-R*.4,'r','r',22)+T(X-R*.55,Y+24,'d','d',22,'middle')+T(X,Y-R-14,'C','C',22,'middle')+T(X-R*.3,Y+R*.55,'A<tspan dy="6" font-size="15">c</tspan>','Ac',22,'middle');
+ var L=[['r','r','cm'],['d','d','cm'],['C','C','cm'],['Ac','A<tspan dy="5" font-size="14">c</tspan><tspan dy="-5">','cm²']];
+ L.forEach(function(q,k){o+=T(388,92+k*44,q[1]+(E?' = '+dec2(E[q[0]])+' '+q[2]:'')+(q[0]==='Ac'?'</tspan>':''),q[0],19);});
+ if(E)o+=T(388,92+4*44,'dato in blu','x',14);
+ $('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';}
+
+/* ================= scheda 05: in preparazione ================= */
 function pannelloAttesa(){
  var s=SCHEDE.filter(function(x){return x.id===S.scheda;})[0];
  $('svg').innerHTML='<rect width="560" height="400" fill="#f3f0e8"/><circle cx="280" cy="190" r="110" fill="none" stroke="#4a86f0" stroke-width="4"/><line x1="170" y1="190" x2="390" y2="190" stroke="#2f6fd6" stroke-width="3"/><text x="280" y="345" text-anchor="middle" font-family="Calibri,Carlito,sans-serif" font-size="22" fill="#5c6572">Scheda in preparazione</text>';
@@ -646,6 +717,7 @@ function mostra(){
  if(tre){if(scena){scena.resize();scena.mostra(S.p);}pannelloRapporto();var f=frasePasso(S.passo);say(f[0],f[1]);}
  else if(S.scheda==='poligoni'){pannelloPoligoni();disegnaPoligoni();var g=frasePasso2(P2.passo);say(g[0],g[1]);}
  else if(S.scheda==='parti'){cursore();pannelloParti();disegnaParti();var h=frasePasso3(P3.passo);say(h[0],h[1]);}
+ else if(S.scheda==='calcolatrice'){pannelloCalc();say('Scrivi un valore in una casella qualsiasi, gli altri li calcolo io.','hi');}
  else pannelloAttesa();}
 
 if(scena)scena.oggetto(OGGETTI[0]);
