@@ -720,17 +720,17 @@ function disegnaCalc(E){
  $('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';}
 
 /* ================= 05 ALLENATI =================
-   Un esercizio alla volta. Tre modi di risposta.
-     num  un numero, calcolato con π = 3,14 (si accetta anche il conto con π esatto, entro un piccolo margine)
-     pi   il risultato in funzione di π: si scrive solo il numero che sta davanti a π (per esempio 36 per 36π)
+   Giri da 6 esercizi, uno per elemento in ordine sparso: circonferenza, cerchio, arco, settore, corona, segmento.
+   Giro 1 formule dirette, giro 2 formule inverse, giro 3 problemi con oggetti veri, giro 4 ragionamento,
+   poi giri misti. Tre modi di risposta.
+     num  un numero con π = 3,14 al centesimo; quando il risultato è un multiplo di π vale anche "81π"
+          (pulsante π, oppure scrivendo pi o p); si accetta anche il conto con π esatto
+     pi   la domanda chiede il risultato in funzione di π (ans è il numero davanti a π)
      sc   domanda di ragionamento a scelta multipla
-   La difficoltà cresce da sola, un livello ogni 4 esercizi completati:
-     0 cerchio e circonferenza, 1 arco e settore (anche in funzione di π), 2 formule inverse,
-     3 corona e segmento, 4 problemi con oggetti veri. Le domande di ragionamento arrivano dal livello 2.
    Ogni esercizio ha l'elenco degli errori tipici (sb): se la risposta sbagliata coincide con uno di questi,
    la diagnosi dice quale errore è stato fatto. Al secondo errore si mostra la soluzione. */
 var PG=3.14;
-var LIVELLI=['Cerchio e circonferenza','Arco e settore','Formule inverse','Corona e segmento','Problemi e ragionamento'];
+var LIVELLI=['Formule dirette','Formule inverse','Problemi','Ragionamento'];
 function ri(a,b){return a+Math.floor(Math.random()*(b-a+1));}
 function sc1(a){return a[Math.floor(Math.random()*a.length)];}
 function d2(x){return dec2(x);}
@@ -847,67 +847,116 @@ var GEN={
   sb:[[function(P){return P*r*r;},'Questa è tutta la torta. Dividi per il numero di fette.'],[function(P){return P*d*d/n;},'Hai usato il diametro. Prima dividilo per 2.']],
   sol:['r = '+r+' cm, A<sub>c</sub> = 3,14 · '+(r*r)+' = '+d2(PG*r*r)+' cm²','una fetta = '+d2(PG*r*r)+' / '+n+' = '+d2(PG*r*r/n)+' cm²','È un settore con angolo 360° / '+n+' = '+d2(360/n)+'°.'],fig:{t:'settore',r:r+' cm',a:360/n}};},
  /* ragionamento, a scelta multipla: la prima risposta è quella giusta */
- rag:function(){var D=sc1(RAGION);return {q:D.q,modo:'sc',o:D.o,sol:[D.s],fig:{t:'pi'}};}
+ rag:function(el){var D=sc1(RAGION.filter(function(x){return x.el.indexOf(el)>=0;}));return {q:D.q,modo:'sc',o:D.o,sol:[D.s],fig:{t:'pi'}};},
+ R_A:function(){var R=ri(4,10),r=ri(1,R-1),A=PG*(R*R-r*r);return {q:'Una corona circolare ha l\'area di '+d2(A)+' cm² e il raggio interno r = '+r+' cm. Quanto misura il raggio esterno R?',u:'cm',modo:'num',
+  f:function(P){return Math.sqrt(A/P+r*r);},
+  sb:[[Math.sqrt(A/PG),'Hai dimenticato di aggiungere r². Da A<sub>cc</sub> = π · (R² − r²) viene R² = A<sub>cc</sub> / π + r².'],[A/PG+r*r,'Hai trovato R². Manca la radice quadrata.'],[Math.sqrt(Math.max(0,A/PG-r*r)),'r² va aggiunto, non tolto.']],
+  sol:['A<sub>cc</sub> = π · (R² − r²), quindi R² = A<sub>cc</sub> / π + r²','R² = '+d2(A)+' / 3,14 + '+(r*r)+' = '+(R*R-r*r)+' + '+(r*r)+' = '+(R*R),'R = √'+(R*R)+' = '+R+' cm'],fig:{t:'corona',R:'?',r:r+' cm',rap:r/R}};},
+ seg_inv:function(){var r=2*ri(1,6),At=r*r/2,Asg=Math.round((PG*r*r/4-At)*100)/100;return {q:'In un cerchio di raggio '+r+' cm il segmento circolare di 90° ha l\'area di '+d2(Asg)+' cm². Il triangolo OAB ha l\'area di '+d2(At)+' cm². Quanto misura l\'area del settore circolare corrispondente?',u:'cm²',modo:'num',
+  f:function(){return Asg+At;},
+  sb:[[Math.abs(Asg-At),'Il settore è il segmento più il triangolo, non meno.']],
+  sol:['A<sub>sg</sub> = A<sub>sc</sub> − A<sub>t</sub>, quindi A<sub>sc</sub> = A<sub>sg</sub> + A<sub>t</sub>','A<sub>sc</sub> = '+d2(Asg)+' + '+d2(At)+' = '+d2(Asg+At)+' cm²'],fig:{t:'segmento',r:r+' cm',a:90}};},
+ cd:function(){return {q:'Un CD ha il diametro di 12 cm e il foro centrale ha il diametro di 1,5 cm. Quanti cm² misura la superficie del disco, senza il foro?',u:'cm²',modo:'num',
+  f:function(P){return P*(36-0.5625);},
+  sb:[[function(P){return P*(144-2.25);},'Hai usato i diametri. Prima dividili per 2 e trovi i raggi.'],[function(P){return P*5.25*5.25;},'Prima si fanno i quadrati, poi la differenza.'],[function(P){return P*36;},'Hai dimenticato di togliere il foro.']],
+  sol:['R = 12 / 2 = 6 cm, r = 1,5 / 2 = 0,75 cm','A<sub>cc</sub> = π · (R² − r²) = 3,14 · (36 − 0,5625) = 3,14 · 35,4375 = '+d2(PG*35.4375)+' cm²'],fig:{t:'corona',R:'6 cm',r:'0,75 cm',rap:.125}};},
+ aiuola:function(){var r=ri(3,10);return {q:'Un prato tondo di raggio '+r+' m è attraversato da un vialetto dritto. Il pezzo di prato più piccolo è un segmento circolare con angolo al centro di 90°. Quanti m² misura?',u:'m²',modo:'num',
+  f:function(P){return P*r*r/4-r*r/2;},
+  sb:[[function(P){return P*r*r/4;},'Questo è il settore. Bisogna togliere il triangolo OAB.'],[function(P){return P*r*r/4-r*r;},'Il triangolo OAB è rettangolo, la sua area è r · r / 2.']],
+  sol:['A<sub>sc</sub> = πr² / 4 = 3,14 · '+(r*r)+' / 4 = '+d2(PG*r*r/4)+' m²','A<sub>t</sub> = r · r / 2 = '+d2(r*r/2)+' m²','A<sub>sg</sub> = '+d2(PG*r*r/4)+' − '+d2(r*r/2)+' = '+d2(PG*r*r/4-r*r/2)+' m²'],fig:{t:'segmento',r:r+' m',a:90}};}
 };
 var RAGION=[
- {q:'Se il raggio di un cerchio raddoppia, la circonferenza…',o:[['raddoppia'],['quadruplica','La circonferenza è 2πr. Se r raddoppia, raddoppia anche C. È l\'area che quadruplica.'],['resta uguale','La circonferenza dipende dal raggio, quindi cambia.'],['aumenta di 2 cm','Non si aggiunge una quantità fissa, si moltiplica per 2.']],s:'C = 2πr è direttamente proporzionale al raggio.'},
- {q:'Se il raggio di un cerchio raddoppia, l\'area…',o:[['quadruplica'],['raddoppia','Nell\'area il raggio è al quadrato. (2r)² = 4r², quindi l\'area diventa 4 volte.'],['resta uguale','L\'area dipende dal raggio, quindi cambia.'],['aumenta di π','Non si aggiunge π, si moltiplica per 4.']],s:'A<sub>c</sub> = πr². Con 2r viene π · 4r², quattro volte tanto.'},
- {q:'Se l\'angolo al centro di un settore raddoppia (e il raggio resta uguale), l\'area del settore…',o:[['raddoppia'],['quadruplica','Il settore è proporzionale all\'angolo, non al suo quadrato.'],['resta uguale','Con un angolo più grande la fetta è più grande.'],['si dimezza','Con un angolo più grande la fetta cresce, non diminuisce.']],s:'A<sub>sc</sub> : A<sub>c</sub> = α : 360°. Settore e angolo sono direttamente proporzionali.'},
- {q:'Il rapporto tra circonferenza e diametro di una ruota gigante, rispetto a quello di una moneta, è…',o:[['uguale, vale π'],['più grande, perché la ruota è più grande','C e d crescono insieme, il loro rapporto resta π.'],['più piccolo','Il rapporto C : d è lo stesso in ogni cerchio.'],['dipende dal materiale','π è un numero della geometria, non dipende dal materiale.']],s:'In ogni cerchio C : d = π.'},
- {q:'Un settore circolare con angolo al centro di 90° è…',o:[['un quarto del cerchio'],['metà del cerchio','Metà del cerchio corrisponde a 180°.'],['un terzo del cerchio','Un terzo corrisponde a 120°.'],['un decimo del cerchio','90° su 360° fa un quarto.']],s:'90° / 360° = 1/4.'},
- {q:'Quale frase su π è corretta?',o:[['ha infinite cifre decimali che non si ripetono'],['è esattamente 3,14','3,14 è un valore approssimato. π = 3,14159… continua.'],['è esattamente 22/7','22/7 = 3,1428… è solo un\'ottima approssimazione.'],['è un numero decimale periodico','Le cifre di π non si ripetono mai con un periodo.']],s:'π non si può scrivere come frazione. Nei calcoli si usa 3,14 o si lascia il simbolo π.'},
- {q:'Una corona circolare con R = 5 cm e r = 4 cm e un cerchio di raggio 3 cm. Quale ha l\'area maggiore?',o:[['hanno la stessa area'],['la corona','A<sub>cc</sub> = π · (25 − 16) = 9π, come il cerchio, π · 9.'],['il cerchio','A<sub>cc</sub> = π · (25 − 16) = 9π, uguale al cerchio di raggio 3.'],['non si può dire','Si può calcolare, sono tutte e due 9π cm².']],s:'π · (25 − 16) = 9π e π · 3² = 9π.'},
- {q:'Per trovare il raggio conoscendo l\'area di un cerchio, che cosa si fa?',o:[['si divide per π e si fa la radice quadrata'],['si divide per 2π','Dividere per 2π serve con la circonferenza, non con l\'area.'],['si divide per π e basta','Così si trova r². Serve ancora la radice quadrata.'],['si divide per 2','Così si dimezza l\'area, non si trova il raggio.']],s:'A<sub>c</sub> = πr², quindi r² = A<sub>c</sub> / π e r = √(A<sub>c</sub> / π).'}];
-var POOL=[['C_r','C_d','A_r','A_d'],['arco','settore','C_pi','A_pi'],['r_C','r_A','a_l','a_A','rag'],['corona','cor_pi','seg90','seg','sett_pi','rag'],['ruota','pizza','pista','orologio','torta','rag']];
-var P5={fatti:0,giusti:0,es:null,ultimo:''};
+ {el:'circ',q:'Se il raggio di un cerchio raddoppia, la circonferenza…',o:[['raddoppia'],['quadruplica','La circonferenza è 2πr. Se r raddoppia, raddoppia anche C. È l\'area che quadruplica.'],['resta uguale','La circonferenza dipende dal raggio, quindi cambia.'],['aumenta di 2 cm','Non si aggiunge una quantità fissa, si moltiplica per 2.']],s:'C = 2πr è direttamente proporzionale al raggio.'},
+ {el:'cerchio',q:'Se il raggio di un cerchio raddoppia, l\'area…',o:[['quadruplica'],['raddoppia','Nell\'area il raggio è al quadrato. (2r)² = 4r², quindi l\'area diventa 4 volte.'],['resta uguale','L\'area dipende dal raggio, quindi cambia.'],['aumenta di π','Non si aggiunge π, si moltiplica per 4.']],s:'A<sub>c</sub> = πr². Con 2r viene π · 4r², quattro volte tanto.'},
+ {el:'settore',q:'Se l\'angolo al centro di un settore raddoppia (e il raggio resta uguale), l\'area del settore…',o:[['raddoppia'],['quadruplica','Il settore è proporzionale all\'angolo, non al suo quadrato.'],['resta uguale','Con un angolo più grande la fetta è più grande.'],['si dimezza','Con un angolo più grande la fetta cresce, non diminuisce.']],s:'A<sub>sc</sub> : A<sub>c</sub> = α : 360°. Settore e angolo sono direttamente proporzionali.'},
+ {el:'circ arco',q:'Il rapporto tra circonferenza e diametro di una ruota gigante, rispetto a quello di una moneta, è…',o:[['uguale, vale π'],['più grande, perché la ruota è più grande','C e d crescono insieme, il loro rapporto resta π.'],['più piccolo','Il rapporto C : d è lo stesso in ogni cerchio.'],['dipende dal materiale','π è un numero della geometria, non dipende dal materiale.']],s:'In ogni cerchio C : d = π.'},
+ {el:'settore',q:'Un settore circolare con angolo al centro di 90° è…',o:[['un quarto del cerchio'],['metà del cerchio','Metà del cerchio corrisponde a 180°.'],['un terzo del cerchio','Un terzo corrisponde a 120°.'],['un decimo del cerchio','90° su 360° fa un quarto.']],s:'90° / 360° = 1/4.'},
+ {el:'circ cerchio',q:'Quale frase su π è corretta?',o:[['ha infinite cifre decimali che non si ripetono'],['è esattamente 3,14','3,14 è un valore approssimato. π = 3,14159… continua.'],['è esattamente 22/7','22/7 = 3,1428… è solo un\'ottima approssimazione.'],['è un numero decimale periodico','Le cifre di π non si ripetono mai con un periodo.']],s:'π non si può scrivere come frazione. Nei calcoli si usa 3,14 o si lascia il simbolo π.'},
+ {el:'corona',q:'Una corona circolare con R = 5 cm e r = 4 cm e un cerchio di raggio 3 cm. Quale ha l\'area maggiore?',o:[['hanno la stessa area'],['la corona','A<sub>cc</sub> = π · (25 − 16) = 9π, come il cerchio, π · 9.'],['il cerchio','A<sub>cc</sub> = π · (25 − 16) = 9π, uguale al cerchio di raggio 3.'],['non si può dire','Si può calcolare, sono tutte e due 9π cm².']],s:'π · (25 − 16) = 9π e π · 3² = 9π.'},
+ {el:'cerchio',q:'Per trovare il raggio conoscendo l\'area di un cerchio, che cosa si fa?',o:[['si divide per π e si fa la radice quadrata'],['si divide per 2π','Dividere per 2π serve con la circonferenza, non con l\'area.'],['si divide per π e basta','Così si trova r². Serve ancora la radice quadrata.'],['si divide per 2','Così si dimezza l\'area, non si trova il raggio.']],s:'A<sub>c</sub> = πr², quindi r² = A<sub>c</sub> / π e r = √(A<sub>c</sub> / π).'},
+ {el:'arco',q:'Se l\'angolo al centro raddoppia (e il raggio resta uguale), l\'arco…',o:[['raddoppia'],['quadruplica','L\'arco è proporzionale all\'angolo, non al suo quadrato.'],['resta uguale','Con un angolo più grande l\'arco è più lungo.'],['si dimezza','Con un angolo più grande l\'arco cresce.']],s:'l : C = α : 360°. Arco e angolo sono direttamente proporzionali.'},
+ {el:'arco',q:'Due archi hanno lo stesso angolo al centro, uno in una circonferenza di raggio 3 cm e uno in una di raggio 6 cm. L\'arco nella circonferenza grande è…',o:[['il doppio'],['il quadruplo','La lunghezza dell\'arco è proporzionale al raggio, non al suo quadrato.'],['uguale','Con lo stesso angolo, la circonferenza più grande ha l\'arco più lungo.'],['la metà','La circonferenza più grande ha l\'arco più lungo, non più corto.']],s:'l = 2πr · α / 360°. Con lo stesso α, se r raddoppia raddoppia anche l.'},
+ {el:'segmento',q:'Un segmento circolare con angolo al centro di 180° è…',o:[['mezzo cerchio'],['un quarto di cerchio','Un quarto corrisponde a 90° ed è un settore.'],['tutto il cerchio','Il cerchio intero corrisponde a 360°.'],['un triangolo','Con 180° la corda è un diametro e il triangolo OAB non c\'è più.']],s:'Con 180° la corda passa per il centro, è un diametro, e il segmento è un semicerchio.'},
+ {el:'segmento',q:'Per trovare l\'area di un segmento circolare…',o:[['si toglie l\'area del triangolo da quella del settore'],['si aggiunge l\'area del triangolo a quella del settore','Il segmento è più piccolo del settore, quindi il triangolo si toglie.'],['si toglie l\'area del settore da quella del cerchio','Così si trova il resto del cerchio, non il segmento.'],['si moltiplica la corda per il raggio','Il segmento non è un rettangolo. Serve settore meno triangolo.']],s:'A<sub>sg</sub> = A<sub>sc</sub> − A<sub>t</sub>.'},
+ {el:'corona',q:'Una corona circolare ha R = 10 cm e r = 9 cm. La sua area è…',o:[['19π cm²'],['π cm²','(10 − 9)² = 1 è l\'errore tipico. Si fa 10² − 9² = 100 − 81 = 19.'],['181π cm²','Il cerchio interno va tolto, 100 − 81, non aggiunto.'],['1 cm²','Si fa π · (R² − r²) = π · (100 − 81).']],s:'A<sub>cc</sub> = π · (100 − 81) = 19π cm². Una corona sottile può avere un\'area sorprendente.'}];
+var ELEM=[   /* per ogni elemento i generatori dei quattro livelli; nel primo livello a volte si chiede il risultato in funzione di π */
+ {id:'circ',n:'circonferenza',L:[['C_r','C_d','C_pi'],['r_C'],['pista','ruota'],['rag']]},
+ {id:'cerchio',n:'cerchio',L:[['A_r','A_d','A_pi'],['r_A'],['pizza'],['rag']]},
+ {id:'arco',n:'arco',L:[['arco'],['a_l'],['orologio'],['rag']]},
+ {id:'settore',n:'settore',L:[['settore','sett_pi'],['a_A'],['torta'],['rag']]},
+ {id:'corona',n:'corona',L:[['corona','cor_pi'],['R_A'],['cd'],['rag']]},
+ {id:'segmento',n:'segmento',L:[['seg90','seg'],['seg_inv'],['aiuola'],['rag']]}];
+var P5={fatti:0,giusti:0,es:null,giro:0,pos:6,ordine:[]};
 
-function livello(){return Math.min(4,Math.floor(P5.fatti/4));}
-function nuovoEs(){
- var L=livello(),k,tent=0;
- do{var vecchi=[].concat.apply([],POOL.slice(0,L));
-  k=(L>0&&Math.random()<.4)?sc1(vecchi):sc1(POOL[L]);tent++;}while(k===P5.ultimo&&tent<10);
- var E=GEN[k]();E.k=k;E.err=0;E.fatto=false;P5.ultimo=k;
- if(E.modo==='num'){E.ans=E.f(PG);E.ansE=E.f(Math.PI);
-  E.sb=E.sb.map(function(x){return {v:typeof x[0]==='function'?x[0](PG):x[0],vE:typeof x[0]==='function'?x[0](Math.PI):x[0],m:x[1]};});}
- else if(E.modo==='pi')E.sb=E.sb.map(function(x){return {v:x[0],vE:x[0],m:x[1]};});
- else E.ord=mescola5(E.o.map(function(x,i){return i;}));
- P5.es=E;}
 function mescola5(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
 function vicino(v,x){var tol=Math.max(.011,Math.abs(x)*.006);return Math.abs(v-x)<=tol;}
+function nuovoEs(){
+ if(P5.pos>=6){if(P5.ordine.length)P5.giro++;P5.ordine=mescola5([0,1,2,3,4,5]);P5.pos=0;}
+ var el=ELEM[P5.ordine[P5.pos]],L=P5.giro<4?P5.giro:ri(0,3),k=sc1(el.L[L]);P5.pos++;
+ var E=GEN[k](el.id);E.k=k;E.el=el;E.L=L;E.err=0;E.fatto=false;E.n=P5.pos;
+ if(E.modo==='num'){E.ans=E.f(PG);E.ansE=E.f(Math.PI);
+  if(E.f(0)===0&&Math.abs(E.f(2)-2*E.f(1))<1e-9)E.kpi=E.f(1);   /* il risultato è un multiplo di π */
+  E.sb=E.sb.map(function(x){return {v:typeof x[0]==='function'?x[0](PG):x[0],vE:typeof x[0]==='function'?x[0](Math.PI):x[0],m:x[1]};});}
+ else if(E.modo==='pi'){E.kpi=E.ans;E.sb=E.sb.map(function(x){return {v:x[0],m:x[1]};});}
+ else E.ord=mescola5(E.o.map(function(x,i){return i;}));
+ if(E.kpi!=null&&E.modo!=='pi')E.sol=E.sol.concat(['In funzione di π, '+num(Math.round(E.kpi*100)/100)+'π '+E.u]);
+ P5.es=E;}
+/* legge la risposta: un numero oppure "kπ" (anche scritto kpi o kp); restituisce i valori con 3,14 e con π esatto */
+function leggiPi(t){
+ t=String(t).replace(/\s/g,'').replace(/pi|p/gi,'π').replace(',','.');
+ var m=t.match(/^(\d*\.?\d*)π$/);
+ if(m){var k=m[1]===''?1:+m[1];if(isNaN(k))return null;return {pi:true,k:k,v3:k*PG,vE:k*Math.PI};}
+ var v=+t;if(t===''||isNaN(v))return null;return {pi:false,k:v,v3:v,vE:v};}
 
 function pannelloAllenati(){
- if(!P5.es)nuovoEs();var E=P5.es,L=livello();
- var h='<div class="card"><div class="stat">Esercizio '+(P5.fatti+1)+' · livello '+(L+1)+' di 5, '+LIVELLI[L]+'</div><div class="q">'+E.q+'</div>';
+ if(!P5.es)nuovoEs();var E=P5.es;
+ var giro=P5.giro<4?'Giro '+(P5.giro+1)+', '+LIVELLI[E.L]:'Giro '+(P5.giro+1)+', misto';
+ var h='<div class="card"><div class="stat">'+giro+' · esercizio '+E.n+' di 6, '+E.el.n+'</div><div class="q">'+E.q+'</div>';
  if(E.modo==='sc')h+='<div class="opts">'+E.ord.map(function(i){return '<button class="opt" data-i="'+i+'">'+E.o[i][0]+'</button>';}).join('')+'</div>';
- else{h+='<div class="ans">'+(E.modo==='pi'?'<input id="inA" inputmode="decimal" autocomplete="off" aria-label="Numero davanti a π"><span class="unita"><b>π</b> '+E.u+'</span>':'<input id="inA" inputmode="decimal" autocomplete="off" aria-label="Risposta"><span class="unita">'+E.u+'</span>')
-  +(TOUCH?'':'<button class="azione primaria" id="bOk">Verifica</button>')+'</div>'
-  +(E.modo==='pi'?'<div class="nota">Scrivi solo il numero che sta davanti a π.</div>':'<div class="nota">Usa π = 3,14 e arrotonda al centesimo.</div>')
+ else{var conPi=E.kpi!=null;
+  h+='<div class="ans"><input id="inA" inputmode="decimal" autocomplete="off" aria-label="Risposta">'
+  +(conPi?'<button class="azione icona" id="bPi" type="button" aria-label="Scrivi π" title="Scrivi π" style="font:700 21px Cambria,Georgia,serif">π</button>':'')
+  +'<span class="unita">'+E.u+'</span>'+(TOUCH?'':'<button class="azione primaria" id="bOk">Verifica</button>')+'</div>'
+  +'<div class="nota">'+(E.modo==='pi'?'Rispondi in funzione di π, per esempio 12π. Usa il pulsante π oppure scrivi pi.':conPi?'Rispondi con π = 3,14, al centesimo, oppure in funzione di π (pulsante π o pi).':'Usa π = 3,14 e arrotonda al centesimo.')+'</div>'
   +tastierinaHTML({virgola:true,idVerifica:'bOk'});}
  h+='<div class="fb" id="fb" aria-live="polite"></div><div class="azioni"><button class="azione link" id="bNx">↻ Nuovo esercizio</button></div></div>'
-  +'<div class="card"><div class="sect">Il tuo allenamento</div><div class="stat" style="margin:0">Esercizi completati '+P5.fatti+', al primo colpo '+P5.giusti+'</div></div>'
+  +'<div class="card"><div class="sect">Il tuo allenamento</div><div class="stat" id="conta5" style="margin:0">'+conta5()+'</div></div>'
   +'<div class="anchor"><b>C = 2πr</b>, <b>A<sub>c</sub> = πr²</b>. Arco e settore sono la parte <b>α / 360°</b> di circonferenza e cerchio.</div>';
  $('panel').innerHTML=h;
  if(E.modo==='sc'){$('panel').querySelector('.opts').onclick=function(e){var b=e.target.closest('.opt');if(b&&!b.disabled)sceglie(b);};}
  else{$('bOk').onclick=verifica5;$('inA').onkeydown=function(e){if(e.key==='Enter')verifica5();};
+  if($('bPi'))$('bPi').onclick=function(){var i=$('inA');if(i.value.indexOf('π')<0)i.value+='π';if(!TOUCH)i.focus();};
   if(TOUCH)tastierinaCollega($('pad'),$('inA'),{max:9});   /* il tasto Verifica della tastierina ha id bOk e usa già verifica5 */}
  $('bNx').onclick=function(){nuovoEs();pannelloAllenati();disegnaEs();say(fraseNuovo(),'idle');};
  disegnaEs();}
 
-function fraseNuovo(){var E=P5.es;return E.modo==='pi'?'Questa volta niente 3,14. Lascia il simbolo π.':E.modo==='sc'?'Qui non servono calcoli lunghi. Ragiona!':'Leggi bene il testo e guarda il disegno.';}
+function fraseNuovo(){var E=P5.es;
+ if(E.n===1)return 'Nuovo giro, '+(P5.giro<4?LIVELLI[E.L].toLowerCase():'tutti i tipi mescolati')+'. Un esercizio per ogni elemento.';
+ return E.modo==='pi'?'Qui il risultato va lasciato in funzione di π.':E.modo==='sc'?'Qui non servono calcoli lunghi. Ragiona!':'Leggi bene il testo e guarda il disegno.';}
+function conta5(){return 'Esercizi completati '+P5.fatti+', al primo colpo '+P5.giusti;}
 function solHTML(E){return '<div class="sol"><b>Soluzione</b><br>'+E.sol.join('<br>')+'</div>';}
 function finito(E,giusto){
- E.fatto=true;P5.fatti++;if(giusto&&E.err===0)P5.giusti++;
+ E.fatto=true;P5.fatti++;if(giusto&&E.err===0)P5.giusti++;if($('conta5'))$('conta5').textContent=conta5();
  var b=$('bNx');b.classList.remove('link');b.classList.add('primaria');if($('bOk'))$('bOk').disabled=true;
- if(giusto&&E.err===0&&P5.fatti%5===0)say('Cinque esercizi! Livello '+(livello()+1)+', '+LIVELLI[livello()]+'. Archimede approva.','fine',true);
+ if(E.n===6)say('Giro completato! '+(P5.giro<3?'Il prossimo è più difficile, '+LIVELLI[P5.giro+1].toLowerCase()+'.':'Ora si continua con esercizi misti.')+' Archimede approva.','fine',true);
  else if(giusto)say(E.err?'Ce l\'hai fatta. Rivedi i passaggi qui sotto.':'Perfetto!','ok');
  else say('Guarda la soluzione con calma, poi prova il prossimo.','idle');}
 
 function verifica5(){
- var E=P5.es;if(!E||E.fatto)return;var v=leggi($('inA').value);if(isNaN(v))return;
- var ok=E.modo==='pi'?Math.abs(v-E.ans)<.001:(vicino(v,E.ans)||vicino(v,E.ansE));
- if(ok){$('fb').innerHTML='<div class="ok">Esatto.</div>'+solHTML(E);finito(E,true);return;}
- E.err++;var diag=E.sb.filter(function(s){return E.modo==='pi'?Math.abs(v-s.v)<.001:(vicino(v,s.v)||vicino(v,s.vE));})[0];
- var msg=diag?diag.m:(E.modo==='pi'?'Non è il numero giusto davanti a π. Scrivi la formula e sostituisci il dato.':'Ricontrolla i calcoli. Ricorda π = 3,14 e il centesimo.');
+ var E=P5.es;if(!E||E.fatto)return;var R=leggiPi($('inA').value);if(!R)return;
+ var ok,diag,msg;
+ if(E.modo==='pi'){
+  if(!R.pi){   /* valore giusto ma scritto senza π: non è un errore, si chiede la forma con π */
+   if(vicino(R.v3,E.ans*PG)||vicino(R.v3,E.ans*Math.PI)){$('fb').innerHTML='Il valore è giusto, ma qui va scritto in funzione di π, cioè <b>'+num(E.ans)+'π</b>. Riscrivilo così.';return;}
+   if(Math.abs(R.k-E.ans)<.006){$('fb').innerHTML='Manca il simbolo π. Tocca il pulsante π oppure scrivi pi.';return;}}
+  var kk=R.pi?R.k:R.v3/PG;ok=R.pi&&Math.abs(kk-E.ans)<.006;
+  diag=E.sb.filter(function(q){return Math.abs(kk-q.v)<.006;})[0];}
+ else{
+  ok=vicino(R.v3,E.ans)||vicino(R.vE,E.ansE)||vicino(R.vE,E.ans)||vicino(R.v3,E.ansE);
+  diag=E.sb.filter(function(q){return vicino(R.v3,q.v)||vicino(R.vE,q.vE);})[0];}
+ if(ok){$('fb').innerHTML='<div class="ok">Esatto.</div>'+(R.pi&&E.modo!=='pi'?'Giusto anche in funzione di π. ':'')+solHTML(E);finito(E,true);return;}
+ E.err++;
+ msg=diag?diag.m:(E.modo==='pi'?'Non è il numero giusto davanti a π. Scrivi la formula e sostituisci il dato.':'Ricontrolla i calcoli. Ricorda π = 3,14 e il centesimo.');
  if(E.err>=2){$('fb').innerHTML='<div class="no">Non ancora.</div>'+msg+solHTML(E);finito(E,false);}
  else{$('fb').innerHTML='<div class="no">Non ancora.</div>'+msg+' Riprova.';say('Riprova, ci sei quasi.','ko');}}
 
@@ -947,14 +996,14 @@ function disegnaEs(){
   var mr=[(X+A[0])/2,(Y+A[1])/2];o+=T(mr[0]+16,mr[1]+16,'r = '+F.r,ink,18);
   o+='<circle cx="'+X+'" cy="'+Y+'" r="4" fill="'+ink+'"/>';}
  else if(F.t==='corona'){
-  var rr=R*parseFloat(F.r)/parseFloat(F.R);
+  var rr=R*(F.rap||parseFloat(F.r)/parseFloat(F.R));
   o+='<circle cx="'+X+'" cy="'+Y+'" r="'+R+'" fill="#2fae8f" fill-opacity=".35" stroke="#5c6572" stroke-width="2"/><circle cx="'+X+'" cy="'+Y+'" r="'+rr.toFixed(1)+'" fill="#f6f3ea" stroke="#5c6572" stroke-width="2"/>';
-  o+='<line x1="'+X+'" y1="'+Y+'" x2="'+(X+R*.707)+'" y2="'+(Y-R*.707)+'" stroke="'+ink+'" stroke-width="2"/>'+T(X+R*.5+10,Y-R*.5-4,'R = '+F.R,ink,18);
+  o+='<line x1="'+X+'" y1="'+Y+'" x2="'+(X+R*.707)+'" y2="'+(Y-R*.707)+'" stroke="'+ink+'" stroke-width="2"/>'+T(X+R*.5+10,Y-R*.5-4,'R = '+F.R,F.R==='?'?'#c43c3c':ink,18);
   o+='<line x1="'+X+'" y1="'+Y+'" x2="'+(X-rr*.707).toFixed(1)+'" y2="'+(Y+rr*.707).toFixed(1)+'" stroke="'+ink+'" stroke-width="2"/>'+T(X-rr*.5-8,Y+rr*.5+26,'r = '+F.r,ink,18,'end');
   o+='<circle cx="'+X+'" cy="'+Y+'" r="4" fill="'+ink+'"/>';}
  $('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';}
 
-if(/[?&]prova\b/.test(location.search))window.__P5=P5;   /* solo per le prove automatiche */
+if(/[?&]prova\b/.test(location.search)){window.__P5=P5;window.__GEN=GEN;}   /* solo per le prove automatiche */
 
 function mostra(){
  cancelAnimationFrame(raf);ferma2();
