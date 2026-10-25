@@ -621,7 +621,8 @@ function disegnaParti(){
   o+='<circle cx="'+CX3+'" cy="'+CY3+'" r="'+ri+'" fill="#f6f3ea" fill-opacity="'+(g)+'" stroke="#5c6572" stroke-width="2" stroke-dasharray="'+(w>0?'7 5':'0')+'"/>';
   if(w>0)o+='<circle cx="'+CX3+'" cy="'+CY3+'" r="'+ri+'" fill="#d64545" fill-opacity="'+(.25*w)+'"/>'+T(CX3,CY3-ri*.45+6,'− πr²','#c43c3c',18,'middle','opacity="'+w+'"');
   o+='<line x1="'+CX3+'" y1="'+CY3+'" x2="'+(CX3+R3*.707)+'" y2="'+(CY3-R3*.707)+'" stroke="'+ink+'" stroke-width="2"/>'+T(CX3+R3*.42,CY3-R3*.42-8,'R',ink,20,'',"font-style=\"italic\" font-weight=\"700\"");
-  o+='<line x1="'+CX3+'" y1="'+CY3+'" x2="'+(CX3-ri*.707)+'" y2="'+(CY3+ri*.707)+'" stroke="'+ink+'" stroke-width="2"/>'+T(CX3-ri*.42-16,CY3+ri*.42+4,'r',ink,20,'',"font-style=\"italic\" font-weight=\"700\"");
+  /* raggio piccolo in orizzontale verso sinistra, non sulla stessa retta di R (sembrerebbe un diametro) */
+  o+='<line x1="'+CX3+'" y1="'+CY3+'" x2="'+(CX3-ri)+'" y2="'+CY3+'" stroke="'+ink+'" stroke-width="2"/>'+T(CX3-Math.max(ri/2,22),CY3+22,'r',ink,20,'middle',"font-style=\"italic\" font-weight=\"700\"");
  }else{
   o+='<circle cx="'+CX3+'" cy="'+CY3+'" r="'+R3+'" fill="'+(id==='arco'?'none':'#4a86f0')+'" fill-opacity="'+(id==='settore'?.12*w:0)+'" stroke="#5c6572" stroke-width="2"'+(id==='arco'&&w>0?' stroke-dasharray="8 6"':'')+'/>';
   if(id==='arco'&&w>0)o+='<circle cx="'+CX3+'" cy="'+CY3+'" r="'+R3+'" fill="none" stroke="'+cr+'" stroke-opacity="'+(.35*w)+'" stroke-width="6"/>'+T(CX3,CY3+R3-16,'C, angolo giro 360°','#b8641c',17,'middle','opacity="'+w+'"');
@@ -645,7 +646,7 @@ function disegnaParti(){
    if(id==='arco')o+=T(lab[0],lab[1]+(v.al>300?40:0),'l','#b8641c',22,'middle','font-style="italic" font-weight="700"');}
   if(al>0.5){var mr=[(CX3+A[0])/2,(CY3+A[1])/2];o+=T(mr[0]+14,mr[1]+12,'r',ink,20,'middle','font-style="italic" font-weight="700"');}
  }
- o+='<circle cx="'+CX3+'" cy="'+CY3+'" r="3.5" fill="'+ink+'"/>'+T(CX3-8,CY3+22,'O',ink,18,'middle');
+ o+='<circle cx="'+CX3+'" cy="'+CY3+'" r="3.5" fill="'+ink+'"/>'+T(id==='corona'?CX3+14:CX3-8,CY3+22,'O',ink,18,'middle');
  /* lettura dei valori a destra, con π esatto */
  var L=[],y=60;
  if(id==='corona'){L=[['R = 6 cm'],['r = '+num(P3.ri)+' cm'],['A<tspan dy="5" font-size="14">cc</tspan><tspan dy="-5"> ≈ '+dec2(v.Acce)+' cm²</tspan>',cr]];}
@@ -915,10 +916,10 @@ function pannelloAllenati(){
  if(E.modo==='sc')h+='<div class="opts">'+E.ord.map(function(i){return '<button class="opt" data-i="'+i+'">'+E.o[i][0]+'</button>';}).join('')+'</div>';
  else{var conPi=E.kpi!=null;
   h+='<div class="ans"><input id="inA" inputmode="decimal" autocomplete="off" aria-label="Risposta">'
-  +(conPi?'<button class="azione icona" id="bPi" type="button" aria-label="Scrivi π" title="Scrivi π" style="font:700 21px Cambria,Georgia,serif">π</button>':'')
   +'<span class="unita">'+E.u+'</span>'+(TOUCH?'':'<button class="azione primaria" id="bOk">Verifica</button>')+'</div>'
-  +'<div class="nota">'+(E.modo==='pi'?'Rispondi in funzione di π, per esempio 12π. Usa il pulsante π oppure scrivi pi.':conPi?'Rispondi con π = 3,14, al centesimo, oppure in funzione di π (pulsante π o pi).':'Usa π = 3,14 e arrotonda al centesimo.')+'</div>'
-  +tastierinaHTML({virgola:true,idVerifica:'bOk'});}
+  +'<div class="nota">'+(E.modo==='pi'?'Rispondi in funzione di π, per esempio 12π. Usa il tasto π oppure scrivi pi.':conPi?'Rispondi con π = 3,14, al centesimo, oppure in funzione di π (tasto π o scrivi pi).':'Usa π = 3,14 e arrotonda al centesimo.')+'</div>'
+  +(conPi&&!TOUCH?'<button class="azione link" id="bPi" type="button" style="margin-top:2px">Inserisci <b style="font:700 18px Cambria,Georgia,serif">π</b></button>':'')
+  +tastierinaPi(conPi);}
  h+='<div class="fb" id="fb" aria-live="polite"></div><div class="azioni"><button class="azione link" id="bNx">↻ Nuovo esercizio</button></div></div>'
   +'<div class="card"><div class="sect">Il tuo allenamento</div><div class="stat" id="conta5" style="margin:0">'+conta5()+'</div></div>'
   +'<div class="anchor"><b>C = 2πr</b>, <b>A<sub>c</sub> = πr²</b>. Arco e settore sono la parte <b>α / 360°</b> di circonferenza e cerchio.</div>';
@@ -933,6 +934,10 @@ function pannelloAllenati(){
 function fraseNuovo(){var E=P5.es;
  if(E.n===1)return 'Nuovo giro, '+(P5.giro<4?LIVELLI[E.L].toLowerCase():'tutti i tipi mescolati')+'. Un esercizio per ogni elemento.';
  return E.modo==='pi'?'Qui il risultato va lasciato in funzione di π.':E.modo==='sc'?'Qui non servono calcoli lunghi. Ragiona!':'Leggi bene il testo e guarda il disegno.';}
+function tastierinaPi(conPi){
+ var h=tastierinaHTML({virgola:true,idVerifica:'bOk'});
+ if(!conPi||!h)return h;
+ return h.replace('<button type="button" class="del" data-k="del" style="grid-column:span 2">','<button type="button" data-k="π" aria-label="pi greco" style="font:700 22px Cambria,Georgia,serif">π</button><button type="button" class="del" data-k="del" style="grid-column:span 1">');}
 function conta5(){return 'Esercizi completati '+P5.fatti+', al primo colpo '+P5.giusti;}
 function solHTML(E){return '<div class="sol"><b>Soluzione</b><br>'+E.sol.join('<br>')+'</div>';}
 function finito(E,giusto){
@@ -948,7 +953,7 @@ function verifica5(){
  if(E.modo==='pi'){
   if(!R.pi){   /* valore giusto ma scritto senza π: non è un errore, si chiede la forma con π */
    if(vicino(R.v3,E.ans*PG)||vicino(R.v3,E.ans*Math.PI)){$('fb').innerHTML='Il valore è giusto, ma qui va scritto in funzione di π, cioè <b>'+num(E.ans)+'π</b>. Riscrivilo così.';return;}
-   if(Math.abs(R.k-E.ans)<.006){$('fb').innerHTML='Manca il simbolo π. Tocca il pulsante π oppure scrivi pi.';return;}}
+   if(Math.abs(R.k-E.ans)<.006){$('fb').innerHTML='Manca il simbolo π. Usa il tasto π oppure scrivi pi.';return;}}
   var kk=R.pi?R.k:R.v3/PG;ok=R.pi&&Math.abs(kk-E.ans)<.006;
   diag=E.sb.filter(function(q){return Math.abs(kk-q.v)<.006;})[0];}
  else{
@@ -999,7 +1004,7 @@ function disegnaEs(){
   var rr=R*(F.rap||parseFloat(F.r)/parseFloat(F.R));
   o+='<circle cx="'+X+'" cy="'+Y+'" r="'+R+'" fill="#2fae8f" fill-opacity=".35" stroke="#5c6572" stroke-width="2"/><circle cx="'+X+'" cy="'+Y+'" r="'+rr.toFixed(1)+'" fill="#f6f3ea" stroke="#5c6572" stroke-width="2"/>';
   o+='<line x1="'+X+'" y1="'+Y+'" x2="'+(X+R*.707)+'" y2="'+(Y-R*.707)+'" stroke="'+ink+'" stroke-width="2"/>'+T(X+R*.5+10,Y-R*.5-4,'R = '+F.R,F.R==='?'?'#c43c3c':ink,18);
-  o+='<line x1="'+X+'" y1="'+Y+'" x2="'+(X-rr*.707).toFixed(1)+'" y2="'+(Y+rr*.707).toFixed(1)+'" stroke="'+ink+'" stroke-width="2"/>'+T(X-rr*.5-8,Y+rr*.5+26,'r = '+F.r,ink,18,'end');
+  o+='<line x1="'+X+'" y1="'+Y+'" x2="'+(X-rr).toFixed(1)+'" y2="'+Y+'" stroke="'+ink+'" stroke-width="2"/>'+T(rr<70?X-10:X-rr/2,Y+24,'r = '+F.r,ink,18,rr<70?'end':'middle');   /* raggio piccolo in orizzontale */
   o+='<circle cx="'+X+'" cy="'+Y+'" r="4" fill="'+ink+'"/>';}
  $('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';}
 
