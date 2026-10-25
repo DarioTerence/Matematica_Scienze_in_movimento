@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Prof. T">
+<!-- © 2026 Prof. T. Tutti i diritti riservati. -->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pi greco, circonferenza e cerchio - Scienza in Movimento</title>
+<meta name="description" content="Pi greco con oggetti veri in 3D: la circonferenza è circa 3,14 volte il diametro. Area del cerchio dai poligoni, parti del cerchio, calcolatrice ed esercizi.">
+<link rel="canonical" href="https://scienzainmovimento.it/geometria/pi_greco_cerchio.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Scienza in Movimento">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="Pi greco, circonferenza e cerchio - Scienza in Movimento">
+<meta property="og:description" content="Pi greco con oggetti veri in 3D: la circonferenza è circa 3,14 volte il diametro. Area del cerchio dai poligoni, parti del cerchio, calcolatrice ed esercizi.">
+<meta property="og:url" content="https://scienzainmovimento.it/geometria/pi_greco_cerchio.html">
+<meta property="og:image" content="https://scienzainmovimento.it/og_image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Prof. T - La Matematica e le Scienze in Movimento">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+/* ---- base della pagina (uguale in tutte le animazioni) ---- */
+:root{--bg:#0a0f1a;--panel:#111a2b;--line:#22304a;--txt:#e6ecf5;--mut:#8fa0b8;--warn:#FF8A80}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at 50% -10%,rgba(74,134,240,.14),transparent 60%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px),#0a0f1a;background-size:auto,36px 36px,36px 36px;color:var(--txt);font-family:Calibri,Carlito,"Segoe UI",system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 8px}
+.eyebrow{color:var(--disciplina);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px;color:#fff}
+.sub{color:var(--mut);margin:0 0 4px}
+button,input{font-family:inherit}
+.hide{display:none!important}
+/* riquadro a sinistra, pannello a destra; sotto 760 px colonna unica: riquadro, pannello, Prof. T */
+.layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:6px}
+.layout>*{min-width:0}
+@media(max-width:760px){.layout{display:flex;flex-direction:column}.layout>section,.layout>aside{display:contents}.stage,.hint{order:1}#panel{order:2;margin-top:12px}.prof{order:3}}
+.stage{position:relative;background:linear-gradient(#fbfaf6,#ece8dd);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto}
+#scena3d{position:relative;height:clamp(280px,44vh,410px);touch-action:none}
+@media(max-width:760px){#scena3d{height:clamp(230px,32vh,300px)}}
+#scena3d canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.cap{position:absolute;left:10px;bottom:8px;right:60px;font-size:12px;color:#5c6572;pointer-events:none}
+.fail{padding:24px;color:#26282B}
+.hint{color:var(--mut);font-size:14px;margin:8px 2px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.card .h{font:700 17px Cambria,Georgia,serif;color:var(--disciplina);margin-bottom:6px}
+.txt{font-size:16px;line-height:1.45}
+.sect{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:0 0 2px}
+.anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;line-height:1.45}
+/* Prof. T con il fumetto */
+.prof{display:flex;gap:12px;align-items:flex-end;position:relative;margin-bottom:12px}
+.prof img{height:150px;width:auto;flex:none}
+@media(max-width:760px){.prof{margin-top:12px}.prof img{height:110px}}
+.prof img.pop{animation:pop .6s ease-out}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.09) rotate(-2deg)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.prof img.pop{animation:none}}
+.bubble{position:relative;flex:1;background:#17233a;border:1px solid var(--line);border-radius:14px;padding:11px 14px;font-size:16px;line-height:1.4;min-height:56px;margin-bottom:22px}
+.bubble::before{content:"";position:absolute;left:-8px;bottom:22px;border:8px solid transparent;border-left:0;border-right-color:#17233a}
+/* ---- stili propri dell'animazione ---- */
+.cC{color:#ffa94d;font-weight:700}.cD{color:#7fb0ff;font-weight:700}.cR{color:#ff8a80;font-weight:700}
+table.mis{width:100%;border-collapse:collapse;font-size:15px;margin-top:4px}
+table.mis th{color:var(--mut);font-weight:400;text-align:right;padding:3px 4px;border-bottom:1px solid var(--line)}
+table.mis th:first-child,table.mis td:first-child{text-align:left}
+table.mis td{text-align:right;padding:4px;border-bottom:1px solid #1a2640;white-space:nowrap}
+table.mis td:last-child{color:#fff;font-weight:700}
+.vuoto{color:var(--mut);font-size:14px}
+.pi{margin-top:8px;font-size:14px;color:var(--mut);line-height:1.4}
+.pi b{color:var(--txt)}
+</style>
+<link rel="stylesheet" href="../animazioni.css">
+</head>
+<body style="--area:#6aa5ff;--disciplina:#4a86f0">
+<div class="wrap">
+<div class="eyebrow">Geometria</div>
+<h1>Pi greco, circonferenza e cerchio</h1>
+<p class="sub" id="sub"></p>
+
+<!-- 1 schede: create dallo script (elenco SCHEDE) -->
+<nav class="schede" id="tabs" role="tablist" aria-label="Schede"></nav>
+
+<div class="layout">
+<section>
+ <div class="stage">
+  <div id="scena3d">
+   <div class="cap">Ogni oggetto è mostrato alla stessa grandezza, le misure sono quelle reali.</div>
+   <button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+   <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
+   <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+  </div>
+  <svg id="svg" class="hide" viewBox="0 0 560 400" role="img" aria-label="Disegno della scheda"></svg>
+ </div>
+ <p class="hint" id="hint">Trascina per ruotare la vista, pizzica o usa la rotella per avvicinarti.</p>
+</section>
+<aside>
+ <div class="prof"><img id="profImg" alt="Prof. T"><div class="bubble" id="bubble"></div></div>
+ <div id="panel"></div>
+</aside>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../animazioni.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
+var liscio=function(u){u=clamp(u,0,1);return u*u*(3-2*u);};
+var TAU=2*Math.PI;
+
+/* Tempi uniformi (millisecondi): un giro completo, uno spostamento, una scritta. Si cambiano solo qui. */
+var T_ROLL=4000, T_MOVE=1400, T_SHOW=1200, T_BACK=500;
+
+/* Prof. T in versione greca: cinque pose (file in immagini/prof_t/) */
+var IMG={hi:'../immagini/prof_t/prof_t_greco_saluto.webp',idle:'../immagini/prof_t/prof_t_greco_pensieroso.webp',
+ ok:'../immagini/prof_t/prof_t_greco_occhiolino_indica.webp',ko:'../immagini/prof_t/prof_t_greco_braccia_conserte.webp',
+ fine:'../immagini/prof_t/prof_t_greco_compasso_alzato.webp'};
+precarica(IMG);
+function say(testo,posa,salto){var im=$('profImg');im.src=IMG[posa||'idle'];$('bubble').innerHTML=testo;
+ if(salto&&!reduce){im.classList.remove('pop');void im.offsetWidth;im.classList.add('pop');}}
+
+/* numeri all'italiana: virgola decimale */
+function num(x,dec){return (dec==null?String(x):x.toFixed(dec)).replace('.',',');}
+
+/* ---- schede ---- */
+var SCHEDE=[
+ {id:'rapporto',nome:'Il rapporto costante',sub:'Misura la circonferenza di oggetti veri e confrontala con il diametro.'},
+ {id:'poligoni',nome:'Dai poligoni al cerchio',sub:'L\'area del cerchio come limite dei poligoni regolari inscritti.'},
+ {id:'parti',nome:'Parti del cerchio',sub:'Arco, settore, corona e segmento circolare.'},
+ {id:'calcolatrice',nome:'Calcolatrice',sub:'Da un dato del cerchio a tutti gli altri.'},
+ {id:'allenati',nome:'Allenati',sub:'Esercizi su circonferenza, cerchio e sue parti.'}];
+var S={scheda:'rapporto',obj:0,passo:0,p:0,misure:{}};
+
+function disegnaSchede(){
+ var nav=$('tabs'),x0=nav.scrollLeft;
+ nav.innerHTML=SCHEDE.map(function(s,i){var on=s.id===S.scheda;
+  return '<button class="scheda'+(on?' attiva':'')+'" role="tab" aria-selected="'+on+'" data-s="'+s.id+'"><span class="num">0'+(i+1)+'</span>'+s.nome+'</button>';}).join('');
+ nav.scrollLeft=x0;centraScheda(nav);
+ $('sub').textContent=SCHEDE.filter(function(s){return s.id===S.scheda;})[0].sub;}
+$('tabs').addEventListener('click',function(e){var b=e.target.closest('[data-s]');if(b&&b.dataset.s!==S.scheda){S.scheda=b.dataset.s;mostra();}});
+
+/* ================= 01 IL RAPPORTO COSTANTE =================
+   Misure reali in millimetri. C è la lettura sul metro, arrotondata al millimetro come farebbe uno studente,
+   quindi C : d viene 3,14 con piccole differenze sulla terza cifra decimale. */
+var OGGETTI=[
+ {id:'moneta',n:'Moneta da 1 euro',art:'La moneta da 1 euro',c:'#c9a640',d:23.25,C:73,prof:2.33},
+ {id:'lattina',n:'Lattina',art:'La lattina',c:'#c0392b',d:66,C:207,prof:115},
+ {id:'piatto',n:'Piatto',art:'Il piatto',c:'#d8d2c4',d:260,C:817,prof:25},
+ {id:'ruota',n:'Ruota di bicicletta',art:'La ruota di bicicletta',c:'#555b66',d:680,C:2136,prof:28},
+ {id:'tubo',n:'Tubo di palline da tennis',art:'Il tubo delle palline da tennis',c:'#cddc39',d:70,C:220,prof:210}];
+
+function durPasso(i){return i===1?T_ROLL:i===2?3*T_MOVE+T_SHOW:i===3?T_SHOW:0;}
+
+function testoPasso(i){
+ var o=OGGETTI[S.obj],r=o.C/o.d,avanzo=num(r-3,2);
+ if(i===0)return {h:'Il diametro',t:o.art+' ha il diametro <span class="cD">d = '+num(o.d)+' mm</span>. Il diametro è il segmento che passa per il centro e unisce due punti della circonferenza.'};
+ if(i===1)return {h:'Un giro completo',t:'L\'oggetto rotola sul metro per un giro esatto, dal punto rosso al punto rosso. La striscia arancione stesa sul metro è lunga quanto la circonferenza, <span class="cC">C = '+num(o.C)+' mm</span>.'};
+ if(i===2)return {h:'Quanti diametri?',t:'Riportiamo il diametro sulla circonferenza stesa. Ci sta <b>3 volte</b> e avanza un <span class="cR">pezzetto</span>, circa '+avanzo+' di diametro.'
+  +(o.id==='tubo'?' Il tubo contiene 3 palline, quindi è alto circa 3 diametri (210 mm). La circonferenza è più lunga dell\'altezza, te lo aspettavi?':'')};
+ return {h:'Il rapporto',t:'<span class="cC">C</span> : <span class="cD">d</span> = '+num(o.C)+' : '+num(o.d)+' = <b>'+num(r,3)+'</b>. Con ogni oggetto il rapporto viene circa 3,14. È il numero <b>π</b> (pi greco), uguale per tutti i cerchi.'};}
+
+function frasePasso(i){
+ var o=OGGETTI[S.obj],n=Object.keys(S.misure).length;
+ if(i===0)return ['Questo è il diametro. Tocca <b>Avanti</b> e facciamo rotolare l\'oggetto.','idle'];
+ if(i===1)return ['Un giro intero, e la circonferenza è stesa sul metro.','idle'];
+ if(i===2)return [o.id==='tubo'?'Sorpresa! Il giro del tubo è più lungo del tubo stesso.':'Tre diametri e un pezzetto. Succede con ogni cerchio.','ok'];
+ if(n>=OGGETTI.length)return ['Cinque oggetti diversi, sempre circa 3,14. Questo è π!','fine'];
+ return ['Il rapporto è circa 3,14. Prova con un altro oggetto.','ok'];}
+
+function tabellaHTML(){
+ var righe=OGGETTI.filter(function(o){return S.misure[o.id];});
+ if(!righe.length)return '<div class="vuoto">Le misure compaiono qui quando arrivi all\'ultimo passo.</div>';
+ return '<table class="mis"><tr><th>Oggetto</th><th>d (mm)</th><th>C (mm)</th><th>C : d</th></tr>'
+  +righe.map(function(o){return '<tr><td>'+o.n+'</td><td>'+num(o.d)+'</td><td>'+num(o.C)+'</td><td>'+num(o.C/o.d,3)+'</td></tr>';}).join('')
+  +'</table><div class="pi"><b>π = 3,14159…</b> ha infinite cifre decimali che non si ripetono mai. Nei calcoli si usa spesso il valore approssimato <b>3,14</b>.</div>';}
+
+function pannelloRapporto(){
+ var n=4,i=S.passo,P=testoPasso(i);
+ $('panel').innerHTML='<div class="card"><div class="h">'+P.h+'</div><div class="txt">'+P.t+'</div>'
+  +passoHTML(i,n)+azioniHTML(i===0,i===n-1,'Altro oggetto')+'</div>'
+  +'<div class="card"><div class="sect">Scegli l\'oggetto</div><div class="chips" id="ogg" style="margin-top:6px">'
+  +OGGETTI.map(function(o,k){return '<button class="chip'+(k===S.obj?' attivo':'')+'" data-k="'+k+'" style="--chip:'+o.c+'">'+o.n+'</button>';}).join('')+'</div></div>'
+  +'<div class="card"><div class="sect">Le tue misure</div>'+tabellaHTML()+'</div>'
+  +'<div class="anchor">In ogni cerchio la circonferenza è circa 3,14 volte il diametro. Questo numero si chiama <b>π</b>, quindi <b>C = π · d</b>.</div>';
+ $('bPrev').onclick=function(){vai(i-1);};
+ $('bNext').onclick=function(){vai(i+1);};
+ $('bNew').onclick=function(){altroOggetto();};
+ $('ogg').onclick=function(e){var b=e.target.closest('[data-k]');if(b)scegliOggetto(+b.dataset.k);};}
+
+function vai(i){
+ i=clamp(i,0,3);var avanti=i>S.passo;S.passo=i;
+ if(i===3)S.misure[OGGETTI[S.obj].id]=true;
+ pannelloRapporto();var f=frasePasso(i);say(f[0],f[1],i===3&&f[1]==='fine');
+ anima(i,avanti?durPasso(i):T_BACK);}
+function scegliOggetto(k){S.obj=k;S.passo=0;S.p=0;cancelAnimationFrame(raf);if(scena){scena.oggetto(OGGETTI[k]);scena.mostra(0);}
+ pannelloRapporto();var f=frasePasso(0);say(f[0],f[1]);}
+function altroOggetto(){   /* il primo oggetto non ancora misurato, altrimenti il successivo */
+ for(var j=1;j<=OGGETTI.length;j++){var k=(S.obj+j)%OGGETTI.length;if(!S.misure[OGGETTI[k].id])return scegliOggetto(k);}
+ scegliOggetto((S.obj+1)%OGGETTI.length);}
+
+/* animazione verso il passo scelto: avanzamento lineare, progresso sempre tra 0 e 1, intervallo mai negativo */
+var raf=0;
+function anima(meta,dur){
+ cancelAnimationFrame(raf);var da=S.p,last=performance.now(),u=0;if(reduce)dur=0;
+ (function frame(now){
+  var dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;
+  u=dur?clamp(u+dt*1000/dur,0,1):1;
+  S.p=da+(meta-da)*u;if(scena)scena.mostra(S.p);
+  if(u<1)raf=requestAnimationFrame(frame);})(last);}
+
+/* ---------------- scena 3D ----------------
+   Unità della scena: il raggio di ogni oggetto vale 1, quindi la circonferenza stesa è lunga 2π ≈ 6,28.
+   Il metro ha le tacche reali: 1 mm reale = 2/d unità. L'oggetto rotola verso destra lungo l'asse x,
+   il punto di contatto parte da x = 0; la faccia verso chi guarda sta a z = 0, il resto dell'oggetto va verso z negativo. */
+function Scena(el){
+ if(typeof THREE==='undefined'){el.insertAdjacentHTML('beforeend','<div class="fail">La scena 3D richiede la connessione a internet. Riprova più tardi.</div>');return null;}
+ var R;try{R=new THREE.WebGLRenderer({antialias:true,alpha:true});}catch(e){el.insertAdjacentHTML('beforeend','<div class="fail">Questo browser non supporta il 3D (WebGL).</div>');return null;}
+ R.setPixelRatio(Math.min(devicePixelRatio,2));el.insertBefore(R.domElement,el.firstChild);
+ var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(40,1,.1,200);
+ scene.add(new THREE.AmbientLight(0xffffff,.72));
+ var l1=new THREE.DirectionalLight(0xffffff,.6);l1.position.set(3,7,6);scene.add(l1);
+ var l2=new THREE.DirectionalLight(0xffffff,.25);l2.position.set(-5,2,-4);scene.add(l2);
+ var M=function(c,o){return new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o||{}));};
+ var COL={C:0xf08c2e,d:0x2f6fd6,r:0xd64545};
+
+ /* tavolo e metro */
+ var tavolo=new THREE.Mesh(new THREE.PlaneGeometry(400,400),M(0xe6dcc6,{roughness:.9}));tavolo.rotation.x=-Math.PI/2;tavolo.position.set(3,-.002,-20);scene.add(tavolo);
+ var X0=-.7,X1=7.3,Z0=-.06,Z1=.9;   /* estensione del metro */
+ var tela=document.createElement('canvas');tela.width=2048;tela.height=248;
+ var texMetro=new THREE.CanvasTexture(tela);texMetro.anisotropy=4;
+ var metro=new THREE.Mesh(new THREE.PlaneGeometry(X1-X0,Z1-Z0),M(0xffffff,{map:texMetro,roughness:.7}));
+ metro.rotation.x=-Math.PI/2;metro.position.set((X0+X1)/2,.004,(Z0+Z1)/2);scene.add(metro);
+ function disegnaMetro(d){   /* tacche ogni mm, cm o più, numeri in centimetri come su un metro vero */
+  var g=tela.getContext('2d'),W=tela.width,H=tela.height,pxu=W/(X1-X0),pxmm=pxu*2/d;
+  g.fillStyle='#f3e4a0';g.fillRect(0,0,W,H);g.strokeStyle='#c9b46a';g.lineWidth=3;g.strokeRect(1,1,W-2,H-2);
+  var passi=[1,2,5,10,20,50,100,200,500],min=passi.filter(function(s){return s*pxmm>=7;})[0]||500;
+  var mag=passi.filter(function(s){return s>=min*5&&s*pxmm>=110&&s%10===0;})[0]||1000;
+  var mez=mag/2;
+  var a=Math.ceil((X0*d/2)/min)*min,b=(X1*d/2);
+  g.fillStyle='#2b2b2b';g.textAlign='center';g.font='bold 46px Calibri,Carlito,sans-serif';
+  for(var mm=a;mm<=b;mm+=min){
+   var x=(mm*2/d-X0)*pxu,lun=mm%mag===0?66:mm%mez===0?46:28;
+   g.fillRect(x-2,0,4,lun);
+   if(mm%mag===0&&mm>=0)g.fillText(num(mm/10),x,116);}
+  g.font='34px Calibri,Carlito,sans-serif';g.textAlign='right';g.fillStyle='#6b5d2a';g.fillText('cm',W-14,116);
+  texMetro.needsUpdate=true;}
+
+ /* etichette sempre leggibili (sprite con testo) */
+ function etichetta(txt,col,alt){
+  var c=document.createElement('canvas'),g=c.getContext('2d'),f='bold 56px Calibri,Carlito,sans-serif';g.font=f;
+  var w=Math.ceil(g.measureText(txt).width)+44;c.width=w;c.height=88;g=c.getContext('2d');
+  g.fillStyle='rgba(255,255,255,.88)';g.strokeStyle=col;g.lineWidth=5;
+  var rr=20;g.beginPath();g.moveTo(rr,3);g.arcTo(w-3,3,w-3,85,rr);g.arcTo(w-3,85,3,85,rr);g.arcTo(3,85,3,3,rr);g.arcTo(3,3,w-3,3,rr);g.closePath();g.fill();g.stroke();
+  g.font=f;g.fillStyle=col;g.textAlign='center';g.textBaseline='middle';g.fillText(txt,w/2,47);
+  var t=new THREE.CanvasTexture(c),s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));
+  var h=alt||.36;s.scale.set(h*w/88,h,1);s.renderOrder=10;scene.add(s);return s;}
+ function togli(o){if(!o)return;scene.remove(o);o.traverse(function(x){if(x.geometry)x.geometry.dispose();if(x.material){if(x.material.map)x.material.map.dispose();x.material.dispose();}});}
+
+ /* modelli degli oggetti: raggio 1, faccia verso chi guarda a z = 0 */
+ function modello(o){
+  var g=new THREE.Group(),pz=o.prof*2/o.d;
+  var cil=function(r,l,mat,z,seg){var m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,l,seg||72),mat);m.rotation.x=Math.PI/2;m.position.z=z;g.add(m);return m;};
+  if(o.id==='moneta'){   /* bimetallica: anello dorato, centro argentato */
+   cil(1,pz,M(0xc9a640,{metalness:.3,roughness:.4}),-pz/2);
+   cil(.7,pz+.012,M(0xd2d6da,{metalness:.25,roughness:.35}),-pz/2);
+   var bordo=new THREE.Mesh(new THREE.TorusGeometry(.965,.028,10,90),M(0xd8b552,{metalness:.3,roughness:.35}));g.add(bordo);
+  }else if(o.id==='lattina'){
+   cil(.97,pz-.16,M(0xc0392b,{roughness:.35,metalness:.3}),-pz/2);
+   cil(.975,.4,M(0xf2f2f2,{roughness:.4}),-pz*.45);   /* fascia bianca */
+   cil(.9,.06,M(0xd4d8dc,{metalness:.2,roughness:.35}),-.05);
+   [0,-pz].forEach(function(z){var t=new THREE.Mesh(new THREE.TorusGeometry(.93,.07,10,72),M(0xd4d8dc,{metalness:.2,roughness:.35}));t.position.z=z-(z?-.08:.08);g.add(t);});
+   var lin=new THREE.Mesh(new THREE.BoxGeometry(.16,.5,.02),M(0xa9aeb4,{metalness:.2,roughness:.35}));lin.position.set(0,.35,0);g.add(lin);
+  }else if(o.id==='piatto'){   /* profilo del piatto fatto ruotare attorno all'asse */
+   var pf=[[0,-.005],[.55,-.005],[.6,-.04],[.67,-.04],[.71,0],[.95,.15],[1,.17],[.995,.19],[.94,.175],[.68,.055],[.6,.045],[0,.045]].map(function(p){return new THREE.Vector2(p[0],p[1]);});
+   var pi=new THREE.Mesh(new THREE.LatheGeometry(pf,96),M(0xf1ede2,{roughness:.45,side:THREE.DoubleSide}));
+   pi.rotation.x=Math.PI/2;pi.position.z=-.19;g.add(pi);
+   var filo=new THREE.Mesh(new THREE.TorusGeometry(.975,.012,8,96),M(0x2f6fd6));filo.position.z=-.012;g.add(filo);
+  }else if(o.id==='ruota'){   /* copertone, cerchio, mozzo e raggi */
+   g.add(new THREE.Mesh(new THREE.TorusGeometry(.945,.055,14,120),M(0x2a2c30,{roughness:.85})));
+   g.add(new THREE.Mesh(new THREE.TorusGeometry(.87,.032,10,120),M(0xc8ccd2,{metalness:.25,roughness:.3})));
+   cil(.07,.2,M(0x9aa0a6,{metalness:.25,roughness:.3}),0,24);
+   for(var k=0;k<28;k++){var a=k*TAU/28,zz=(k%2?.07:-.07),p1=new THREE.Vector3(Math.cos(a)*.06,Math.sin(a)*.06,zz),p2=new THREE.Vector3(Math.cos(a+.25)*.86,Math.sin(a+.25)*.86,0);
+    var dir=p2.clone().sub(p1),r=new THREE.Mesh(new THREE.CylinderGeometry(.007,.007,dir.length(),5),M(0xa0a6ad,{metalness:.2,roughness:.4}));
+    r.position.copy(p1).add(p2).multiplyScalar(.5);r.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());g.add(r);}
+  }else if(o.id==='tubo'){   /* tubo trasparente con tre palline */
+   var tb=cil(1,pz,M(0xdfe9f2,{transparent:true,opacity:.28,roughness:.1,depthWrite:false,side:THREE.DoubleSide}),-pz/2);tb.renderOrder=2;
+   var rb=67/70;
+   for(var j=0;j<3;j++){var b=new THREE.Mesh(new THREE.SphereGeometry(rb,40,28),M(0xd4e04a,{roughness:.95}));b.position.z=-(pz/6)*(2*j+1);g.add(b);
+    var cu=new THREE.Mesh(new THREE.TorusGeometry(rb*.72,.025,6,60),M(0xffffff,{roughness:.9}));cu.position.copy(b.position);cu.rotation.y=Math.PI/2;cu.rotation.x=.5;g.add(cu);}
+   var tappo=new THREE.Mesh(new THREE.TorusGeometry(1,.05,8,72),M(0xffffff,{roughness:.6}));g.add(tappo);
+   var fondo=cil(1.01,.12,M(0xb9bfc6,{metalness:.2,roughness:.4}),-pz+.06);
+  }
+  return g;}
+
+ /* oggetti della scena che cambiano con l'oggetto scelto */
+ var radice=null,giro=null,arco=null,puntoObj=null,diam=null,striscia,copie=[],avanzo,puntoA,puntoB;
+ var labD=null,labC=null,labR=null,labN=[],labAv=null,O=null;
+ striscia=new THREE.Mesh(new THREE.BoxGeometry(1,.02,.07),M(COL.C,{roughness:.5}));striscia.position.set(0,.014,.04);scene.add(striscia);
+ for(var k=0;k<3;k++){var cp=new THREE.Mesh(new THREE.BoxGeometry(2,.03,.09),M(k%2?0x5a8fe6:COL.d,{roughness:.5}));scene.add(cp);copie.push(cp);}
+ avanzo=new THREE.Mesh(new THREE.BoxGeometry(1,.03,.09),M(COL.r,{roughness:.5}));scene.add(avanzo);
+ puntoA=new THREE.Mesh(new THREE.SphereGeometry(.06,16,12),M(COL.r));puntoA.position.set(0,.03,.04);scene.add(puntoA);
+ puntoB=puntoA.clone();puntoB.position.x=TAU;scene.add(puntoB);
+
+ function oggetto(o){
+  O=o;togli(radice);[labD,labC,labR,labAv].concat(labN).forEach(togli);labN=[];
+  radice=new THREE.Group();giro=new THREE.Group();radice.add(giro);scene.add(radice);
+  giro.add(modello(o));
+  puntoObj=new THREE.Mesh(new THREE.SphereGeometry(.06,16,12),M(COL.r));puntoObj.position.set(0,-1,.03);giro.add(puntoObj);
+  diam=new THREE.Mesh(new THREE.BoxGeometry(2,.035,.03),M(COL.d));diam.position.z=.06;giro.add(diam);
+  arco=null;disegnaMetro(o.d);
+  labD=etichetta('d = '+num(o.d)+' mm','#2f6fd6');
+  labC=etichetta('C = '+num(o.C)+' mm','#d9731c');labC.position.set(Math.PI,.42,.2);
+  labR=etichetta('C : d = '+num(o.C)+' : '+num(o.d)+' = '+num(o.C/o.d,3),'#1d2433',.42);labR.position.set(Math.PI,2.75,0);
+  for(var k=0;k<3;k++){var l=etichetta(String(k+1),'#2f6fd6',.28);labN.push(l);}
+  labAv=etichetta('≈ '+num(o.C/o.d-3,2)+' d','#c43c3c',.28);
+  dirty=true;}
+
+ function mostra(p){   /* p continuo da 0 (inizio) a 3 (ultimo passo) */
+  if(!O)return;
+  var th=clamp(p,0,1)*TAU;
+  radice.position.set(th,1,0);giro.rotation.z=-th;
+  /* parte di circonferenza ancora sull'oggetto (tubo arancione) */
+  if(arco){giro.remove(arco);arco.geometry.dispose();arco=null;}
+  if(th<TAU-1e-3){   /* toro aperto: parte dall'angolo -90° + th e arriva al punto rosso dopo il resto del giro */
+   arco=new THREE.Mesh(new THREE.TorusGeometry(1,.034,8,Math.max(8,Math.round(120*(1-th/TAU))),TAU-th),M(COL.C,{roughness:.5}));
+   arco.rotation.z=-Math.PI/2+th;arco.position.z=.04;giro.add(arco);}
+  striscia.visible=th>1e-3;striscia.scale.x=Math.max(th,1e-3);striscia.position.x=th/2;
+  puntoB.visible=p>=1-1e-6;
+  /* etichette di diametro e circonferenza */
+  labD.position.set(Math.max(th-.25,.55),2.38,0);   /* sparisce mentre rotola, ricompare alla fine del giro */
+  labD.material.opacity=p<.5?1-clamp(p*6,0,1):clamp((p-.85)*6.7,0,1);
+  labC.material.opacity=clamp((p-.9)*10,0,1);labC.visible=p>.9;
+  /* passo 3: i diametri riportati sulla circonferenza stesa */
+  var q=clamp(p-1,0,1)*(3*T_MOVE+T_SHOW);
+  var da=new THREE.Vector3(TAU,1,.06);
+  copie.forEach(function(c,k){var u=liscio((q-k*T_MOVE)/T_MOVE),a=new THREE.Vector3(1+2*k,.03,.64);
+   c.visible=u>0;c.position.lerpVectors(da,a,u);c.position.y+=Math.sin(u*Math.PI)*.9;
+   labN[k].visible=u>=1;labN[k].position.set(1+2*k,.3,.82);});
+  var ua=clamp((q-3*T_MOVE)/T_SHOW,0,1),lav=TAU-6;
+  avanzo.visible=ua>0;avanzo.scale.x=Math.max(lav*ua,1e-3);avanzo.position.set(6+lav*ua/2,.03,.64);
+  labAv.visible=ua>0;labAv.material.opacity=ua;labAv.position.set(6.6,.3,1.0);
+  /* passo 4: il rapporto */
+  labR.visible=p>2;labR.material.opacity=clamp(p-2,0,1);
+  dirty=true;}
+
+ /* vista: orbita attorno al centro della circonferenza stesa */
+ var V0={th:0,ph:1.02,rad:7.6},th=V0.th,ph=V0.ph,rad=V0.rad,fit=1,dirty=true,cen=new THREE.Vector3(Math.PI+.2,1.35,.2);
+ var cv=R.domElement,ptr=new Map(),pd=0;
+ var dist=function(){var a=Array.from(ptr.values());return Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);};
+ cv.addEventListener('pointerdown',function(e){cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);});
+ cv.addEventListener('pointermove',function(e){if(!ptr.has(e.pointerId))return;var o=ptr.get(e.pointerId),n=[e.clientX,e.clientY];
+  if(ptr.size===1){th=clamp(th-(n[0]-o[0])*.008,-1.4,1.4);ph=clamp(ph-(n[1]-o[1])*.008,.3,1.5);}
+  ptr.set(e.pointerId,n);
+  if(ptr.size===2){var d=dist();if(pd)rad=clamp(rad*pd/d,4,18);pd=d;}
+  dirty=true;});
+ var su=function(e){ptr.delete(e.pointerId);pd=0;};
+ cv.addEventListener('pointerup',su);cv.addEventListener('pointercancel',su);
+ cv.addEventListener('wheel',function(e){e.preventDefault();rad=clamp(rad*(1+e.deltaY*.001),4,18);dirty=true;},{passive:false});
+ function resize(){var w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();fit=Math.max(1,12.2/cam.aspect/V0.rad)*(cam.aspect<1.6?1.12:1);   /* la circonferenza stesa (circa 8,4 unità) sta sempre nel riquadro */dirty=true;}
+ if(window.ResizeObserver)new ResizeObserver(resize).observe(el);else window.addEventListener('resize',resize);
+ (function loop(){requestAnimationFrame(loop);
+  if(!dirty||el.offsetParent===null)return;dirty=false;
+  var d=rad*fit;cam.position.set(cen.x+d*Math.sin(ph)*Math.sin(th),cen.y+d*Math.cos(ph),cen.z+d*Math.sin(ph)*Math.cos(th));cam.lookAt(cen);R.render(scene,cam);})();
+ resize();
+ return {oggetto:oggetto,mostra:mostra,resize:resize,
+  reset:function(){th=V0.th;ph=V0.ph;rad=V0.rad;dirty=true;},
+  zoom:function(f){rad=clamp(rad*f,4,18);dirty=true;}};
+}
+var scena=Scena($('scena3d'));
+$('bReset').onclick=function(){if(scena)scena.reset();};
+$('bPiu').onclick=function(){if(scena)scena.zoom(.8);};
+$('bMeno').onclick=function(){if(scena)scena.zoom(1.25);};
+
+/* ================= schede 02-05: in preparazione ================= */
+function pannelloAttesa(){
+ var s=SCHEDE.filter(function(x){return x.id===S.scheda;})[0];
+ $('svg').innerHTML='<rect width="560" height="400" fill="#f3f0e8"/><circle cx="280" cy="190" r="110" fill="none" stroke="#4a86f0" stroke-width="4"/><line x1="170" y1="190" x2="390" y2="190" stroke="#2f6fd6" stroke-width="3"/><text x="280" y="345" text-anchor="middle" font-family="Calibri,Carlito,sans-serif" font-size="22" fill="#5c6572">Scheda in preparazione</text>';
+ $('panel').innerHTML='<div class="card"><div class="h">'+s.nome+'</div><div class="txt">Questa scheda è in preparazione.</div></div>';
+ say('Ci sto lavorando con il compasso. Torna presto!','idle');}
+
+function mostra(){
+ disegnaSchede();var tre=S.scheda==='rapporto';
+ $('scena3d').classList.toggle('hide',!tre);$('hint').classList.toggle('hide',!tre);$('svg').classList.toggle('hide',tre);
+ if(tre){if(scena){scena.resize();scena.mostra(S.p);}pannelloRapporto();var f=frasePasso(S.passo);say(f[0],f[1]);}
+ else{cancelAnimationFrame(raf);if(S.passo===1||S.passo===2)S.p=S.passo;pannelloAttesa();}}
+
+if(scena)scena.oggetto(OGGETTI[0]);
+mostra();
+say('Ciao, sono Prof. T in versione greca! Tocca <b>Avanti</b> e facciamo rotolare la moneta sul metro.','hi');
+})();
+</script>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Il pi greco come rapporto tra circonferenza e diametro, misurato su oggetti veri in 3D. L'area del cerchio dai poligoni regolari inscritti, arco, settore, corona e segmento circolare, con calcolatrice ed esercizi.</p>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T</div></div>
+<style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6aa5ff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(106,165,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
+<a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Geometria</a>
+<script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
