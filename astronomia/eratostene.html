@@ -108,7 +108,7 @@ table.mis td{text-align:right;padding:4px;border-bottom:1px solid #1a2640;white-
 <section>
  <div class="stage">
   <div id="scena3d">
-   <div class="cap" id="cap3d">Gnomone e pozzo molto ingranditi, Sole molto più lontano. Non in scala.</div>
+   <div class="cap" id="cap3d">Gnomone e pozzo molto ingranditi, Sole molto più lontano e molto più grande. Non in scala.</div>
    <button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
    <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
    <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
@@ -119,6 +119,7 @@ table.mis td{text-align:right;padding:4px;border-bottom:1px solid #1a2640;white-
  <details class="opzioni" id="opz1">
   <summary><b>Opzioni</b></summary>
   <button class="levetta" role="switch" id="oCentro" aria-checked="false">Linee fino al centro della Terra</button>
+  <button class="levetta" role="switch" id="oMerid" aria-checked="false">Meridiano di Siene</button>
  </details>
 </section>
 <aside>
@@ -175,11 +176,11 @@ function leggi(t){
 
 /* ---- schede ---- */
 var SCHEDE=[
- {id:'scena',nome:'La scena',sub:'Siene e Alessandria a mezzogiorno del solstizio d\'estate.'},
+ {id:'scena',nome:'Il pozzo e lo gnomone',sub:'Siene e Alessandria a mezzogiorno del solstizio d\'estate.'},
  {id:'geometria',nome:'La geometria',sub:'Dagli angoli alla circonferenza della Terra, un passo alla volta.'},
- {id:'rifallo',nome:'Rifallo tu',sub:'Scrivi un angolo e una distanza e trova la circonferenza e il raggio.'},
+ {id:'rifallo',nome:'Calcolatrice della Terra',sub:'Scrivi un angolo e una distanza e trova la circonferenza e il raggio. Poi scopri perché il risultato non è esatto.'},
  {id:'allenati',nome:'Allenati',sub:'Esercizi su angoli, proporzioni e misure della Terra.'}];
-var S={scheda:'scena',vista:'terra',centro:false};
+var S={scheda:'scena',vista:'terra',centro:false,merid:false};
 
 function disegnaSchede(){
  var nav=$('tabs'),x0=nav.scrollLeft;
@@ -190,12 +191,15 @@ function disegnaSchede(){
 $('tabs').addEventListener('click',function(e){var b=e.target.closest('[data-s]');if(b&&b.dataset.s!==S.scheda){S.scheda=b.dataset.s;mostra();}});
 
 /* =====================================================================================
-   01 LA SCENA 3D
-   Il piano del disegno (x, y) è il piano del meridiano di Siene. Siene sta in (1, 0, 0), il Sole è lontano
-   verso +x e i suoi raggi viaggiano verso -x. Alessandria sta 7,2° più a nord, sullo stesso meridiano,
-   come supponeva Eratostene. La Terra ha raggio 1; la texture è ruotata perché Siene stia davvero in (1, 0, 0).
+   01 IL POZZO E LO GNOMONE (scena 3D)
+   Il piano del disegno (x, y) passa per il centro della Terra, Siene e Alessandria. Siene sta in (1, 0, 0),
+   il Sole è lontano verso +x e i suoi raggi viaggiano verso -x. Lo gnomone sta a 7,2° da Siene in questo piano,
+   cioè ad Alessandria (la distanza vera è un po' maggiore, ma la differenza non si vede). Eratostene supponeva
+   Alessandria sullo stesso meridiano di Siene: la levetta Meridiano di Siene mostra che è circa 3° più a ovest.
+   La Terra ha raggio 1.
    ===================================================================================== */
 var LAT_S=24.09,LON_S=32.90;   /* Siene (Assuan), gradi */
+var LAT_A=31.20,LON_A=29.92;   /* Alessandria, gradi: circa 3° più a ovest di Siene */
 function Scena(el){
  if(typeof THREE==='undefined'){el.insertAdjacentHTML('beforeend','<div class="fail">La scena 3D richiede la connessione a internet. Riprova più tardi.</div>');return null;}
  var R;try{R=new THREE.WebGLRenderer({antialias:true,alpha:false});if(!R.getContext())throw 0;}catch(e){el.insertAdjacentHTML('beforeend','<div class="fail">Questo browser non supporta il 3D (WebGL).</div>');return null;}
@@ -216,42 +220,78 @@ function Scena(el){
   g.setAttribute('position',new THREE.BufferAttribute(p,3));
   scene.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xcfd8ff,size:1.3,sizeAttenuation:false,transparent:true,opacity:.7})));})();
 
- /* spaccato di Siene: si toglie dalla sfera una fessura davanti al pozzo (x > 0,8, |y| < W, z > 0) */
- var W=.03,X0=.9;
- var clips=[new THREE.Plane(new THREE.Vector3(-1,0,0),X0),new THREE.Plane(new THREE.Vector3(0,1,0),-W),
+ /* spaccato di Siene: si toglie dalla sfera un cuneo davanti al pozzo (|y| < W, z > 0, sopra il piano inclinato x = X0 + PEND · z),
+    largo quanto basta per vedere la metà posteriore del pozzo, che resta nella parete di fondo (z = 0) */
+ var W=.03,X0=.9,PEND=.75;
+ var clips=[new THREE.Plane().setFromNormalAndCoplanarPoint(new THREE.Vector3(-1,0,PEND).normalize(),new THREE.Vector3(X0,0,0)),new THREE.Plane(new THREE.Vector3(0,1,0),-W),
   new THREE.Plane(new THREE.Vector3(0,-1,0),-W),new THREE.Plane(new THREE.Vector3(0,0,-1),0)];
 
- /* globo con la texture NASA */
+ /* globo con la texture NASA.
+    perno e globo portano Siene in (1, 0, 0) con il suo meridiano nel piano (x, y).
+    giro ruota tutto attorno all'asse x (la retta Sole-Siene) finché la vera Alessandria cade nel piano (x, y):
+    così il piano del disegno passa per il centro della Terra, Siene e Alessandria, come nel disegno della scheda 02. */
  var tex=new THREE.TextureLoader().load('../immagini/terra/terra_superficie_nasa.jpg',function(){dirty=true;});
  tex.anisotropy=Math.min(8,R.capabilities.getMaxAnisotropy());
  var matTerra=new THREE.MeshPhongMaterial({map:tex,shininess:8,specular:new THREE.Color(0x222833),clippingPlanes:clips,clipIntersection:true});
- var perno=new THREE.Group();perno.rotation.z=-LAT_S*RAD;scene.add(perno);
+ var giro=new THREE.Group();scene.add(giro);
+ var perno=new THREE.Group();perno.rotation.z=-LAT_S*RAD;giro.add(perno);
  var globo=new THREE.Mesh(new THREE.SphereGeometry(1,128,64),matTerra);globo.rotation.y=-LON_S*RAD;perno.add(globo);
+ /* punto della sfera (coordinate del globo) da latitudine e longitudine in gradi */
+ function geo(lat,lon,r){var f=lat*RAD,l=lon*RAD;r=r||1;return new THREE.Vector3(r*Math.cos(l)*Math.cos(f),r*Math.sin(f),-r*Math.sin(l)*Math.cos(f));}
+ giro.updateMatrixWorld(true);
+ var Avera=globo.localToWorld(geo(LAT_A,LON_A));
+ giro.rotation.x=Math.atan2(-Avera.z,Avera.y);giro.updateMatrixWorld(true);
+ var NORD=globo.localToWorld(new THREE.Vector3(0,1,0)).normalize();   /* direzione del polo nord nella scena */
 
- /* pareti dello spaccato: roccia; sulla parete di fondo il pozzo illuminato fino al fondo */
- var zMax=Math.sqrt(1-W*W-X0*X0);
- var tela=document.createElement('canvas');tela.width=240;tela.height=400;
- (function(){var g=tela.getContext('2d'),w=tela.width,h=tela.height;
-  for(var k=0;k<10;k++){g.fillStyle=['#6b4f33','#7a5a3a','#5e452d','#836343','#6f5236'][k%5];g.fillRect(0,k*h/10,w,h/10+1);}
-  g.globalAlpha=.25;for(var i=0;i<160;i++){g.fillStyle=i%2?'#2e2216':'#b08a5c';g.fillRect(Math.random()*w,Math.random()*h,3,2);}g.globalAlpha=1;
-  var cx=w/2,pw=56,fondo=h*.8;   /* il pozzo occupa gran parte della profondità dello spaccato */
-  g.fillStyle='#9a9384';g.fillRect(cx-pw/2-10,0,10,fondo+8);g.fillRect(cx+pw/2,0,10,fondo+8);   /* pietre */
-  var gr=g.createLinearGradient(0,0,0,fondo);gr.addColorStop(0,'#fff3b0');gr.addColorStop(1,'#ffd166');
-  g.fillStyle=gr;g.fillRect(cx-pw/2,0,pw,fondo);
-  g.fillStyle='#4fc3f7';g.fillRect(cx-pw/2,fondo-14,pw,14);g.fillStyle='#fffbe0';g.fillRect(cx-pw/2+4,fondo-14,pw-8,4);
-  g.strokeStyle='#5a5448';g.lineWidth=2;for(var y=8;y<fondo;y+=16){g.beginPath();g.moveTo(cx-pw/2-10,y);g.lineTo(cx-pw/2,y);g.moveTo(cx+pw/2,y+8);g.lineTo(cx+pw/2+10,y+8);g.stroke();}})();
- var texPozzo=new THREE.CanvasTexture(tela);
- var fondoP=new THREE.Mesh(new THREE.PlaneGeometry(2*W,1-X0),new THREE.MeshBasicMaterial({map:texPozzo}));
- fondoP.rotation.z=-Math.PI/2;fondoP.position.set((1+X0)/2,0,-.006);
- var spacc=new THREE.Group();spacc.add(fondoP);scene.add(spacc);   /* lo spaccato si vede solo nelle viste da vicino */
- var matRoccia=new THREE.MeshBasicMaterial({color:0x4d3a27,side:THREE.DoubleSide});
- var forma=new THREE.Shape();forma.moveTo(X0,0);forma.lineTo(Math.sqrt(1-W*W),0);
- forma.absarc(0,0,Math.sqrt(1-W*W),0,Math.atan2(zMax,X0),false);forma.lineTo(X0,0);
- [-W,W].forEach(function(y){var m=new THREE.Mesh(new THREE.ShapeGeometry(forma,24),matRoccia);m.rotation.x=Math.PI/2;m.position.y=y;spacc.add(m);});
- var base=new THREE.Mesh(new THREE.PlaneGeometry(zMax,2*W),matRoccia);base.rotation.y=-Math.PI/2;base.position.set(X0,0,zMax/2);spacc.add(base);
+ /* pareti dello spaccato di Siene: roccia a strati, con la canna del pozzo incassata nella parete di fondo */
+ var PR=.012,PD=.08,PH=.012;   /* raggio, profondità e altezza del parapetto del pozzo */
+ function telaRoccia(){var c=document.createElement('canvas');c.width=400;c.height=120;var g=c.getContext('2d');
+  for(var k=0;k<10;k++){g.fillStyle=['#6b4f33','#7a5a3a','#5e452d','#836343','#6f5236'][k%5];g.fillRect(k*40,0,41,120);}
+  g.globalAlpha=.25;for(var i=0;i<220;i++){g.fillStyle=i%2?'#2e2216':'#b08a5c';g.fillRect(Math.random()*400,Math.random()*120,2,3);}
+  return new THREE.CanvasTexture(c);}
+ var top=Math.sqrt(1-W*W),fp=new THREE.Shape();
+ fp.moveTo(X0,-W);fp.lineTo(top,-W);fp.lineTo(top,-PR);fp.lineTo(1-PD,-PR);fp.lineTo(1-PD,PR);fp.lineTo(top,PR);fp.lineTo(top,W);fp.lineTo(X0,W);fp.lineTo(X0,-W);
+ var gFondo=new THREE.ShapeGeometry(fp),uv=gFondo.attributes.uv,pos=gFondo.attributes.position;
+ for(var q=0;q<uv.count;q++)uv.setXY(q,(pos.getX(q)-X0)/(top-X0),(pos.getY(q)+W)/(2*W));
+ var fondoP=new THREE.Mesh(gFondo,new THREE.MeshBasicMaterial({map:telaRoccia(),side:THREE.DoubleSide}));
+ var spacc=new THREE.Group();spacc.add(fondoP);scene.add(spacc);   /* lo spaccato si vede solo nella vista di Siene */
+ var texRoccia=telaRoccia(),matRoccia=new THREE.MeshBasicMaterial({map:texRoccia,color:0xb8a690,side:THREE.DoubleSide});
+ /* pareti laterali (y = ±W) e fondo inclinato del cuneo; zi, xi = dove il fondo incontra la superficie */
+ var R2=1-W*W,a2=1+PEND*PEND,zi=(-2*X0*PEND+Math.sqrt(4*X0*X0*PEND*PEND-4*a2*(X0*X0-R2)))/(2*a2),xi=X0+PEND*zi;
+ var forma=new THREE.Shape();forma.moveTo(X0,0);forma.lineTo(top,0);
+ forma.absarc(0,0,Math.sqrt(R2),0,Math.atan2(zi,xi),false);forma.lineTo(X0,0);
+ var gLato=new THREE.ShapeGeometry(forma,24),uvL=gLato.attributes.uv,pL=gLato.attributes.position;
+ for(var q2=0;q2<uvL.count;q2++)uvL.setXY(q2,(pL.getX(q2)-X0)/(top-X0),pL.getY(q2)/zi);
+ [-W,W].forEach(function(y){var m=new THREE.Mesh(gLato,matRoccia);m.rotation.x=Math.PI/2;m.position.y=y;spacc.add(m);});
+ var lenB=Math.hypot(xi-X0,zi),uB=new THREE.Vector3(xi-X0,0,zi).normalize(),yB=new THREE.Vector3(0,1,0);
+ var base=new THREE.Mesh(new THREE.PlaneGeometry(lenB,2*W),new THREE.MeshBasicMaterial({color:0x3f2f20,side:THREE.DoubleSide}));
+ base.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(uB,yB,uB.clone().cross(yB)));base.position.set((X0+xi)/2,0,zi/2);spacc.add(base);
+
+ /* il pozzo: metà posteriore della canna in pietra (si vede l'interno), acqua sul fondo, fascio di luce, parapetto */
+ function telaPietre(){var c=document.createElement('canvas');c.width=256;c.height=256;var g=c.getContext('2d');
+  g.fillStyle='#3e352b';g.fillRect(0,0,256,256);   /* malta */
+  for(var r=0;r<8;r++)for(var k=-1;k<5;k++){var x=k*64+(r%2?32:0)+3,y=r*32+3,l=125+Math.random()*55|0;
+   g.fillStyle='rgb('+l+','+(l-18)+','+(l-48)+')';g.fillRect(x,y,58,26);
+   g.fillStyle='rgba(255,240,200,.18)';g.fillRect(x,y,60,5);g.fillStyle='rgba(40,30,20,.22)';g.fillRect(x,y+23,60,5);}
+  var t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(3,4);return t;}
+ var gCanna=new THREE.CylinderGeometry(PR,PR,PD,32,1,true,Math.PI/2,Math.PI);gCanna.rotateZ(-Math.PI/2);
+ var canna=new THREE.Mesh(gCanna,new THREE.MeshBasicMaterial({map:telaPietre(),side:THREE.DoubleSide}));canna.position.x=1-PD/2;spacc.add(canna);
+ function telaAcqua(){var c=document.createElement('canvas');c.width=c.height=128;var g=c.getContext('2d'),gr=g.createRadialGradient(64,64,2,64,64,64);
+  gr.addColorStop(0,'#fffbe0');gr.addColorStop(.18,'#ffe9a0');gr.addColorStop(.45,'#4fc3f7');gr.addColorStop(1,'#1b6fa0');g.fillStyle=gr;g.fillRect(0,0,128,128);return new THREE.CanvasTexture(c);}
+ var gAcqua=new THREE.CylinderGeometry(PR*.98,PR*.98,.004,32,1,false,Math.PI/2,Math.PI);gAcqua.rotateZ(-Math.PI/2);
+ var acqua=new THREE.Mesh(gAcqua,new THREE.MeshBasicMaterial({map:telaAcqua()}));acqua.position.x=1-PD+.002;spacc.add(acqua);
+ var gFascio=new THREE.CylinderGeometry(PR*.55,PR*.55,PD+PH,24,1,true);gFascio.rotateZ(-Math.PI/2);
+ var fascio=new THREE.Mesh(gFascio,new THREE.MeshBasicMaterial({color:0xfff0a8,transparent:true,opacity:.1,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
+ fascio.position.x=1-PD/2+PH/2;spacc.add(fascio);
+ var parDietro=new THREE.Group(),parDavanti=new THREE.Group();scene.add(parDietro);scene.add(parDavanti);
+ (function(){var n=14,rr=PR+.003,larg=2*Math.PI*rr/n*.92;
+  for(var fila=0;fila<2;fila++)for(var i=0;i<n;i++){var th=(i+(fila?.5:0))/n*2*Math.PI,l=150+Math.random()*45|0;
+   var m=new THREE.Mesh(new THREE.BoxGeometry(PH/2*.94,.006,larg),new THREE.MeshLambertMaterial({color:new THREE.Color('rgb('+l+','+(l-12)+','+(l-38)+')')}));
+   m.position.set(1+PH/4+fila*PH/2,-rr*Math.sin(th),rr*Math.cos(th));m.rotation.x=th+Math.PI/2;
+   (Math.cos(th)>.05?parDavanti:parDietro).add(m);}})();
 
  /* raggi del Sole, tutti paralleli all'asse x */
- var XS=3.1;
+ var XS=3.1;   /* i raggi partono dal Sole */
  var matRag=new THREE.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:.85});
  var matRagD=new THREE.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:.3});
  var matRagF=new THREE.MeshBasicMaterial({color:0xfff0a8});
@@ -260,12 +300,26 @@ function Scena(el){
  function raggio(y,z,xFine,r,mat){return asta(new THREE.Vector3(XS,y,z),new THREE.Vector3(xFine,y,z),r,mat);}
  [-.95,-.76,-.57,-.38,-.19,.3,.5,.7,.9].forEach(function(y){raggio(y,0,Math.sqrt(Math.max(0,1-y*y)),.004,matRag);});
  [-.5,.5].forEach(function(z){[-.8,-.4,.4,.8].forEach(function(y){var q=1-y*y-z*z;raggio(y,z,q>0?Math.sqrt(q):-XS,.003,matRagD);});});
- raggio(0,0,1-(1-X0)*.8,.004,matRagF);                    /* raggio che scende fino al fondo del pozzo */
+ raggio(0,0,1-PD,.0025,matRagF);                    /* raggio che scende fino al fondo del pozzo */
  raggio(T.y,0,G.x,.0012,matRagF);                           /* raggio che sfiora la punta dello gnomone */
- /* il Sole, molto più lontano nella realtà */
- function bagliore(){var c=document.createElement('canvas');c.width=c.height=128;var g=c.getContext('2d'),gr=g.createRadialGradient(64,64,4,64,64,64);
-  gr.addColorStop(0,'rgba(255,250,220,1)');gr.addColorStop(.3,'rgba(255,214,102,.9)');gr.addColorStop(1,'rgba(255,180,84,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);return new THREE.CanvasTexture(c);}
- var sole=new THREE.Sprite(new THREE.SpriteMaterial({map:bagliore(),transparent:true,depthWrite:false}));sole.scale.set(.9,.9,1);sole.position.set(XS+.25,0,0);scene.add(sole);
+ /* il Sole: più grande della Terra, ma molto più vicino e più piccolo che nella realtà.
+    Superficie granulosa disegnata nel codice, bordo più scuro (come nelle foto), alone e corona. */
+ var RS=.75,XSOLE=XS+RS*.9;
+ function telaSole(){var c=document.createElement('canvas');c.width=512;c.height=256;var g=c.getContext('2d');
+  g.fillStyle='#ffc845';g.fillRect(0,0,512,256);
+  for(var i=0;i<14000;i++){var x=Math.random()*512,y=Math.random()*256,r=.6+Math.random()*1.4;
+   g.fillStyle=Math.random()<.55?'rgba(255,240,170,.35)':'rgba(220,130,30,.22)';g.beginPath();g.arc(x,y,r,0,7);g.fill();}
+  return new THREE.CanvasTexture(c);}
+ var matSole=new THREE.ShaderMaterial({uniforms:{map:{value:telaSole()}},
+  vertexShader:'varying vec2 vUv;varying float vMu;void main(){vUv=uv;vec4 mv=modelViewMatrix*vec4(position,1.0);vMu=max(0.0,dot(normalize(normalMatrix*normal),normalize(-mv.xyz)));gl_Position=projectionMatrix*mv;}',
+  fragmentShader:'uniform sampler2D map;varying vec2 vUv;varying float vMu;void main(){vec3 c=texture2D(map,vUv).rgb;gl_FragColor=vec4(c*(0.55+0.55*sqrt(vMu)),1.0);}'});
+ var sole=new THREE.Mesh(new THREE.SphereGeometry(RS,48,24),matSole);sole.position.set(XSOLE,0,0);scene.add(sole);
+ function alone(stops){var c=document.createElement('canvas');c.width=c.height=256;var g=c.getContext('2d'),gr=g.createRadialGradient(128,128,0,128,128,128);
+  stops.forEach(function(st){gr.addColorStop(st[0],st[1]);});g.fillStyle=gr;g.fillRect(0,0,256,256);return new THREE.CanvasTexture(c);}
+ [[2.6,[[0,'rgba(255,230,150,.9)'],[.36,'rgba(255,200,90,.55)'],[.5,'rgba(255,170,60,.18)'],[1,'rgba(255,150,40,0)']]],
+  [5.2,[[0,'rgba(255,210,120,.35)'],[.25,'rgba(255,190,90,.12)'],[1,'rgba(255,160,60,0)']]]].forEach(function(a){
+  var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:alone(a[1]),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+  sp.scale.set(RS*a[0],RS*a[0],1);sp.position.copy(sole.position);scene.add(sp);});
 
  /* gnomone di Alessandria, la sua ombra e l'angolo tra gnomone e raggio */
  var matLegno=new THREE.MeshLambertMaterial({color:0xc89f62});
@@ -287,7 +341,7 @@ function Scena(el){
   var h=alt||.05;s.scale.set(h*w/80,h,1);s.renderOrder=10;scene.add(s);return s;}
  var labS=etichetta('Siene','#ffd166');labS.center.set(0,1.3);labS.position.set(1.01,-.03,0);
  var labA=etichetta('Alessandria','#e6ecf5');labA.center.set(.5,-.4);labA.position.copy(T);
- var labSole=etichetta('Sole →','#ffd166');labSole.center.set(1,-.6);labSole.position.set(XS+.1,.25,0);
+ var labSole=etichetta('Sole','#ffd166');labSole.center.set(.5,-.3);labSole.position.set(XSOLE,RS+.05,0);
  var labAng=etichetta('7,2°','#c9aaff',.042);labAng.center.set(1.1,.5);labAng.position.copy(T).add(new THREE.Vector3(-.045,-.004,0));labAng.visible=false;
 
  /* linee fino al centro (Opzioni): raggio di Siene e prolungamento dello gnomone, con l'angolo al centro */
@@ -301,18 +355,33 @@ function Scena(el){
  var labO=etichetta('7,2° al centro','#c9aaff',.042);labO.center.set(1.08,.5);labO.position.set(0,0,0);
  centro.visible=false;labO.visible=false;
 
+ /* meridiano di Siene (Opzioni): passa a est di Alessandria; un tratto di parallelo mostra lo scarto di circa 3° */
+ var merid=new THREE.Group();globo.add(merid);
+ var matM=new THREE.MeshBasicMaterial({color:0x8fd3ff,depthTest:false,transparent:true});
+ function tubo(punti,r,mat){var m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(punti),Math.max(8,punti.length*2),r,6,false),mat);m.renderOrder=7;return m;}
+ (function(){var pm=[];for(var lat=12;lat<=40;lat+=1)pm.push(geo(lat,LON_S,1.002));merid.add(tubo(pm,.0032,matM));
+  var n=6;for(var k=0;k<n;k++){var l0=LON_A+(LON_S-LON_A)*k/n,l1=l0+(LON_S-LON_A)*.6/n,pp=[];
+   for(var t=0;t<=4;t++)pp.push(geo(LAT_A,l0+(l1-l0)*t/4,1.002));merid.add(tubo(pp,.0022,matM));}})();
+ var labM=etichetta('meridiano di Siene','#8fd3ff',.042),lab3=etichetta('circa 3°','#8fd3ff',.042);
+ labM.center.set(.5,-.3);labM.position.copy(globo.localToWorld(geo(39,LON_S,1.004)));
+ lab3.center.set(.5,1.4);lab3.position.copy(globo.localToWorld(geo(LAT_A,(LON_A+LON_S)/2,1.004)));
+ merid.visible=false;labM.visible=false;lab3.visible=false;
+
  /* viste: punto guardato, distanza, angoli */
  /* up = direzione che appare in alto sullo schermo: a Siene e ad Alessandria è la verticale del luogo */
- var VISTE={terra:{t:new THREE.Vector3(.75,0,0),rad:4.3,th:.75,ph:1.4,up:new THREE.Vector3(0,1,0)},
-  siene:{t:new THREE.Vector3(.96,0,0),rad:.42,th:0,ph:Math.PI/2,up:new THREE.Vector3(1,0,0)},
+ var MEZZO=new THREE.Vector3(1,0,0).add(A).normalize();
+ var VISTE={terra:{t:new THREE.Vector3(1.75,0,0),rad:6.4,th:.4,ph:1.47,up:NORD.clone()},
+  siene:{t:new THREE.Vector3(.962,0,0),rad:.19,th:.62,ph:Math.PI/2,up:new THREE.Vector3(1,0,0)},
+  meridiano:{t:MEZZO.clone(),rad:.62,dir:MEZZO.clone().add(new THREE.Vector3(0,0,.35)).normalize(),up:NORD.clone()},
   alessandria:{t:A.clone().multiplyScalar(1.07),rad:.19,dir:A.clone().multiplyScalar(.3).add(new THREE.Vector3(0,0,.95)).normalize(),up:A.clone()},
   centro:{t:new THREE.Vector3(.75,0,0),rad:4.3,th:0,ph:Math.PI/2,up:new THREE.Vector3(0,1,0)}};
  Object.keys(VISTE).forEach(function(k){var v=VISTE[k];if(v.dir){v.ph=Math.acos(v.dir.y);v.th=Math.atan2(v.dir.x,v.dir.z);}});
  var V=VISTE.terra,th=V.th,ph=V.ph,rad=V.rad,radT=V.rad,tgt=V.t.clone(),tgtT=V.t.clone(),upT=V.up.clone(),fit=1,moto=false;
  cam.up.copy(V.up);spacc.visible=false;matTerra.clippingPlanes=[];
  function vista(k){if(k==='terra'&&centro.visible)k='centro';V=VISTE[k];
-  var vicino=k==='siene';spacc.visible=vicino;   /* lo spaccato del pozzo solo nella vista di Siene */matTerra.clippingPlanes=vicino?clips:[];matTerra.needsUpdate=true;tgtT.copy(V.t);radT=V.rad;upT.copy(V.up);th=V.th;ph=V.ph;moto=true;if(reduce){tgt.copy(tgtT);rad=radT;cam.up.copy(upT);}dirty=true;
+  var vicino=k==='siene';spacc.visible=vicino;parDavanti.visible=!vicino;   /* lo spaccato del pozzo solo nella vista di Siene */matTerra.clippingPlanes=vicino?clips:[];matTerra.needsUpdate=true;tgtT.copy(V.t);radT=V.rad;upT.copy(V.up);th=V.th;ph=V.ph;moto=true;if(reduce){tgt.copy(tgtT);rad=radT;cam.up.copy(upT);}dirty=true;
   labS.visible=k!=='alessandria';labAng.visible=k==='alessandria';labA.visible=k!=='siene';}
+ function mostraMeridiano(on){merid.visible=on;labM.visible=on;lab3.visible=on;vista(on?'meridiano':'terra');}
  function mostraCentro(on){centro.visible=on;labO.visible=on;matTerra.transparent=on;matTerra.opacity=on?.5:1;matTerra.depthWrite=!on;matTerra.needsUpdate=true;
   vista(on?'centro':'terra');}   /* con le linee al centro la Terra si guarda di lato, come nel disegno della scheda 02 */
 
@@ -340,7 +409,7 @@ function Scena(el){
   var d=rad*(V===VISTE.terra?fit:Math.min(fit,1.3));
   cam.position.set(tgt.x+d*Math.sin(ph)*Math.sin(th),tgt.y+d*Math.cos(ph),tgt.z+d*Math.sin(ph)*Math.cos(th));cam.lookAt(tgt);R.render(scene,cam);})(last);
  resize();
- return {vista:vista,centro:mostraCentro,resize:resize,
+ return {vista:vista,centro:mostraCentro,meridiano:mostraMeridiano,resize:resize,
   reset:function(){vista('terra');},
   zoom:function(f){radT=lim(radT*f);moto=true;dirty=true;}};
 }
@@ -348,6 +417,8 @@ var scena=Scena($('scena3d'));
 $('bReset').onclick=function(){S.vista='terra';if(scena)scena.reset();if(S.scheda==='scena')pannelloScena();};
 $('bPiu').onclick=function(){if(scena)scena.zoom(.8);};
 $('bMeno').onclick=function(){if(scena)scena.zoom(1.25);};
+$('oMerid').onclick=function(){S.merid=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',S.merid);if(scena)scena.meridiano(S.merid);S.vista='terra';if(S.scheda==='scena')pannelloScena();
+ if(S.scheda==='scena')say(S.merid?'La linea azzurra è il meridiano di Siene. Io pensavo che Alessandria fosse proprio lì sopra, invece è circa 3° più a ovest, quasi 300 km!':'Il meridiano sparisce.',S.merid?'pensieroso':'gnomone');};
 $('oCentro').onclick=function(){S.centro=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',S.centro);if(scena)scena.centro(S.centro);S.vista='terra';if(S.scheda==='scena')pannelloScena();
  if(S.scheda==='scena')say(S.centro?'Ora la Terra è trasparente. Lo gnomone prolungato e il raggio di Siene si incontrano al centro, con lo stesso angolo di 7,2°.':'La Terra torna come prima.',S.centro?'papiro':'gnomone');};
 
@@ -366,7 +437,8 @@ function pannelloScena(){
  $('panel').innerHTML='<div class="card"><div class="h">'+v.h+'</div><div class="txt">'+v.t+'</div></div>'
   +'<div class="card"><div class="sect">Avvicinati</div><div class="chips" id="viste" style="margin-top:6px">'
   +Object.keys(VISTE1).map(function(k){return '<button class="chip'+(k===S.vista?' attivo':'')+'" data-v="'+k+'" style="--chip:'+VISTE1[k].c+'">'+VISTE1[k].n+'</button>';}).join('')+'</div></div>'
-  +'<div class="anchor">I raggi del Sole arrivano paralleli. Se nello stesso istante l\'ombra è diversa in due luoghi, la Terra non è piatta.</div>';
+  +'<div class="anchor">I raggi del Sole arrivano paralleli. Se nello stesso istante l\'ombra è diversa in due luoghi, la Terra non è piatta.</div>'
+  +'<div class="card"><div class="sect">Che cos\'è uno gnomone</div><div class="txt">Un bastone o un\'asta piantati in verticale nel terreno. Dalla lunghezza della sua ombra si ricava quanto è alto il Sole nel cielo. Il nome viene dal greco e significa <i>che indica</i>. Niente a che vedere con gli gnomi!</div></div>';
  $('viste').onclick=function(e){var b=e.target.closest('[data-v]');if(!b)return;S.vista=b.dataset.v;if(scena)scena.vista(S.vista);pannelloScena();var w=VISTE1[S.vista];say(w.f,w.p);};}
 
 /* =====================================================================================
@@ -388,7 +460,9 @@ function figura(o){
  var s='<defs><radialGradient id="gT" cx="62%" cy="45%" r="70%"><stop offset="0" stop-color="#2b5a8f"/><stop offset="1" stop-color="#0f223d"/></radialGradient></defs>';
  /* stelle fisse e Sole */
  [[40,40],[110,90],[480,330],[520,250],[60,330],[150,30],[300,20],[30,200],[420,380]].forEach(function(p){s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.2" fill="#cfd8ff" opacity=".6"/>';});
- s+='<circle cx="528" cy="40" r="16" fill="#ffd166"/><circle cx="528" cy="40" r="24" fill="#ffd166" opacity=".25"/>'+Tx(498,47,'Sole','#ffd166',20,'end');
+ /* il Sole a destra, sulla stessa linea dei raggi: se ne vede solo il bordo, perché è lontanissimo e grandissimo */
+ s+='<defs><radialGradient id="gS"><stop offset=".55" stop-color="#ffd166"/><stop offset=".72" stop-color="#ffb454" stop-opacity=".45"/><stop offset="1" stop-color="#ffb454" stop-opacity="0"/></radialGradient></defs>'
+  +'<circle cx="640" cy="'+OY+'" r="150" fill="url(#gS)"/>'+Tx(552,OY+58,'Sole','#ffd166',19,'end');
  /* Terra */
  s+='<circle cx="'+OX+'" cy="'+OY+'" r="'+RR+'" fill="url(#gT)" stroke="#6aa5ff" stroke-width="2"/>';
  /* arco da Siene ad Alessandria */
@@ -459,12 +533,12 @@ function disegna2(){
   prop:'7,2° : 360° = 5000 stadi : C',nota:'Disegno non in scala, l\'angolo è ingrandito.'});}
 var TESTI2=[
  {h:'Raggi paralleli',t:'Il Sole è lontanissimo, circa 150 milioni di km, mentre il raggio della Terra è di circa 6400 km. Per questo i suoi raggi arrivano sulla Terra praticamente <span class="cS">paralleli</span>.',f:['I raggi del Sole sono paralleli. Tocca <b>Avanti</b> e guardiamo Siene e Alessandria.','papiro']},
- {h:'Siene e Alessandria',t:'A Siene il raggio arriva in verticale e scende fino al <span class="cS">fondo del pozzo</span>. Ad Alessandria, nello stesso momento, lo gnomone fa un\'ombra. L\'angolo tra lo gnomone e il raggio è <span class="cA">7,2°</span>, cioè 1/50 dell\'angolo giro.',f:['A Siene niente ombra, ad Alessandria un\'ombra corta.','pozzo']},
+ {h:'Siene e Alessandria',t:'A Siene il raggio arriva in verticale e scende fino al <span class="cS">fondo del pozzo</span>. Ad Alessandria, nello stesso momento, lo gnomone, un bastone verticale, fa un\'ombra. L\'angolo tra lo gnomone e il raggio è <span class="cA">7,2°</span>, cioè 1/50 dell\'angolo giro.',f:['A Siene niente ombra, ad Alessandria un\'ombra corta.','pozzo']},
  {h:'Fino al centro della Terra',t:'Lo gnomone è verticale, quindi la sua retta, prolungata verso il basso, passa per il <span class="cG">centro O</span> della Terra. Anche il raggio che entra nel pozzo di Siene, prolungato, arriva al centro.',f:['Due rette che si incontrano proprio al centro della Terra.','papiro']},
  {h:'Angoli alterni interni',t:'Le due rette dei raggi sono <span class="cS">parallele</span> e la retta dello gnomone le taglia. L\'angolo ad Alessandria e l\'angolo al centro sono <span class="cA">angoli alterni interni</span>, quindi sono uguali. Anche l\'angolo al centro tra Siene e Alessandria misura 7,2°.',f:['Ecco il trucco. Gli angoli alterni interni sono uguali!','papiro']},
  {h:'La proporzione',t:'L\'arco da Siene ad Alessandria sta alla circonferenza come l\'angolo al centro sta all\'angolo giro. La distanza tra le due città era stimata in circa <span class="cR">5000 stadi</span>.<div class="prop">7,2° : 360° = 5000 stadi : C</div>',f:['Angolo e arco sono direttamente proporzionali.','papiro']},
- {h:'Il risultato',t:'360 / 7,2 = 50, quindi la circonferenza è 50 volte la distanza.<div class="prop">C = 5000 · 360 / 7,2 = 5000 · 50 = <b>250 000 stadi</b></div><div class="nota">Altre fonti antiche riportano 252 000 stadi.</div>',f:['Cinquanta volte la distanza tra le due città. Ecco la Terra!','papiro']},
- {h:'Il raggio con il pi greco',t:'Dalla circonferenza si trova il raggio, perché C = 2πr.<div class="prop">r = C / 2π = 250 000 / 2π ≈ <b>39 800 stadi</b></div><div class="nota">Con π ≈ 3,14 viene 250 000 / 6,28 ≈ 39 809 stadi. Quanti km sono? Dipende dallo stadio, che non conosciamo con certezza. Lo vedi nella scheda 03.</div>',f:['Una misura della Terra fatta con un bastone, un pozzo e la geometria!','terra']}];
+ {h:'Il risultato',t:'360 / 7,2 = 50, quindi la circonferenza è 50 volte la distanza.<div class="prop">C = 5000 · 360 / 7,2 = 5000 · 50 = <b>250 000 stadi</b></div><div class="nota">Con lo stadio di circa 157 m sono circa <b>39 250 km</b>. Oggi sappiamo che la circonferenza lungo i meridiani è di circa <b>40 000 km</b>, quindi l\'errore è appena del 2% circa, con un bastone, un pozzo e la geometria. Con lo stadio attico, di circa 185 m, verrebbero invece 46 250 km. Altre fonti antiche riportano 252 000 stadi.</div>',f:['Cinquanta volte la distanza tra le due città. In km sono circa 39 250, vicinissimi ai 40 000 veri!','terra']},
+ {h:'Il raggio con il pi greco',t:'Dalla circonferenza si trova il raggio, perché C = 2πr.<div class="prop">r = C / 2π = 250 000 / 2π ≈ <b>39 800 stadi</b></div><div class="prop" style="font-size:16px">con lo stadio di circa 157 m, r ≈ <b>6250 km</b></div><div class="nota">Attenzione, 39 800 è il <b>raggio</b> ed è misurato in <b>stadi</b>, non è la circonferenza in km. Il raggio vero della Terra è di circa 6370 km. Con π ≈ 3,14 viene 250 000 / 6,28 ≈ 39 809 stadi.</div>',f:['Attenzione, 39 800 stadi è il <b>raggio</b>, non la circonferenza in km! In km il raggio è circa 6250.','papiro']}];
 var gioco=0,inGioco=false,raf=0;
 function anima(st,meta,dur,disegna,fine){
  cancelAnimationFrame(raf);var da=st.p,last=performance.now(),u=0;if(reduce)dur=0;
@@ -496,7 +570,7 @@ function vai2(i,fine){
  anima(P2,i,avanti?durPasso2(i):T_BACK,disegna2,fine);}
 
 /* =====================================================================================
-   03 RIFALLO TU: calcolatrice
+   03 CALCOLATRICE DELLA TERRA e cause dell'errore
    ===================================================================================== */
 var P3={a:'7,2',d:'5000',unita:'stadi',attiva:null};
 function pannelloRifallo(){
@@ -508,6 +582,12 @@ function pannelloRifallo(){
   +'<div class="azioni"><button class="azione link" id="bEra">↻ Dati di Eratostene</button></div></div>'
   +'<div class="card" aria-live="polite"><div class="h">Risultati</div><div id="ris" class="ris"></div>'
   +'<div class="nota">Si può rifare a scuola, al solstizio d\'estate o agli equinozi, con uno gnomone e una scuola gemellata a un\'altra latitudine.</div></div>'
+  +'<div class="card"><div class="h">Perché la circonferenza di Eratostene non fu precisa</div><div class="txt">'
+  +'<p style="margin:0 0 6px"><b>1. Il meridiano.</b> Eratostene pensava che Alessandria fosse proprio a nord di Siene. In realtà è circa 3° di longitudine più a ovest, quasi 300 km. Nella scheda 01 accendi <b>Meridiano di Siene</b> nelle Opzioni.</p>'
+  +'<p style="margin:0 0 6px"><b>2. La distanza.</b> I 5000 stadi erano una stima, forse ricavata contando i passi lungo la strada o dai tempi di viaggio.</p>'
+  +'<p style="margin:0 0 6px"><b>3. Il tropico.</b> Siene è poco a nord del tropico del Cancro, quindi a mezzogiorno del solstizio il Sole non era proprio allo zenit.</p>'
+  +'<p style="margin:0 0 6px"><b>4. La Terra e lo stadio.</b> La Terra è un po\' schiacciata ai poli e non sappiamo con certezza quanto fosse lungo lo stadio.</p>'
+  +'Alcuni errori fanno crescere il risultato, altri lo fanno diminuire, e in parte si compensano. Anche per questo la misura è così vicina al vero.</div></div>'
   +'<div class="anchor"><b>C = d · 360 / α</b> e <b>r = C / 2π</b>. Se l\'angolo si dimezza, a parità di distanza la Terra raddoppia.</div>';
  ['c_a','c_d'].forEach(function(id){var c=$(id);
   c.addEventListener('input',function(){P3.a=$('c_a').value;P3.d=$('c_d').value;calcola(true);});
@@ -689,13 +769,13 @@ function mostra(){
  if(tre){if(scena)scena.resize();pannelloScena();var v=VISTE1[S.vista];say(v.f,v.p);}
  else if(S.scheda==='geometria'){pannelloGeo();disegna2();var f=TESTI2[P2.passo].f;say(f[0],f[1]);}
  else if(S.scheda==='rifallo'){pannelloRifallo();say('Scrivi un angolo e una distanza. Prova a dimezzare l\'angolo, che cosa succede alla Terra?','papiro');}
- else{pannelloAllenati();say(P4.fatti?fraseNuovo():'Si parte dalle formule dirette. Gli esercizi diventano più difficili da soli.','braccia');}}
+ else{pannelloAllenati();say(P4.fatti?fraseNuovo():'Si parte dalle formule dirette. Gli esercizi diventano più difficili man mano che li risolvi.','braccia');}}
 
 mostra();
-say('Ciao, sono Prof. T nei panni di Eratostene! Tocca <b>Siene</b> o <b>Alessandria</b> per avvicinarti.','gnomone');
+say('Ciao, sono Prof. T nei panni di Eratostene! Il bastone che tengo in mano è uno <b>gnomone</b>, serve a misurare le ombre. Tocca <b>Siene</b> o <b>Alessandria</b> per avvicinarti.','gnomone');
 })();
 </script>
-<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">La misura della circonferenza della Terra di Eratostene, con lo gnomone di Alessandria e il pozzo di Siene: raggi del Sole paralleli, angoli alterni interni, proporzione tra arco e angolo al centro e raggio con il pi greco, come nella pagina <a href="../geometria/pi_greco_cerchio.html" style="color:#c9aaff">Pi greco, circonferenza e cerchio</a>.</p>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">La misura della circonferenza della Terra di Eratostene, con lo gnomone di Alessandria e il pozzo di Siene: raggi del Sole paralleli, angoli alterni interni, proporzione tra arco e angolo al centro, raggio con il pi greco, come nella pagina <a href="../geometria/pi_greco_cerchio.html" style="color:#c9aaff">Pi greco, circonferenza e cerchio</a>, e le cause dell'errore, dal meridiano alla lunghezza dello stadio.</p>
 <div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T</div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#b38cff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(179,140,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Astronomia</a>
