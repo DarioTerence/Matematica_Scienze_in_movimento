@@ -197,7 +197,7 @@ function testoPasso(i){
  if(i===1)return {h:'Un giro completo',t:'L\'oggetto rotola sul metro per un giro esatto, dal punto rosso al punto rosso. La striscia arancione stesa sul metro è lunga quanto la circonferenza, <span class="cC">C = '+num(o.C)+' mm</span>.'};
  if(i===2)return {h:'Quanti diametri?',t:'Riportiamo il diametro sulla circonferenza stesa. Ci sta <b>3 volte</b> e avanza un <span class="cR">pezzetto</span>, circa '+avanzo+' di diametro.'
   +(o.id==='tubo'?' Il tubo contiene 3 palline, quindi è alto circa 3 diametri (210 mm). La circonferenza è più lunga dell\'altezza, te lo aspettavi?':'')};
- return {h:'Il rapporto',t:'<span class="cC">C</span> : <span class="cD">d</span> = '+num(o.C)+' : '+num(o.d)+' = <b>'+num(r,3)+'</b>. Con ogni oggetto il rapporto viene circa 3,14. È il numero <b>π</b> (pi greco), uguale per tutti i cerchi.'};}
+ return {h:'Il rapporto',t:'<span class="cC">C</span> : <span class="cD">d</span> = '+num(o.C)+' : '+num(o.d)+' = <b>'+num(r,3)+'</b>. Con ogni oggetto il rapporto tra circonferenza e diametro viene circa 3,14. È il numero <b>π</b> (pi greco), uguale per tutti i cerchi.'};}
 
 function frasePasso(i){
  var o=OGGETTI[S.obj],n=Object.keys(S.misure).length;
@@ -205,7 +205,7 @@ function frasePasso(i){
  if(i===1)return ['Un giro intero, e la circonferenza è stesa sul metro.','idle'];
  if(i===2)return [o.id==='tubo'?'Sorpresa! Il giro del tubo è più lungo del tubo stesso.':'Tre diametri e un pezzetto. Succede con ogni cerchio.','ok'];
  if(n>=OGGETTI.length)return ['Cinque oggetti diversi, sempre circa 3,14. Questo è π!','fine'];
- return ['Il rapporto è circa 3,14. Prova con un altro oggetto.','ok'];}
+ return ['Il loro rapporto è circa 3,14. Prova con un altro oggetto.','ok'];}
 
 function tabellaHTML(){
  var righe=OGGETTI.filter(function(o){return S.misure[o.id];});
@@ -1019,7 +1019,7 @@ function mostra(){
  else if(S.scheda==='poligoni'){pannelloPoligoni();disegnaPoligoni();var g=frasePasso2(P2.passo);say(g[0],g[1]);}
  else if(S.scheda==='parti'){cursore();pannelloParti();disegnaParti();var h=frasePasso3(P3.passo);say(h[0],h[1]);}
  else if(S.scheda==='calcolatrice'){pannelloCalc();say('Scrivi un valore in una casella qualsiasi, gli altri li calcolo io.','hi');}
- else{pannelloAllenati();say(P5.fatti?fraseNuovo():'Si parte dal cerchio e dalla circonferenza. Gli esercizi diventano più difficili da soli.','hi');}}
+ else{pannelloAllenati();say(P5.fatti?fraseNuovo():'Si parte dal cerchio e dalla circonferenza. Gli esercizi diventano più difficili man mano che li risolvi.','hi');}}
 
 if(scena)scena.oggetto(OGGETTI[0]);
 mostra();
