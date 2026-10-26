@@ -146,15 +146,19 @@ var T_ARROW=1600, T_MOVE=1400, T_SHOW=1200, T_BACK=500, T_PAUSE=1500, TAU_VISTA=
 
 /* Dati dell'esperimento (dal racconto di Cleomede) */
 var ALFA=7.2, DIST=5000, CIRC=250000;
-/* Possibili valori dello stadio proposti dagli storici (metri): il valore usato da Eratostene non è noto con certezza */
-var STADI=[158,176,185];
+/* Due valori dello stadio proposti dagli storici (metri): il valore usato da Eratostene non è noto con certezza.
+   Stadio itinerario circa 157 m (Letronne, Firsov), stadio attico circa 185 m (il più accettato). */
+var STADI=[[157,'itinerario'],[185,'attico']];
 var C_VERA=40000;   /* circonferenza della Terra lungo un meridiano, circa 40 000 km */
 
-/* Prof. T nei panni di Eratostene: quattro pose (file in immagini/prof_t/) */
+/* Prof. T nei panni di Eratostene: sei pose (file in immagini/prof_t/).
+   gnomone saluto e Alessandria, papiro spiegazioni e risposte giuste, pozzo Siene, terra risultati e fine giro,
+   braccia conserte attesa e nuovo esercizio, pensieroso risposte sbagliate. */
 var IMG={gnomone:'../immagini/prof_t/prof_t_eratostene_gnomone.webp',papiro:'../immagini/prof_t/prof_t_eratostene_papiro.webp',
- pozzo:'../immagini/prof_t/prof_t_eratostene_pozzo.webp',terra:'../immagini/prof_t/prof_t_eratostene_terra.webp'};
+ pozzo:'../immagini/prof_t/prof_t_eratostene_pozzo.webp',terra:'../immagini/prof_t/prof_t_eratostene_terra.webp',
+ braccia:'../immagini/prof_t/prof_t_eratostene_braccia_conserte.webp',pensieroso:'../immagini/prof_t/prof_t_eratostene_pensieroso.webp'};
 precarica(IMG);
-function say(testo,posa,salto){var im=$('profImg');var src=IMG[posa||'pozzo'];if(im.getAttribute('src')!==src)im.src=src;$('bubble').innerHTML=testo;
+function say(testo,posa,salto){var im=$('profImg');var src=IMG[posa||'gnomone'];if(im.getAttribute('src')!==src)im.src=src;$('bubble').innerHTML=testo;
  if(salto&&!reduce){im.classList.remove('pop');void im.offsetWidth;im.classList.add('pop');}}
 
 /* numeri all'italiana: virgola decimale, spazio tra le migliaia dai 10 000 in su */
@@ -213,7 +217,7 @@ function Scena(el){
   scene.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xcfd8ff,size:1.3,sizeAttenuation:false,transparent:true,opacity:.7})));})();
 
  /* spaccato di Siene: si toglie dalla sfera una fessura davanti al pozzo (x > 0,8, |y| < W, z > 0) */
- var W=.06,X0=.8;
+ var W=.03,X0=.9;
  var clips=[new THREE.Plane(new THREE.Vector3(-1,0,0),X0),new THREE.Plane(new THREE.Vector3(0,1,0),-W),
   new THREE.Plane(new THREE.Vector3(0,-1,0),-W),new THREE.Plane(new THREE.Vector3(0,0,-1),0)];
 
@@ -230,7 +234,7 @@ function Scena(el){
  (function(){var g=tela.getContext('2d'),w=tela.width,h=tela.height;
   for(var k=0;k<10;k++){g.fillStyle=['#6b4f33','#7a5a3a','#5e452d','#836343','#6f5236'][k%5];g.fillRect(0,k*h/10,w,h/10+1);}
   g.globalAlpha=.25;for(var i=0;i<160;i++){g.fillStyle=i%2?'#2e2216':'#b08a5c';g.fillRect(Math.random()*w,Math.random()*h,3,2);}g.globalAlpha=1;
-  var cx=w/2,pw=56,fondo=h*.5;   /* il pozzo occupa metà della profondità dello spaccato */
+  var cx=w/2,pw=56,fondo=h*.8;   /* il pozzo occupa gran parte della profondità dello spaccato */
   g.fillStyle='#9a9384';g.fillRect(cx-pw/2-10,0,10,fondo+8);g.fillRect(cx+pw/2,0,10,fondo+8);   /* pietre */
   var gr=g.createLinearGradient(0,0,0,fondo);gr.addColorStop(0,'#fff3b0');gr.addColorStop(1,'#ffd166');
   g.fillStyle=gr;g.fillRect(cx-pw/2,0,pw,fondo);
@@ -256,8 +260,8 @@ function Scena(el){
  function raggio(y,z,xFine,r,mat){return asta(new THREE.Vector3(XS,y,z),new THREE.Vector3(xFine,y,z),r,mat);}
  [-.95,-.76,-.57,-.38,-.19,.3,.5,.7,.9].forEach(function(y){raggio(y,0,Math.sqrt(Math.max(0,1-y*y)),.004,matRag);});
  [-.5,.5].forEach(function(z){[-.8,-.4,.4,.8].forEach(function(y){var q=1-y*y-z*z;raggio(y,z,q>0?Math.sqrt(q):-XS,.003,matRagD);});});
- raggio(0,0,1-(1-X0)*.5,.005,matRagF);                    /* raggio che scende fino al fondo del pozzo */
- raggio(T.y,0,G.x,.0025,matRagF);                           /* raggio che sfiora la punta dello gnomone */
+ raggio(0,0,1-(1-X0)*.8,.004,matRagF);                    /* raggio che scende fino al fondo del pozzo */
+ raggio(T.y,0,G.x,.0012,matRagF);                           /* raggio che sfiora la punta dello gnomone */
  /* il Sole, molto più lontano nella realtà */
  function bagliore(){var c=document.createElement('canvas');c.width=c.height=128;var g=c.getContext('2d'),gr=g.createRadialGradient(64,64,4,64,64,64);
   gr.addColorStop(0,'rgba(255,250,220,1)');gr.addColorStop(.3,'rgba(255,214,102,.9)');gr.addColorStop(1,'rgba(255,180,84,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);return new THREE.CanvasTexture(c);}
@@ -265,11 +269,11 @@ function Scena(el){
 
  /* gnomone di Alessandria, la sua ombra e l'angolo tra gnomone e raggio */
  var matLegno=new THREE.MeshLambertMaterial({color:0xc89f62});
- asta(A,T,.009,matLegno);
- var lOmb=G.distanceTo(A),ombra=new THREE.Mesh(new THREE.BoxGeometry(lOmb,.002,.05),new THREE.MeshBasicMaterial({color:0x1a1209}));
+ asta(A,T,.0022,matLegno);   /* gnomone sottile: lo spessore non deve coprire l'angolo con il raggio */
+ var lOmb=G.distanceTo(A),ombra=new THREE.Mesh(new THREE.BoxGeometry(lOmb,.0015,.008),new THREE.MeshBasicMaterial({color:0x1a1209}));
  ombra.position.copy(A).add(G).multiplyScalar(.5).add(A.clone().multiplyScalar(.0012));
  ombra.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(G.clone().sub(A).normalize(),A.clone(),new THREE.Vector3(0,0,1)));scene.add(ombra);
- var settA=new THREE.Mesh(new THREE.CircleGeometry(.04,24,Math.PI,a),new THREE.MeshBasicMaterial({color:0xc9aaff,transparent:true,opacity:.75,side:THREE.DoubleSide,depthTest:false}));
+ var settA=new THREE.Mesh(new THREE.CircleGeometry(.055,24,Math.PI,a),new THREE.MeshBasicMaterial({color:0xc9aaff,transparent:true,opacity:.75,side:THREE.DoubleSide,depthTest:false}));
  settA.position.copy(T);settA.renderOrder=5;scene.add(settA);
 
  /* etichette sempre leggibili, della stessa grandezza sullo schermo */
@@ -300,14 +304,14 @@ function Scena(el){
  /* viste: punto guardato, distanza, angoli */
  /* up = direzione che appare in alto sullo schermo: a Siene e ad Alessandria è la verticale del luogo */
  var VISTE={terra:{t:new THREE.Vector3(.75,0,0),rad:4.3,th:.75,ph:1.4,up:new THREE.Vector3(0,1,0)},
-  siene:{t:new THREE.Vector3(.93,0,0),rad:.72,th:0,ph:Math.PI/2,up:new THREE.Vector3(1,0,0)},
-  alessandria:{t:A.clone().multiplyScalar(1.05),rad:.3,dir:A.clone().multiplyScalar(.3).add(new THREE.Vector3(0,0,.95)).normalize(),up:A.clone()},
+  siene:{t:new THREE.Vector3(.96,0,0),rad:.42,th:0,ph:Math.PI/2,up:new THREE.Vector3(1,0,0)},
+  alessandria:{t:A.clone().multiplyScalar(1.07),rad:.19,dir:A.clone().multiplyScalar(.3).add(new THREE.Vector3(0,0,.95)).normalize(),up:A.clone()},
   centro:{t:new THREE.Vector3(.75,0,0),rad:4.3,th:0,ph:Math.PI/2,up:new THREE.Vector3(0,1,0)}};
  Object.keys(VISTE).forEach(function(k){var v=VISTE[k];if(v.dir){v.ph=Math.acos(v.dir.y);v.th=Math.atan2(v.dir.x,v.dir.z);}});
  var V=VISTE.terra,th=V.th,ph=V.ph,rad=V.rad,radT=V.rad,tgt=V.t.clone(),tgtT=V.t.clone(),upT=V.up.clone(),fit=1,moto=false;
  cam.up.copy(V.up);spacc.visible=false;matTerra.clippingPlanes=[];
  function vista(k){if(k==='terra'&&centro.visible)k='centro';V=VISTE[k];
-  var vicino=k==='siene'||k==='alessandria';spacc.visible=vicino;matTerra.clippingPlanes=vicino?clips:[];matTerra.needsUpdate=true;tgtT.copy(V.t);radT=V.rad;upT.copy(V.up);th=V.th;ph=V.ph;moto=true;if(reduce){tgt.copy(tgtT);rad=radT;cam.up.copy(upT);}dirty=true;
+  var vicino=k==='siene';spacc.visible=vicino;   /* lo spaccato del pozzo solo nella vista di Siene */matTerra.clippingPlanes=vicino?clips:[];matTerra.needsUpdate=true;tgtT.copy(V.t);radT=V.rad;upT.copy(V.up);th=V.th;ph=V.ph;moto=true;if(reduce){tgt.copy(tgtT);rad=radT;cam.up.copy(upT);}dirty=true;
   labS.visible=k!=='alessandria';labAng.visible=k==='alessandria';labA.visible=k!=='siene';}
  function mostraCentro(on){centro.visible=on;labO.visible=on;matTerra.transparent=on;matTerra.opacity=on?.5:1;matTerra.depthWrite=!on;matTerra.needsUpdate=true;
   vista(on?'centro':'terra');}   /* con le linee al centro la Terra si guarda di lato, come nel disegno della scheda 02 */
@@ -452,7 +456,7 @@ function stato2(p){
 function disegna2(){
  var u=stato2(P2.p),passo5=P2.p>4;
  $('svg').innerHTML=figura({av:AV,u:u,aT:'7,2°',dT:'5000 stadi',CT:passo5?'C = 250 000 stadi':'C = ?',rT:'r = C / 2π',
-  prop:'5000 stadi : C = 7,2° : 360°',nota:'Disegno non in scala, l\'angolo è ingrandito.'});}
+  prop:'7,2° : 360° = 5000 stadi : C',nota:'Disegno non in scala, l\'angolo è ingrandito.'});}
 var TESTI2=[
  {h:'Raggi paralleli',t:'Il Sole è lontanissimo, circa 150 milioni di km, mentre il raggio della Terra è di circa 6400 km. Per questo i suoi raggi arrivano sulla Terra praticamente <span class="cS">paralleli</span>.',f:['I raggi del Sole sono paralleli. Tocca <b>Avanti</b> e guardiamo Siene e Alessandria.','papiro']},
  {h:'Siene e Alessandria',t:'A Siene il raggio arriva in verticale e scende fino al <span class="cS">fondo del pozzo</span>. Ad Alessandria, nello stesso momento, lo gnomone fa un\'ombra. L\'angolo tra lo gnomone e il raggio è <span class="cA">7,2°</span>, cioè 1/50 dell\'angolo giro.',f:['A Siene niente ombra, ad Alessandria un\'ombra corta.','pozzo']},
@@ -499,10 +503,11 @@ function pannelloRifallo(){
  $('panel').innerHTML='<div class="card"><div class="h">I tuoi dati</div>'
   +'<div class="calc"><label for="c_a">angolo <b>α</b></label><input id="c_a" inputmode="decimal" autocomplete="off" value="'+P3.a+'"><span class="u">°</span>'
   +'<label for="c_d">distanza <b>d</b></label><input id="c_d" inputmode="decimal" autocomplete="off" value="'+P3.d+'"><span class="u" id="c_u">'+P3.unita+'</span></div>'
-  +'<div class="chips" id="unita" style="margin-top:10px">'+['stadi','km'].map(function(k){return '<button class="chip'+(k===P3.unita?' attivo':'')+'" data-u="'+k+'" style="--chip:'+(k==='km'?'#6aa5ff':'#ffb454')+'">distanza in '+k+'</button>';}).join('')
-  +'<button class="chip" data-u="era" style="--chip:#c9aaff">dati di Eratostene</button></div>'
-  +tastierinaHTML({virgola:true,verifica:false,id:'pad3'})+'</div>'
-  +'<div class="card" aria-live="polite"><div class="h">Risultati</div><div id="ris" class="ris"></div></div>'
+  +'<div class="chips" id="unita" style="margin-top:10px">'+['stadi','km'].map(function(k){return '<button class="chip'+(k===P3.unita?' attivo':'')+'" data-u="'+k+'" style="--chip:'+(k==='km'?'#6aa5ff':'#ffb454')+'">distanza in '+k+'</button>';}).join('')+'</div>'
+  +tastierinaHTML({virgola:true,verifica:false,id:'pad3'})
+  +'<div class="azioni"><button class="azione link" id="bEra">↻ Dati di Eratostene</button></div></div>'
+  +'<div class="card" aria-live="polite"><div class="h">Risultati</div><div id="ris" class="ris"></div>'
+  +'<div class="nota">Si può rifare a scuola, al solstizio d\'estate o agli equinozi, con uno gnomone e una scuola gemellata a un\'altra latitudine.</div></div>'
   +'<div class="anchor"><b>C = d · 360 / α</b> e <b>r = C / 2π</b>. Se l\'angolo si dimezza, a parità di distanza la Terra raddoppia.</div>';
  ['c_a','c_d'].forEach(function(id){var c=$(id);
   c.addEventListener('input',function(){P3.a=$('c_a').value;P3.d=$('c_d').value;calcola(true);});
@@ -510,9 +515,8 @@ function pannelloRifallo(){
   if(TOUCH)tastierinaCampo(c);});
  scegliCampo($('c_a'));
  if(TOUCH)tastierinaCollega($('pad3'),function(){return P3.attiva;},{max:9,nuovoSeEsterno:true});
- $('unita').onclick=function(e){var b=e.target.closest('[data-u]');if(!b)return;
-  if(b.dataset.u==='era'){P3.a='7,2';P3.d='5000';P3.unita='stadi';pannelloRifallo();say('Questi sono i dati del racconto di Cleomede.','gnomone');return;}
-  P3.unita=b.dataset.u;pannelloRifallo();};
+ $('unita').onclick=function(e){var b=e.target.closest('[data-u]');if(!b)return;P3.unita=b.dataset.u;pannelloRifallo();};
+ $('bEra').onclick=function(){P3.a='7,2';P3.d='5000';P3.unita='stadi';pannelloRifallo();say('Questi sono i dati del racconto di Cleomede.','gnomone');};
  calcola(false);}
 function scegliCampo(c){P3.attiva=c;['c_a','c_d'].forEach(function(id){$(id).classList.toggle('attiva',$(id)===c);});}
 function calcola(daUtente){
@@ -525,7 +529,7 @@ function calcola(daUtente){
  h+='<b>r = C / 2π ≈ '+fmt(r)+' '+u+'</b> <span style="color:var(--mut)">(con π ≈ 3,14 viene '+fmt(r3)+')</span>';
  if(u==='stadi'){
   h+='<div class="sect" style="margin-top:10px">In km, secondo la lunghezza dello stadio</div><table class="mis"><tr><th>stadio</th><th>C (km)</th><th>r (km)</th></tr>'
-   +STADI.map(function(s){return '<tr><td>circa '+s+' m</td><td>'+fmt(C*s/1000)+'</td><td>'+fmt(r*s/1000)+'</td></tr>';}).join('')+'</table>'
+   +STADI.map(function(s){return '<tr><td>'+s[1]+', circa '+s[0]+' m</td><td>'+fmt(C*s[0]/1000)+'</td><td>'+fmt(r*s[0]/1000)+'</td></tr>';}).join('')+'</table>'
    +'<div class="nota">Non sappiamo con certezza quanto fosse lungo lo stadio usato da Eratostene. Oggi la circonferenza della Terra lungo un meridiano è di circa 40 000 km e il raggio medio di circa 6371 km.</div>';}
  else h+='<div class="nota">Oggi la circonferenza della Terra lungo un meridiano è di circa 40 000 km. Il tuo risultato è il '+fmt(C/C_VERA*100)+'% di questo valore.</div>';
  $('ris').innerHTML=h;
@@ -542,12 +546,12 @@ function calcola(daUtente){
    la diagnosi dice quale errore è stato fatto. Al secondo errore si mostra la soluzione.
    ===================================================================================== */
 var PG=3.14,PER_GIRO=5;
-var LIVELLI=['Dalla misura alla Terra','Formule inverse','Problemi','Ragionamento'];
+var LIVELLI=['dalla misura alla Terra','formule inverse','problemi','ragionamento'];
 function ri(a,b){return a+Math.floor(Math.random()*(b-a+1));}
 function sc1(a){return a[Math.floor(Math.random()*a.length)];}
 function mescola(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
 var TERRA=[[1.8,200],[2.7,300],[3.6,400],[4.5,500],[7.2,800],[9,1000],[18,2000]];   /* angolo e distanza in km con C = 40 000 km */
-var fig=function(a,dT,CT,extra){var o={av:clamp(a*2.5,8,60),u:tutto({}),aT:a==null?'α = ?':num(a)+'°',dT:dT,CT:CT};if(a==null)o.av=20;for(var k in extra)o[k]=extra[k];return o;};
+var fig=function(a,dT,CT,extra){var o={av:clamp(a*2.5,8,60),u:tutto({}),aT:a==null?'α = ?':num(a)+'°',dT:dT,CT:CT,nota:'Disegno non in scala, l\'angolo è ingrandito.'};if(a==null)o.av=20;for(var k in extra)o[k]=extra[k];return o;};
 
 var GEN={
  C_dir:function(){var v=ri(0,2),a,d,u,cont;
@@ -589,7 +593,7 @@ var GEN={
        [d*360/a1,'Hai usato solo l\'angolo della città più a sud. Serve la differenza dei due angoli.'],
        [d*360/(a1+a2),'Gli angoli vanno sottratti, non sommati.'],[d*D,'L\'arco sta alla circonferenza come l\'angolo sta a 360°.']],
    sol:['angolo al centro α = '+num(a2)+'° − '+num(a1)+'° = '+num(D)+'°','360 / '+num(D)+' = '+fmt(360/D),'C = '+d+' · '+fmt(360/D)+' = 40 000 km'],fig:fig(D,d+' km','C = ?',{aT:'α = '+num(a2)+'° − '+num(a1)+'°'})};},
- stadikm:function(){var C=sc1([250000,252000]),s=sc1(STADI),km=C*s/1000;
+ stadikm:function(){var C=sc1([250000,252000]),s=sc1(STADI)[0],km=C*s/1000;
   return {q:'Per la circonferenza della Terra le fonti antiche riportano '+fmt(C)+' stadi. Se uno stadio fosse lungo '+s+' m, quanti km sarebbero?',u:'km',ans:km,
    sb:[[C*s,'Questo è il risultato in metri. Per i km dividi per 1000.'],[C*s/100,'In un km ci sono 1000 m, non 100.'],[C/s,'Bisogna moltiplicare per la lunghezza dello stadio, non dividere.']],
    sol:[fmt(C)+' · '+s+' m = '+fmt(C*s)+' m',fmt(C*s)+' m / 1000 = '+fmt(km)+' km','Oggi sappiamo che il meridiano misura circa 40 000 km.'],fig:fig(7.2,'5000 stadi','C = '+fmt(C)+' stadi')};},
@@ -610,7 +614,7 @@ var RAGION=[
  {q:'Se Alessandria fosse più lontana da Siene, sulla stessa Terra, l\'angolo dell\'ombra sarebbe…',o:[['più grande'],['più piccolo','Più lontano significa un arco più lungo, quindi un angolo al centro più grande.'],['uguale','L\'angolo dipende dalla distanza tra i due luoghi.']],s:'Arco e angolo al centro sono direttamente proporzionali.'},
  {q:'Su un altro pianeta, con la stessa distanza di 5000 stadi, l\'angolo misura 14,4°, il doppio di 7,2°. Il pianeta è…',o:[['più piccolo, con la circonferenza dimezzata'],['più grande, con la circonferenza doppia','Con un angolo doppio la stessa distanza è una parte più grande della circonferenza, quindi la circonferenza è più piccola.'],['uguale alla Terra','Con angoli diversi e la stessa distanza le circonferenze sono diverse.']],s:'C = d · 360 / α. Se α raddoppia, C si dimezza. 360 / 14,4 = 25, quindi C = 125 000 stadi.'},
  {q:'Perché a Siene il pozzo era illuminato fino al fondo?',o:[['perché il Sole era proprio sopra la testa, allo zenit'],['perché il pozzo era poco profondo','Anche un pozzo profondo si illumina fino in fondo, se il Sole è esattamente in verticale.'],['perché l\'acqua rifletteva la luce del cielo','Il fondo era illuminato direttamente dal Sole, perché i raggi scendevano in verticale.']],s:'Con il Sole allo zenit i raggi scendono in verticale e arrivano fino al fondo dei pozzi. Gli gnomoni non fanno ombra.'},
- {q:'Perché oggi non sappiamo con certezza quanti km misurava la Terra di Eratostene?',o:[['perché non sappiamo con certezza quanto era lungo il suo stadio'],['perché sbagliò l\'angolo di molto','7,2° è un valore vicino a quello giusto. L\'incertezza più grande è nell\'unità di misura.'],['perché la Terra nel frattempo è cresciuta','La Terra non è cambiata in modo misurabile in duemila anni.']],s:'Gli storici propongono stadi di lunghezze diverse, per esempio circa 158 m o circa 185 m, e il risultato in km cambia molto.'},
+ {q:'Perché oggi non sappiamo con certezza quanti km misurava la Terra di Eratostene?',o:[['perché non sappiamo con certezza quanto era lungo il suo stadio'],['perché sbagliò l\'angolo di molto','7,2° è un valore vicino a quello giusto. L\'incertezza più grande è nell\'unità di misura.'],['perché la Terra nel frattempo è cresciuta','La Terra non è cambiata in modo misurabile in duemila anni.']],s:'Gli storici propongono stadi di lunghezze diverse, per esempio circa 157 m o circa 185 m, e il risultato in km cambia molto.'},
  {q:'7,2° quale parte dell\'angolo giro è?',o:[['1/50'],['1/72','360 / 7,2 = 50, non 72.'],['1/36','1/36 sarebbe 10°.'],['1/7','1/7 dell\'angolo giro è circa 51°.']],s:'360 / 7,2 = 50, quindi 7,2° è 1/50 dell\'angolo giro.'},
  {q:'Chi ci racconta l\'esperimento di Eratostene?',o:[['Cleomede, un autore vissuto molto tempo dopo'],['Eratostene stesso, nel suo libro che leggiamo ancora oggi','Il libro di Eratostene sulla misura della Terra è andato perduto.'],['Archimede, nelle sue lettere','Il racconto più completo che ci è arrivato è quello di Cleomede.']],s:'L\'opera di Eratostene è perduta. Il metodo lo conosciamo soprattutto dal racconto di Cleomede, scritto secoli dopo.'},
  {q:'A mezzogiorno del solstizio d\'estate il Sole è allo zenit nei luoghi che si trovano…',o:[['sul tropico del Cancro'],['sull\'equatore','Sull\'equatore il Sole è allo zenit agli equinozi.'],['sul circolo polare artico','Lì il Sole al solstizio non tramonta, ma resta basso sull\'orizzonte.']],s:'Il tropico del Cancro è la linea dove il Sole è allo zenit a mezzogiorno del solstizio d\'estate. Siene era poco a nord del tropico.'},
@@ -631,7 +635,7 @@ function nuovoEs(){
  P4.es=E;}
 function pannelloAllenati(){
  if(!P4.es)nuovoEs();var E=P4.es;
- var giro='Giro '+(P4.giro+1)+', '+(P4.giro<4?LIVELLI[P4.giro].toLowerCase():'misto');
+ var giro='Giro '+(P4.giro+1)+', '+(P4.giro<4?LIVELLI[P4.giro]:'misto');
  var h='<div class="card"><div class="stat">'+giro+' · esercizio '+E.n+' di '+PER_GIRO+'</div><div class="q">'+E.q+'</div>';
  if(E.modo==='sc')h+='<div class="opts">'+E.ord.map(function(i){return '<button class="opt" data-i="'+i+'">'+E.o[i][0]+'</button>';}).join('')+'</div>';
  else h+='<div class="ans"><input id="inA" inputmode="decimal" autocomplete="off" aria-label="Risposta"><span class="unita">'+E.u+'</span>'
@@ -644,19 +648,19 @@ function pannelloAllenati(){
  if(E.modo==='sc')$('panel').querySelector('.opts').onclick=function(e){var b=e.target.closest('.opt');if(b&&!b.disabled)sceglie(b);};
  else{$('bOk').onclick=verifica4;$('inA').onkeydown=function(e){if(e.key==='Enter')verifica4();};
   if(TOUCH)tastierinaCollega($('pad'),$('inA'),{max:9});   /* il tasto Verifica della tastierina ha id bOk e usa già verifica4 */}
- $('bNx').onclick=function(){nuovoEs();pannelloAllenati();say(fraseNuovo(),'pozzo');};
+ $('bNx').onclick=function(){nuovoEs();pannelloAllenati();say(fraseNuovo(),'braccia');};
  $('svg').innerHTML=figura(E.fig);}
 function fraseNuovo(){var E=P4.es;
- if(E.n===1)return 'Nuovo giro, '+(P4.giro<4?LIVELLI[P4.giro].toLowerCase():'tutti i tipi mescolati')+'. Cinque esercizi.';
+ if(E.n===1)return 'Nuovo giro, '+(P4.giro<4?LIVELLI[P4.giro]:'tutti i tipi mescolati')+'. Cinque esercizi.';
  return E.modo==='sc'?'Qui non servono calcoli lunghi. Ragiona!':'Leggi bene il testo e guarda il disegno.';}
 function conta4(){return 'Esercizi completati '+P4.fatti+', al primo colpo '+P4.giusti;}
 function solHTML(E){return '<div class="sol"><b>Soluzione</b><br>'+E.sol.join('<br>')+'</div>';}
 function finito(E,giusto){
  E.fatto=true;P4.fatti++;if(giusto&&E.err===0)P4.giusti++;if($('conta4'))$('conta4').textContent=conta4();
  var b=$('bNx');b.classList.remove('link');b.classList.add('primaria');if($('bOk'))$('bOk').disabled=true;
- if(E.n===PER_GIRO)say('Giro completato! '+(P4.giro<3?'Il prossimo è più difficile, '+LIVELLI[P4.giro+1].toLowerCase()+'.':'Ora si continua con esercizi misti.'),'terra',true);
+ if(E.n===PER_GIRO)say('Giro completato! '+(P4.giro<3?'Il prossimo è più difficile, '+LIVELLI[P4.giro+1]+'.':'Ora si continua con esercizi misti.'),'terra',true);
  else if(giusto)say(E.err?'Ce l\'hai fatta. Rivedi i passaggi qui sotto.':'Esatto, proprio come avrei fatto io ad Alessandria!','papiro');
- else say('Guarda la soluzione con calma, poi prova il prossimo.','pozzo');}
+ else say('Guarda la soluzione con calma, poi prova il prossimo.','pensieroso');}
 function verifica4(){
  var E=P4.es;if(!E||E.fatto)return;var v=leggi($('inA').value);if(v==null){$('fb').innerHTML='Scrivi un numero.';return;}
  if(v===0){$('fb').innerHTML='Lo zero non può essere la risposta. Riprova.';return;}
@@ -664,13 +668,13 @@ function verifica4(){
  var diag=E.sb.filter(function(q){return vicino(v,q.v);})[0];E.err++;
  var msg=diag?diag.m:'Ricontrolla i calcoli e la proporzione.';
  if(E.err>=2){$('fb').innerHTML='<div class="no">Non ancora.</div>'+msg+solHTML(E);finito(E,false);}
- else{$('fb').innerHTML='<div class="no">Non ancora.</div>'+msg+' Riprova.';say('Non ti scoraggiare, anch\'io ho dovuto ripetere le misure. Riprova!','pozzo');}}
+ else{$('fb').innerHTML='<div class="no">Non ancora.</div>'+msg+' Riprova.';say('Non ti scoraggiare, anch\'io ho dovuto ripetere le misure. Riprova!','pensieroso');}}
 function sceglie(b){
  var E=P4.es,i=+b.dataset.i,tutti=$('panel').querySelectorAll('.opt');if(E.fatto)return;
  if(i===0){b.classList.add('ok');tutti.forEach(function(x){x.disabled=true;});$('fb').innerHTML='<div class="ok">Esatto.</div>'+solHTML(E);finito(E,true);return;}
  E.err++;b.classList.add('ko');b.disabled=true;
  if(E.err>=2){tutti.forEach(function(x){x.disabled=true;if(+x.dataset.i===0)x.classList.add('ok');});$('fb').innerHTML='<div class="no">Non ancora.</div>'+E.o[i][1]+solHTML(E);finito(E,false);}
- else{$('fb').innerHTML='<div class="no">Non ancora.</div>'+E.o[i][1]+' Riprova.';say('Ragiona ancora un momento, la risposta è vicina.','pozzo');}}
+ else{$('fb').innerHTML='<div class="no">Non ancora.</div>'+E.o[i][1]+' Riprova.';say('Ragiona ancora un momento, la risposta è vicina.','pensieroso');}}
 
 if(/[?&]prova\b/.test(location.search)){window.__P4=P4;window.__GEN=GEN;window.__P2=P2;}   /* solo per le prove automatiche */
 
@@ -685,7 +689,7 @@ function mostra(){
  if(tre){if(scena)scena.resize();pannelloScena();var v=VISTE1[S.vista];say(v.f,v.p);}
  else if(S.scheda==='geometria'){pannelloGeo();disegna2();var f=TESTI2[P2.passo].f;say(f[0],f[1]);}
  else if(S.scheda==='rifallo'){pannelloRifallo();say('Scrivi un angolo e una distanza. Prova a dimezzare l\'angolo, che cosa succede alla Terra?','papiro');}
- else{pannelloAllenati();say(P4.fatti?fraseNuovo():'Si parte dalle formule dirette. Gli esercizi diventano più difficili da soli.','gnomone');}}
+ else{pannelloAllenati();say(P4.fatti?fraseNuovo():'Si parte dalle formule dirette. Gli esercizi diventano più difficili da soli.','braccia');}}
 
 mostra();
 say('Ciao, sono Prof. T nei panni di Eratostene! Tocca <b>Siene</b> o <b>Alessandria</b> per avvicinarti.','gnomone');
