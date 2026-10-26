@@ -291,7 +291,7 @@ function Scena(el){
    (Math.cos(th)>.05?parDavanti:parDietro).add(m);}})();
 
  /* raggi del Sole, tutti paralleli all'asse x */
- var XS=3.1;   /* i raggi partono dal Sole */
+ var RS=2,XSOLE=6.4,XS=XSOLE-RS*.92;   /* Sole: raggio doppio della Terra, centro e partenza dei raggi */
  var matRag=new THREE.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:.85});
  var matRagD=new THREE.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:.3});
  var matRagF=new THREE.MeshBasicMaterial({color:0xfff0a8});
@@ -302,9 +302,8 @@ function Scena(el){
  [-.5,.5].forEach(function(z){[-.8,-.4,.4,.8].forEach(function(y){var q=1-y*y-z*z;raggio(y,z,q>0?Math.sqrt(q):-XS,.003,matRagD);});});
  raggio(0,0,1-PD,.0025,matRagF);                    /* raggio che scende fino al fondo del pozzo */
  raggio(T.y,0,G.x,.0012,matRagF);                           /* raggio che sfiora la punta dello gnomone */
- /* il Sole: più grande della Terra, ma molto più vicino e più piccolo che nella realtà.
+ /* il Sole: più grande della Terra (raggio doppio), ma molto più vicino e più piccolo che nella realtà.
     Superficie granulosa disegnata nel codice, bordo più scuro (come nelle foto), alone e corona. */
- var RS=.75,XSOLE=XS+RS*.9;
  function telaSole(){var c=document.createElement('canvas');c.width=512;c.height=256;var g=c.getContext('2d');
   g.fillStyle='#ffc845';g.fillRect(0,0,512,256);
   for(var i=0;i<14000;i++){var x=Math.random()*512,y=Math.random()*256,r=.6+Math.random()*1.4;
@@ -316,8 +315,8 @@ function Scena(el){
  var sole=new THREE.Mesh(new THREE.SphereGeometry(RS,48,24),matSole);sole.position.set(XSOLE,0,0);scene.add(sole);
  function alone(stops){var c=document.createElement('canvas');c.width=c.height=256;var g=c.getContext('2d'),gr=g.createRadialGradient(128,128,0,128,128,128);
   stops.forEach(function(st){gr.addColorStop(st[0],st[1]);});g.fillStyle=gr;g.fillRect(0,0,256,256);return new THREE.CanvasTexture(c);}
- [[2.6,[[0,'rgba(255,230,150,.9)'],[.36,'rgba(255,200,90,.55)'],[.5,'rgba(255,170,60,.18)'],[1,'rgba(255,150,40,0)']]],
-  [5.2,[[0,'rgba(255,210,120,.35)'],[.25,'rgba(255,190,90,.12)'],[1,'rgba(255,160,60,0)']]]].forEach(function(a){
+ [[2.3,[[0,'rgba(255,230,150,.9)'],[.36,'rgba(255,200,90,.55)'],[.5,'rgba(255,170,60,.18)'],[1,'rgba(255,150,40,0)']]],
+  [3.6,[[0,'rgba(255,210,120,.35)'],[.25,'rgba(255,190,90,.12)'],[1,'rgba(255,160,60,0)']]]].forEach(function(a){
   var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:alone(a[1]),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
   sp.scale.set(RS*a[0],RS*a[0],1);sp.position.copy(sole.position);scene.add(sp);});
 
@@ -370,7 +369,7 @@ function Scena(el){
  /* viste: punto guardato, distanza, angoli */
  /* up = direzione che appare in alto sullo schermo: a Siene e ad Alessandria è la verticale del luogo */
  var MEZZO=new THREE.Vector3(1,0,0).add(A).normalize();
- var VISTE={terra:{t:new THREE.Vector3(1.75,0,0),rad:6.4,th:.4,ph:1.47,up:NORD.clone()},
+ var VISTE={terra:{t:new THREE.Vector3(3.6,0,0),rad:10,th:.22,ph:1.48,up:new THREE.Vector3(0,1,0)},
   siene:{t:new THREE.Vector3(.962,0,0),rad:.19,th:.62,ph:Math.PI/2,up:new THREE.Vector3(1,0,0)},
   meridiano:{t:MEZZO.clone(),rad:.62,dir:MEZZO.clone().add(new THREE.Vector3(0,0,.35)).normalize(),up:NORD.clone()},
   alessandria:{t:A.clone().multiplyScalar(1.07),rad:.19,dir:A.clone().multiplyScalar(.3).add(new THREE.Vector3(0,0,.95)).normalize(),up:A.clone()},
@@ -388,7 +387,7 @@ function Scena(el){
  /* puntatore: un dito ruota, due dita fanno lo zoom */
  var cv=R.domElement,ptr=new Map(),pd=0;
  var dist=function(){var v=Array.from(ptr.values());return Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1]);};
- var lim=function(r){return clamp(r,.18,8);};
+ var lim=function(r){return clamp(r,.18,14);};
  cv.addEventListener('pointerdown',function(e){cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);});
  cv.addEventListener('pointermove',function(e){if(!ptr.has(e.pointerId))return;var o=ptr.get(e.pointerId),n=[e.clientX,e.clientY];
   if(ptr.size===1){th-=(n[0]-o[0])*.008;ph=clamp(ph-(n[1]-o[1])*.008,.2,Math.PI-.2);}
