@@ -212,7 +212,8 @@ function Scena(el){
  var a=ALFA*RAD,H=.1;   /* H = altezza dello gnomone (ingrandita) */
  var A=new THREE.Vector3(Math.cos(a),Math.sin(a),0);           /* Alessandria */
  var T=A.clone().multiplyScalar(1+H);                             /* punta dello gnomone */
- var G=T.clone().add(new THREE.Vector3(-H/Math.cos(a),0,0));     /* fine dell'ombra sul terreno */
+ var HP=.0092;   /* altezza del basamento a gradini su cui poggia lo gnomone */
+ var G=T.clone().add(new THREE.Vector3(-(H-HP)/Math.cos(a),0,0));     /* fine dell'ombra, sul piano del basamento */
 
  /* stelle */
  (function(){var g=new THREE.BufferGeometry(),n=1200,p=new Float32Array(n*3);
@@ -323,9 +324,26 @@ function Scena(el){
  /* gnomone di Alessandria, la sua ombra e l'angolo tra gnomone e raggio */
  var matLegno=new THREE.MeshLambertMaterial({color:0xc89f62});
  asta(A,T,.0022,matLegno);   /* gnomone sottile: lo spessore non deve coprire l'angolo con il raggio */
- var lOmb=G.distanceTo(A),ombra=new THREE.Mesh(new THREE.BoxGeometry(lOmb,.0015,.008),new THREE.MeshBasicMaterial({color:0x1a1209}));
- ombra.position.copy(A).add(G).multiplyScalar(.5).add(A.clone().multiplyScalar(.0012));
- ombra.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(G.clone().sub(A).normalize(),A.clone(),new THREE.Vector3(0,0,1)));scene.add(ombra);
+ /* basamento greco: tre gradini circolari di marmo (come la base di un tempio), con una greca blu sul gradino più basso.
+    Niente linee delle ore: non è una meridiana, serve solo a far vedere l'ombra. */
+ var AP=A.clone().multiplyScalar(1+HP),uO=G.clone().sub(AP).normalize(),wO=uO.clone().cross(A).normalize();
+ var piano=new THREE.Matrix4().makeBasis(uO,A.clone(),wO);   /* x lungo l'ombra, y verticale del luogo */
+ function telaGreca(){var c=document.createElement('canvas');c.width=512;c.height=64;var g=c.getContext('2d');
+  g.fillStyle='#eef0f4';g.fillRect(0,0,512,64);g.strokeStyle='#2f5d9e';g.lineWidth=5;g.lineJoin='miter';
+  for(var x=0;x<512;x+=48){g.beginPath();g.moveTo(x,52);g.lineTo(x+40,52);g.lineTo(x+40,12);g.lineTo(x+10,12);g.lineTo(x+10,40);g.lineTo(x+28,40);g.lineTo(x+28,24);g.stroke();}
+  g.fillStyle='#2f5d9e';g.fillRect(0,0,512,4);g.fillRect(0,60,512,4);
+  var t=new THREE.CanvasTexture(c);t.wrapS=THREE.RepeatWrapping;t.repeat.set(5,1);return t;}
+ var marmo=[0xc9bfac,0xd7cebd,0xe6dfd1].map(function(c){return new THREE.MeshBasicMaterial({color:c});}),marmoS=new THREE.MeshBasicMaterial({color:0x9d9483});
+ var greca=new THREE.MeshBasicMaterial({map:telaGreca()});
+ var z0=0;[[.034,greca,.004],[.028,marmoS,.0026],[.022,marmoS,.0026]].forEach(function(g,i){var h=g[2];   /* raggio, fianco, altezza */
+  var m=new THREE.Mesh(new THREE.CylinderGeometry(g[0],g[0],h,64),[g[1],marmo[i],marmo[i]]);
+  m.quaternion.setFromRotationMatrix(piano);m.position.copy(A).add(A.clone().multiplyScalar(z0+h/2));scene.add(m);z0+=h;});
+ /* ombra piatta sul gradino più alto: dalla base dello gnomone al punto G dove arriva il raggio che sfiora la punta */
+ var lOmb=G.distanceTo(AP),fo=new THREE.Shape(),w0=.0028;
+ fo.moveTo(0,-w0);fo.lineTo(lOmb,-w0*.8);fo.absarc(lOmb,0,w0*.8,-Math.PI/2,Math.PI/2,false);fo.lineTo(0,w0);fo.lineTo(0,-w0);
+ var gO=new THREE.ShapeGeometry(fo,12);gO.rotateX(-Math.PI/2);   /* forma nel piano orizzontale del luogo */
+ var ombra=new THREE.Mesh(gO,new THREE.MeshBasicMaterial({color:0x10131a,depthWrite:false}));
+ ombra.quaternion.setFromRotationMatrix(piano);ombra.position.copy(AP).add(A.clone().multiplyScalar(.0002));ombra.renderOrder=2;scene.add(ombra);
  var settA=new THREE.Mesh(new THREE.CircleGeometry(.055,24,Math.PI,a),new THREE.MeshBasicMaterial({color:0xc9aaff,transparent:true,opacity:.75,side:THREE.DoubleSide,depthTest:false}));
  settA.position.copy(T);settA.renderOrder=5;scene.add(settA);
 
@@ -341,6 +359,7 @@ function Scena(el){
  var labS=etichetta('Siene','#ffd166');labS.center.set(0,1.3);labS.position.set(1.01,-.03,0);
  var labA=etichetta('Alessandria','#e6ecf5');labA.center.set(.5,-.4);labA.position.copy(T);
  var labSole=etichetta('Sole','#ffd166');labSole.center.set(.5,-.3);labSole.position.set(XSOLE,RS+.05,0);
+ var labOmb=etichetta('ombra','#e6ecf5',.036);labOmb.center.set(1.15,.5);labOmb.position.copy(G).add(uO.clone().multiplyScalar(.007));labOmb.visible=false;
  var labAng=etichetta('7,2°','#c9aaff',.042);labAng.center.set(1.1,.5);labAng.position.copy(T).add(new THREE.Vector3(-.045,-.004,0));labAng.visible=false;
 
  /* linee fino al centro (Opzioni): raggio di Siene e prolungamento dello gnomone, con l'angolo al centro */
@@ -372,14 +391,15 @@ function Scena(el){
  var VISTE={terra:{t:new THREE.Vector3(3.6,0,0),rad:10,th:.22,ph:1.48,up:new THREE.Vector3(0,1,0)},
   siene:{t:new THREE.Vector3(.962,0,0),rad:.19,th:.62,ph:Math.PI/2,up:new THREE.Vector3(1,0,0)},
   meridiano:{t:MEZZO.clone(),rad:.62,dir:MEZZO.clone().add(new THREE.Vector3(0,0,.35)).normalize(),up:NORD.clone()},
-  alessandria:{t:A.clone().multiplyScalar(1.07),rad:.19,dir:A.clone().multiplyScalar(.3).add(new THREE.Vector3(0,0,.95)).normalize(),up:A.clone()},
+  alessandria:{t:A.clone().multiplyScalar(1.045),rad:.2,dir:A.clone().multiplyScalar(.5).add(new THREE.Vector3(0,0,.86)).normalize(),up:A.clone()},
   centro:{t:new THREE.Vector3(.75,0,0),rad:4.3,th:0,ph:Math.PI/2,up:new THREE.Vector3(0,1,0)}};
  Object.keys(VISTE).forEach(function(k){var v=VISTE[k];if(v.dir){v.ph=Math.acos(v.dir.y);v.th=Math.atan2(v.dir.x,v.dir.z);}});
  var V=VISTE.terra,th=V.th,ph=V.ph,rad=V.rad,radT=V.rad,tgt=V.t.clone(),tgtT=V.t.clone(),upT=V.up.clone(),fit=1,moto=false;
  cam.up.copy(V.up);spacc.visible=false;matTerra.clippingPlanes=[];
  function vista(k){if(k==='terra'&&centro.visible)k='centro';V=VISTE[k];
   var vicino=k==='siene';spacc.visible=vicino;parDavanti.visible=!vicino;   /* lo spaccato del pozzo solo nella vista di Siene */matTerra.clippingPlanes=vicino?clips:[];matTerra.needsUpdate=true;tgtT.copy(V.t);radT=V.rad;upT.copy(V.up);th=V.th;ph=V.ph;moto=true;if(reduce){tgt.copy(tgtT);rad=radT;cam.up.copy(upT);}dirty=true;
-  labS.visible=k!=='alessandria';labAng.visible=k==='alessandria';labA.visible=k!=='siene';}
+  labS.visible=k!=='alessandria';labAng.visible=k==='alessandria';labOmb.visible=k==='alessandria';labA.visible=k!=='siene';
+  if(k==='alessandria'){labA.center.set(.5,2.6);labA.position.copy(A);}else{labA.center.set(.5,-.4);labA.position.copy(T);}}   /* vicino: nome sotto il basamento */
  function mostraMeridiano(on){merid.visible=on;labM.visible=on;lab3.visible=on;vista(on?'meridiano':'terra');}
  function mostraCentro(on){centro.visible=on;labO.visible=on;matTerra.transparent=on;matTerra.opacity=on?.5:1;matTerra.depthWrite=!on;matTerra.needsUpdate=true;
   vista(on?'centro':'terra');}   /* con le linee al centro la Terra si guarda di lato, come nel disegno della scheda 02 */
