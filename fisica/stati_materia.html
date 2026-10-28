@@ -7,13 +7,13 @@
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gli stati della materia - Scienza in Movimento</title>
-<meta name="description" content="Gli stati della materia in 3D: solido, liquido, gas e plasma, passaggi di stato e calore latente, con acqua, alcol, ferro e ghiaccio secco.">
+<meta name="description" content="Gli stati della materia in 3D: solido, liquido, aeriforme e plasma, passaggi di stato e calore latente, con acqua, alcol, ferro e ghiaccio secco.">
 <link rel="canonical" href="https://scienzainmovimento.it/fisica/stati_materia.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Scienza in Movimento">
 <meta property="og:locale" content="it_IT">
 <meta property="og:title" content="Gli stati della materia - Scienza in Movimento">
-<meta property="og:description" content="Gli stati della materia in 3D: solido, liquido, gas e plasma, passaggi di stato e calore latente, con acqua, alcol, ferro e ghiaccio secco.">
+<meta property="og:description" content="Gli stati della materia in 3D: solido, liquido, aeriforme e plasma, passaggi di stato e calore latente, con acqua, alcol, ferro e ghiaccio secco.">
 <meta property="og:url" content="https://scienzainmovimento.it/fisica/stati_materia.html">
 <meta property="og:image" content="https://scienzainmovimento.it/og_image.jpg">
 <meta property="og:image:width" content="1200">
@@ -39,11 +39,13 @@ button,input{font-family:inherit}
 @media(max-width:760px){.layout{display:flex;flex-direction:column}.layout>section,.layout>aside{display:contents}
  .stage{order:1}.hint{order:2}#tcard{order:3}.prof{order:4}#panel{order:6}.opzioni{order:9}
  /* schede 02 e 03: scena più bassa e comandi subito sotto, così scena, comandi e grafico stanno in una schermata */
- .layout.forn .stage{height:clamp(170px,23vh,210px)}.layout.pass .stage{height:clamp(190px,28vh,240px)}
+ .layout.forn .stage{height:clamp(170px,23vh,210px)}.layout.pass .stage,.layout.all .stage{height:clamp(180px,26vh,230px)}
  .layout.forn #gcard .nota{display:none}.layout.forn #gcard{padding:8px 10px}
- .layout.forn .hint,.layout.pass .hint{display:none}
- .layout.forn #panel3,.layout.pass #panel2{order:2;margin-top:10px}
- .layout.forn #gcard{order:3;margin-top:0}.layout.forn .prof,.layout.pass .prof{order:4}.layout.forn #anchor3,.layout.pass #anchor2{order:5}
+ .layout.forn .hint,.layout.pass .hint,.layout.all .hint{display:none}
+ .layout.forn #panel3,.layout.all #panel4{order:2;margin-top:10px}
+ .layout.pass #schemaCard{order:2;margin-top:10px}.layout.pass #panel2{order:3}
+ .layout.forn #gcard{order:3;margin-top:0}.layout.forn .prof,.layout.pass .prof,.layout.all .prof{order:4}.layout.forn #anchor3,.layout.pass #anchor2{order:5}
+ #schema text{font-size:23px}
  .frow{grid-template-columns:62px 1fr 1fr;gap:10px;margin-bottom:8px}#forn{width:62px;height:62px}.gnum{font-size:23px}
  .layout.forn #panel3 .card{padding:10px 12px}}
 .stage{position:relative;height:clamp(300px,56vh,520px);background:#080B14;border:1px solid var(--line);border-radius:12px;overflow:hidden;touch-action:none}
@@ -96,7 +98,8 @@ button,input{font-family:inherit}
 .vetri{display:flex;gap:10px;margin-top:10px}
 /* fornello a gettoni (scheda 03) */
 #gcard{margin:12px 0 0}
-@media(min-width:761px){.layout.forn .stage{height:clamp(240px,36vh,320px)}}
+@media(min-width:761px){.layout.forn .stage,.layout.pass .stage{height:clamp(240px,36vh,320px)}}
+#schemaCard{margin:12px 0 0}
 @media(max-width:560px){#grafico text{font-size:24px}}
 #grafico{display:block;width:100%;height:auto}
 .frow{display:grid;grid-template-columns:96px 1fr 1fr;gap:12px;align-items:center;margin-bottom:10px}
@@ -118,6 +121,19 @@ button,input{font-family:inherit}
 .ptit{font:700 22px Cambria,Georgia,serif;margin:0 0 4px}
 .badge{display:inline-block;font-size:13px;font-weight:700;border-radius:999px;padding:2px 10px;margin:0 6px 8px 0;color:#0a0f1a}
 .pes{color:var(--mut);font-size:15px;line-height:1.4;margin:6px 0 4px}
+/* allenati (scheda 04) */
+.qhead{display:flex;justify-content:space-between;color:var(--mut);font-size:14px;margin-bottom:6px}
+.qopts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:560px){.qopts{grid-template-columns:1fr}}
+.qopt{border:1px solid var(--line);background:#0d1626;color:var(--txt);border-radius:12px;padding:10px 12px;font-weight:700;cursor:pointer;text-align:left;font-size:16px}
+.qopt:hover:not(:disabled){border-color:#3a4d70}
+.qopt.ok,.casella.ok{background:rgba(142,224,166,.2);border-color:#8ee0a6}
+.qopt.ko,.casella.ko{background:rgba(255,138,128,.16);border-color:var(--warn)}
+.qopt:disabled{cursor:default}
+.qnum{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.casella{width:130px;background:#0d1524;color:var(--txt);border:2px solid #ffb454;border-radius:10px;padding:8px 10px;font:700 22px Calibri,Carlito,sans-serif;text-align:right}
+.qnum span{font-size:18px;color:var(--mut)}
+.fb{margin:10px 0 0;line-height:1.45}
 .qq{font-size:17px;font-weight:700;margin:2px 0 10px;line-height:1.35}
 .opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .opt{border:1px solid var(--line);background:#0d1626;color:var(--txt);border-radius:12px;padding:10px 8px;font-weight:700;cursor:pointer;text-align:center;font-size:16px}
@@ -135,10 +151,10 @@ button,input{font-family:inherit}
 
 <!-- 1 schede -->
 <nav class="schede" id="tabs" role="tablist" aria-label="Schede">
- <button class="scheda attiva" role="tab" aria-selected="true" data-p="stati"><span class="num">01</span>Solido, liquido, gas</button>
+ <button class="scheda attiva" role="tab" aria-selected="true" data-p="stati"><span class="num">01</span>Solido, liquido, aeriforme</button>
  <button class="scheda" role="tab" aria-selected="false" data-p="passaggi"><span class="num">02</span>I passaggi di stato</button>
- <button class="scheda" role="tab" aria-selected="false" data-p="fornello"><span class="num">03</span>Il calore nascosto</button>
- <button class="scheda" role="tab" aria-selected="false" disabled title="In preparazione"><span class="num">04</span>Allenati</button>
+ <button class="scheda" role="tab" aria-selected="false" data-p="fornello"><span class="num">03</span>Il calore latente</button>
+ <button class="scheda" role="tab" aria-selected="false" data-p="allenati"><span class="num">04</span>Allenati</button>
 </nav>
 
 <div class="layout">
@@ -159,6 +175,10 @@ button,input{font-family:inherit}
  <div class="card hide" id="gcard">
   <svg id="grafico" viewBox="0 0 560 312" role="img" aria-label="Grafico della temperatura dell'acqua al crescere dei gettoni"></svg>
   <p class="nota" style="margin:2px 0 0">1 g d'acqua. Un gettone vale 42 J, l'energia che scalda 1 g d'acqua di 10 °C.</p>
+ </div>
+ <div class="card hide" id="schemaCard">
+  <svg id="schema" viewBox="0 0 660 432" role="group" aria-label="Schema dei passaggi di stato"></svg>
+  <div class="leg2"><span><i style="background:#ff8a5b"></i>assorbe calore</span><span><i style="background:#6fc3ff"></i>cede calore</span></div>
  </div>
  <p class="hint">Trascina per ruotare la vista, pizzica o usa la rotella per avvicinarti.</p>
  <details class="opzioni">
@@ -190,13 +210,10 @@ button,input{font-family:inherit}
  </div>
  <div class="anchor hide" id="anchor3">Durante la fusione e l'ebollizione i gettoni non scaldano. Servono a staccare le particelle le une dalle altre. Per questo si chiama calore latente, cioè nascosto.</div>
  <div id="panel2" class="hide">
-  <div class="card">
-   <svg id="schema" viewBox="-45 4 455 282" role="group" aria-label="Schema dei passaggi di stato"></svg>
-   <div class="leg2"><span><i style="background:#ff8a5b"></i>assorbe calore</span><span><i style="background:#6fc3ff"></i>cede calore</span></div>
-  </div>
   <div class="card" aria-live="polite" id="pInfo"></div>
  </div>
- <div class="anchor hide" id="anchor2">I passaggi verso il gas assorbono calore dall'ambiente. I passaggi al contrario lo restituiscono, nella stessa quantità.</div>
+ <div id="panel4" class="hide"><div class="card quiz4" id="quiz4" aria-live="polite"></div></div>
+ <div class="anchor hide" id="anchor2">I passaggi verso l'aeriforme assorbono calore dall'ambiente. I passaggi al contrario lo restituiscono, nella stessa quantità.</div>
 </aside>
 </div>
 </div>
@@ -253,7 +270,7 @@ var SOST={
   nota:'Fonde a 1538 °C e bolle a 2861 °C. Già sopra i 500 °C comincia a emettere luce, prima rossa poi arancione.'},
  secco:{n:'Ghiaccio secco',f:'CO₂, anidride carbonica',c:'#e6ecf5',mp:-78.5,bp:-78.5,sub:true,min:-120,max:40,passo:1,N:64,d:.31,mol:'co2',lat:'cubo',
   nomi:['Ghiaccio secco','','Anidride carbonica gassosa'],
-  nota:'È anidride carbonica solida. A pressione normale non fonde, a −78,5 °C passa direttamente da solido a gas.'}};
+  nota:'È anidride carbonica solida. A pressione normale non fonde, a −78,5 °C passa direttamente da solido ad aeriforme.'}};
 var ORDINE=['acqua','alcol','ferro','secco'];
 var INIZIO={acqua:20,alcol:20,ferro:20,secco:-100};
 
@@ -261,7 +278,7 @@ var INIZIO={acqua:20,alcol:20,ferro:20,secco:-100};
 var STATI=[
  {n:'Solido',c:'#7fb2ff',forma:'propria',vol:'proprio',part:'vicine e ordinate',mov:'vibrano sul posto',forze:'forti'},
  {n:'Liquido',c:'#4fc3c7',forma:'quella del recipiente',vol:'proprio',part:'vicine ma disordinate',mov:'scorrono le une sulle altre',forze:'medie'},
- {n:'Gas',c:'#ffd08a',forma:'quella del recipiente',vol:'occupa tutto il recipiente',part:'lontane e disordinate',mov:'libere e veloci in ogni direzione',forze:'debolissime'},
+ {n:'Aeriforme',c:'#ffd08a',forma:'quella del recipiente',vol:'occupa tutto il recipiente',part:'lontane e disordinate',mov:'libere e veloci in ogni direzione',forze:'debolissime'},
  {n:'Plasma',c:'#c9aaff',forma:'quella del recipiente',vol:'occupa tutto il recipiente',part:'atomi ed elettroni separati, con carica elettrica',mov:'velocissime',forze:'debolissime'}];
 
 /* cursore 0-1000, non in scala: da 0 a 900 ogni stato (solido, liquido, gas) ha lo stesso spazio, a partire dallo
@@ -519,7 +536,7 @@ $('sost').addEventListener('click',function(e){var b=e.target.closest('[data-k]'
 function legenda(){
  var s=SOST[S.tab!=='stati'?'acqua':S.k],tipi=[];MOL[s.mol].forEach(function(a){if(tipi.indexOf(a[0])<0)tipi.push(a[0]);});
  $('legenda').innerHTML='<b>'+s.f.split(',')[0]+'</b> '+tipi.map(function(k){return '<i style="background:'+ATOMI[k].c+'"></i>'+ATOMI[k].n;}).join('')
-  +(S.stato===3&&S.tab==='stati'?' <i style="background:#7fe3ff"></i>elettroni':'');}
+  +((S.tab==='stati'?S.stato===3:S.plasmaVis)?' <i style="background:#7fe3ff"></i>elettroni':'');}
 
 /* cursore: colori delle zone e tacche delle temperature di fusione ed ebollizione */
 function tacche(){
@@ -564,8 +581,8 @@ var FRASI={
  ghiaccio:'Ruota la vista e guarda il ghiaccio dall\'alto. Le molecole formano anelli a sei lati con un vuoto al centro, per questo il ghiaccio occupa più spazio dell\'acqua e galleggia.',
  1:'Nel liquido le particelle restano vicine ma scorrono le une sulle altre. Per questo il liquido prende la forma del recipiente.',
  ferro:'Il ferro fuso è così caldo che brilla di luce propria. Nelle fonderie si vede incandescente.',
- 2:'Nel gas le particelle sono lontane e velocissime. Urtano le pareti e riempiono tutto il recipiente.',
- secco:'Il ghiaccio secco salta il liquido. Passa direttamente da solido a gas, è la sublimazione.',
+ 2:'Nell\'aeriforme le particelle sono lontane e velocissime. Urtano le pareti e riempiono tutto il recipiente.',
+ secco:'Il ghiaccio secco salta il liquido. Passa direttamente da solido ad aeriforme, è la sublimazione.',
  zero:'Vicino allo zero assoluto, −273,15 °C, le particelle sono quasi ferme. È la temperatura più bassa possibile e non si raggiunge mai del tutto.',
  3:'A migliaia di gradi gli urti strappano elettroni agli atomi. È il plasma, il quarto stato, come nel Sole e nei fulmini.'};
 var POSE={0:'idle',1:'ok',2:'fine',3:'pensieroso'};
@@ -606,32 +623,35 @@ $('oLento').onclick=function(){S.lento=this.getAttribute('aria-checked')!=='true
 /* =========================== SCHEDE =========================== */
 var SUB={stati:'Muovi la temperatura e osserva come si comportano le particelle.',
  passaggi:'Tocca una freccia dello schema e guarda le particelle cambiare stato.',
+ allenati:'Domande sugli stati, sui passaggi e sui gettoni. La difficoltà cresce da sola.',
  fornello:'Ogni gettone dà la stessa energia. Guarda cosa succede al termometro.'};
 S.tab='stati';
 document.querySelectorAll('#tabs .scheda').forEach(function(t){t.addEventListener('click',function(){
  if(t.disabled||!t.dataset.p||t.dataset.p===S.tab)return;apriScheda(t.dataset.p);});});
 /* per ogni scheda gli elementi da mostrare; quelli delle altre schede si nascondono */
-var VISTI={stati:['tcard','panel'],passaggi:['panel2','anchor2'],fornello:['gcard','panel3','anchor3']};
+var VISTI={stati:['tcard','panel'],passaggi:['schemaCard','panel2','anchor2'],fornello:['gcard','panel3','anchor3'],allenati:['panel4']};
 function apriScheda(p){
  var nav=$('tabs'),x0=nav.scrollLeft;S.tab=p;
  document.querySelectorAll('#tabs .scheda').forEach(function(x){var on=x.dataset.p===p;x.classList.toggle('attiva',on);x.setAttribute('aria-selected',on);});
  nav.scrollLeft=x0;centraScheda(nav);
  $('sub').textContent=SUB[p];
  Object.keys(VISTI).forEach(function(k){VISTI[k].forEach(function(id){$(id).classList.toggle('hide',k!==p);});});
- var L=document.querySelector('.layout');L.classList.toggle('forn',p==='fornello');L.classList.toggle('pass',p==='passaggi');
- Fornello.chiudi();Passaggi.chiudi();if(scena)scena.piastra(null);
- if(p==='fornello')Fornello.apri();else if(p==='passaggi')Passaggi.apri();else{sostanza(S.k,false);say(FRASI.start,'hi');}
+ var L=document.querySelector('.layout');L.classList.toggle('forn',p==='fornello');L.classList.toggle('pass',p==='passaggi');L.classList.toggle('all',p==='allenati');
+ Fornello.chiudi();Passaggi.chiudi();Allenati.chiudi();if(scena)scena.piastra(null);
+ if(p==='fornello')Fornello.apri();else if(p==='passaggi')Passaggi.apri();else if(p==='allenati')Allenati.apri();else{sostanza(S.k,false);say(FRASI.start,'hi');}
  if(scena)scena.resize();}
 
 /* =========================== 02 I PASSAGGI DI STATO ===========================
    Sempre acqua. Ogni passaggio parte dallo stato iniziale e in T_PASSAGGIO secondi trasforma tutte le particelle
-   (l'evaporazione solo una parte, dalla superficie). Al contrario fa il passaggio inverso. */
+   (l'evaporazione solo una parte, dalla superficie). Al contrario fa il passaggio inverso.
+   Schema lineare come alla lavagna: Solido, Liquido, Aeriforme, Plasma da sinistra a destra; sopra i passaggi che
+   assorbono calore, sotto quelli che lo cedono; sublimazione e brinamento scavalcano il liquido. */
 var Passaggi=(function(){
  var T_PASSAGGIO=4;
  var CALDO='#ff8a5b',FREDDO='#6fc3ff';
- /* da, a = stato iniziale e finale (0 solido, 1 liquido, 2 gas); t = temperatura; caldo = assorbe calore;
-    fin = frazione che cambia stato (l'evaporazione si ferma prima); cas = particelle scelte in tutto il liquido;
-    f = frase di Prof. T */
+ /* da, a = stato iniziale e finale (0 solido, 1 liquido, 2 aeriforme, 3 plasma); t = temperatura (null = migliaia di gradi);
+    caldo = assorbe calore; fin = frazione che cambia stato (l'evaporazione si ferma prima);
+    cas = particelle scelte in tutto il liquido; f = frase di Prof. T */
  var P={
   fusione:{n:'Fusione',da:0,a:1,t:0,caldo:true,inv:'solidificazione',
    d:'Il solido diventa liquido. Le particelle ricevono energia, lasciano il loro posto nel reticolo e cominciano a scorrere.',
@@ -646,51 +666,63 @@ var Passaggi=(function(){
    d:'A 100 °C le particelle si staccano in tutto il liquido e formano bolle di vapore. La temperatura resta ferma finché tutta l\'acqua non è bollita.',
    es:'L\'acqua della pasta. In montagna, a 3000 m, bolle già a circa 90 °C, nella pentola a pressione a circa 120 °C.',f:'Le bolle dell\'acqua che bolle non sono aria, sono vapore acqueo.'},
   condensazione:{n:'Condensazione',da:2,a:1,t:100,caldo:false,inv:'ebollizione',
-   d:'Il gas diventa liquido. Le particelle rallentano, cedono energia e si riavvicinano.',
+   d:'L\'aeriforme diventa liquido. Le particelle rallentano, cedono energia e si riavvicinano.',
    es:'Le goccioline sul coperchio della pentola, lo specchio appannato dopo la doccia.',f:'La nuvoletta sopra la pentola non è vapore, perché il vapore è invisibile. Sono goccioline già condensate.'},
   sublimazione:{n:'Sublimazione',da:0,a:2,t:-10,caldo:true,inv:'brinamento',
-   d:'Il solido diventa gas senza passare dal liquido.',
+   d:'Il solido diventa aeriforme senza passare dal liquido.',
    es:'Il ghiaccio secco che sparisce, la neve che in alta montagna si consuma anche senza sciogliersi.',f:'Il ghiaccio secco sublima a −78,5 °C. Lo trovi nella scheda 01.'},
   brinamento:{n:'Brinamento',da:2,a:0,t:-10,caldo:false,inv:'sublimazione',
-   d:'Il gas diventa solido senza passare dal liquido.',
-   es:'La brina sull\'erba e sui vetri nelle notti fredde, il ghiaccio che si forma sulle pareti del freezer.',f:'Il vapore acqueo dell\'aria fredda si posa direttamente come ghiaccio.'}};
- var G={sel:null,u:1,attivo:false};
+   d:'L\'aeriforme diventa solido senza passare dal liquido.',
+   es:'La brina sull\'erba e sui vetri nelle notti fredde, il ghiaccio che si forma sulle pareti del freezer.',f:'Il vapore acqueo dell\'aria fredda si posa direttamente come ghiaccio.'},
+  ionizzazione:{n:'Ionizzazione',da:2,a:3,t:1000,t2:null,caldo:true,inv:'ricombinazione',
+   d:'A migliaia di gradi gli urti sono così violenti che le molecole si spezzano e gli atomi perdono elettroni. Si forma il plasma, un aeriforme con cariche elettriche.',
+   es:'Il Sole e le altre stelle, i fulmini, le insegne al neon accese.',f:'Il plasma è lo stato più diffuso nell\'universo, perché le stelle sono fatte di plasma.'},
+  ricombinazione:{n:'Ricombinazione',da:3,a:2,t:null,t2:1000,caldo:false,inv:'ionizzazione',
+   d:'Raffreddandosi, gli atomi riprendono gli elettroni e si riuniscono in molecole. Il plasma torna aeriforme.',
+   es:'Il fulmine che si spegne, l\'insegna al neon spenta.',f:'Quando gli elettroni tornano agli atomi, l\'energia si libera spesso come luce.'}};
+ var G={sel:null,u:1,attivo:false,scambiato:false};
 
- /* ---- schema: tre stati ai vertici di un triangolo, due frecce opposte per ogni lato ---- */
- var NODI=[{n:'Solido',x:62,y:236,c:STATI[0].c},{n:'Liquido',x:298,y:236,c:STATI[1].c},{n:'Gas',x:180,y:46,c:STATI[2].c}];
- var LATI=[['fusione',0,1],['solidificazione',1,0],['vaporizzazione',1,2],['condensazione',2,1],['sublimazione',0,2],['brinamento',2,0]];
- /* posizione della scritta: dentro o fuori dal triangolo, così le due scritte di un lato non si sovrappongono */
- function freccia(k,i,j){
-  var A=NODI[i],B=NODI[j],dx=B.x-A.x,dy=B.y-A.y,L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
-  /* le due frecce di un lato stanno una per parte, a 8 unità dal centro del lato */
-  var o=8,r=40,x1=A.x+ux*r+nx*o,y1=A.y+uy*r+ny*o,x2=B.x-ux*r+nx*o,y2=B.y-uy*r+ny*o;
-  var caldo=k==='fusione'||k==='vaporizzazione'||k==='sublimazione',c=caldo?CALDO:FREDDO;
-  var dato=k==='vaporizzazione'?'evaporazione':k,on=G.sel===k||(k==='vaporizzazione'&&G.sel&&P[G.sel].vap),dim=G.sel&&!on;
-  /* lati obliqui: tutte e due le scritte fuori dal triangolo, una sopra l'altra (quella calda sopra);
-     lato in basso: una scritta sopra e una sotto le frecce */
-  var obl=Math.abs(nx)>.3,tx,ty,anc='middle';
-  if(obl){var mx=(A.x+B.x)/2,my=(A.y+B.y)/2,sg=mx<180?-1:1;tx=mx+sg*26;anc=sg<0?'end':'start';ty=caldo?my-8:my+24;}
-  else{tx=(x1+x2)/2+nx*20;ty=(y1+y2)/2+ny*20+5;}
-  var lab=k==='vaporizzazione'?'<tspan x="'+tx+'" dy="-11">evaporazione</tspan><tspan x="'+tx+'" dy="19">ebollizione</tspan>':k;
-  return '<g class="freccia" tabindex="0" role="button" data-k="'+dato+'" aria-label="'+(k==='vaporizzazione'?'evaporazione ed ebollizione':k)+'" opacity="'+(dim?.4:1)+'">'
-   +'<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="transparent" stroke-width="16"/>'
-   +'<line class="vis" x1="'+x1+'" y1="'+y1+'" x2="'+(x2-ux*9)+'" y2="'+(y2-uy*9)+'" stroke="'+c+'" stroke-width="'+(on?6:4)+'" stroke-linecap="round"/>'
-   +'<path d="M'+x2+' '+y2+' L'+(x2-ux*14+nx*7)+' '+(y2-uy*14+ny*7)+' L'+(x2-ux*14-nx*7)+' '+(y2-uy*14-ny*7)+' Z" fill="'+c+'"/>'
-   +'<text x="'+tx+'" y="'+ty+'" text-anchor="'+anc+'" font-size="18" font-weight="'+(on?700:400)+'" fill="'+(on?'#fff':caldo?'#ffc2a6':'#b5e0ff')+'">'+lab+'</text></g>';}
+ /* ---- schema: posizione e larghezza dei quattro stati, archi dei passaggi ---- */
+ var Y=190,NODI=[{n:'Solido',x:72,w:112,c:STATI[0].c},{n:'Liquido',x:258,w:112,c:STATI[1].c},
+  {n:'Aeriforme',x:444,w:124,c:STATI[2].c},{n:'Plasma',x:592,w:88,c:STATI[3].c}];
+ /* k, da, a, sopra (true) o sotto, altezza dell'arco */
+ var ARCHI=[['fusione',0,1,1,70],['evaporazione',1,2,1,70],['sublimazione',0,2,1,270],['ionizzazione',2,3,1,62],
+  ['solidificazione',1,0,0,70],['condensazione',2,1,0,70],['brinamento',2,0,0,270],['ricombinazione',3,2,0,62]];
+ function arco(k,i,j,su,h){
+  var A=NODI[i],B=NODI[j],sg=su?-1:1,dir=B.x>A.x?1:-1;
+  /* partenza e arrivo sul bordo alto (o basso) dei rettangoli, un po' verso l'interno */
+  var lungo=h>150,x1=A.x+dir*(lungo?0:A.w*.28),x2=B.x-dir*(lungo?0:B.w*.28),y0=Y+sg*21;
+  var cx=(x1+x2)/2,cy=y0+sg*h,c=P[k].caldo?CALDO:FREDDO;
+  var on=G.sel===k||(k==='evaporazione'&&G.sel&&P[G.sel].vap),dim=G.sel&&!on;
+  /* punta della freccia lungo la tangente nel punto di arrivo (direzione dal punto di controllo all'arrivo) */
+  var tx=x2-cx,ty=y0-cy,L=Math.hypot(tx,ty);tx/=L;ty/=L;var nx=-ty,ny=tx;
+  var ex=x2-tx*12,ey=y0-ty*12;
+  var lx=cx,ly=(y0+cy)/2+sg*(su?13:20);   /* la scritta sta oltre il vertice dell'arco */
+  var lab=k;
+  return '<g class="freccia" tabindex="0" role="button" data-k="'+k+'" aria-label="'+(k==='evaporazione'?'evaporazione ed ebollizione':k)+'" opacity="'+(dim?.4:1)+'">'
+   +'<path d="M'+x1+' '+y0+' Q'+cx+' '+cy+' '+ex+' '+ey+'" fill="none" stroke="transparent" stroke-width="16"/>'
+   +'<path class="vis" d="M'+x1+' '+y0+' Q'+cx+' '+cy+' '+ex+' '+ey+'" fill="none" stroke="'+c+'" stroke-width="'+(on?6:4)+'" stroke-linecap="round"/>'
+   +'<path d="M'+x2+' '+y0+' L'+(x2-tx*16+nx*8)+' '+(y0-ty*16+ny*8)+' L'+(x2-tx*16-nx*8)+' '+(y0-ty*16-ny*8)+' Z" fill="'+c+'"/>'
+   +'<text x="'+lx+'" y="'+ly+'" text-anchor="middle" font-size="18" font-weight="'+(on?700:400)+'" fill="'+(on?'#fff':P[k].caldo?'#ffc2a6':'#b5e0ff')+'">'+lab+'</text></g>';}
  function schema(){
-  var h=LATI.map(function(l){return freccia(l[0],l[1],l[2]);}).join('');
-  h+=NODI.map(function(n){return '<circle cx="'+n.x+'" cy="'+n.y+'" r="32" fill="#0d1626" stroke="'+n.c+'" stroke-width="3"/>'
-   +'<text x="'+n.x+'" y="'+(n.y+5)+'" text-anchor="middle" font-size="16" font-weight="700" fill="'+n.c+'">'+n.n+'</text>';}).join('');
+  var h='<defs><linearGradient id="gEn" gradientUnits="userSpaceOnUse" x1="20" y1="0" x2="618" y2="0"><stop offset="0" stop-color="#ffb454" stop-opacity=".15"/><stop offset=".6" stop-color="#ff8a3d"/><stop offset="1" stop-color="#ff3b2f"/></linearGradient></defs>';
+  h+=ARCHI.map(function(a){return arco(a[0],a[1],a[2],a[3],a[4]);}).join('');
+  h+=NODI.map(function(n){return '<rect x="'+(n.x-n.w/2)+'" y="'+(Y-20)+'" width="'+n.w+'" height="40" rx="20" fill="#0d1626" stroke="'+n.c+'" stroke-width="3"/>'
+   +'<text x="'+n.x+'" y="'+(Y+7)+'" text-anchor="middle" font-size="19" font-weight="700" fill="'+n.c+'">'+n.n+'</text>';}).join('');
+  /* energia termica crescente verso destra */
+  h+='<path d="M20 '+(Y+200)+' L618 '+(Y+200)+'" stroke="url(#gEn)" stroke-width="10" stroke-linecap="round"/>'
+   +'<path d="M640 '+(Y+200)+' L616 '+(Y+188)+' L616 '+(Y+212)+' Z" fill="#ff3b2f"/>'
+   +'<text x="330" y="'+(Y+230)+'" text-anchor="middle" font-size="18" fill="#ffc2a6">energia termica delle particelle</text>';
   $('schema').innerHTML=h;}
  $('schema').addEventListener('click',function(e){var g=e.target.closest('.freccia');if(g)scegli(g.dataset.k);});
  $('schema').addEventListener('keydown',function(e){if(e.key!=='Enter'&&e.key!==' ')return;var g=e.target.closest('.freccia');if(g){e.preventDefault();scegli(g.dataset.k);}});
 
  function info(){
-  if(!G.sel){$('pInfo').innerHTML='<div class="ptit">Tocca una freccia</div><p class="pes" style="margin:0">Ogni freccia è un passaggio di stato. Le particelle nella scena lo faranno davanti a te.</p>';return;}
-  var p=P[G.sel],c=p.caldo?CALDO:FREDDO;
+  if(!G.sel){$('pInfo').innerHTML='<div class="ptit">Tocca una freccia</div><p class="pes" style="margin:0">Ogni freccia dello schema è un passaggio di stato. Le particelle nella scena lo faranno davanti a te.</p>';return;}
+  var p=P[G.sel],c=p.caldo?CALDO:FREDDO,tt=p.a===3||p.da===3?'migliaia di gradi':gradi(p.t);
   var h='<div class="ptit" style="color:'+c+'">'+p.n+'</div>'
    +'<span class="badge" style="background:'+c+'">'+(p.caldo?'assorbe calore':'cede calore')+'</span>'
-   +'<span class="badge" style="background:#22304a;color:#e6ecf5">acqua a '+gradi(p.t)+'</span>';
+   +'<span class="badge" style="background:#22304a;color:#e6ecf5">acqua a '+tt+'</span>';
   if(p.vap)h+='<div class="chips" id="vapChips" style="margin:2px 0 8px">'+['evaporazione','ebollizione'].map(function(k){
    return '<button class="chip'+(k===G.sel?' attivo':'')+'" data-v="'+k+'" style="--chip:'+CALDO+'">'+P[k].n+'</button>';}).join('')+'</div>';
   h+='<p style="margin:0 0 4px;line-height:1.45">'+p.d+'</p><p class="pes">'+p.es+'</p>'
@@ -701,9 +733,10 @@ var Passaggi=(function(){
   $('pPlay').onclick=function(){scegli(G.sel);};}
 
  function scegli(k,contrario){
-  G.sel=k;var p=P[k];G.u=0;
-  S.t=p.t;if(scena){scena.imposta('acqua',p.da);scena.piastra(p.caldo?0x7a3a1c:0x1c4a6e);}
-  schema();info();
+  G.sel=k;var p=P[k];G.u=0;G.scambiato=false;
+  S.t=p.t;S.plasmaVis=p.da===3;
+  if(scena){scena.imposta('acqua',p.da);scena.piastra(p.caldo?0x7a3a1c:0x1c4a6e);}
+  legenda();schema();info();
   say(contrario?'Al contrario, l\'energia viene restituita all\'ambiente. '+p.f:p.f,contrario?'ok':(p.caldo?'fornello':'idle'),true);}
 
  var last=performance.now();
@@ -711,19 +744,24 @@ var Passaggi=(function(){
   var dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;     /* intervallo mai negativo */
   if(!G.attivo||!G.sel||G.u>=1)return;
   G.u=Math.min(1,G.u+dt*(S.lento?LENTO:1)/T_PASSAGGIO);
-  var p=P[G.sel],u=liscio(G.u)*(p.fin||1),fs=0,fg=0;
-  if(p.da===0)fs=1-u;if(p.a===0)fs=u;
-  if(p.da===2)fg=1-u;if(p.a===2)fg=u;
-  if(scena)scena.fasi(fs,fg,p.cas);
+  var p=P[G.sel];
+  if(p.a===3||p.da===3){           /* plasma: a metà del tempo le molecole si spezzano (o si riformano) tutte insieme */
+   if(G.u>=.5&&!G.scambiato){G.scambiato=true;S.t=p.t2;S.plasmaVis=p.a===3;if(scena){scena.cambiaStato(p.da,p.a);scena.ricolora();}legenda();}
+  }else{
+   var u=liscio(G.u)*(p.fin||1),fs=0,fg=0;
+   if(p.da===0)fs=1-u;if(p.a===0)fs=u;
+   if(p.da===2)fg=1-u;if(p.a===2)fg=u;
+   if(scena)scena.fasi(fs,fg,p.cas);
+  }
   if(G.u>=1&&scena)scena.piastra(null);})(last);
 
  return {
-  apri:function(){G.attivo=true;G.sel=null;S.t=20;if(scena)scena.imposta('acqua',1);legenda();schema();info();
-   say('Ecco i sei passaggi di stato dell\'acqua. Tocca una freccia dello schema.','hi');},
-  chiudi:function(){G.attivo=false;}};
+  apri:function(){G.attivo=true;G.sel=null;S.t=20;S.plasmaVis=false;if(scena){scena.imposta('acqua',1);scena.ricolora();}legenda();schema();info();
+   say('Ecco i passaggi di stato dell\'acqua. Tocca una freccia dello schema.','hi');},
+  chiudi:function(){G.attivo=false;S.plasmaVis=false;}};
 })();
 
-/* =========================== 03 IL CALORE NASCOSTO (fornello a gettoni) ===========================
+/* =========================== 03 IL CALORE LATENTE (fornello a gettoni) ===========================
    1 g d'acqua da −20 a 120 °C. Un gettone = 42 J, l'energia che scalda 1 g d'acqua di 10 °C.
    Gettoni per tratto (valori nella scheda di progetto): ghiaccio da −20 a 0 °C 1, fusione 8,
    acqua da 0 a 100 °C 10, ebollizione 54, vapore da 100 a 120 °C 1; in tutto 74. */
@@ -863,11 +901,164 @@ var Fornello=(function(){
   chiudi:function(){F.attivo=false;F.play=false;}};
 })();
 
+/* =========================== 04 ALLENATI ===========================
+   Giri di 8 domande in ordine di difficoltà: riconoscere gli stati e i passaggi (livello 1), energia e
+   misconcezioni (livello 2), conti con i gettoni (livelli 2 e 3). Dal secondo giro più domande difficili.
+   Domande a scelta: d = spiegazione per ogni risposta sbagliata. Domande con numero: due tentativi,
+   diagnosi dei risultati sbagliati più comuni, al secondo errore si mostra il calcolo. */
+var Allenati=(function(){
+ var PER_GIRO=8, J=42;
+ var MIX=[[3,3,2],[2,3,3]];      /* domande di livello 1, 2, 3: primo giro, giri successivi */
+ var R=function(a,b){return a+Math.floor(Math.random()*(b-a+1));};
+ var num=function(x){return String(x).replace(/\B(?=(\d{3})+(?!\d))/g,' ');};
+
+ /* ---- domande a scelta: o = risposte (la prima è giusta), d = perché le altre sono sbagliate, sc = stato da mostrare ---- */
+ var SCELTE=[
+  {lv:1,sc:[0,-10],q:'Guarda le particelle nella scena. In che stato è l\'acqua?',o:['Solido','Liquido','Aeriforme'],
+   d:['','Nel liquido le particelle scorrono le une sulle altre. Qui restano ferme al loro posto e vibrano soltanto.','Nell\'aeriforme le particelle sono lontane e riempiono tutto il recipiente.'],sp:'Particelle ordinate che vibrano sul posto, è ghiaccio.'},
+  {lv:1,sc:[1,40],q:'Guarda le particelle nella scena. In che stato è l\'acqua?',o:['Liquido','Solido','Aeriforme'],
+   d:['','Nel solido le particelle sono ordinate e restano al loro posto. Qui scorrono le une sulle altre.','Nell\'aeriforme le particelle sono lontane e riempiono tutto il recipiente. Qui restano vicine sul fondo.'],sp:'Particelle vicine che scorrono, è acqua liquida.'},
+  {lv:1,sc:[2,120],q:'Guarda le particelle nella scena. In che stato è l\'acqua?',o:['Aeriforme','Liquido','Solido'],
+   d:['','Nel liquido le particelle restano vicine sul fondo. Qui sono lontane e riempiono il recipiente.','Nel solido le particelle sono ordinate e ferme al loro posto.'],sp:'Particelle lontane e veloci in tutto il recipiente, è vapore acqueo.'},
+  {lv:1,q:'Quale stato ha forma propria e volume proprio?',o:['Solido','Liquido','Aeriforme'],
+   d:['','Il liquido ha volume proprio ma prende la forma del recipiente.','L\'aeriforme non ha né forma né volume propri, occupa tutto il recipiente.']},
+  {lv:1,q:'Quale stato occupa tutto lo spazio del recipiente in cui si trova?',o:['Aeriforme','Liquido','Solido'],
+   d:['','Il liquido prende la forma del recipiente ma conserva il suo volume, non lo riempie tutto.','Il solido ha forma e volume propri.']},
+  {lv:1,q:'Come si chiama il passaggio da liquido ad aeriforme?',o:['Evaporazione','Condensazione','Sublimazione','Fusione'],
+   d:['','La condensazione è al contrario, da aeriforme a liquido.','La sublimazione va da solido ad aeriforme, senza passare dal liquido.','La fusione va da solido a liquido.']},
+  {lv:1,q:'Come si chiama il passaggio da aeriforme a solido, senza passare dal liquido?',o:['Brinamento','Solidificazione','Sublimazione','Condensazione'],
+   d:['','La solidificazione va da liquido a solido.','La sublimazione è al contrario, da solido ad aeriforme.','La condensazione va da aeriforme a liquido.']},
+  {lv:1,q:'Il ghiaccio che si scioglie nel bicchiere è un esempio di',o:['fusione','solidificazione','evaporazione','sublimazione'],
+   d:['','La solidificazione è al contrario, il liquido che diventa solido.','Nell\'evaporazione il liquido diventa aeriforme.','Nella sublimazione il solido diventa aeriforme senza passare dal liquido.']},
+  {lv:1,q:'Lo specchio del bagno che si appanna dopo la doccia è un esempio di',o:['condensazione','evaporazione','brinamento','fusione'],
+   d:['','Nell\'evaporazione il liquido diventa aeriforme. Qui il vapore torna liquido.','Nel brinamento il vapore diventa ghiaccio. Sullo specchio si formano goccioline d\'acqua liquida.','La fusione va da solido a liquido.']},
+  {lv:2,q:'Le grandi bolle che si formano nell\'acqua che bolle sono fatte di',o:['vapore acqueo','aria','idrogeno e ossigeno separati'],
+   d:['','L\'aria disciolta forma solo le prime bollicine. Le grandi bolle sono acqua diventata aeriforme.','Le molecole d\'acqua restano intere. È un passaggio di stato, non una trasformazione chimica.']},
+  {lv:2,q:'Quando il ghiaccio si scalda da −20 a −5 °C, le sue particelle',o:['vibrano più forte','diventano più grandi','cominciano a scorrere'],
+   d:['','Le particelle non cambiano dimensione. Cresce il loro movimento, e un poco la distanza tra loro.','Scorrono solo quando il ghiaccio fonde, a 0 °C.']},
+  {lv:2,q:'A −20 °C le particelle del ghiaccio sono',o:['in vibrazione, ma meno che a 0 °C','completamente ferme','libere di scorrere'],
+   d:['','Le particelle si fermerebbero solo allo zero assoluto, −273,15 °C.','Nel solido le particelle restano al loro posto.']},
+  {lv:2,q:'Mentre il ghiaccio fonde a 0 °C, la sua temperatura',o:['resta a 0 °C','sale','scende'],
+   d:['','Durante la fusione l\'energia serve a staccare le particelle, non a scaldarle.','Il ghiaccio riceve energia, non ne cede.']},
+  {lv:2,q:'Alzi la fiamma sotto una pentola d\'acqua che bolle già. La temperatura dell\'acqua',o:['resta a 100 °C','sale sopra i 100 °C','scende'],
+   d:['','Con più fiamma l\'acqua bolle più in fretta, ma la temperatura resta 100 °C.','Più energia non abbassa la temperatura.']},
+  {lv:2,q:'La nuvoletta bianca sopra la pentola che bolle è fatta di',o:['goccioline d\'acqua','vapore acqueo','fumo'],
+   d:['','Il vapore acqueo è invisibile. La nuvoletta si vede perché il vapore si è già raffreddato e condensato in goccioline.','Non brucia niente. Sono goccioline d\'acqua.']},
+  {lv:2,q:'Un cubetto di ghiaccio di 10 g fonde tutto. L\'acqua che si forma pesa',o:['10 g','meno di 10 g','più di 10 g'],
+   d:['','Le particelle sono sempre le stesse. Cambia il volume, non la massa.','Le particelle sono sempre le stesse. Cambia il volume, non la massa.']},
+  {lv:2,q:'Il ghiaccio galleggia sull\'acqua perché',o:['ha densità minore dell\'acqua liquida','pesa meno perché contiene aria','le sue particelle sono più leggere'],
+   d:['','Il ghiaccio limpido non contiene aria. Galleggia perché le molecole lasciano dei vuoti a sei lati e occupano più spazio.','Le molecole sono le stesse dell\'acqua liquida. Cambia solo il modo in cui sono disposte.']},
+  {lv:2,q:'Perché il sudore che evapora ci rinfresca?',o:['Evaporando assorbe calore dalla pelle','Il sudore è più freddo dell\'aria','Il sale del sudore raffredda'],
+   d:['','Il sudore esce alla temperatura del corpo. Rinfresca perché le particelle che evaporano portano via energia.','Il sale non c\'entra. Rinfresca l\'evaporazione dell\'acqua.']},
+  {lv:3,q:'Nel grafico della temperatura dell\'acqua, da −20 a 120 °C, il tratto piatto più lungo è',o:['l\'ebollizione a 100 °C','la fusione a 0 °C','il riscaldamento da 0 a 100 °C'],
+   d:['','La fusione costa 8 gettoni, l\'ebollizione 54.','Quel tratto non è piatto, la temperatura sale. E costa 10 gettoni, contro i 54 dell\'ebollizione.']},
+  {lv:3,q:'Una scottatura con il vapore a 100 °C è più grave che con l\'acqua a 100 °C perché',o:['condensando sulla pelle il vapore cede molto altro calore','il vapore è più caldo','il vapore è più denso'],
+   d:['','La temperatura è la stessa, 100 °C. Ma il vapore che condensa restituisce 54 gettoni per grammo.','Il vapore è molto meno denso dell\'acqua. Conta il calore che cede condensando.']}];
+
+ /* ---- domande con numero: generatori. Ognuno restituisce domanda, risposta, unità, calcolo e diagnosi ---- */
+ var NUMERI=[
+  {lv:2,f:function(){var n=R(3,12);return {q:n+' gettoni. Quanti joule sono?',r:n*J,u:'J',c:n+' · 42 J = '+num(n*J)+' J',
+   d:[[n+J,'Non si sommano. Ogni gettone vale 42 J, quindi si moltiplica.'],[n*10,'Un gettone vale 42 J. I 10 °C sono quanto scalda 1 g d\'acqua.'],[J,'Questo è un gettone solo.']]};}},
+  {lv:2,f:function(){var m=R(2,6);return {q:'Quanti gettoni servono per fondere '+m+' g di ghiaccio a 0 °C?',r:8*m,u:'gettoni',c:m+' · 8 = '+8*m+' gettoni',
+   d:[[8,'Così fondi un grammo solo. I grammi sono '+m+'.'],[10*m,'10 gettoni per grammo servono per scaldare l\'acqua da 0 a 100 °C, non per fonderla.'],[54*m,'54 gettoni per grammo servono per l\'ebollizione, non per la fusione.']]};}},
+  {lv:2,f:function(){var m=R(2,5),T=R(2,9)*10;return {q:'Quanti gettoni servono per scaldare '+m+' g d\'acqua da 0 a '+T+' °C?',r:m*T/10,u:'gettoni',c:m+' · '+T/10+' = '+m*T/10+' gettoni (ogni gettone scalda 1 g d\'acqua di 10 °C)',
+   d:[[T/10,'Così scaldi un grammo solo. I grammi sono '+m+'.'],[m*T,'Un gettone scalda 1 g d\'acqua di 10 °C, non di 1 °C.']]};}},
+  {lv:3,f:function(){var m=R(2,4);return {q:'L\'acqua è già a 100 °C. Quanti gettoni servono per far bollire tutti i '+m+' g?',r:54*m,u:'gettoni',c:m+' · 54 = '+54*m+' gettoni',
+   d:[[54,'Così fai bollire un grammo solo. I grammi sono '+m+'.'],[10*m,'10 gettoni per grammo scaldano l\'acqua da 0 a 100 °C. Per farla bollire ne servono 54.'],[8*m,'8 gettoni per grammo servono per la fusione. Per l\'ebollizione ne servono 54.'],[0,'La temperatura non sale, ma l\'energia serve lo stesso, per staccare le particelle.']]};}},
+  {lv:3,f:function(){var m=R(2,4);return {q:m+' g di ghiaccio a 0 °C devono diventare acqua a 100 °C. Quanti gettoni servono?',r:18*m,u:'gettoni',c:m+' · 8 = '+8*m+' per fondere, '+m+' · 10 = '+10*m+' per scaldare, in tutto '+18*m+' gettoni',
+   d:[[10*m,'Manca la fusione. Prima il ghiaccio va fuso, 8 gettoni per grammo.'],[8*m,'Hai solo fuso il ghiaccio. Poi l\'acqua va scaldata fino a 100 °C, 10 gettoni per grammo.'],[18,'Così è per un grammo solo. I grammi sono '+m+'.']]};}},
+  {lv:3,f:function(){var m=R(2,5);return {q:m+' g di ghiaccio a −20 °C devono diventare acqua a 0 °C. Quanti gettoni servono?',r:9*m,u:'gettoni',c:m+' · 1 = '+m+' per scaldare il ghiaccio fino a 0 °C, '+m+' · 8 = '+8*m+' per fonderlo, in tutto '+9*m+' gettoni',
+   d:[[8*m,'Prima il ghiaccio va scaldato da −20 a 0 °C, 1 gettone per grammo.'],[m,'Hai solo scaldato il ghiaccio fino a 0 °C. Manca la fusione, 8 gettoni per grammo.'],[9,'Così è per un grammo solo. I grammi sono '+m+'.']]};}},
+  {lv:3,f:function(){var m=R(2,4);return {q:m+' g di vapore a 100 °C condensano in acqua a 100 °C. Quanti gettoni restituiscono all\'ambiente?',r:54*m,u:'gettoni',c:m+' · 54 = '+54*m+' gettoni, gli stessi che erano serviti per l\'ebollizione',
+   d:[[0,'La temperatura non cambia, ma condensando il vapore restituisce tutta l\'energia servita per l\'ebollizione.'],[54,'Così è per un grammo solo. I grammi sono '+m+'.'],[10*m,'Condensando si restituiscono i gettoni dell\'ebollizione, 54 per grammo.']]};}},
+  {lv:3,f:function(){var m=R(2,4);return {q:'Quanti joule servono per fondere '+m+' g di ghiaccio a 0 °C? Conta prima i gettoni.',r:8*m*J,u:'J',c:m+' · 8 = '+8*m+' gettoni, '+8*m+' · 42 J = '+num(8*m*J)+' J (il valore misurato è 334 J per grammo)',
+   d:[[8*m,'Questi sono i gettoni. Ora moltiplica per 42 J.'],[336,'Così è per un grammo solo. I grammi sono '+m+'.'],[8*m+J,'Gettoni e joule non si sommano, si moltiplica per 42 J.']]};}}];
+
+ var A={giro:0,lista:[],i:0,punti:0,tent:0,fatto:false,attivo:false};
+ function mescola(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+ function nuovoGiro(){
+  var mix=MIX[Math.min(A.giro,1)],lista=[];A.giro++;
+  [1,2,3].forEach(function(lv,k){
+   var sc=SCELTE.filter(function(x){return x.lv===lv;}).map(function(x){return {tipo:'s',d:x};});
+   var nu=NUMERI.filter(function(x){return x.lv===lv;}).map(function(x){return {tipo:'n',g:x};});
+   var pool=mescola(sc.concat(nu)),scelte=pool.slice(0,mix[k]);
+   /* dal livello 2 almeno un conto con i gettoni */
+   if(lv>1&&nu.length&&!scelte.some(function(x){return x.tipo==='n';}))scelte[scelte.length-1]=mescola(nu)[0];
+   lista=lista.concat(mescola(scelte));});
+  A.lista=lista;A.i=0;A.punti=0;domanda();}
+
+ function testa(){return '<div class="qhead"><span>Giro '+A.giro+', domanda '+(A.i+1)+' di '+A.lista.length+'</span><span>Punti '+A.punti+'</span></div>';}
+ function domanda(){
+  var it=A.lista[A.i];A.tent=0;A.fatto=false;
+  if(it.tipo==='n'&&!it.x)it.x=it.g.f();
+  /* la scena: lo stato chiesto nella domanda, altrimenti acqua liquida a 20 °C */
+  var sc=it.tipo==='s'&&it.d.sc?it.d.sc:[1,20];
+  S.t=sc[1];if(scena){scena.imposta('acqua',sc[0]);scena.ricolora();}
+  var h=testa();
+  if(it.tipo==='s'){
+   var ord=mescola(it.d.o.map(function(t,k){return k;}));
+   h+='<p class="qq">'+it.d.q+'</p><div class="qopts">'+ord.map(function(k){return '<button class="qopt" data-k="'+k+'">'+it.d.o[k]+'</button>';}).join('')+'</div>';
+  }else{
+   h+='<p class="qq">'+it.x.q+'</p><div class="qnum"><input id="qIn" class="casella" inputmode="numeric" autocomplete="off" aria-label="Risposta"><span>'+it.x.u+'</span>'
+    +(TOUCH?'':'<button class="azione primaria" id="qVer" style="flex:none;padding:10px 22px">Verifica</button>')+'</div>'
+    +tastierinaHTML({id:'qPad'});
+  }
+  h+='<div class="fb" id="qfb" aria-live="polite"></div><div id="qaz"></div>';
+  $('quiz4').innerHTML=h.replace(/ °C/g,'\u00a0°C');    /* il numero non si separa da °C andando a capo */
+  legenda();
+  say(A.i===0?'Giro '+A.giro+'. Le domande diventano via via più difficili.':'Prossima domanda.','idle');
+  if(it.tipo==='s')$('quiz4').querySelector('.qopts').onclick=function(e){var b=e.target.closest('.qopt');if(b&&!A.fatto)rispScelta(+b.dataset.k);};
+  else{
+   var inp=$('qIn');
+   if(TOUCH)tastierinaCollega($('qPad'),inp,{max:6,alVerifica:verificaNum});
+   else{inp.focus();$('qVer').onclick=verificaNum;inp.addEventListener('keydown',function(e){if(e.key==='Enter')verificaNum();});}
+  }}
+
+ function rispScelta(k){
+  var it=A.lista[A.i].d;A.fatto=true;
+  $('quiz4').querySelectorAll('.qopt').forEach(function(x){x.disabled=true;if(+x.dataset.k===0)x.classList.add('ok');});
+  if(k===0){A.punti++;$('qfb').innerHTML='<b>Esatto.</b> '+(it.sp||'');say('Giusto!','ok',true);}
+  else{$('quiz4').querySelector('.qopt[data-k="'+k+'"]').classList.add('ko');$('qfb').innerHTML='<b>Non proprio.</b> '+it.d[k];say('Leggi la spiegazione, poi vai avanti.','pensieroso');}
+  avanti();}
+
+ function verificaNum(){
+  if(A.fatto)return;var it=A.lista[A.i].x,inp=$('qIn');
+  var v=parseInt(String(inp.value).replace(/[\s.]/g,''),10);
+  if(isNaN(v)){$('qfb').innerHTML='Scrivi un numero.';return;}
+  A.tent++;
+  if(v===it.r){A.fatto=true;if(A.tent===1)A.punti++;inp.classList.add('ok');
+   $('qfb').innerHTML='<b>Esatto.</b> '+it.c+'.';say(A.tent===1?'Giusto al primo colpo!':'Giusto, questa volta sì.','ok',true);avanti();return;}
+  var dg=it.d.filter(function(x){return x[0]===v;})[0];
+  if(A.tent===1){inp.classList.add('ko');
+   $('qfb').innerHTML='<b>Non proprio.</b> '+(dg?dg[1]:'Ricontrolla il calcolo, gettone per gettone.')+' Riprova.';
+   say('Quasi. Hai un altro tentativo.','pensieroso');
+   setTimeout(function(){inp.classList.remove('ko');inp.value='';if(!TOUCH)inp.focus();},900);return;}
+  A.fatto=true;inp.classList.add('ko');
+  $('qfb').innerHTML='<b>La risposta è '+num(it.r)+' '+it.u+'.</b> '+it.c+'.';say('Guarda il calcolo, poi vai avanti.','pensieroso');avanti();}
+
+ function avanti(){
+  var ultima=A.i+1>=A.lista.length;
+  $('qaz').innerHTML='<div class="azioni"><button class="azione primaria" id="qNext" style="flex:none;padding:10px 30px">'+(ultima?'Vedi il risultato':'Avanti ›')+'</button></div>';
+  $('qNext').onclick=function(){if(ultima)fine();else{A.i++;domanda();}};
+  if(TOUCH&&$('qPad'))$('qPad').classList.add('hide');}
+
+ function fine(){
+  var n=A.lista.length,p=A.punti,msg=p===n?'Tutte giuste, complimenti!':p>=n*.75?'Molto bene!':p>=n/2?'Discreto. Rivedi le schede 02 e 03 e riprova.':'Rivedi le schede con calma, poi riprova.';
+  $('quiz4').innerHTML='<div class="qhead"><span>Giro '+A.giro+' finito</span><span>Punti '+p+'</span></div>'
+   +'<p class="qq">Hai fatto '+p+' su '+n+'. '+msg+'</p><p class="pes">Nel prossimo giro ci saranno più conti con i gettoni.</p>'
+   +'<div class="azioni"><button class="azione primaria" id="qAgain" style="flex:none;padding:10px 30px">↻ Nuovo giro</button></div>';
+  $('qAgain').onclick=nuovoGiro;
+  say(msg,'fine',p>=n*.75);}
+
+ return {apri:function(){A.attivo=true;if(!A.lista.length||A.i>=A.lista.length)nuovoGiro();else domanda();},
+  chiudi:function(){A.attivo=false;}};
+})();
+
 sostanza('acqua',false);
 say(FRASI.start,'hi');
 })();
 </script>
-<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Le particelle di acqua, alcol, ferro e ghiaccio secco in 3D, dal solido al gas fino al plasma. Forma, volume, movimento ed energia delle particelle, passaggi di stato e calore latente.</p>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Le particelle di acqua, alcol, ferro e ghiaccio secco in 3D, dal solido all'aeriforme fino al plasma. Forma, volume, movimento ed energia delle particelle, passaggi di stato e calore latente.</p>
 <div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T</div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#ffb454!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(255,180,84,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Fisica</a>
