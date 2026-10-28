@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Prof. T">
+<!-- © 2026 Prof. T. Tutti i diritti riservati. -->
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gli stati della materia - Scienza in Movimento</title>
+<meta name="description" content="Gli stati della materia in 3D: solido, liquido, gas e plasma, passaggi di stato e calore latente, con acqua, alcol, ferro e ghiaccio secco.">
+<link rel="canonical" href="https://scienzainmovimento.it/fisica/stati_materia.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Scienza in Movimento">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="Gli stati della materia - Scienza in Movimento">
+<meta property="og:description" content="Gli stati della materia in 3D: solido, liquido, gas e plasma, passaggi di stato e calore latente, con acqua, alcol, ferro e ghiaccio secco.">
+<meta property="og:url" content="https://scienzainmovimento.it/fisica/stati_materia.html">
+<meta property="og:image" content="https://scienzainmovimento.it/og_image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Prof. T - La Matematica e le Scienze in Movimento">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+/* ---- base della pagina (uguale in tutte le animazioni) ---- */
+:root{--bg:#0a0f1a;--panel:#111a2b;--line:#22304a;--txt:#e6ecf5;--mut:#8fa0b8;--warn:#FF8A80}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at 50% -10%,rgba(255,180,84,.12),transparent 60%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px),#0a0f1a;background-size:auto,36px 36px,36px 36px;color:var(--txt);font-family:Calibri,Carlito,"Segoe UI",system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 8px}
+.eyebrow{color:var(--disciplina);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px;color:#fff}
+.sub{color:var(--mut);margin:0 0 4px}
+button,input{font-family:inherit}
+.hide{display:none!important}
+/* scena a sinistra, pannello a destra; sotto 760 px colonna unica: scena, temperatura, pannello, Prof. T */
+.layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:6px}
+.layout>*{min-width:0}
+@media(max-width:760px){.layout{display:flex;flex-direction:column}.layout>section,.layout>aside{display:contents}
+ .stage{order:1}.hint{order:2}#tcard{order:3}.prof{order:4}#panel{order:5}.opzioni{order:6}}
+.stage{position:relative;height:clamp(300px,56vh,520px);background:#080B14;border:1px solid var(--line);border-radius:12px;overflow:hidden;touch-action:none}
+@media(max-width:760px){.stage{height:clamp(260px,44vh,360px)}}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.cap{position:absolute;left:10px;bottom:8px;right:60px;font-size:12px;color:#8fa0b8;pointer-events:none}
+.legenda{position:absolute;left:10px;top:8px;font-size:13px;color:#c8d3e3;pointer-events:none;line-height:1.5}
+.legenda i{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 4px 0 8px;vertical-align:-1px}
+.legenda i:first-child{margin-left:0}
+.fail{padding:24px;color:#e6ecf5}
+.hint{color:var(--mut);font-size:14px;margin:8px 2px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.sect{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:0 0 6px}
+.anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;line-height:1.45}
+/* Prof. T con il fumetto */
+.prof{display:flex;gap:12px;align-items:flex-end;position:relative;margin-bottom:12px}
+.prof img{height:150px;width:auto;flex:none;max-width:45%;object-fit:contain}
+@media(max-width:760px){.prof{margin-top:12px}.prof img{height:110px}}
+.prof img.pop{animation:pop .6s ease-out}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.09) rotate(-2deg)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.prof img.pop{animation:none}}
+.bubble{position:relative;flex:1;min-width:0;background:#17233a;border:1px solid var(--line);border-radius:14px;padding:11px 14px;font-size:16px;line-height:1.4;min-height:56px;margin-bottom:22px}
+.bubble::before{content:"";position:absolute;left:-8px;bottom:22px;border:8px solid transparent;border-left:0;border-right-color:#17233a}
+/* ---- stili propri dell'animazione ---- */
+/* temperatura */
+#tcard{margin:12px 0 0}
+.trow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tval{font:700 28px Cambria,Georgia,serif;color:#fff}
+.tstato{font:700 18px Cambria,Georgia,serif}
+.cursore{position:relative;margin:10px 0 2px}
+.cursore input{-webkit-appearance:none;appearance:none;width:100%;height:14px;border-radius:7px;outline:none;margin:0;background:#22304a;cursor:pointer}
+.cursore input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;border:4px solid var(--disciplina);box-shadow:0 1px 6px rgba(0,0,0,.5)}
+.cursore input::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid var(--disciplina);box-shadow:0 1px 6px rgba(0,0,0,.5)}
+.cursore input:focus-visible{box-shadow:0 0 0 3px rgba(255,208,138,.45)}
+.tacche{position:relative;height:34px;font-size:12px;color:var(--mut)}
+.tacche span{position:absolute;top:2px;transform:translateX(-50%);white-space:nowrap;text-align:center;line-height:1.25}
+.tacche span b{display:block;color:#c8d3e3;font-weight:700}
+.tacche span.zona{top:18px;color:#8fa0b8;font-style:italic}
+/* cruscotto */
+.stato-nome{font:700 22px Cambria,Georgia,serif;margin:0 0 2px}
+.stato-sost{color:var(--mut);margin:0 0 10px;font-size:15px}
+.crus{width:100%;border-collapse:collapse;font-size:15px}
+.crus th{text-align:left;font-weight:400;color:var(--mut);padding:5px 8px 5px 0;white-space:nowrap;vertical-align:top;width:1%}
+.crus td{padding:5px 0;line-height:1.3}
+.crus tr+tr th,.crus tr+tr td{border-top:1px solid #1b2840}
+.barra{height:10px;border-radius:5px;background:#1b2840;overflow:hidden;margin-top:3px}
+.barra i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#ffd08a,#ff8a5b);transition:width .25s}
+.nota{color:var(--mut);font-size:14px;line-height:1.4;margin:10px 0 0}
+.vetri{display:flex;gap:10px;margin-top:10px}
+.vetri figure{margin:0;flex:1;text-align:center;font-size:13px;color:var(--mut)}
+.vetri svg{width:100%;max-width:120px;height:auto;display:block;margin:0 auto 2px}
+</style>
+<link rel="stylesheet" href="../animazioni.css">
+</head>
+<body style="--area:#ffb454;--disciplina:#ffd08a">
+<div class="wrap">
+<div class="eyebrow">Fisica</div>
+<h1>Gli stati della materia</h1>
+<p class="sub" id="sub">Muovi la temperatura e osserva come si comportano le particelle.</p>
+
+<!-- 1 schede -->
+<nav class="schede" id="tabs" role="tablist" aria-label="Schede">
+ <button class="scheda attiva" role="tab" aria-selected="true" data-p="stati"><span class="num">01</span>Solido, liquido, gas</button>
+ <button class="scheda" role="tab" aria-selected="false" disabled title="In preparazione"><span class="num">02</span>I passaggi di stato</button>
+ <button class="scheda" role="tab" aria-selected="false" disabled title="In preparazione"><span class="num">03</span>Il fornello a gettoni</button>
+ <button class="scheda" role="tab" aria-selected="false" disabled title="In preparazione"><span class="num">04</span>Allenati</button>
+</nav>
+
+<div class="layout">
+<section>
+ <div class="stage" id="stage">
+  <div class="legenda" id="legenda"></div>
+  <div class="cap">Recipiente chiuso. Particelle molto ingrandite, non in scala.</div>
+  <button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+  <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
+  <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+ </div>
+ <div class="card" id="tcard">
+  <div class="trow"><div><div class="sect" style="margin:0">Temperatura</div><div class="tval" id="tval">20 °C</div></div><div class="tstato" id="tstato"></div></div>
+  <div class="cursore"><input type="range" id="temp" min="0" max="1000" step="1" aria-label="Temperatura"></div>
+  <div class="tacche" id="tacche"></div>
+ </div>
+ <p class="hint">Trascina per ruotare la vista, pizzica o usa la rotella per avvicinarti.</p>
+ <details class="opzioni">
+  <summary><b>Opzioni</b></summary>
+  <button class="levetta" role="switch" id="oLento" aria-checked="false">Rallenta il movimento</button>
+ </details>
+</section>
+<aside>
+ <div class="prof"><img id="profImg" alt="Prof. T con il grembiule da cucina"><div class="bubble" id="bubble" aria-live="polite"></div></div>
+ <div id="panel">
+  <div class="card"><div class="sect">Sostanza</div><div class="chips" id="sost" style="margin:0"></div></div>
+  <div class="card" aria-live="polite">
+   <div class="stato-nome" id="sNome"></div>
+   <div class="stato-sost" id="sSost"></div>
+   <table class="crus" id="crus"></table>
+   <div id="extra"></div>
+  </div>
+  <div class="anchor">Scaldando, le particelle si muovono più in fretta e si allontanano. La sostanza resta la stessa, cambia solo il modo in cui le particelle stanno insieme.</div>
+ </div>
+</aside>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../animazioni.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
+var liscio=function(u){u=clamp(u,0,1);return u*u*(3-2*u);};
+
+/* Tempi uniformi (secondi). T_CRISTALLO = durata del ritorno ordinato nel reticolo quando una sostanza
+   solidifica o brina. Per rallentare o accelerare si cambia solo questo numero. LENTO = fattore di "Rallenta". */
+var T_CRISTALLO=1.4, LENTO=.3;
+
+/* Prof. T in cucina: sei pose (file in immagini/prof_t/). In questa scheda
+   hi saluto, solido braccia conserte, liquido occhiolino, gas pentolino, plasma termometro. */
+var IMG={hi:'../immagini/prof_t/prof_t_cucina_saluto.webp',idle:'../immagini/prof_t/prof_t_cucina_braccia_conserte.webp',
+ ok:'../immagini/prof_t/prof_t_cucina_occhiolino_indica.webp',fine:'../immagini/prof_t/prof_t_cucina_pentolino.webp',
+ pensieroso:'../immagini/prof_t/prof_t_cucina_termometro.webp',fornello:'../immagini/prof_t/prof_t_cucina_fornello.webp'};
+precarica(IMG);
+function say(testo,posa,salto){var im=$('profImg');var src=IMG[posa||'hi'];if(im.getAttribute('src')!==src)im.src=src;$('bubble').innerHTML=testo;
+ if(salto&&!reduce){im.classList.remove('pop');void im.offsetWidth;im.classList.add('pop');}}
+
+/* ---- atomi: colore e raggio (unità della scena) ---- */
+var ATOMI={O:{c:'#e5534b',r:.085,n:'ossigeno'},H:{c:'#f2f2f2',r:.048,n:'idrogeno'},C:{c:'#8a929e',r:.075,n:'carbonio'},Fe:{c:'#b9c2cf',r:.1,n:'ferro'}};
+/* ---- molecole: atomi con posizione rispetto al centro ---- */
+var MOL={
+ h2o:[['O',0,0,0],['H',.075,.058,0],['H',-.075,.058,0]],
+ co2:[['C',0,0,0],['O',.125,0,0],['O',-.125,0,0]],
+ fe:[['Fe',0,0,0]],
+ etanolo:[['C',-.12,-.02,0],['H',-.19,.04,0],['H',-.16,-.07,.07],['H',-.16,-.07,-.07],
+  ['C',.01,.05,0],['H',.02,.11,.07],['H',.02,.11,-.07],['O',.13,-.02,0],['H',.2,.03,0]]};
+
+/* ---- sostanze: temperature di fusione (mp) ed ebollizione (bp) in °C a pressione normale ----
+   Valori verificati il 28 ott 2026 (scheda claude/progetto_stati_materia.md).
+   d = diametro efficace di una particella, N = numero di particelle, lat = tipo di reticolo nel solido. */
+var SOST={
+ acqua:{n:'Acqua',f:'H₂O',c:'#5bc8f0',mp:0,bp:100,min:-40,max:140,passo:1,N:72,d:.27,mol:'h2o',lat:'esa',
+  nomi:['Ghiaccio','Acqua liquida','Vapore acqueo'],
+  nota:'Fonde a 0 °C e bolle a 100 °C.'},
+ alcol:{n:'Alcol',f:'C₂H₅OH, etanolo',c:'#8ee0a6',mp:-114,bp:78,min:-150,max:120,passo:1,N:40,d:.36,mol:'etanolo',lat:'cubo',
+  nomi:['Alcol solido','Alcol liquido','Vapore di alcol'],
+  nota:'Fonde a −114 °C e bolle a 78 °C. A temperatura ambiente evapora in fretta, per questo sulla pelle dà una sensazione di fresco.'},
+ ferro:{n:'Ferro',f:'Fe',c:'#b9c2cf',mp:1538,bp:2861,min:20,max:3200,passo:10,N:125,d:.21,mol:'fe',lat:'cubo',
+  nomi:['Ferro solido','Ferro fuso','Vapore di ferro'],
+  nota:'Fonde a 1538 °C e bolle a 2861 °C. Già sopra i 500 °C comincia a emettere luce, prima rossa poi arancione.'},
+ secco:{n:'Ghiaccio secco',f:'CO₂, anidride carbonica',c:'#e6ecf5',mp:-78.5,bp:-78.5,sub:true,min:-120,max:40,passo:1,N:64,d:.31,mol:'co2',lat:'cubo',
+  nomi:['Ghiaccio secco','','Anidride carbonica gassosa'],
+  nota:'È anidride carbonica solida. A pressione normale non fonde, a −78,5 °C passa direttamente da solido a gas.'}};
+var ORDINE=['acqua','alcol','ferro','secco'];
+var INIZIO={acqua:20,alcol:20,ferro:20,secco:-100};
+
+/* ---- stati: testo del cruscotto ---- */
+var STATI=[
+ {n:'Solido',c:'#7fb2ff',forma:'propria',vol:'proprio',part:'vicine e ordinate',mov:'vibrano sul posto',forze:'forti'},
+ {n:'Liquido',c:'#4fc3c7',forma:'quella del recipiente',vol:'proprio',part:'vicine ma disordinate',mov:'scorrono le une sulle altre',forze:'medie'},
+ {n:'Gas',c:'#ffd08a',forma:'quella del recipiente',vol:'occupa tutto il recipiente',part:'lontane e disordinate',mov:'libere e veloci in ogni direzione',forze:'debolissime'},
+ {n:'Plasma',c:'#c9aaff',forma:'quella del recipiente',vol:'occupa tutto il recipiente',part:'atomi ed elettroni separati, con carica elettrica',mov:'velocissime',forze:'debolissime'}];
+
+/* cursore 0-1000: fino a 900 le temperature della sostanza, oltre il plasma (migliaia di gradi) */
+var U_PLASMA=900;
+function tDaU(s,u){return u>U_PLASMA?null:s.min+(s.max-s.min)*u/U_PLASMA;}
+function uDaT(s,t){return Math.round((t-s.min)/(s.max-s.min)*U_PLASMA);}
+function arrot(s,t){return Math.round(t/s.passo)*s.passo;}
+function statoDi(s,t){if(t===null)return 3;if(t<s.mp)return 0;if(s.sub)return 2;return t<s.bp?1:2;}
+function gradi(t){var x=Math.round(t*10)/10;return (x<0?'−':'')+String(Math.abs(x)).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' °C';}
+
+var S={k:'acqua',u:0,t:20,stato:1,lento:false,primo:true};
+
+/* =========================== SCENA 3D =========================== */
+var BX=.75,BY=1,BZ=.75;           /* metà delle dimensioni del recipiente */
+function Scena(el){
+ if(typeof THREE==='undefined'){el.insertAdjacentHTML('beforeend','<div class="fail">Il modello 3D richiede la connessione a internet. Riprova più tardi.</div>');return null;}
+ var R;try{R=new THREE.WebGLRenderer({antialias:true,alpha:true});}catch(e){el.insertAdjacentHTML('beforeend','<div class="fail">Questo browser non supporta il 3D (WebGL).</div>');return null;}
+ R.setPixelRatio(Math.min(devicePixelRatio,2));el.insertBefore(R.domElement,el.firstChild);
+ var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(40,1,.05,60);
+ scene.add(new THREE.AmbientLight(0xffffff,.62));
+ var l1=new THREE.DirectionalLight(0xffffff,.75);l1.position.set(3,5,4);scene.add(l1);
+ var l2=new THREE.DirectionalLight(0xb8c8ff,.3);l2.position.set(-4,-1,-3);scene.add(l2);
+
+ /* recipiente: pareti appena visibili e spigoli */
+ var vetro=new THREE.Mesh(new THREE.BoxGeometry(2*BX,2*BY,2*BZ),new THREE.MeshBasicMaterial({color:0x9fb3d1,transparent:true,opacity:.05,side:THREE.BackSide,depthWrite:false}));
+ scene.add(vetro);
+ var spig=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(2*BX,2*BY,2*BZ)),new THREE.LineBasicMaterial({color:0x4a5f86}));
+ scene.add(spig);
+ var fondo=new THREE.Mesh(new THREE.PlaneGeometry(2*BX,2*BZ),new THREE.MeshBasicMaterial({color:0x1a2740,transparent:true,opacity:.7}));
+ fondo.rotation.x=-Math.PI/2;fondo.position.y=-BY-.002;scene.add(fondo);
+
+ /* un InstancedMesh per tipo di atomo, più gli elettroni del plasma */
+ var MAXI=700,mesh={},sfera=new THREE.SphereGeometry(1,18,14);
+ Object.keys(ATOMI).forEach(function(k){
+  var m=new THREE.InstancedMesh(sfera,new THREE.MeshStandardMaterial({color:ATOMI[k].c,roughness:.45,metalness:k==='Fe'?.35:0}),MAXI);
+  m.count=0;m.frustumCulled=false;scene.add(m);mesh[k]=m;});
+ var elet=new THREE.InstancedMesh(new THREE.SphereGeometry(1,10,8),new THREE.MeshBasicMaterial({color:0x7fe3ff}),MAXI);
+ elet.count=0;elet.frustumCulled=false;scene.add(elet);
+
+ /* ---- stato delle particelle ---- */
+ var s,N,d,mol,P,V,Q,W,H,HQ,FAS,modo,tr=0,trDa=null,tempo=0;
+ var at=[],el2=[];                 /* plasma: atomi liberi ed elettroni */
+ var m4=new THREE.Matrix4(),q=new THREE.Quaternion(),q2=new THREE.Quaternion(),v3=new THREE.Vector3(),sc=new THREE.Vector3(),e3=new THREE.Euler();
+
+ /* reticolo del solido: cubico, oppure esagonale per il ghiaccio (strati di anelli a sei, con i vuoti) */
+ function reticolo(){
+  var pts=[];
+  if(s.lat==='esa'){
+   /* tre strati di anelli a sei attorno al centro di un esagono: 6 + 6 + 12 molecole per strato.
+      Ogni molecola ha i due idrogeni rivolti verso due vicine, come nei legami del ghiaccio. */
+   var b=d*.9,a1=[1.5*b,Math.sqrt(3)/2*b],a2=[1.5*b,-Math.sqrt(3)/2*b],cand=[];
+   for(var i=-5;i<=5;i++)for(var j=-5;j<=5;j++)[[0,0,60],[b,0,120]].forEach(function(o){
+    var x=i*a1[0]+j*a2[0]+o[0]+b,z=i*a1[1]+j*a2[1]+o[1];cand.push([x,z,x*x+z*z,o[2]]);});
+   cand.sort(function(p,r){return p[2]-r[2];});
+   var per=N/3,strato=cand.slice(0,per);
+   for(var l=0;l<3;l++)strato.forEach(function(p){pts.push([p[0],-BY+d/2+l*d*.95,p[1],p[3]]);});
+  }else{
+   var n=Math.round(Math.cbrt(N)),k=0,off=(n-1)/2*d;
+   for(var y=0;y<n&&k<N;y++)for(var x2=0;x2<n&&k<N;x2++)for(var z=0;z<n&&k<N;z++,k++)
+    pts.push([x2*d-off,-BY+d/2+y*d*1.02,z*d-off]);
+   while(pts.length<N)pts.push([0,0,0]);
+  }
+  return pts;}
+
+ function imposta(k,stato){
+  s=SOST[k];N=s.N;d=s.d;mol=MOL[s.mol];
+  P=new Float32Array(3*N);V=new Float32Array(3*N);Q=[];W=[];FAS=[];HQ=[];
+  H=reticolo();
+  for(var i=0;i<N;i++){
+   Q.push(new THREE.Quaternion());W.push(new THREE.Vector3());
+   if(H[i][3]!==undefined)HQ.push(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI/2-H[i][3]*Math.PI/180)
+    .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),Math.PI/2)));
+   else HQ.push(new THREE.Quaternion().setFromEuler(new THREE.Euler(0,(i%2)*Math.PI/3,0)));
+   FAS.push([Math.random()*6.3,Math.random()*6.3,Math.random()*6.3,7+Math.random()*3,7+Math.random()*3,7+Math.random()*3]);}
+  at=[];el2=[];
+  if(stato===0){for(i=0;i<N;i++){P[3*i]=H[i][0];P[3*i+1]=H[i][1];P[3*i+2]=H[i][2];Q[i].copy(HQ[i]);}modo='solido';tr=1;}
+  else{
+   for(i=0;i<N;i++){
+    P[3*i]=(Math.random()*2-1)*(BX-d/2);P[3*i+2]=(Math.random()*2-1)*(BZ-d/2);
+    P[3*i+1]=stato===1?-BY+d/2+Math.random()*.9:(Math.random()*2-1)*(BY-d/2);
+    Q[i].setFromEuler(new THREE.Euler(Math.random()*6.3,Math.random()*6.3,Math.random()*6.3));}
+   modo=stato===1?'liquido':'gas';
+   if(stato===3)entraPlasma();
+   if(stato===1)for(var r=0;r<240;r++)passo(1/120,1);   /* il liquido si deposita prima di comparire */
+  }
+  ricolora();}
+
+ /* ---- velocità tipiche (unità al secondo) in funzione della temperatura assoluta ---- */
+ function TK(){return S.t===null?20000:S.t+273.15;}
+ function vLiq(){return .28*Math.sqrt(TK()/(s.mp+273.15));}
+ function vGas(){return 1.5*Math.sqrt(TK()/(s.bp+273.15));}
+
+ /* ---- dinamica di liquido e gas: urti morbidi tra particelle, pareti, gravità, termostato ---- */
+ function passo(h,liq){
+  var g=liq?4:.25,K=90,A=liq?10:0,d2=d*d,dc=(1.45*d)*(1.45*d),i,j;
+  for(i=0;i<N;i++)V[3*i+1]-=g*h;
+  for(i=0;i<N;i++){var xi=P[3*i],yi=P[3*i+1],zi=P[3*i+2];
+   for(j=i+1;j<N;j++){var dx=P[3*j]-xi,dy=P[3*j+1]-yi,dz=P[3*j+2]-zi,r2=dx*dx+dy*dy+dz*dz;
+    if(r2>=dc||r2<1e-9)continue;var r=Math.sqrt(r2),f;
+    if(r2<d2)f=-K*(d-r)/r;else if(A)f=A*(r-d)/r;else continue;
+    f*=h;V[3*i]+=f*dx;V[3*i+1]+=f*dy;V[3*i+2]+=f*dz;V[3*j]-=f*dx;V[3*j+1]-=f*dy;V[3*j+2]-=f*dz;}}
+  var rr=d/2;
+  for(i=0;i<N;i++){
+   for(var c=0;c<3;c++){var B=c===0?BX:c===1?BY:BZ,p=P[3*i+c]+V[3*i+c]*h;
+    if(p<-B+rr){p=-B+rr;V[3*i+c]=Math.abs(V[3*i+c]);}else if(p>B-rr){p=B-rr;V[3*i+c]=-Math.abs(V[3*i+c]);}
+    P[3*i+c]=p;}}}
+ function termostato(dt,vt,liq){
+  var m=0,i;for(i=0;i<N;i++)m+=Math.hypot(V[3*i],V[3*i+1],V[3*i+2]);m=m/N+1e-6;
+  var f=1+(vt/m-1)*Math.min(1,dt*4);
+  for(i=0;i<N;i++){V[3*i]*=f;V[3*i+1]*=f;V[3*i+2]*=f;
+   if(liq){V[3*i]+=(Math.random()-.5)*vt*dt*6;V[3*i+2]+=(Math.random()-.5)*vt*dt*6;}}}
+
+ /* ---- plasma: le molecole si spezzano in atomi e gli atomi perdono elettroni ---- */
+ function entraPlasma(){
+  at=[];el2=[];
+  for(var i=0;i<N;i++)mol.forEach(function(a){
+   v3.set(a[1],a[2],a[3]).applyQuaternion(Q[i]);
+   var p=[clamp(P[3*i]+v3.x,-BX+.05,BX-.05),clamp(P[3*i+1]+v3.y,-BY+.05,BY-.05),clamp(P[3*i+2]+v3.z,-BZ+.05,BZ-.05)];
+   at.push({e:a[0],p:p,v:dirCasuale(2.2)});
+   if(at.length%2===0||mol.length===1)el2.push({p:p.slice(),v:dirCasuale(5)});});}
+ function dirCasuale(m){var u=Math.random()*2-1,f=Math.random()*6.283,r=Math.sqrt(1-u*u);return [r*Math.cos(f)*m,u*m,r*Math.sin(f)*m];}
+ function muoviLiberi(lista,dt){lista.forEach(function(o){for(var c=0;c<3;c++){var B=(c===0?BX:c===1?BY:BZ)-.04,p=o.p[c]+o.v[c]*dt;
+  if(p<-B){p=-B;o.v[c]=Math.abs(o.v[c]);}else if(p>B){p=B;o.v[c]=-Math.abs(o.v[c]);}o.p[c]=p;}});}
+ function esciPlasma(){         /* le particelle tornano molecole intere, sparse nel recipiente */
+  for(var i=0;i<N;i++){P[3*i]=(Math.random()*2-1)*(BX-d/2);P[3*i+1]=(Math.random()*2-1)*(BY-d/2);P[3*i+2]=(Math.random()*2-1)*(BZ-d/2);
+   var dv=dirCasuale(vGas());V[3*i]=dv[0];V[3*i+1]=dv[1];V[3*i+2]=dv[2];}
+  at=[];el2=[];}
+
+ /* cambio di stato: il solido si forma tornando ordinato nel reticolo, gli altri passaggi li fa la dinamica */
+ function cambiaStato(da,a){
+  if(a===3){entraPlasma();modo='plasma';return;}
+  if(da===3)esciPlasma();
+  if(a===0){trDa={P:Float32Array.from(P),Q:Q.map(function(x){return x.clone();})};tr=0;modo='solido';return;}
+  if(da===0){for(var i=0;i<N;i++){var dv=dirCasuale(a===1?vLiq():vGas());V[3*i]=dv[0];V[3*i+1]=dv[1];V[3*i+2]=dv[2];}}
+  modo=a===1?'liquido':'gas';}
+
+ /* il ferro caldo emette luce: dal rosso scuro (500 °C) all'arancione chiaro */
+ function ricolora(){
+  var fe=mesh.Fe.material,t=S.t===null?3500:S.t,g=clamp((t-500)/2000,0,1);
+  fe.emissive.setRGB(1,.3+.3*g,.05*g).multiplyScalar(g*.55);
+  Object.keys(mesh).forEach(function(k){var m=mesh[k].material;
+   if(k!=='Fe')m.emissive.setRGB(0,0,0);if(S.t===null)m.emissive.set(0x6a4bd0).multiplyScalar(.3);});}
+
+ /* ---- disegno: posizione e orientamento di ogni molecola, poi ogni atomo ---- */
+ function disegna(){
+  var cnt={O:0,H:0,C:0,Fe:0},i;
+  Object.keys(mesh).forEach(function(k){mesh[k].count=0;});
+  if(modo==='plasma'){
+   at.forEach(function(a){var r=ATOMI[a.e].r*.85;m4.compose(v3.set(a.p[0],a.p[1],a.p[2]),q.identity(),sc.set(r,r,r));mesh[a.e].setMatrixAt(cnt[a.e]++,m4);});
+   el2.forEach(function(o,k){m4.compose(v3.set(o.p[0],o.p[1],o.p[2]),q.identity(),sc.set(.022,.022,.022));elet.setMatrixAt(k,m4);});
+   elet.count=el2.length;elet.instanceMatrix.needsUpdate=true;
+  }else{
+   elet.count=0;
+   for(i=0;i<N;i++){
+    var cx=P[3*i],cy=P[3*i+1],cz=P[3*i+2];
+    mol.forEach(function(a){var r=ATOMI[a[0]].r;v3.set(a[1],a[2],a[3]).applyQuaternion(Q[i]);v3.x+=cx;v3.y+=cy;v3.z+=cz;
+     m4.compose(v3,Q[i],sc.set(r,r,r));mesh[a[0]].setMatrixAt(cnt[a[0]]++,m4);});}
+  }
+  Object.keys(mesh).forEach(function(k){mesh[k].count=cnt[k];mesh[k].instanceMatrix.needsUpdate=true;});}
+
+ function aggiorna(dt){
+  tempo+=dt;var i;
+  if(modo==='solido'){
+   var amp=.006+.03*clamp(TK()/(s.mp+273.15),0,1.2);
+   var u=liscio(tr=Math.min(1,tr+dt/T_CRISTALLO));
+   for(i=0;i<N;i++){var f=FAS[i],h=H[i];
+    var ox=amp*Math.sin(f[3]*tempo+f[0]),oy=amp*Math.sin(f[4]*tempo+f[1]),oz=amp*Math.sin(f[5]*tempo+f[2]);
+    var tx=h[0]+ox,ty=h[1]+oy,tz=h[2]+oz;
+    if(trDa&&u<1){P[3*i]=trDa.P[3*i]+(tx-trDa.P[3*i])*u;P[3*i+1]=trDa.P[3*i+1]+(ty-trDa.P[3*i+1])*u;P[3*i+2]=trDa.P[3*i+2]+(tz-trDa.P[3*i+2])*u;
+     q2.setFromEuler(e3.set(ox*3,oy*3,oz*3));q.copy(HQ[i]).multiply(q2);Q[i].copy(trDa.Q[i]).slerp(q,u);}
+    else{P[3*i]=tx;P[3*i+1]=ty;P[3*i+2]=tz;q2.setFromEuler(e3.set(ox*3,oy*3,oz*3));Q[i].copy(HQ[i]).multiply(q2);}}
+   if(u>=1)trDa=null;
+  }else if(modo==='plasma'){
+   muoviLiberi(at,dt);muoviLiberi(el2,dt);
+  }else{
+   var liq=modo==='liquido',vt=liq?vLiq():vGas(),n=Math.ceil(dt/.004),h2=dt/n;
+   for(var k=0;k<n;k++)passo(h2,liq);
+   termostato(dt,vt,liq);
+   var w=(liq?2.5:5)*vt/(liq?.28:1.5);
+   for(i=0;i<N;i++){if(W[i].lengthSq()<1e-6){var dv=dirCasuale(1);W[i].set(dv[0],dv[1],dv[2]);}
+    q2.setFromAxisAngle(W[i],w*dt);Q[i].multiply(q2).normalize();}
+  }
+  disegna();}
+
+ /* ---- camera: un dito ruota, due dita o la rotella fanno lo zoom ---- */
+ var V0={th:-.55,ph:1.22,rad:4.3},th=V0.th,ph=V0.ph,rad=V0.rad,fit=1;
+ var cv=R.domElement,ptr=new Map(),pd=0;
+ var dist=function(){var a=Array.from(ptr.values());return Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);};
+ cv.addEventListener('pointerdown',function(e){cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);});
+ cv.addEventListener('pointermove',function(e){if(!ptr.has(e.pointerId))return;var o=ptr.get(e.pointerId),n=[e.clientX,e.clientY];
+  if(ptr.size===1){th-=(n[0]-o[0])*.008;ph=clamp(ph-(n[1]-o[1])*.008,.2,Math.PI-.2);}
+  ptr.set(e.pointerId,n);if(ptr.size===2){var dd=dist();if(pd)rad=clamp(rad*pd/dd,2,8);pd=dd;}});
+ var su=function(e){ptr.delete(e.pointerId);pd=0;};
+ cv.addEventListener('pointerup',su);cv.addEventListener('pointercancel',su);
+ cv.addEventListener('wheel',function(e){e.preventDefault();rad=clamp(rad*(1+e.deltaY*.001),2,8);},{passive:false});
+ function resize(){var w=el.clientWidth,hh=el.clientHeight;if(!w||!hh)return;R.setSize(w,hh,false);cam.aspect=w/hh;cam.updateProjectionMatrix();fit=Math.max(1,1.15/cam.aspect);}
+ if(window.ResizeObserver)new ResizeObserver(resize).observe(el);else window.addEventListener('resize',resize);
+ var last=performance.now();
+ (function loop(now){requestAnimationFrame(loop);
+  var dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;     /* intervallo mai negativo */
+  if(el.offsetParent===null||!s)return;
+  aggiorna(dt*(S.lento?LENTO:1)*(reduce?.5:1));
+  var dd=rad*fit;cam.position.set(dd*Math.sin(ph)*Math.sin(th),dd*Math.cos(ph)-.05,dd*Math.sin(ph)*Math.cos(th));cam.lookAt(0,-.1,0);R.render(scene,cam);})(last);
+ resize();
+ return {imposta:imposta,cambiaStato:cambiaStato,ricolora:ricolora,resize:resize,
+  reset:function(){th=V0.th;ph=V0.ph;rad=V0.rad;},zoom:function(f){rad=clamp(rad*f,2,8);}};
+}
+var scena=Scena($('stage'));
+
+/* =========================== PANNELLO =========================== */
+function chipSost(){
+ $('sost').innerHTML=ORDINE.map(function(k){var s=SOST[k];
+  return '<button class="chip'+(k===S.k?' attivo':'')+'" data-k="'+k+'" style="--chip:'+s.c+'">'+s.n+'</button>';}).join('');}
+$('sost').addEventListener('click',function(e){var b=e.target.closest('[data-k]');if(b&&b.dataset.k!==S.k)sostanza(b.dataset.k,true);});
+
+function legenda(){
+ var s=SOST[S.k],tipi=[];MOL[s.mol].forEach(function(a){if(tipi.indexOf(a[0])<0)tipi.push(a[0]);});
+ $('legenda').innerHTML='<b>'+s.f.split(',')[0]+'</b> '+tipi.map(function(k){return '<i style="background:'+ATOMI[k].c+'"></i>'+ATOMI[k].n;}).join('')
+  +(S.stato===3?' <i style="background:#7fe3ff"></i>elettroni':'');}
+
+/* cursore: colori delle zone e tacche delle temperature di fusione ed ebollizione */
+function tacche(){
+ var s=SOST[S.k],pc=function(t){return clamp((t-s.min)/(s.max-s.min)*U_PLASMA/10,0,100);};
+ var a=pc(s.mp),b=pc(s.bp),p=U_PLASMA/10,Z=STATI;
+ var g='linear-gradient(90deg,'+Z[0].c+' 0%,'+Z[0].c+' '+a+'%,'
+  +(s.sub?'':Z[1].c+' '+a+'%,'+Z[1].c+' '+b+'%,')+Z[2].c+' '+b+'%,'+Z[2].c+' '+p+'%,'+Z[3].c+' '+p+'%,'+Z[3].c+' 100%)';
+ $('temp').style.background=g;
+ var h='';
+ if(s.sub)h+='<span style="left:'+a+'%"><b>'+gradi(s.mp)+'</b>sublima</span>';
+ else h+='<span style="left:'+a+'%"><b>'+gradi(s.mp)+'</b>fonde</span><span style="left:'+b+'%"><b>'+gradi(s.bp)+'</b>bolle</span>';
+ h+='<span style="left:'+(p+(100-p)/2)+'%"><b>migliaia</b>di gradi</span>';
+ $('tacche').innerHTML=h;}
+
+function cruscotto(){
+ var s=SOST[S.k],st=STATI[S.stato],t=S.t;
+ $('sNome').textContent=st.n;$('sNome').style.color=st.c;
+ $('sSost').textContent=S.stato===3?'Gli atomi hanno perso parte degli elettroni.':s.nomi[S.stato]+' ('+s.f+')';
+ var vol=st.vol;if(S.k==='acqua'&&S.stato===0)vol='proprio, più grande di quello dell\'acqua liquida';
+ /* energia cinetica media, proporzionale alla temperatura assoluta (in kelvin) */
+ var tk=t===null?null:t+273.15,tkMax=s.max+273.15,e=tk===null?100:clamp(tk/tkMax*88,3,88);
+ $('crus').innerHTML='<tr><th>Forma</th><td>'+st.forma+'</td></tr><tr><th>Volume</th><td>'+vol+'</td></tr>'
+  +'<tr><th>Particelle</th><td>'+st.part+'</td></tr><tr><th>Movimento</th><td>'+st.mov+'</td></tr>'
+  +'<tr><th>Attrazione</th><td>'+st.forze+'</td></tr>'
+  +'<tr><th>Energia cinetica<br>media</th><td>'+(tk===null?'altissima':'cresce con la temperatura')+'<div class="barra"><i style="width:'+e+'%"></i></div></td></tr>';
+ var x='<p class="nota">'+s.nota+'</p>';
+ if(S.k==='acqua'&&S.stato===0)x+='<div class="vetri">'+vetro(true)+vetro(false)+'</div>';
+ $('extra').innerHTML=x;}
+
+/* due bicchieri: il ghiaccio galleggia nell'acqua, la cera solida affonda nella cera fusa */
+function vetro(ghiaccio){
+ var liq=ghiaccio?'#5bc8f0':'#e8c66a',sol=ghiaccio?'#d9f2ff':'#f3e3b0',y=ghiaccio?34:78;
+ return '<figure><svg viewBox="0 0 120 110" aria-hidden="true">'
+  +'<path d="M22 14 L30 102 H90 L98 14" fill="none" stroke="#8fa0b8" stroke-width="2.5" stroke-linejoin="round"/>'
+  +'<path d="M25.5 40 L30 100 H90 L94.5 40 Z" fill="'+liq+'" opacity=".55"/>'
+  +'<rect x="46" y="'+y+'" width="28" height="22" rx="4" fill="'+sol+'" stroke="#fff" stroke-opacity=".6"/></svg>'
+  +(ghiaccio?'il ghiaccio galleggia nell\'acqua':'la cera solida affonda nella cera fusa')+'</figure>';}
+
+var FRASI={
+ start:'Ciao! Muovi il cursore della temperatura e guarda cosa fanno le particelle. Con i pulsanti Acqua, Alcol, Ferro e Ghiaccio secco cambi sostanza.',
+ 0:'Nel solido le particelle sono vicine e ordinate. Non stanno ferme, vibrano sul posto, e più è caldo più vibrano.',
+ ghiaccio:'Ruota la vista e guarda il ghiaccio dall\'alto. Le molecole formano anelli a sei lati con un vuoto al centro, per questo il ghiaccio occupa più spazio dell\'acqua e galleggia.',
+ 1:'Nel liquido le particelle restano vicine ma scorrono le une sulle altre. Per questo il liquido prende la forma del recipiente.',
+ ferro:'Il ferro fuso è così caldo che brilla di luce propria. Nelle fonderie si vede incandescente.',
+ 2:'Nel gas le particelle sono lontane e velocissime. Urtano le pareti e riempiono tutto il recipiente.',
+ secco:'Il ghiaccio secco salta il liquido. Passa direttamente da solido a gas, è la sublimazione.',
+ 3:'A migliaia di gradi gli urti strappano elettroni agli atomi. È il plasma, il quarto stato, come nel Sole e nei fulmini.'};
+var POSE={0:'idle',1:'ok',2:'fine',3:'pensieroso'};
+function parla(){
+ var st=S.stato,f=FRASI[st];
+ if(st===0&&S.k==='acqua')f=FRASI.ghiaccio;
+ if(st===1&&S.k==='ferro')f=FRASI.ferro;
+ if(st===2&&S.k==='secco')f=FRASI.secco;
+ say(f,POSE[st],true);}
+
+function aggiornaTemp(){
+ var s=SOST[S.k],raw=tDaU(s,S.u);S.t=raw===null?null:arrot(s,raw);
+ var nuovo=statoDi(s,S.t),vecchio=S.stato;
+ $('tval').textContent=S.t===null?'migliaia di °C':gradi(S.t);
+ $('tstato').textContent=STATI[nuovo].n;$('tstato').style.color=STATI[nuovo].c;
+ $('temp').setAttribute('aria-valuetext',$('tval').textContent+', '+STATI[nuovo].n);
+ if(nuovo!==vecchio){S.stato=nuovo;if(scena)scena.cambiaStato(vecchio,nuovo);if(!S.primo)parla();legenda();}
+ if(scena)scena.ricolora();
+ cruscotto();}
+
+function sostanza(k,parlare){
+ S.k=k;var s=SOST[k];S.t=INIZIO[k];S.u=uDaT(s,S.t);S.stato=statoDi(s,S.t);
+ $('temp').value=S.u;chipSost();tacche();legenda();
+ if(scena)scena.imposta(k,S.stato);
+ aggiornaTemp();
+ if(parlare)say(s.n+'. '+s.nota,'ok',true);}
+
+$('temp').addEventListener('input',function(){S.u=+this.value;S.primo=false;aggiornaTemp();});
+$('bReset').onclick=function(){if(scena)scena.reset();};
+$('bPiu').onclick=function(){if(scena)scena.zoom(.8);};
+$('bMeno').onclick=function(){if(scena)scena.zoom(1.25);};
+$('oLento').onclick=function(){S.lento=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',S.lento);};
+
+sostanza('acqua',false);
+say(FRASI.start,'hi');
+})();
+</script>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Le particelle di acqua, alcol, ferro e ghiaccio secco in 3D, dal solido al gas fino al plasma. Forma, volume, movimento ed energia delle particelle, passaggi di stato e calore latente.</p>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T</div></div>
+<style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#ffb454!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(255,180,84,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
+<a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Fisica</a>
+<script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
