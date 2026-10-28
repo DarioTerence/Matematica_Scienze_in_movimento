@@ -153,6 +153,9 @@ var liscio=function(u){u=clamp(u,0,1);return u*u*(3-2*u);};
 /* Tempi uniformi (secondi). T_CRISTALLO = durata del ritorno ordinato nel reticolo quando una sostanza
    solidifica o brina. Per rallentare o accelerare si cambia solo questo numero. LENTO = fattore di "Rallenta". */
 var T_CRISTALLO=1.4, LENTO=.3;
+/* Vibrazione nel solido: ampiezza da VIB_MIN (temperatura più bassa del cursore) a VIB_MAX (punto di fusione),
+   in unità della scena (il diametro di una particella è circa 0,2-0,3). Cresce più in fretta vicino alla fusione. */
+var VIB_MIN=.002, VIB_MAX=.016;
 
 /* Prof. T in cucina: sei pose (file in immagini/prof_t/). In questa scheda
    hi saluto, solido braccia conserte, liquido occhiolino, gas pentolino, plasma termometro. */
@@ -180,7 +183,7 @@ var SOST={
  acqua:{n:'Acqua',f:'H₂O',c:'#5bc8f0',mp:0,bp:100,min:-40,max:140,passo:1,N:72,d:.27,mol:'h2o',lat:'esa',
   nomi:['Ghiaccio','Acqua liquida','Vapore acqueo'],
   nota:'Fonde a 0 °C e bolle a 100 °C.'},
- alcol:{n:'Alcol',f:'C₂H₅OH, etanolo',c:'#8ee0a6',mp:-114,bp:78,min:-150,max:120,passo:1,N:40,d:.36,mol:'etanolo',lat:'cubo',
+ alcol:{n:'Alcol',f:'C₂H₅OH, etanolo',c:'#f48fb1',mp:-114,bp:78,min:-150,max:120,passo:1,N:40,d:.36,mol:'etanolo',lat:'cubo',
   nomi:['Alcol solido','Alcol liquido','Vapore di alcol'],
   nota:'Fonde a −114 °C e bolle a 78 °C. A temperatura ambiente evapora in fretta, per questo sulla pelle dà una sensazione di fresco.'},
  ferro:{n:'Ferro',f:'Fe',c:'#b9c2cf',mp:1538,bp:2861,min:20,max:3200,passo:10,N:125,d:.21,mol:'fe',lat:'cubo',
@@ -237,7 +240,7 @@ function Scena(el){
  elet.count=0;elet.frustumCulled=false;scene.add(elet);
 
  /* ---- stato delle particelle ---- */
- var s,N,d,mol,P,V,Q,W,H,HQ,FAS,modo,tr=0,trDa=null,tempo=0;
+ var s,N,d,mol,P,V,Q,W,H,HQ,FAS,modo,tr=0,trDa=null,tempo=0,orologio=0;
  var at=[],el2=[];                 /* plasma: atomi liberi ed elettroni */
  var m4=new THREE.Matrix4(),q=new THREE.Quaternion(),q2=new THREE.Quaternion(),v3=new THREE.Vector3(),sc=new THREE.Vector3(),e3=new THREE.Euler();
 
@@ -360,14 +363,16 @@ function Scena(el){
  function aggiorna(dt){
   tempo+=dt;var i;
   if(modo==='solido'){
-   var amp=.006+.03*clamp(TK()/(s.mp+273.15),0,1.2);
+   /* fr va da 0 (temperatura più bassa del cursore) a 1 (punto di fusione): più freddo, vibrazione più piccola e più lenta */
+   var fr=clamp((S.t-s.min)/(s.mp-s.min),0,1),amp=VIB_MIN+(VIB_MAX-VIB_MIN)*Math.pow(fr,1.5);
+   orologio+=dt*(.35+.65*fr);
    var u=liscio(tr=Math.min(1,tr+dt/T_CRISTALLO));
    for(i=0;i<N;i++){var f=FAS[i],h=H[i];
-    var ox=amp*Math.sin(f[3]*tempo+f[0]),oy=amp*Math.sin(f[4]*tempo+f[1]),oz=amp*Math.sin(f[5]*tempo+f[2]);
+    var ox=amp*Math.sin(f[3]*orologio+f[0]),oy=amp*Math.sin(f[4]*orologio+f[1]),oz=amp*Math.sin(f[5]*orologio+f[2]);
     var tx=h[0]+ox,ty=h[1]+oy,tz=h[2]+oz;
     if(trDa&&u<1){P[3*i]=trDa.P[3*i]+(tx-trDa.P[3*i])*u;P[3*i+1]=trDa.P[3*i+1]+(ty-trDa.P[3*i+1])*u;P[3*i+2]=trDa.P[3*i+2]+(tz-trDa.P[3*i+2])*u;
-     q2.setFromEuler(e3.set(ox*3,oy*3,oz*3));q.copy(HQ[i]).multiply(q2);Q[i].copy(trDa.Q[i]).slerp(q,u);}
-    else{P[3*i]=tx;P[3*i+1]=ty;P[3*i+2]=tz;q2.setFromEuler(e3.set(ox*3,oy*3,oz*3));Q[i].copy(HQ[i]).multiply(q2);}}
+     q2.setFromEuler(e3.set(ox*2,oy*2,oz*2));q.copy(HQ[i]).multiply(q2);Q[i].copy(trDa.Q[i]).slerp(q,u);}
+    else{P[3*i]=tx;P[3*i+1]=ty;P[3*i+2]=tz;q2.setFromEuler(e3.set(ox*2,oy*2,oz*2));Q[i].copy(HQ[i]).multiply(q2);}}
    if(u>=1)trDa=null;
   }else if(modo==='plasma'){
    muoviLiberi(at,dt);muoviLiberi(el2,dt);
