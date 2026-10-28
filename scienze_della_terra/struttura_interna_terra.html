@@ -163,7 +163,7 @@ input[type=range]{accent-color:var(--acc);height:28px}
      <div class="lbls" id="lbls"></div>
      <div class="ctl" role="group" aria-label="Comandi della vista"><button class="cb on" id="cRuota" aria-pressed="true">Ruota</button><button class="cb" id="cSposta" aria-pressed="false">Sposta</button><button class="cb" id="cPiu" aria-label="Avvicina">+</button><button class="cb" id="cMeno" aria-label="Allontana">&minus;</button><button class="cb" id="bReset" aria-label="Reset vista" title="Reset vista">&#10226;</button></div>
      <div class="badge" id="badge">crosta e mantello superiore ingranditi</div>
-     <div class="cap" id="cap1">trascina per ruotare · tasto destro o due dita per spostare · doppio clic o doppio tocco per avvicinarti · tocca un pulsante dello strato per andarci</div>
+     <div class="cap" id="cap1">Trascina per ruotare, due dita per spostare, doppio tocco per avvicinarti.</div>
     </div>
    </div>
    <aside class="panel">
@@ -308,7 +308,7 @@ document.querySelectorAll('.scheda').forEach(t=>t.addEventListener('click',()=>{
 /* ---------- Dati degli strati ---------- */
 /* Profondità in km. Numeri arrotondati per la secondaria di primo grado. */
 const LAYERS={
- 0:{n:"Crosta continentale",c:"#a58a6a",stato:"solida",dati:[["Profondità","da 0 a 30-40 km, fino a 70 km sotto le grandi montagne"],["Fatta di","rocce leggere, ricche di silicio e alluminio, come il granito"],["Densità","circa 2,7 g/cm³"],["Temperatura","sale con la profondità, a 12 km, nel pozzo più profondo mai scavato, circa 180 °C"]],t:"È la crosta dei continenti: più spessa e più leggera della crosta oceanica. Nel disegno la vedi più spessa sotto i continenti e sotto le montagne."},
+ 0:{n:"Crosta continentale",c:"#a58a6a",stato:"solida",dati:[["Profondità","da 0 a 30-40 km, fino a 70 km sotto le grandi montagne"],["Fatta di","rocce leggere, ricche di silicio e alluminio, come il granito"],["Densità","circa 2,7 g/cm³"],["Temperatura","sale con la profondità, a 12 km, nel pozzo più profondo mai scavato, circa 180 °C"]],t:"È la crosta dei continenti: più spessa e più leggera della crosta oceanica."},
  1:{n:"Crosta oceanica",c:"#4f535e",stato:"solida",dati:[["Profondità","circa 10 km sotto il fondo del mare"],["Fatta di","basalto, una roccia scura e più pesante del granito"],["Densità","circa 2,9 g/cm³"]],t:"Forma il fondo degli oceani. È sottile: in scala reale, su questa Terra, sarebbe più sottile di un capello."},
  2:{n:"Mantello superiore",c:"#b0452a",stato:"solido",dati:[["Profondità","dalla base della crosta a circa 660 km"],["Fatto di","rocce ricche di ferro e magnesio"],["Densità","da circa 3,3 a 4 g/cm³"],["Temperatura","già oltre 1000 °C a circa 100 km <span class=stima>(stima)</span>"]],t:"La sua parte alta è rigida e fa parte della litosfera; più sotto la roccia è più calda e plastica (astenosfera).",a:"Il mantello è solido, non è magma liquido. Il magma dei vulcani si forma solo in piccole zone, dove la roccia fonde in parte."},
  3:{n:"Mantello inferiore",c:"#d0622c",stato:"solido",dati:[["Profondità","da 660 a 2890 km"],["Fatto di","rocce molto compresse, ricche di ferro e magnesio"],["Densità","da circa 4,4 a 5,6 g/cm³"],["Temperatura","alla base circa 3500-4000 °C <span class=stima>(stima)</span>"],["Pressione","alla base circa 1,3 milioni di volte quella dell'aria"]],t:"È lo strato più grande della Terra. Il calore che sale dal nucleo lo rimescola lentissimamente: sono i moti convettivi."},
@@ -342,8 +342,8 @@ function Terra(stage){
 
  /* stato */
  const S={open:1,openT:1,ex:1,exT:1,sel:-1,mode:0,conv:false,rot:false,th:.5,ph:1.22,dist:3.4,distT:(stage.clientWidth<520?2.85:3.4),pan:false,vola:-1,tgt:new THREE.Vector3(),tgtT:new THREE.Vector3()};
- const BETA=-102*Math.PI/180; /* rotazione del globo: la faccia mobile, a spicchio aperto, passa per il meridiano 12° E (Italia) */
- const U={uEx:{value:1},uSel:{value:-1},uMode:{value:0},uTime:{value:0},uElev:{value:null},uConv:{value:0},uLW:{value:.0022}};   /* uLW = spessore delle linee di confine, si assottiglia avvicinandosi */
+ const LON0=177,BETA=-LON0*Math.PI/180; /* rotazione del globo: a spicchio aperto la faccia mobile passa per 87° E (golfo del Bengala, Gange, Himalaya, Tibet), la fissa per 177° E (Pacifico) */
+ const U={uEx:{value:1},uSel:{value:-1},uMode:{value:0},uTime:{value:0},uElev:{value:null},uConv:{value:0},uLW:{value:.0022},uLand:{value:null}};   /* uLW = spessore delle linee di confine, si assottiglia avvicinandosi */
 
  /* stelle */
  {const g=new THREE.BufferGeometry(),n=1400,p=new Float32Array(n*3);
@@ -357,12 +357,21 @@ function Terra(stage){
 
  /* globo */
  const loader=new THREE.TextureLoader();
- const mapTex=loader.load(IMG_MAP,()=>{dirty=true});mapTex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
+ const mapTex=loader.load(IMG_MAP,img=>{buildTerra(img.image||img);dirty=true});mapTex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
  const elevTex=loader.load(IMG_ELEV,img=>{buildElev(img.image||img);dirty=true});
  elevTex.wrapS=THREE.RepeatWrapping;U.uElev.value=elevTex;
  const specCanvas=document.createElement('canvas');specCanvas.width=1024;specCanvas.height=512;
  const specTex=new THREE.CanvasTexture(specCanvas);
- let elevData=null;
+ let elevData=null,terraData=null;
+ /* maschera delle terre emerse dalla mappa della superficie: l'acqua è blu. Serve perché le pianure basse
+    (Gange, Siberia) hanno quasi la stessa altitudine del mare e con il solo rilievo sembrerebbero oceano. */
+ const terraCanvas=document.createElement('canvas');terraCanvas.width=1024;terraCanvas.height=512;
+ const terraTex=new THREE.CanvasTexture(terraCanvas);terraTex.wrapS=THREE.RepeatWrapping;U.uLand.value=terraTex;
+ function buildTerra(img){const x=terraCanvas.getContext('2d');x.drawImage(img,0,0,1024,512);const id=x.getImageData(0,0,1024,512),d=id.data;
+  for(let i=0;i<d.length;i+=4){const r=d[i],g=d[i+1],b=d[i+2],acqua=b>r*1.6&&b>g*1.1;d[i]=d[i+1]=d[i+2]=acqua?0:255}
+  x.putImageData(id,0,0);terraData={w:1024,h:512,d};terraTex.needsUpdate=true}
+ function terraAt(lonDeg,latRad){if(!terraData)return false;let u=((lonDeg+180)/360)%1;if(u<0)u+=1;const v=.5-latRad/Math.PI;
+  const x=Math.min(1023,Math.floor(u*1024)),y=Math.min(511,Math.max(0,Math.floor(v*512)));return terraData.d[(y*1024+x)*4]>127}
  function buildElev(img){
   const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const x=c.getContext('2d');x.drawImage(img,0,0);
   elevData={w:c.width,h:c.height,d:x.getImageData(0,0,c.width,c.height).data};
@@ -393,7 +402,7 @@ float f=pow(1.-max(dot(vN,vV),0.),3.2);gl_FragColor=vec4(vec3(.35,.62,1.)*f*1.25
  const faceFS=`precision highp float;
 varying vec2 vP;
 uniform float uEx,uSel,uMode,uTime,uLon,uShade,uConv,uLW;
-uniform sampler2D uElev;
+uniform sampler2D uElev,uLand;
 float dEx(float k){
  if(k<40.)return k*(.024/40.);
  if(k<660.)return .024+(k-40.)*(.155/620.);
@@ -409,7 +418,7 @@ void main(){
  float lat=atan(vP.y,max(vP.x,1e-5));
  vec2 uv=vec2(fract((uLon+180.)/360.),clamp(lat/3.14159265+.5,.002,.998));
  float e=texture2D(uElev,uv).r;
- float land=step(.035,e);
+ float land=max(step(.035,e),step(.5,texture2D(uLand,uv).r));
  float crustKm=mix(8.,30.+40.*e,land);
  float lithKm=mix(90.,130.,land);
  float d=1.-r;
@@ -445,7 +454,7 @@ void main(){
  }
  gl_FragColor=vec4(col*uShade,1.);}`;
  const faceGeo=new THREE.CircleGeometry(1,160,-Math.PI/2,Math.PI);
- function faceMat(){return new THREE.ShaderMaterial({uniforms:{uEx:U.uEx,uSel:U.uSel,uMode:U.uMode,uTime:U.uTime,uElev:U.uElev,uConv:U.uConv,uLW:U.uLW,uLon:{value:0},uShade:{value:1}},vertexShader:faceVS,fragmentShader:faceFS,side:THREE.DoubleSide})}
+ function faceMat(){return new THREE.ShaderMaterial({uniforms:{uEx:U.uEx,uSel:U.uSel,uMode:U.uMode,uTime:U.uTime,uElev:U.uElev,uLand:U.uLand,uConv:U.uConv,uLW:U.uLW,uLon:{value:0},uShade:{value:1}},vertexShader:faceVS,fragmentShader:faceFS,side:THREE.DoubleSide})}
  const F1=new THREE.Mesh(faceGeo,faceMat()),F2=new THREE.Mesh(faceGeo,faceMat());
  scene.add(F1,F2);
 
@@ -465,13 +474,13 @@ void main(){
  const faceAng=f=>f===0?0:S.open*Math.PI/2;
  function facePoint(f,r,lat,off){const a=faceAng(f),x=r*Math.cos(lat),y=r*Math.sin(lat);const v=new THREE.Vector3(x*Math.cos(a),y,x*Math.sin(a));
   if(off){const n=f===0?new THREE.Vector3(0,0,1):new THREE.Vector3(Math.sin(a),0,-Math.cos(a));v.addScaledVector(n,off)}return v}
- function faceLon(f){return 102-faceAng(f)*180/Math.PI}
+ function faceLon(f){return LON0-faceAng(f)*180/Math.PI}
 
  /* elevazione (0-1) dal rilievo, per crosta continentale o oceanica */
  function elevAt(lonDeg,latRad){if(!elevData)return 0;let u=((lonDeg+180)/360)%1;if(u<0)u+=1;const v=.5-latRad/Math.PI;
   const x=Math.min(elevData.w-1,Math.floor(u*elevData.w)),y=Math.min(elevData.h-1,Math.max(0,Math.floor(v*elevData.h)));return elevData.d[(y*elevData.w+x)*4]/255}
  function layerAt(f,r,lat){
-  const e=elevAt(faceLon(f),lat),land=e>=.035,ex=S.ex;
+  const e=elevAt(faceLon(f),lat),land=e>=.035||terraAt(faceLon(f),lat),ex=S.ex;
   const crust=land?30+40*e:8,lith=land?130:90,d=1-r,D=k=>dMix(k,ex);
   const cid=d<D(crust)?(land?0:1):d<D(660)?2:d<D(2890)?3:d<D(5150)?4:5;
   if(S.mode===0)return cid;
@@ -481,7 +490,7 @@ void main(){
  /* etichette */
  const lblBox=document.getElementById('lbls'),labels={};
  /* [faccia, latitudine in gradi, profondità in km per l'ancora] */
- const ANCH={0:[1,50,20],1:[1,-45,5],2:[1,33,430],3:[1,18,1600],4:[1,-28,4000],5:[1,0,6371],6:[1,-28,55],7:[1,-8,380],8:[1,22,1500]};
+ const ANCH={0:[1,36,20],1:[1,-30,5],2:[1,52,430],3:[1,18,1600],4:[1,-28,4000],5:[1,0,6371],6:[1,-28,55],7:[1,-8,380],8:[1,22,1500]};
  for(const k in LAYERS){const b=document.createElement('button');b.className='lbl';b.textContent=LAYERS[k].n;b.addEventListener('click',e=>{e.stopPropagation();select(+k)});lblBox.appendChild(b);labels[k]=b}
 
  /* camera: trascinare ruota oppure sposta; due dita spostano e ingrandiscono; doppio tocco avvicina */
@@ -522,7 +531,7 @@ void main(){
  function pick(cx,cy){const h=hitAt(cx,cy);
   if(!h){select(-1);return}
   if(h.object===globe){const p=h.point.clone(),lat=Math.asin(Math.max(-1,Math.min(1,p.y))),ph=Math.atan2(p.z,p.x),lon=-(ph*180/Math.PI)-BETA*180/Math.PI;
-   const land=elevAt(((lon+540)%360)-180,lat)>=.035;select(S.mode===0?(land?0:1):6);return}
+   const lo=((lon+540)%360)-180,land=elevAt(lo,lat)>=.035||terraAt(lo,lat);select(S.mode===0?(land?0:1):6);return}
   const f=h.object===F1?0:1,lp=h.object.worldToLocal(h.point.clone());select(layerAt(f,Math.hypot(lp.x,lp.y),Math.atan2(lp.y,Math.max(1e-5,lp.x))));
  }
 
@@ -535,7 +544,7 @@ void main(){
  function voloVerso(k){
   const A=ANCH[k];if(!A)return;S.vola=k;
   if(S.openT<1)setOpen(true);
-  const lat=A[1]*Math.PI/180,e=elevAt(102-90,lat),land=e>=.035,ex=S.exT;
+  const lat=(k===0?27:A[1])*Math.PI/180,e=elevAt(LON0-90,lat)   /* crosta continentale: centro tra Gange e Himalaya */,land=e>=.035||terraAt(LON0-90,lat),ex=S.exT;
   let km=SPESS[k];
   if(k===0||k===1)km=[0,land?30+40*e:8];else if(k===6)km=[0,land?130:90];
   const d0=dMix(km[0],ex),d1=dMix(km[1],ex),t=d1-d0;
@@ -543,11 +552,11 @@ void main(){
   const r=k<=1?1-d1*.8:1-(d0+d1)/2;
   const n=new THREE.Vector3(1,0,0),rad=new THREE.Vector3(0,Math.sin(lat),Math.cos(lat));   /* faccia mobile a spicchio aperto: piano x = 0, normale +x */
   S.tgtT.copy(rad).multiplyScalar(r).addScaledVector(n,.002);
-  const dir=n.clone().add(rad.clone().multiplyScalar(.3)).normalize();   /* di fronte alla faccia, un po' dall'esterno */
+  const dir=n.clone().add(rad.clone().multiplyScalar(k===0?.08:.3)).normalize();   /* di fronte alla faccia, un po' dall'esterno */
   let th=Math.atan2(dir.z,dir.x);while(th-S.th>Math.PI)th-=2*Math.PI;while(S.th-th>Math.PI)th+=2*Math.PI;
   S.th=th;S.ph=Math.acos(dir.y);
   const fit=Math.max(1,1.25/camera.aspect);
-  S.distT=clampD(Math.max(.012,t*(k===0?22:k===1?14:3.2))/fit);   /* continentale più da lontano, per vederne lo spessore che cambia */dirty=true}
+  S.distT=clampD(Math.max(.012,t*(k===0?17:k===1?14:3.2))/fit);   /* continentale più da lontano, per vederne lo spessore che cambia */dirty=true}
 
  let onSelect=()=>{};
  function select(k){S.sel=k;U.uSel.value=k;
@@ -634,7 +643,7 @@ void main(){
 
 /* ---------- Pannello ---------- */
 const info=document.getElementById('info'),lb=document.getElementById('layerBtns');
-const GUIDE='<p class="hint" style="margin:0">Tocca uno strato sulla Terra aperta, un\'etichetta o un pulsante qui sopra.</p>';
+const GUIDE='<p class="hint" style="margin:0">Tocca uno strato o un pulsante.</p>';
 function showInfo(k){
  if(k<0){info.innerHTML=GUIDE;return}
  const L=LAYERS[k];
