@@ -544,7 +544,7 @@ void main(){
   let th=Math.atan2(dir.z,dir.x);while(th-S.th>Math.PI)th-=2*Math.PI;while(S.th-th>Math.PI)th+=2*Math.PI;
   S.th=th;S.ph=Math.acos(dir.y);
   const fit=Math.max(1,1.25/camera.aspect);
-  S.distT=clampD(Math.max(.012,t*(k<=1?9:3.2))/fit);dirty=true}
+  S.distT=clampD(Math.max(.012,t*(k===0?22:k===1?9:3.2))/fit);   /* continentale più da lontano, per vederne lo spessore che cambia */dirty=true}
 
  let onSelect=()=>{};
  function select(k){S.sel=k;U.uSel.value=k;
