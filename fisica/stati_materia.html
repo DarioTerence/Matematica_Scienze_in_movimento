@@ -690,12 +690,18 @@ var Passaggi=(function(){
     Il livello 2 (sublimazione e brinamento) passa oltre le scritte del livello 1, così nulla si sovrappone. */
  var ARCHI=[['fusione',100,238,1,1],['evaporazione',286,424,1,1],['ionizzazione',490,572,1,1],['sublimazione',52,456,1,2],
   ['solidificazione',238,100,0,1],['condensazione',424,286,0,1],['ricombinazione',572,490,0,1],['brinamento',456,52,0,2]];
- var LIV={1:48,2:100},RG=10;    /* distanza delle linee orizzontali dal bordo degli stati; raggio degli angoli */
+ var LIV={1:48,2:100};    /* distanza delle linee dal bordo degli stati, per i due livelli */
  function arco(k,x1,x2,su,lv){
   var sg=su?-1:1,y0=Y+sg*20,yh=Y+sg*(20+LIV[lv]),dir=x2>x1?1:-1,c=P[k].caldo?CALDO:FREDDO;
   var on=G.sel===k||(k==='evaporazione'&&G.sel&&P[G.sel].vap),dim=G.sel&&!on;
-  var d='M'+x1+' '+y0+' L'+x1+' '+(yh-sg*RG)+' Q'+x1+' '+yh+' '+(x1+dir*RG)+' '+yh
-   +' L'+(x2-dir*RG)+' '+yh+' Q'+x2+' '+yh+' '+x2+' '+(yh-sg*RG)+' L'+x2+' '+(y0+sg*9);
+  /* FORMA: 'gomito' angoli arrotondati; 'ponte' curva continua con le estremità verticali; 'arco' mezza ellisse */
+  var d,ye=y0+sg*9,F=window.FORMA_SCHEMA||'gomito';
+  if(F==='ponte'){var cy=y0+(yh-y0)/0.75;   /* con due punti di controllo uguali il punto più alto è a 3/4: arriva proprio a yh */
+   d='M'+x1+' '+y0+' C'+x1+' '+cy+' '+x2+' '+cy+' '+x2+' '+ye;}
+  else if(F==='arco'){var rx=Math.abs(x2-x1)/2,ry=Math.abs(yh-y0);
+   d='M'+x1+' '+y0+' A'+rx+' '+ry+' 0 0 '+((su?1:0)^(dir<0?1:0))+' '+x2+' '+y0;}
+  else{var RG=F==='morbido'?24:10;d='M'+x1+' '+y0+' L'+x1+' '+(yh-sg*RG)+' Q'+x1+' '+yh+' '+(x1+dir*RG)+' '+yh
+   +' L'+(x2-dir*RG)+' '+yh+' Q'+x2+' '+yh+' '+x2+' '+(yh-sg*RG)+' L'+x2+' '+ye;}
   /* punta: triangolo che tocca il bordo dello stato di arrivo */
   var pu='M'+x2+' '+y0+' L'+(x2-6)+' '+(y0+sg*11)+' L'+(x2+6)+' '+(y0+sg*11)+' Z';
   var lx=(x1+x2)/2,ly=su?yh-9:yh+21;
@@ -719,7 +725,7 @@ var Passaggi=(function(){
  $('schema').addEventListener('keydown',function(e){if(e.key!=='Enter'&&e.key!==' ')return;var g=e.target.closest('.freccia');if(g){e.preventDefault();scegli(g.dataset.k);}});
 
  function info(){
-  if(!G.sel){$('pInfo').innerHTML='<div class="ptit">Tocca una freccia</div><p class="pes" style="margin:0">Ogni freccia dello schema è un passaggio di stato. Le particelle nella scena lo faranno davanti a te.</p>';return;}
+  if(!G.sel){$('pInfo').innerHTML='<div class="ptit">Tocca una freccia</div><p class="pes" style="margin:0">Ogni freccia è un passaggio di stato. Toccala e osserva come cambiano disposizione e movimento delle particelle.</p>';return;}
   var p=P[G.sel],c=p.caldo?CALDO:FREDDO,tt=p.a===3||p.da===3?'migliaia di gradi':gradi(p.t);
   var h='<div class="ptit" style="color:'+c+'">'+p.n+'</div>'
    +'<span class="badge" style="background:'+c+'">'+(p.caldo?'assorbe calore':'cede calore')+'</span>'
