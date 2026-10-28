@@ -163,7 +163,7 @@ input[type=range]{accent-color:var(--acc);height:28px}
      <div class="lbls" id="lbls"></div>
      <div class="ctl" role="group" aria-label="Comandi della vista"><button class="cb on" id="cRuota" aria-pressed="true">Ruota</button><button class="cb" id="cSposta" aria-pressed="false">Sposta</button><button class="cb" id="cPiu" aria-label="Avvicina">+</button><button class="cb" id="cMeno" aria-label="Allontana">&minus;</button><button class="cb" id="bReset" aria-label="Reset vista" title="Reset vista">&#10226;</button></div>
      <div class="badge" id="badge">crosta e mantello superiore ingranditi</div>
-     <div class="cap" id="cap1">trascina per ruotare · tasto destro o due dita per spostare · doppio clic o doppio tocco per avvicinarti</div>
+     <div class="cap" id="cap1">trascina per ruotare · tasto destro o due dita per spostare · doppio clic o doppio tocco per avvicinarti · tocca un pulsante dello strato per andarci</div>
     </div>
    </div>
    <aside class="panel">
@@ -336,12 +336,12 @@ function Terra(stage){
  renderer.setClearColor(0x05060a,1);
  renderer.localClippingEnabled=true;
  stage.insertBefore(renderer.domElement,stage.firstChild);
- const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(40,1,.01,200);
+ const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(40,1,.0015,120);   /* near piccolo: ci si avvicina fino alla crosta in scala reale */
  scene.add(new THREE.AmbientLight(0xffffff,.32));
  const sun=new THREE.DirectionalLight(0xffffff,1.05);sun.position.set(.25,.55,1);scene.add(sun);
 
  /* stato */
- const S={open:1,openT:1,ex:1,exT:1,sel:-1,mode:0,conv:false,rot:false,th:.5,ph:1.22,dist:3.4,distT:(stage.clientWidth<520?2.85:3.4),pan:false,tgt:new THREE.Vector3(),tgtT:new THREE.Vector3()};
+ const S={open:1,openT:1,ex:1,exT:1,sel:-1,mode:0,conv:false,rot:false,th:.5,ph:1.22,dist:3.4,distT:(stage.clientWidth<520?2.85:3.4),pan:false,vola:-1,tgt:new THREE.Vector3(),tgtT:new THREE.Vector3()};
  const BETA=-102*Math.PI/180; /* rotazione del globo: la faccia mobile, a spicchio aperto, passa per il meridiano 12° E (Italia) */
  const U={uEx:{value:1},uSel:{value:-1},uMode:{value:0},uTime:{value:0},uElev:{value:null},uConv:{value:0}};
 
@@ -483,9 +483,11 @@ void main(){
 
  /* camera: trascinare ruota oppure sposta; due dita spostano e ingrandiscono; doppio tocco avvicina */
  let dirty=true,last=performance.now(),down=null,pinch=null,lastTap=null;
+ /* doppio tocco tollerante (LIM, schermi condivisi con ritardo): tempo massimo tra i tocchi (ms), distanza massima (px), movimento ammesso (px) */
+ const TAP_TEMPO=550,TAP_DIST=44,TAP_MOSSA=14;
  const el=renderer.domElement;
  el.addEventListener('contextmenu',e=>e.preventDefault());
- const DMIN=1.25,DMAX=7,clampD=d=>Math.min(DMAX,Math.max(DMIN,d));
+ const DMIN=1.25,DMIN_APERTA=.01,DMAX=7,clampD=d=>Math.min(DMAX,Math.max(S.openT>.5?DMIN_APERTA:DMIN,d));   /* con la Terra aperta ci si avvicina molto di più */
  const vR=new THREE.Vector3(),vU=new THREE.Vector3();
  function panBy(dx,dy){camera.updateMatrixWorld();vR.setFromMatrixColumn(camera.matrixWorld,0);vU.setFromMatrixColumn(camera.matrixWorld,1);
   const k=S.dist*Math.max(1,1.25/camera.aspect)*.0011;S.tgtT.addScaledVector(vR,-dx*k).addScaledVector(vU,dy*k);if(S.tgtT.length()>1.15)S.tgtT.setLength(1.15)}
@@ -501,8 +503,8 @@ void main(){
   dirty=true});
  const up=e=>{if(!down)return;delete down.pts[e.pointerId];
   if(Object.keys(down.pts).length===0){
-   if(down.moved<6&&performance.now()-down.t<500){const now=performance.now();
-    if(lastTap&&now-lastTap.t<350&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<24){focusAt(e.clientX,e.clientY);lastTap=null}
+   if(down.moved<TAP_MOSSA&&performance.now()-down.t<600){const now=performance.now();
+    if(lastTap&&now-lastTap.t<TAP_TEMPO&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<TAP_DIST){focusAt(e.clientX,e.clientY);lastTap=null}
     else{lastTap={t:now,x:e.clientX,y:e.clientY};pick(e.clientX,e.clientY)}}
    down=null;pinch=null}};
  el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
@@ -521,12 +523,34 @@ void main(){
   const f=h.object===F1?0:1,lp=h.object.worldToLocal(h.point.clone());select(layerAt(f,Math.hypot(lp.x,lp.y),Math.atan2(lp.y,Math.max(1e-5,lp.x))));
  }
 
- function focusAt(cx,cy){const h=hitAt(cx,cy);if(!h)return;S.tgtT.copy(h.point);S.distT=clampD(Math.max(1.4,S.distT*.55))}
+ function focusAt(cx,cy){const h=hitAt(cx,cy);if(!h)return;S.vola=-1;S.tgtT.copy(h.point);S.distT=clampD(S.openT>.5?S.distT*.45:Math.max(1.4,S.distT*.55))}
+
+ /* volo verso uno strato (chip): la camera guarda la faccia mobile dello spicchio, nel punto dell'etichetta,
+    da una distanza proporzionale allo spessore dello strato, così si vede intero anche in scala reale.
+    [profondità in km di inizio e fine strato]; crosta e litosfera dipendono dal rilievo nel punto. */
+ const SPESS={2:[35,660],3:[660,2890],4:[2890,5150],5:[5150,6371],7:[100,660],8:[660,2890]};
+ function voloVerso(k){
+  const A=ANCH[k];if(!A)return;S.vola=k;
+  if(S.openT<1)setOpen(true);
+  const lat=A[1]*Math.PI/180,e=elevAt(102-90,lat),land=e>=.035,ex=S.exT;
+  let km=SPESS[k];
+  if(k===0||k===1)km=[0,land?30+40*e:8];else if(k===6)km=[0,land?130:90];
+  const d0=dMix(km[0],ex),d1=dMix(km[1],ex),t=d1-d0;
+  /* per la crosta si guarda la superficie con sotto un po' di mantello; per gli altri strati il centro dello strato */
+  const r=k<=1?1-d1*.8:1-(d0+d1)/2;
+  const n=new THREE.Vector3(1,0,0),rad=new THREE.Vector3(0,Math.sin(lat),Math.cos(lat));   /* faccia mobile a spicchio aperto: piano x = 0, normale +x */
+  S.tgtT.copy(rad).multiplyScalar(r).addScaledVector(n,.002);
+  const dir=n.clone().add(rad.clone().multiplyScalar(.3)).normalize();   /* di fronte alla faccia, un po' dall'esterno */
+  let th=Math.atan2(dir.z,dir.x);while(th-S.th>Math.PI)th-=2*Math.PI;while(S.th-th>Math.PI)th+=2*Math.PI;
+  S.th=th;S.ph=Math.acos(dir.y);
+  const fit=Math.max(1,1.25/camera.aspect);
+  S.distT=clampD(Math.max(.012,t*(k<=1?9:3.2))/fit);dirty=true}
+
  let onSelect=()=>{};
  function select(k){S.sel=k;U.uSel.value=k;
   if(k>=0&&k!==0&&k!==1&&k!==6&&S.openT<1)setOpen(true);
   for(const j in labels)labels[j].classList.toggle('on',+j===k);dirty=true;onSelect(k)}
- function setOpen(v){S.openT=v?1:0;onOpen(v)}
+ function setOpen(v){S.openT=v?1:0;if(!v){S.vola=-1;S.distT=Math.max(S.distT,DMIN);S.tgtT.set(0,0,0)}onOpen(v)}   /* chiudendo lo spicchio la camera torna fuori */
  let onOpen=()=>{};
 
  function resize(){const w=W(),h=H();if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();dirty=true}
@@ -540,7 +564,7 @@ void main(){
   S.open+=(S.openT-S.open)*k;if(Math.abs(S.openT-S.open)<.012)S.open=S.openT;
   S.ex+=(S.exT-S.ex)*k;if(Math.abs(S.exT-S.ex)<.001)S.ex=S.exT;U.uEx.value=S.ex;
   if(S.rot)S.th+=dt*.18;
-  S.dist+=(S.distT-S.dist)*k;S.tgt.lerp(S.tgtT,k);
+  S.dist*=Math.pow(S.distT/S.dist,k);S.tgt.lerp(S.tgtT,k);   /* distanza in scala logaritmica: avvicinarsi alla crosta non è più lento che allontanarsi */
   /* taglio */
   const a=S.open*Math.PI/2;
   P1.normal.set(0,0,-1);P1.constant=S.open<.02?10:0; /* spicchio chiuso: nessun taglio */
@@ -595,9 +619,10 @@ void main(){
   setOpen,
   setMode(m){S.mode=m;U.uMode.value=m;select(-1);dirty=true},
   setConv(v){S.conv=v;if(v)setOpen(true)},
-  setScale(real){S.exT=real?0:1},
+  setScale(real){S.exT=real?0:1;if(S.vola>=0)voloVerso(S.vola)},   /* cambiando scala la camera si riadatta allo strato */
   setRot(v){S.rot=v},
-  reset(){S.th=.5;S.ph=1.22;S.distT=W()<520?2.85:3.4;S.tgtT.set(0,0,0)},
+  reset(){S.vola=-1;S.th=.5;S.ph=1.22;S.distT=W()<520?2.85:3.4;S.tgtT.set(0,0,0)},
+  vola:voloVerso,
   setPan(v){S.pan=v},
   zoom(f){S.distT=clampD(S.distT*f)},
   get state(){return S},
@@ -616,7 +641,7 @@ function showInfo(k){
 }
 let mode=0,cur=-1;
 function buildBtns(){lb.innerHTML='';for(const k of (mode===0?SET_COMP:SET_RIG)){const b=document.createElement('button');b.className='chip'+(k===cur?' attivo':'');b.dataset.k=k;b.style.setProperty('--chip',LAYERS[k].c);
- b.textContent=LAYERS[k].n;b.addEventListener('click',()=>window.terra&&window.terra.select(cur===k?-1:k));lb.appendChild(b)}}
+ b.textContent=LAYERS[k].n;b.addEventListener('click',()=>{const T=window.terra;if(!T)return;if(cur===k){T.select(-1);T.reset()}else{T.select(k);T.vola(k)}});lb.appendChild(b)}}   /* il chip porta la camera sullo strato; toccato di nuovo torna alla vista iniziale */
 function tog(b,on){b.classList.toggle('on',on);b.setAttribute(b.getAttribute('role')==='switch'?'aria-checked':'aria-pressed',on)}
 const bOpen=document.getElementById('bOpen'),bRot=document.getElementById('bRot'),bConv=document.getElementById('bConv'),bScale=document.getElementById('bScale'),mComp=document.getElementById('mComp'),mRig=document.getElementById('mRig'),badge=document.getElementById('badge');
 buildBtns();showInfo(-1);
