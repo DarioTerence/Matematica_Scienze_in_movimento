@@ -37,7 +37,7 @@ button,input{font-family:inherit}
 .layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:6px}
 .layout>*{min-width:0}
 @media(max-width:760px){.layout{display:flex;flex-direction:column}.layout>section,.layout>aside{display:contents}
- .stage{order:1}.hint{order:2}#tcard{order:3}.prof{order:4}#panel{order:5}.opzioni{order:6}}
+ .stage{order:1}.hint{order:2}#tcard,#gcard{order:3}.prof{order:4}#panel3{order:5}#panel{order:6}.opzioni{order:7}}
 .stage{position:relative;height:clamp(300px,56vh,520px);background:#080B14;border:1px solid var(--line);border-radius:12px;overflow:hidden;touch-action:none}
 @media(max-width:760px){.stage{height:clamp(260px,44vh,360px)}}
 .stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
@@ -86,6 +86,24 @@ button,input{font-family:inherit}
 .barra i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#ffd08a,#ff8a5b);transition:width .25s}
 .nota{color:var(--mut);font-size:14px;line-height:1.4;margin:10px 0 0}
 .vetri{display:flex;gap:10px;margin-top:10px}
+/* fornello a gettoni (scheda 03) */
+#gcard{margin:12px 0 0}
+@media(min-width:761px){.layout.forn .stage{height:clamp(240px,36vh,320px)}}
+@media(max-width:560px){#grafico text{font-size:24px}.layout.forn .stage{height:clamp(220px,32vh,280px)}}
+#grafico{display:block;width:100%;height:auto}
+.frow{display:grid;grid-template-columns:96px 1fr 1fr;gap:12px;align-items:center;margin-bottom:10px}
+#forn{width:96px;height:96px;display:block}
+.gnum{font:700 28px Cambria,Georgia,serif;color:#fff;line-height:1.1}
+.moneta{transform-box:fill-box;transform-origin:center}
+.moneta.entra{animation:entra .6s ease-in forwards}
+.moneta.esce{animation:esce .6s ease-out forwards}
+@keyframes entra{0%{transform:translateY(-34px);opacity:1}80%{opacity:1}100%{transform:translateY(0);opacity:0}}
+@keyframes esce{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(-34px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.moneta.entra,.moneta.esce{animation:none;opacity:0}}
+.qq{font-size:17px;font-weight:700;margin:2px 0 10px;line-height:1.35}
+.opts{display:grid;gap:8px}
+.opt{border:1px solid var(--line);background:#0d1626;color:var(--txt);border-radius:12px;padding:10px 12px;font-weight:700;cursor:pointer;text-align:left;font-size:16px}
+.opt:hover{border-color:#3a4d70}
 .vetri figure{margin:0;flex:1;text-align:center;font-size:13px;color:var(--mut)}
 .vetri svg{width:100%;max-width:120px;height:auto;display:block;margin:0 auto 2px}
 </style>
@@ -101,7 +119,7 @@ button,input{font-family:inherit}
 <nav class="schede" id="tabs" role="tablist" aria-label="Schede">
  <button class="scheda attiva" role="tab" aria-selected="true" data-p="stati"><span class="num">01</span>Solido, liquido, gas</button>
  <button class="scheda" role="tab" aria-selected="false" disabled title="In preparazione"><span class="num">02</span>I passaggi di stato</button>
- <button class="scheda" role="tab" aria-selected="false" disabled title="In preparazione"><span class="num">03</span>Il fornello a gettoni</button>
+ <button class="scheda" role="tab" aria-selected="false" data-p="fornello"><span class="num">03</span>Il fornello a gettoni</button>
  <button class="scheda" role="tab" aria-selected="false" disabled title="In preparazione"><span class="num">04</span>Allenati</button>
 </nav>
 
@@ -120,6 +138,10 @@ button,input{font-family:inherit}
   <div class="tacche" id="tacche"></div>
   <p class="nota" style="margin:4px 0 0">Il cursore non è in scala, ogni stato ha lo stesso spazio.</p>
  </div>
+ <div class="card hide" id="gcard">
+  <svg id="grafico" viewBox="0 0 560 312" role="img" aria-label="Grafico della temperatura dell'acqua al crescere dei gettoni"></svg>
+  <p class="nota" style="margin:2px 0 0">1 g d'acqua. Un gettone vale 42 J, l'energia che scalda 1 g d'acqua di 10 °C.</p>
+ </div>
  <p class="hint">Trascina per ruotare la vista, pizzica o usa la rotella per avvicinarti.</p>
  <details class="opzioni">
   <summary><b>Opzioni</b></summary>
@@ -137,6 +159,17 @@ button,input{font-family:inherit}
    <div id="extra"></div>
   </div>
   <div class="anchor">Scaldando, le particelle si muovono più in fretta e si allontanano. La sostanza resta la stessa, cambia solo il modo in cui le particelle stanno insieme.</div>
+ </div>
+ <div id="panel3" class="hide">
+  <div class="card">
+   <div class="frow">
+    <svg id="forn" viewBox="0 0 120 120" aria-hidden="true"></svg>
+    <div><div class="sect">Gettoni</div><div class="gnum" id="gNum">0</div><div class="nota" id="gJ" style="margin:0">0 J</div></div>
+    <div><div class="sect">Termometro</div><div class="gnum" id="gT">−20 °C</div><div class="nota" id="gStato" style="margin:0">ghiaccio</div></div>
+   </div>
+   <div id="gAz"></div>
+  </div>
+  <div class="anchor">Durante la fusione e l'ebollizione i gettoni non scaldano. Servono a staccare le particelle le une dalle altre.</div>
  </div>
 </aside>
 </div>
@@ -248,8 +281,12 @@ function Scena(el){
  var elet=new THREE.InstancedMesh(new THREE.SphereGeometry(1,10,8),new THREE.MeshBasicMaterial({color:0x7fe3ff}),MAXI);
  elet.count=0;elet.frustumCulled=false;scene.add(elet);
 
- /* ---- stato delle particelle ---- */
- var s,N,d,mol,P,V,Q,W,H,HQ,FAS,modo,tr=0,trDa=null,tempo=0;
+ /* ---- stato delle particelle ----
+    K[i] dice in che stato è la particella i: 0 solido, 1 liquido, 2 gas. Così nello stesso recipiente
+    possono stare insieme ghiaccio e acqua, o acqua e vapore (fusione ed ebollizione nel fornello a gettoni).
+    TR[i] = avanzamento (0-1) del ritorno ordinato nel reticolo, partendo da FP (posizione) e FQ (orientamento).
+    ORD = ordine in cui le particelle lasciano il reticolo fondendo: prima quelle esterne, poi quelle interne. */
+ var s,N,d,mol,P,V,Q,W,H,HQ,FAS,K,TR,FP,FQ,ORD,plasma=false,tempo=0;
  var at=[],el2=[];                 /* plasma: atomi liberi ed elettroni */
  var m4=new THREE.Matrix4(),q=new THREE.Quaternion(),q2=new THREE.Quaternion(),v3=new THREE.Vector3(),sc=new THREE.Vector3(),e3=new THREE.Euler();
 
@@ -275,24 +312,29 @@ function Scena(el){
 
  function imposta(k,stato){
   s=SOST[k];N=s.N;d=s.d;mol=MOL[s.mol];
-  P=new Float32Array(3*N);V=new Float32Array(3*N);Q=[];W=[];FAS=[];HQ=[];
+  P=new Float32Array(3*N);V=new Float32Array(3*N);FP=new Float32Array(3*N);K=new Uint8Array(N);TR=new Float32Array(N).fill(1);
+  Q=[];W=[];FAS=[];HQ=[];FQ=[];
   H=reticolo();
   for(var i=0;i<N;i++){
-   Q.push(new THREE.Quaternion());W.push(new THREE.Vector3());
+   Q.push(new THREE.Quaternion());W.push(new THREE.Vector3());FQ.push(new THREE.Quaternion());
    if(H[i][3]!==undefined)HQ.push(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI/2-H[i][3]*Math.PI/180)
     .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),Math.PI/2)));
    else HQ.push(new THREE.Quaternion().setFromEuler(new THREE.Euler(0,(i%2)*Math.PI/3,0)));
    FAS.push([Math.random()*6.3,Math.random()*6.3,Math.random()*6.3,7+Math.random()*3,7+Math.random()*3,7+Math.random()*3]);}
-  at=[];el2=[];
-  if(stato===0){for(i=0;i<N;i++){P[3*i]=H[i][0];P[3*i+1]=H[i][1];P[3*i+2]=H[i][2];Q[i].copy(HQ[i]);}modo='solido';tr=1;}
+  /* ordine di fusione: dalla superficie del cristallo verso l'interno */
+  var cy=0;H.forEach(function(h){cy+=h[1];});cy/=N;
+  ORD=H.map(function(h,i){return [i,h[0]*h[0]+h[2]*h[2]+1.6*(h[1]-cy)*(h[1]-cy)+(h[1]>cy?.01:0)];})
+   .sort(function(x,y){return y[1]-x[1];}).map(function(x){return x[0];});
+  at=[];el2=[];plasma=false;
+  if(stato===0){for(i=0;i<N;i++){P[3*i]=H[i][0];P[3*i+1]=H[i][1];P[3*i+2]=H[i][2];Q[i].copy(HQ[i]);}}
   else{
+   K.fill(stato===1?1:2);
    for(i=0;i<N;i++){
     P[3*i]=(Math.random()*2-1)*(BX-d/2);P[3*i+2]=(Math.random()*2-1)*(BZ-d/2);
     P[3*i+1]=stato===1?-BY+d/2+Math.random()*.9:(Math.random()*2-1)*(BY-d/2);
     Q[i].setFromEuler(new THREE.Euler(Math.random()*6.3,Math.random()*6.3,Math.random()*6.3));}
-   modo=stato===1?'liquido':'gas';
-   if(stato===3)entraPlasma();
-   if(stato===1)for(var r=0;r<240;r++)passo(1/120,1);   /* il liquido si deposita prima di comparire */
+   if(stato===3){entraPlasma();plasma=true;}
+   if(stato===1)for(var r=0;r<240;r++)passo(1/120);   /* il liquido si deposita prima di comparire */
   }
   ricolora();}
 
@@ -301,25 +343,47 @@ function Scena(el){
  function vLiq(){return .28*Math.sqrt(TK()/(s.mp+273.15));}
  function vGas(){return 1.5*Math.sqrt(TK()/(s.bp+273.15));}
 
- /* ---- dinamica di liquido e gas: urti morbidi tra particelle, pareti, gravità, termostato ---- */
- function passo(h,liq){
-  var g=liq?4:.25,K=90,A=liq?10:0,d2=d*d,dc=(1.45*d)*(1.45*d),i,j;
-  for(i=0;i<N;i++)V[3*i+1]-=g*h;
-  for(i=0;i<N;i++){var xi=P[3*i],yi=P[3*i+1],zi=P[3*i+2];
-   for(j=i+1;j<N;j++){var dx=P[3*j]-xi,dy=P[3*j+1]-yi,dz=P[3*j+2]-zi,r2=dx*dx+dy*dy+dz*dz;
+ /* ---- dinamica di liquido e gas: urti morbidi tra particelle, pareti, gravità, termostato.
+    Le particelle solide restano ferme nel reticolo e fanno da ostacolo; l'attrazione c'è solo nel liquido. ---- */
+ function passo(h){
+  var G=[0,4,.25],KS=90,A=10,d2=d*d,dc=(1.45*d)*(1.45*d),i,j;
+  for(i=0;i<N;i++)if(K[i])V[3*i+1]-=G[K[i]]*h;
+  for(i=0;i<N;i++){var xi=P[3*i],yi=P[3*i+1],zi=P[3*i+2],ki=K[i];
+   for(j=i+1;j<N;j++){var kj=K[j];if(!ki&&!kj)continue;
+    var dx=P[3*j]-xi,dy=P[3*j+1]-yi,dz=P[3*j+2]-zi,r2=dx*dx+dy*dy+dz*dz;
     if(r2>=dc||r2<1e-9)continue;var r=Math.sqrt(r2),f;
-    if(r2<d2)f=-K*(d-r)/r;else if(A)f=A*(r-d)/r;else continue;
-    f*=h;V[3*i]+=f*dx;V[3*i+1]+=f*dy;V[3*i+2]+=f*dz;V[3*j]-=f*dx;V[3*j+1]-=f*dy;V[3*j+2]-=f*dz;}}
+    if(r2<d2)f=-KS*(d-r)/r;else if(ki===1&&kj===1)f=A*(r-d)/r;else continue;
+    f*=h;
+    if(ki){V[3*i]+=f*dx;V[3*i+1]+=f*dy;V[3*i+2]+=f*dz;}
+    if(kj){V[3*j]-=f*dx;V[3*j+1]-=f*dy;V[3*j+2]-=f*dz;}}}
   var rr=d/2;
-  for(i=0;i<N;i++){
+  for(i=0;i<N;i++){if(!K[i])continue;
    for(var c=0;c<3;c++){var B=c===0?BX:c===1?BY:BZ,p=P[3*i+c]+V[3*i+c]*h;
     if(p<-B+rr){p=-B+rr;V[3*i+c]=Math.abs(V[3*i+c]);}else if(p>B-rr){p=B-rr;V[3*i+c]=-Math.abs(V[3*i+c]);}
     P[3*i+c]=p;}}}
- function termostato(dt,vt,liq){
-  var m=0,i;for(i=0;i<N;i++)m+=Math.hypot(V[3*i],V[3*i+1],V[3*i+2]);m=m/N+1e-6;
-  var f=1+(vt/m-1)*Math.min(1,dt*4);
-  for(i=0;i<N;i++){V[3*i]*=f;V[3*i+1]*=f;V[3*i+2]*=f;
-   if(liq){V[3*i]+=(Math.random()-.5)*vt*dt*6;V[3*i+2]+=(Math.random()-.5)*vt*dt*6;}}}
+ function termostato(dt){
+  var m=[0,0,0],n=[0,0,0],i;
+  for(i=0;i<N;i++)if(K[i]){m[K[i]]+=Math.hypot(V[3*i],V[3*i+1],V[3*i+2]);n[K[i]]++;}
+  var vt=[0,vLiq(),vGas()],f=[1,1,1];
+  for(var k=1;k<3;k++)if(n[k])f[k]=1+(vt[k]/(m[k]/n[k]+1e-6)-1)*Math.min(1,dt*4);
+  for(i=0;i<N;i++){var ki=K[i];if(!ki)continue;V[3*i]*=f[ki];V[3*i+1]*=f[ki];V[3*i+2]*=f[ki];
+   if(ki===1){V[3*i]+=(Math.random()-.5)*vt[1]*dt*6;V[3*i+2]+=(Math.random()-.5)*vt[1]*dt*6;}}}
+
+ /* ---- quante particelle sono solide (ns) e quante gassose (ng); le altre sono liquide ----
+    Fondendo lasciano il reticolo prima le particelle esterne; bollendo diventano gas quelle più in alto del liquido;
+    condensando tornano liquide le particelle di gas più in basso. */
+ function fasi(ns,ng){
+  var dentro=new Uint8Array(N),i;
+  for(i=N-ns;i<N;i++)dentro[ORD[i]]=1;
+  for(i=0;i<N;i++){
+   if(dentro[i]&&K[i]){FP[3*i]=P[3*i];FP[3*i+1]=P[3*i+1];FP[3*i+2]=P[3*i+2];FQ[i].copy(Q[i]);TR[i]=0;K[i]=0;}
+   else if(!dentro[i]&&!K[i]){K[i]=1;var dv=dirCasuale(vLiq());V[3*i]=dv[0];V[3*i+1]=dv[1];V[3*i+2]=dv[2];}}
+  var gas=[],liq=[];for(i=0;i<N;i++){if(K[i]===2)gas.push(i);else if(K[i]===1)liq.push(i);}
+  var y=function(i){return P[3*i+1];};
+  if(gas.length<ng){liq.sort(function(a,b){return y(b)-y(a);});
+   liq.slice(0,ng-gas.length).forEach(function(i){K[i]=2;var dv=dirCasuale(vGas());V[3*i]=dv[0];V[3*i+1]=Math.abs(dv[1]);V[3*i+2]=dv[2];});}
+  else if(gas.length>ng){gas.sort(function(a,b){return y(a)-y(b);});
+   gas.slice(0,gas.length-ng).forEach(function(i){K[i]=1;V[3*i]*=.2;V[3*i+1]*=.2;V[3*i+2]*=.2;});}}
 
  /* ---- plasma: le molecole si spezzano in atomi e gli atomi perdono elettroni ---- */
  function entraPlasma(){
@@ -335,15 +399,13 @@ function Scena(el){
  function esciPlasma(){         /* le particelle tornano molecole intere, sparse nel recipiente */
   for(var i=0;i<N;i++){P[3*i]=(Math.random()*2-1)*(BX-d/2);P[3*i+1]=(Math.random()*2-1)*(BY-d/2);P[3*i+2]=(Math.random()*2-1)*(BZ-d/2);
    var dv=dirCasuale(vGas());V[3*i]=dv[0];V[3*i+1]=dv[1];V[3*i+2]=dv[2];}
-  at=[];el2=[];}
+  K.fill(2);at=[];el2=[];plasma=false;}
 
- /* cambio di stato: il solido si forma tornando ordinato nel reticolo, gli altri passaggi li fa la dinamica */
+ /* cambio di stato di tutta la sostanza (scheda 01) */
  function cambiaStato(da,a){
-  if(a===3){entraPlasma();modo='plasma';return;}
+  if(a===3){entraPlasma();plasma=true;return;}
   if(da===3)esciPlasma();
-  if(a===0){trDa={P:Float32Array.from(P),Q:Q.map(function(x){return x.clone();})};tr=0;modo='solido';return;}
-  if(da===0){for(var i=0;i<N;i++){var dv=dirCasuale(a===1?vLiq():vGas());V[3*i]=dv[0];V[3*i+1]=dv[1];V[3*i+2]=dv[2];}}
-  modo=a===1?'liquido':'gas';}
+  fasi(a===0?N:0,a===2?N:0);}
 
  /* il ferro caldo emette luce: dal rosso scuro (500 °C) all'arancione chiaro */
  function ricolora(){
@@ -355,8 +417,7 @@ function Scena(el){
  /* ---- disegno: posizione e orientamento di ogni molecola, poi ogni atomo ---- */
  function disegna(){
   var cnt={O:0,H:0,C:0,Fe:0},i;
-  Object.keys(mesh).forEach(function(k){mesh[k].count=0;});
-  if(modo==='plasma'){
+  if(plasma){
    at.forEach(function(a){var r=ATOMI[a.e].r*.85;m4.compose(v3.set(a.p[0],a.p[1],a.p[2]),q.identity(),sc.set(r,r,r));mesh[a.e].setMatrixAt(cnt[a.e]++,m4);});
    el2.forEach(function(o,k){m4.compose(v3.set(o.p[0],o.p[1],o.p[2]),q.identity(),sc.set(.022,.022,.022));elet.setMatrixAt(k,m4);});
    elet.count=el2.length;elet.instanceMatrix.needsUpdate=true;
@@ -370,26 +431,27 @@ function Scena(el){
   Object.keys(mesh).forEach(function(k){mesh[k].count=cnt[k];mesh[k].instanceMatrix.needsUpdate=true;});}
 
  function aggiorna(dt){
-  tempo+=dt;var i;
-  if(modo==='solido'){
-   var amp=VIB_MAX*Math.sqrt(clamp(TK()/(s.mp+273.15),0,1));
-   var u=liscio(tr=Math.min(1,tr+dt/T_CRISTALLO));
-   for(i=0;i<N;i++){var f=FAS[i],h=H[i];
-    var ox=amp*Math.sin(f[3]*tempo+f[0]),oy=amp*Math.sin(f[4]*tempo+f[1]),oz=amp*Math.sin(f[5]*tempo+f[2]);
-    var tx=h[0]+ox,ty=h[1]+oy,tz=h[2]+oz;
-    if(trDa&&u<1){P[3*i]=trDa.P[3*i]+(tx-trDa.P[3*i])*u;P[3*i+1]=trDa.P[3*i+1]+(ty-trDa.P[3*i+1])*u;P[3*i+2]=trDa.P[3*i+2]+(tz-trDa.P[3*i+2])*u;
-     q2.setFromEuler(e3.set(ox*2,oy*2,oz*2));q.copy(HQ[i]).multiply(q2);Q[i].copy(trDa.Q[i]).slerp(q,u);}
-    else{P[3*i]=tx;P[3*i+1]=ty;P[3*i+2]=tz;q2.setFromEuler(e3.set(ox*2,oy*2,oz*2));Q[i].copy(HQ[i]).multiply(q2);}}
-   if(u>=1)trDa=null;
-  }else if(modo==='plasma'){
-   muoviLiberi(at,dt);muoviLiberi(el2,dt);
-  }else{
-   var liq=modo==='liquido',vt=liq?vLiq():vGas(),n=Math.ceil(dt/.004),h2=dt/n;
-   for(var k=0;k<n;k++)passo(h2,liq);
-   termostato(dt,vt,liq);
-   var w=(liq?2.5:5)*vt/(liq?.28:1.5);
-   for(i=0;i<N;i++){if(W[i].lengthSq()<1e-6){var dv=dirCasuale(1);W[i].set(dv[0],dv[1],dv[2]);}
-    q2.setFromAxisAngle(W[i],w*dt);Q[i].multiply(q2).normalize();}
+  tempo+=dt;var i,fluidi=0;
+  if(plasma){muoviLiberi(at,dt);muoviLiberi(el2,dt);disegna();return;}
+  /* solidi: vibrano attorno al posto nel reticolo; chi ci sta tornando lo raggiunge in T_CRISTALLO secondi */
+  var amp=VIB_MAX*Math.sqrt(clamp(TK()/(s.mp+273.15),0,1));
+  for(i=0;i<N;i++){if(K[i]){fluidi++;continue;}
+   var f=FAS[i],h=H[i];
+   var ox=amp*Math.sin(f[3]*tempo+f[0]),oy=amp*Math.sin(f[4]*tempo+f[1]),oz=amp*Math.sin(f[5]*tempo+f[2]);
+   q2.setFromEuler(e3.set(ox*2,oy*2,oz*2));q.copy(HQ[i]).multiply(q2);
+   var tx=h[0]+ox,ty=h[1]+oy,tz=h[2]+oz;
+   if(TR[i]<1){TR[i]=Math.min(1,TR[i]+dt/T_CRISTALLO);var u=liscio(TR[i]);
+    P[3*i]=FP[3*i]+(tx-FP[3*i])*u;P[3*i+1]=FP[3*i+1]+(ty-FP[3*i+1])*u;P[3*i+2]=FP[3*i+2]+(tz-FP[3*i+2])*u;Q[i].copy(FQ[i]).slerp(q,u);}
+   else{P[3*i]=tx;P[3*i+1]=ty;P[3*i+2]=tz;Q[i].copy(q);}}
+  /* liquidi e gas */
+  if(fluidi){
+   var n=Math.ceil(dt/.004),h2=dt/n;
+   for(var k=0;k<n;k++)passo(h2);
+   termostato(dt);
+   var w=[0,2.5*vLiq()/.28,5*vGas()/1.5];
+   for(i=0;i<N;i++){if(!K[i])continue;
+    if(W[i].lengthSq()<1e-6){var dv=dirCasuale(1);W[i].set(dv[0],dv[1],dv[2]);}
+    q2.setFromAxisAngle(W[i],w[K[i]]*dt);Q[i].multiply(q2).normalize();}
   }
   disegna();}
 
@@ -414,6 +476,7 @@ function Scena(el){
   var dd=rad*fit;cam.position.set(dd*Math.sin(ph)*Math.sin(th),dd*Math.cos(ph)-.05,dd*Math.sin(ph)*Math.cos(th));cam.lookAt(0,-.1,0);R.render(scene,cam);})(last);
  resize();
  return {imposta:imposta,cambiaStato:cambiaStato,ricolora:ricolora,resize:resize,
+  fasi:function(fs,fg){fasi(Math.round(fs*N),Math.round(fg*N));},
   reset:function(){th=V0.th;ph=V0.ph;rad=V0.rad;},zoom:function(f){rad=clamp(rad*f,2,8);}};
 }
 var scena=Scena($('stage'));
@@ -425,9 +488,9 @@ function chipSost(){
 $('sost').addEventListener('click',function(e){var b=e.target.closest('[data-k]');if(b&&b.dataset.k!==S.k)sostanza(b.dataset.k,true);});
 
 function legenda(){
- var s=SOST[S.k],tipi=[];MOL[s.mol].forEach(function(a){if(tipi.indexOf(a[0])<0)tipi.push(a[0]);});
+ var s=SOST[S.tab==='fornello'?'acqua':S.k],tipi=[];MOL[s.mol].forEach(function(a){if(tipi.indexOf(a[0])<0)tipi.push(a[0]);});
  $('legenda').innerHTML='<b>'+s.f.split(',')[0]+'</b> '+tipi.map(function(k){return '<i style="background:'+ATOMI[k].c+'"></i>'+ATOMI[k].n;}).join('')
-  +(S.stato===3?' <i style="background:#7fe3ff"></i>elettroni':'');}
+  +(S.stato===3&&S.tab!=='fornello'?' <i style="background:#7fe3ff"></i>elettroni':'');}
 
 /* cursore: colori delle zone e tacche delle temperature di fusione ed ebollizione */
 function tacche(){
@@ -509,6 +572,165 @@ $('bReset').onclick=function(){if(scena)scena.reset();};
 $('bPiu').onclick=function(){if(scena)scena.zoom(.8);};
 $('bMeno').onclick=function(){if(scena)scena.zoom(1.25);};
 $('oLento').onclick=function(){S.lento=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',S.lento);};
+
+
+/* =========================== SCHEDE =========================== */
+var SUB={stati:'Muovi la temperatura e osserva come si comportano le particelle.',
+ fornello:'Ogni gettone dà la stessa energia. Guarda cosa succede al termometro.'};
+S.tab='stati';
+document.querySelectorAll('#tabs .scheda').forEach(function(t){t.addEventListener('click',function(){
+ if(t.disabled||!t.dataset.p||t.dataset.p===S.tab)return;apriScheda(t.dataset.p);});});
+function apriScheda(p){
+ var nav=$('tabs'),x0=nav.scrollLeft;S.tab=p;
+ document.querySelectorAll('#tabs .scheda').forEach(function(x){var on=x.dataset.p===p;x.classList.toggle('attiva',on);x.setAttribute('aria-selected',on);});
+ nav.scrollLeft=x0;centraScheda(nav);
+ $('sub').textContent=SUB[p];
+ var f=p==='fornello';
+ ['tcard','panel'].forEach(function(id){$(id).classList.toggle('hide',f);});
+ ['gcard','panel3'].forEach(function(id){$(id).classList.toggle('hide',!f);});
+ document.querySelector('.layout').classList.toggle('forn',f);
+ if(f)Fornello.apri();else{Fornello.chiudi();sostanza(S.k,false);say(FRASI.start,'hi');}
+ if(scena)scena.resize();}
+
+/* =========================== 03 IL FORNELLO A GETTONI ===========================
+   1 g d'acqua da −20 a 120 °C. Un gettone = 42 J, l'energia che scalda 1 g d'acqua di 10 °C.
+   Gettoni per tratto (valori nella scheda di progetto): ghiaccio da −20 a 0 °C 1, fusione 8,
+   acqua da 0 a 100 °C 10, ebollizione 54, vapore da 100 a 120 °C 1; in tutto 74. */
+var Fornello=(function(){
+ var T_GETTONE=.6;            /* secondi per ogni gettone: il termometro e il grafico avanzano sempre alla stessa velocità */
+ var J=42,TOT=74;
+ var SEG=[{e0:0,e1:1,t0:-20,t1:0,c:'#7fb2ff'},{e0:1,e1:9,t0:0,t1:0,c:'#a6d9f2',n:'fusione'},
+  {e0:9,e1:19,t0:0,t1:100,c:'#4fc3c7'},{e0:19,e1:73,t0:100,t1:100,c:'#ffb454',n:'ebollizione'},{e0:73,e1:74,t0:100,t1:120,c:'#ffd08a'}];
+ var F={E:0,meta:0,play:false,bet1:false,bet2:false,attivo:false,dom:null};
+ var X0=56,X1=462,Y0=22,Y1=282;
+ var xE=function(E){return X0+(X1-X0)*E/TOT;},yT=function(t){return Y1-(t+20)/140*(Y1-Y0);};
+ function TdaE(E){for(var i=0;i<SEG.length;i++){var g=SEG[i];if(E<=g.e1)return g.t0+(g.t1-g.t0)*(E-g.e0)/(g.e1-g.e0);}return 120;}
+ function fasiDaE(E){return [E<1?1:E<9?1-(E-1)/8:0, E<19?0:E<73?(E-19)/54:1];}
+ function statoTesto(E){
+  var giu=E>F.meta+1e-6;        /* si stanno togliendo gettoni: il passaggio va al contrario */
+  if(E<=1.001)return 'ghiaccio';
+  if(E<8.999)return (giu?'acqua che gela, ':'ghiaccio che fonde, ')+Math.round((E-1)/8*100)+'% liquido';
+  if(E<=19.001)return 'acqua';
+  if(E<72.999)return (giu?'vapore che condensa, ':'acqua che bolle, ')+Math.round((E-19)/54*100)+'% vapore';
+  return 'vapore';}
+
+ /* ---- grafico: parte fissa (assi e griglia) e parte che cresce ---- */
+ function statico(){
+  var h='',t,e;
+  [-20,0,50,100,120].forEach(function(t){h+='<line x1="'+X0+'" x2="'+X1+'" y1="'+yT(t)+'" y2="'+yT(t)+'" stroke="#22304a" stroke-width="1"/>'
+   +'<text x="'+(X0-8)+'" y="'+(yT(t)+4)+'" text-anchor="end" font-size="17" fill="#8fa0b8">'+(t<0?'−'+(-t):t)+'</text>';});
+  for(e=0;e<=70;e+=10)h+='<line x1="'+xE(e)+'" x2="'+xE(e)+'" y1="'+Y1+'" y2="'+(Y1+5)+'" stroke="#3a4d70"/>'
+   +'<text x="'+xE(e)+'" y="'+(Y1+22)+'" text-anchor="middle" font-size="17" fill="#8fa0b8">'+e+'</text>';
+  h+='<line x1="'+X0+'" x2="'+X0+'" y1="'+Y0+'" y2="'+Y1+'" stroke="#3a4d70"/><line x1="'+X0+'" x2="'+X1+'" y1="'+Y1+'" y2="'+Y1+'" stroke="#3a4d70"/>'
+   +'<text x="'+(X0+8)+'" y="'+(Y0+4)+'" font-size="17" fill="#c8d3e3">°C</text>'
+   +'<text x="'+(X1+6)+'" y="'+(Y1+22)+'" font-size="17" fill="#c8d3e3">gettoni</text>'
+   +'<text x="'+xE(5)+'" y="'+(yT(0)-9)+'" text-anchor="middle" font-size="18" font-style="italic" fill="#a6d9f2" id="lFus" opacity="0">fusione</text>'
+   +'<text x="'+xE(46)+'" y="'+(yT(100)-9)+'" text-anchor="middle" font-size="18" font-style="italic" fill="#ffb454" id="lEbo" opacity="0">ebollizione</text>'
+   +'<text x="508" y="15" text-anchor="middle" font-size="15" fill="#c8d3e3">gettoni</text>'
+   +'<rect x="490" y="'+Y0+'" width="36" height="'+(Y1-Y0)+'" rx="3" fill="none" stroke="#22304a" stroke-dasharray="3 3"/>'
+   +'<g id="gDin"></g>';
+  $('grafico').innerHTML=h;}
+ function grafico(){
+  var E=F.E,h='',hc=(Y1-Y0)/TOT;
+  SEG.forEach(function(g){if(E<=g.e0)return;var e=Math.min(E,g.e1);
+   h+='<line x1="'+xE(g.e0)+'" y1="'+yT(g.t0)+'" x2="'+xE(e)+'" y2="'+yT(TdaE(e))+'" stroke="'+g.c+'" stroke-width="5" stroke-linecap="round"/>';});
+  h+='<circle cx="'+xE(E)+'" cy="'+yT(TdaE(E))+'" r="7" fill="#fff" stroke="#ffd08a" stroke-width="3"/>';
+  /* colonna dei gettoni: uno sopra l'altro, con una barretta del colore del tratto e il conto dei tratti finiti */
+  var n=Math.floor(E+1e-6);
+  for(var i=0;i<n;i++){var y=Y1-(i+1)*hc,g=SEG.filter(function(s){return i<s.e1;})[0];
+   h+='<rect x="494" y="'+(y+.3)+'" width="28" height="'+(hc-.6)+'" rx="1.5" fill="#f2c14e" stroke="#b8892a" stroke-width=".5"/>'
+    +'<rect x="487" y="'+(y+.3)+'" width="3" height="'+(hc-.6)+'" fill="'+g.c+'"/>';}
+  SEG.forEach(function(g){if(E<g.e1-1e-6||g.e1-g.e0<2)return;var ym=Y1-(g.e0+g.e1)/2*hc;
+   h+='<text x="530" y="'+(ym+5)+'" font-size="19" font-weight="700" fill="'+g.c+'">'+(g.e1-g.e0)+'</text>';});
+  $('gDin').innerHTML=h;
+  $('lFus').setAttribute('opacity',E>1.2?1:0);$('lEbo').setAttribute('opacity',E>19.2?1:0);}
+
+ /* ---- il fornello: pentolino, piastra e fessura per i gettoni ---- */
+ function fornello(){
+  $('forn').innerHTML='<rect x="30" y="22" width="60" height="30" rx="5" fill="#8a96a8"/><rect x="34" y="30" width="52" height="18" rx="3" fill="#0d1626"/>'
+   +'<rect x="35" y="36" width="50" height="11" rx="2" id="fAcq" fill="#a6d9f2"/><rect x="88" y="27" width="22" height="5" rx="2.5" fill="#3a4d70"/>'
+   +'<ellipse cx="60" cy="56" rx="38" ry="4.5" id="fPia" fill="#3a4d70"/>'
+   +'<rect x="18" y="60" width="84" height="48" rx="9" fill="#1b2840" stroke="#3a4d70"/>'
+   +'<rect x="51" y="70" width="18" height="5" rx="2.5" fill="#05070c" stroke="#ffd08a" stroke-width="1"/>'
+   +'<text x="60" y="97" text-anchor="middle" font-size="12" fill="#ffd08a">42 J</text>'
+   +'<g class="moneta" id="fMon" opacity="0"><circle cx="60" cy="68" r="8" fill="#f2c14e" stroke="#b8892a" stroke-width="1.5"/><circle cx="60" cy="68" r="4.5" fill="none" stroke="#b8892a" stroke-width="1"/></g>';}
+ function moneta(cls){var m=$('fMon');if(!m||reduce)return;m.classList.remove('entra','esce');void m.getBoundingClientRect();m.classList.add(cls);}
+
+ function ui(){
+  var t=TdaE(F.E);
+  $('gNum').textContent=F.meta;
+  $('gJ').textContent=F.meta?F.meta+' · 42 J = '+F.meta*J+' J':'0 J';
+  $('gT').textContent=gradi(Math.round(t));
+  $('gStato').textContent=statoTesto(F.E);
+  var f=fasiDaE(F.E),acq=$('fAcq');if(acq)acq.setAttribute('fill',f[0]>.5?'#d9f2ff':f[1]>.99?'#3a4d70':'#5bc8f0');
+  var gm=$('gMeno');if(gm)gm.disabled=!F.meta;
+  var pia=$('fPia');if(pia)pia.setAttribute('fill',F.E<F.meta-1e-6?'#ff7a3d':F.E>F.meta+1e-6?'#7fd3ff':'#3a4d70');}
+
+ /* ---- comandi: Metti un gettone (pieno), Togli un gettone, Riproduci; al posto loro le domande ---- */
+ function azioni(){
+  if(F.dom){var D=F.dom;
+   $('gAz').innerHTML='<p class="qq">'+D.q+'</p><div class="opts">'+D.o.map(function(o,k){return '<button class="opt" data-k="'+k+'">'+o+'</button>';}).join('')+'</div>';
+   $('gAz').querySelector('.opts').onclick=function(e){var b=e.target.closest('.opt');if(!b)return;var k=+b.dataset.k;
+    say(k===D.ok?D.si:D.no,k===D.ok?'ok':'pensieroso',true);F.dom=null;if(D.id===1)F.bet1=true;else F.bet2=true;metti(1);azioni();};
+   return;}
+  var fine=F.meta>=TOT;
+  $('gAz').innerHTML='<div class="azioni">'
+   +'<button class="azione primaria" id="gPiu">'+(fine?'↻ Ricomincia':'+ Metti un gettone')+'</button>'
+   +'<button class="azione" id="gMeno"'+(F.meta?'':' disabled')+'>− Togli un gettone</button>'
+   +'<button class="azione link" id="gPlay">↻ Riproduci</button></div>';
+  $('gPiu').onclick=function(){F.play=false;
+   if(fine){azzera();say(MSG.start,'fornello');azioni();return;}
+   if(F.meta===1&&!F.bet1){F.dom=DOM[0];azioni();say('Prima di mettere il gettone, scommetti. Che cosa farà il termometro?','pensieroso');return;}
+   if(F.meta===19&&!F.bet2){F.dom=DOM[1];azioni();say('Scommetti di nuovo prima di continuare.','pensieroso');return;}
+   metti(1);azioni();};
+  $('gMeno').onclick=function(){F.play=false;metti(-1);azioni();};
+  $('gPlay').onclick=function(){azzera();F.play=true;say('Guarda il termometro e la colonna dei gettoni. Il fornello mette un gettone dopo l\'altro, sempre alla stessa velocità.','fornello');azioni();};}
+ function metti(k){var m=clamp(F.meta+k,0,TOT);if(m===F.meta)return;F.meta=m;moneta(k>0?'entra':'esce');ui();}
+ function azzera(){F.E=F.meta=0;F.dom=null;S.t=-20;if(scena)scena.imposta('acqua',0);grafico();ui();}
+
+ var DOM=[
+  {id:1,q:'Il ghiaccio è arrivato a 0 °C. Se metto un altro gettone, il termometro sale?',o:['Sì, sale di 10 °C','Sì, ma sale di poco','No, resta a 0 °C'],ok:2,
+   si:'Esatto! Il gettone serve a staccare le molecole del ghiaccio. Il termometro resta a 0 °C finché tutto il ghiaccio non è fuso.',
+   no:'Guarda il termometro. Resta fermo a 0 °C, perché il gettone serve a staccare le molecole del ghiaccio, non a farle muovere più in fretta.'},
+  {id:2,q:'Per scaldare l\'acqua da 0 a 100 °C sono serviti 10 gettoni. Quanti ne servono per farla bollire tutta?',o:['Circa 10','Circa 25','Più di 50'],ok:2,
+   si:'Proprio così, ne servono 54! Staccare del tutto le molecole e farle volare via costa moltissima energia.',
+   no:'Molti di più, ne servono 54. È più di cinque volte l\'energia per scaldarla da 0 a 100 °C. Mettili uno alla volta, oppure tocca Riproduci.'}];
+
+ var MSG={
+  start:'Ecco 1 g di ghiaccio a −20 °C. Ogni gettone che metto nel fornello dà 42 J di energia. Tocca Metti un gettone.',
+  zero:'0 °C, il ghiaccio comincia a fondere.',
+  fonde:'Il termometro è fermo a 0 °C. I gettoni servono a staccare le molecole del ghiaccio, non a farle muovere più in fretta.',
+  fuso:'Tutto il ghiaccio è fuso. Sono serviti 8 gettoni, cioè 336 J, e la temperatura non è salita di un grado.',
+  scalda:'Ora la temperatura sale di nuovo. Ogni gettone scalda l\'acqua di 10 °C.',
+  bolle:'100 °C, l\'acqua comincia a bollire.',
+  bolle2:'Di nuovo il termometro è fermo. Le molecole che si staccano dal liquido volano via come vapore.',
+  vapore:'Tutta l\'acqua è diventata vapore. Sono serviti 54 gettoni, più di cinque volte quelli per scaldarla da 0 a 100 °C.',
+  fine:'Vapore a 120 °C. In tutto 74 gettoni, cioè 3108 J. Ora prova a togliere i gettoni, il fornello diventa un frigorifero.',
+  condensa:'Raffreddando succede il contrario. Il vapore che condensa restituisce uno alla volta gli stessi 54 gettoni. Per questo il vapore scotta più dell\'acqua bollente.',
+  gela:'L\'acqua che gela restituisce 8 gettoni. Per questo nei frutteti si spruzza acqua sulle piante nelle notti di gelo.'};
+ var SOGLIE_SU=[[1,'zero','ok'],[2.5,'fonde','pensieroso'],[9,'fuso','ok'],[11,'scalda','fornello'],[19,'bolle','ok'],[25,'bolle2','pensieroso'],[73,'vapore','fine'],[74,'fine','fine']];
+ var SOGLIE_GIU=[[72,'condensa','ok'],[8,'gela','ok']];
+ function messaggi(a,b){var m=null;if(F.dom)return;
+  if(b>a)SOGLIE_SU.forEach(function(x){if(a<x[0]&&b>=x[0]-1e-6)m=x;});
+  else SOGLIE_GIU.forEach(function(x){if(a>x[0]&&b<=x[0])m=x;});
+  if(m)say(MSG[m[1]],m[2],true);}
+
+ var last=performance.now();
+ (function loop(now){requestAnimationFrame(loop);
+  var dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;     /* intervallo mai negativo */
+  if(!F.attivo)return;
+  if(F.play&&Math.abs(F.E-F.meta)<1e-6){if(F.meta<TOT)metti(1);else{F.play=false;azioni();}}
+  if(Math.abs(F.E-F.meta)<1e-6)return;
+  var a=F.E,st=dt/T_GETTONE;
+  F.E=F.E<F.meta?Math.min(F.meta,F.E+st):Math.max(F.meta,F.E-st);
+  S.t=TdaE(F.E);var f=fasiDaE(F.E);if(scena)scena.fasi(f[0],f[1]);
+  grafico();ui();messaggi(a,F.E);
+  if(Math.abs(F.E-F.meta)<1e-6&&!F.play)azioni();})(last);
+
+ return {
+  apri:function(){F.attivo=true;F.play=false;statico();fornello();azzera();legenda();azioni();say(MSG.start,'fornello');},
+  chiudi:function(){F.attivo=false;F.play=false;}};
+})();
 
 sostanza('acqua',false);
 say(FRASI.start,'hi');
