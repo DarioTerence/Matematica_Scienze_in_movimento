@@ -343,7 +343,7 @@ function Terra(stage){
  /* stato */
  const S={open:1,openT:1,ex:1,exT:1,sel:-1,mode:0,conv:false,rot:false,th:.5,ph:1.22,dist:3.4,distT:(stage.clientWidth<520?2.85:3.4),pan:false,vola:-1,tgt:new THREE.Vector3(),tgtT:new THREE.Vector3()};
  const BETA=-102*Math.PI/180; /* rotazione del globo: la faccia mobile, a spicchio aperto, passa per il meridiano 12° E (Italia) */
- const U={uEx:{value:1},uSel:{value:-1},uMode:{value:0},uTime:{value:0},uElev:{value:null},uConv:{value:0}};
+ const U={uEx:{value:1},uSel:{value:-1},uMode:{value:0},uTime:{value:0},uElev:{value:null},uConv:{value:0},uLW:{value:.0022}};   /* uLW = spessore delle linee di confine, si assottiglia avvicinandosi */
 
  /* stelle */
  {const g=new THREE.BufferGeometry(),n=1400,p=new Float32Array(n*3);
@@ -392,7 +392,7 @@ float f=pow(1.-max(dot(vN,vV),0.),3.2);gl_FragColor=vec4(vec3(.35,.62,1.)*f*1.25
  const faceVS=`varying vec2 vP;void main(){vP=position.xy;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`;
  const faceFS=`precision highp float;
 varying vec2 vP;
-uniform float uEx,uSel,uMode,uTime,uLon,uShade,uConv;
+uniform float uEx,uSel,uMode,uTime,uLon,uShade,uConv,uLW;
 uniform sampler2D uElev;
 float dEx(float k){
  if(k<40.)return k*(.024/40.);
@@ -424,7 +424,7 @@ void main(){
  else if(cid<4.5){float t=(d-bG)/(bI-bG);float f=fbm(vec2(lat*4.+uTime*.06,d*10.-uTime*.09));col=mix(vec3(1.,.66,.16),vec3(1.,.82,.36),f*.8+t*.3);}
  else{float t=clamp((d-bI)/(1.-bI),0.,1.);col=mix(vec3(1.,.93,.68),vec3(1.,.99,.93),t*t);col*=.94+.12*fbm(vP*18.);}
  if(cid>1.5&&cid<3.5)col*=1.-.3*uConv;
- float w=.0022;
+ float w=uLW;   /* da vicino la linea non deve coprire la crosta oceanica, spessa meno di 0,002 */
  float ln=max(max(line(d,bC,w),line(d,b6,w)),max(line(d,bG,w),line(d,bI,w)));
  col*=1.-.45*ln;
  if(uMode>.5){
@@ -437,12 +437,15 @@ void main(){
  }
  if(uSel>-.5){
   float id=uMode>.5?rid:cid;
-  if(abs(id-uSel)<.5){col*=1.12+.06*sin(uTime*3.);}
-  else{col=mix(col,vec3(dot(col,vec3(.3,.59,.11))),.65)*.38;}
+  float crosta=step(uSel,1.5)*(1.-uMode);   /* selezionata una crosta: il resto si spegne meno, per vedere che cosa c'è sotto */
+  if(abs(id-uSel)<.5){
+   if(id>.5&&id<1.5)col=mix(col,vec3(.62,.68,.80),.45);   /* crosta oceanica selezionata: più chiara, altrimenti si confonde con il buio */
+   col*=1.18+.08*sin(uTime*3.);}
+  else{col=mix(col,vec3(dot(col,vec3(.3,.59,.11))),.65)*mix(.38,.7,crosta);}
  }
  gl_FragColor=vec4(col*uShade,1.);}`;
  const faceGeo=new THREE.CircleGeometry(1,160,-Math.PI/2,Math.PI);
- function faceMat(){return new THREE.ShaderMaterial({uniforms:{uEx:U.uEx,uSel:U.uSel,uMode:U.uMode,uTime:U.uTime,uElev:U.uElev,uConv:U.uConv,uLon:{value:0},uShade:{value:1}},vertexShader:faceVS,fragmentShader:faceFS,side:THREE.DoubleSide})}
+ function faceMat(){return new THREE.ShaderMaterial({uniforms:{uEx:U.uEx,uSel:U.uSel,uMode:U.uMode,uTime:U.uTime,uElev:U.uElev,uConv:U.uConv,uLW:U.uLW,uLon:{value:0},uShade:{value:1}},vertexShader:faceVS,fragmentShader:faceFS,side:THREE.DoubleSide})}
  const F1=new THREE.Mesh(faceGeo,faceMat()),F2=new THREE.Mesh(faceGeo,faceMat());
  scene.add(F1,F2);
 
@@ -544,7 +547,7 @@ void main(){
   let th=Math.atan2(dir.z,dir.x);while(th-S.th>Math.PI)th-=2*Math.PI;while(S.th-th>Math.PI)th+=2*Math.PI;
   S.th=th;S.ph=Math.acos(dir.y);
   const fit=Math.max(1,1.25/camera.aspect);
-  S.distT=clampD(Math.max(.012,t*(k===0?22:k===1?9:3.2))/fit);   /* continentale più da lontano, per vederne lo spessore che cambia */dirty=true}
+  S.distT=clampD(Math.max(.012,t*(k===0?22:k===1?14:3.2))/fit);   /* continentale più da lontano, per vederne lo spessore che cambia */dirty=true}
 
  let onSelect=()=>{};
  function select(k){S.sel=k;U.uSel.value=k;
@@ -564,7 +567,7 @@ void main(){
   S.open+=(S.openT-S.open)*k;if(Math.abs(S.openT-S.open)<.012)S.open=S.openT;
   S.ex+=(S.exT-S.ex)*k;if(Math.abs(S.exT-S.ex)<.001)S.ex=S.exT;U.uEx.value=S.ex;
   if(S.rot)S.th+=dt*.18;
-  S.dist*=Math.pow(S.distT/S.dist,k);S.tgt.lerp(S.tgtT,k);   /* distanza in scala logaritmica: avvicinarsi alla crosta non è più lento che allontanarsi */
+  S.dist*=Math.pow(S.distT/S.dist,k);U.uLW.value=Math.max(.00008,.0022*Math.min(1,S.dist/1.2));S.tgt.lerp(S.tgtT,k);   /* distanza in scala logaritmica: avvicinarsi alla crosta non è più lento che allontanarsi */
   /* taglio */
   const a=S.open*Math.PI/2;
   P1.normal.set(0,0,-1);P1.constant=S.open<.02?10:0; /* spicchio chiuso: nessun taglio */
