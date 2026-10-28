@@ -64,6 +64,7 @@ button,input{font-family:inherit}
 #tcard{margin:12px 0 0}
 .trow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .tval{font:700 28px Cambria,Georgia,serif;color:#fff}
+.tval .kel{font:400 17px Calibri,Carlito,sans-serif;color:var(--mut);margin-left:6px}
 .tstato{font:700 18px Cambria,Georgia,serif}
 .cursore{position:relative;margin:10px 0 2px}
 .cursore input{-webkit-appearance:none;appearance:none;width:100%;height:14px;border-radius:7px;outline:none;margin:0;background:#22304a;cursor:pointer}
@@ -117,6 +118,7 @@ button,input{font-family:inherit}
   <div class="trow"><div><div class="sect" style="margin:0">Temperatura</div><div class="tval" id="tval">20 °C</div></div><div class="tstato" id="tstato"></div></div>
   <div class="cursore"><input type="range" id="temp" min="0" max="1000" step="1" aria-label="Temperatura"></div>
   <div class="tacche" id="tacche"></div>
+  <p class="nota" style="margin:4px 0 0">Il cursore non è in scala, ogni stato ha lo stesso spazio.</p>
  </div>
  <p class="hint">Trascina per ruotare la vista, pizzica o usa la rotella per avvicinarti.</p>
  <details class="opzioni">
@@ -153,9 +155,10 @@ var liscio=function(u){u=clamp(u,0,1);return u*u*(3-2*u);};
 /* Tempi uniformi (secondi). T_CRISTALLO = durata del ritorno ordinato nel reticolo quando una sostanza
    solidifica o brina. Per rallentare o accelerare si cambia solo questo numero. LENTO = fattore di "Rallenta". */
 var T_CRISTALLO=1.4, LENTO=.3;
-/* Vibrazione nel solido: ampiezza da VIB_MIN (temperatura più bassa del cursore) a VIB_MAX (punto di fusione),
-   in unità della scena (il diametro di una particella è circa 0,2-0,3). Cresce più in fretta vicino alla fusione. */
-var VIB_MIN=.002, VIB_MAX=.016;
+/* Vibrazione nel solido: ampiezza al punto di fusione, in unità della scena (il diametro di una particella
+   è circa 0,2-0,3). Come nella realtà, l'energia cinetica media è proporzionale alla temperatura in kelvin,
+   quindi l'ampiezza (e la velocità) è proporzionale alla sua radice quadrata: allo zero assoluto si ferma. */
+var VIB_MAX=.016;
 
 /* Prof. T in cucina: sei pose (file in immagini/prof_t/). In questa scheda
    hi saluto, solido braccia conserte, liquido occhiolino, gas pentolino, plasma termometro. */
@@ -202,15 +205,21 @@ var STATI=[
  {n:'Gas',c:'#ffd08a',forma:'quella del recipiente',vol:'occupa tutto il recipiente',part:'lontane e disordinate',mov:'libere e veloci in ogni direzione',forze:'debolissime'},
  {n:'Plasma',c:'#c9aaff',forma:'quella del recipiente',vol:'occupa tutto il recipiente',part:'atomi ed elettroni separati, con carica elettrica',mov:'velocissime',forze:'debolissime'}];
 
-/* cursore 0-1000: fino a 900 le temperature della sostanza, oltre il plasma (migliaia di gradi) */
-var U_PLASMA=900;
-function tDaU(s,u){return u>U_PLASMA?null:s.min+(s.max-s.min)*u/U_PLASMA;}
-function uDaT(s,t){return Math.round((t-s.min)/(s.max-s.min)*U_PLASMA);}
+/* cursore 0-1000, non in scala: da 0 a 900 ogni stato (solido, liquido, gas) ha lo stesso spazio, a partire dallo
+   zero assoluto; da 900 a 1000 il plasma (migliaia di gradi). Dentro ogni tratto la temperatura cresce in modo uniforme. */
+var U_PLASMA=900, T0=-273.15;
+function tratti(s){
+ var L=[[T0,s.mp]];if(!s.sub)L.push([s.mp,s.bp]);L.push([s.bp,s.max]);
+ var w=U_PLASMA/L.length;return L.map(function(x,i){return [i*w,(i+1)*w,x[0],x[1]];});}
+function tDaU(s,u){if(u>U_PLASMA)return null;var L=tratti(s);
+ for(var i=0;i<L.length;i++){var r=L[i];if(u<=r[1])return r[2]+(r[3]-r[2])*(u-r[0])/(r[1]-r[0]);}return s.max;}
+function uDaT(s,t){var L=tratti(s);
+ for(var i=0;i<L.length;i++){var r=L[i];if(t<=r[3])return Math.round(r[0]+(t-r[2])/(r[3]-r[2])*(r[1]-r[0]));}return U_PLASMA;}
 function arrot(s,t){return Math.round(t/s.passo)*s.passo;}
 function statoDi(s,t){if(t===null)return 3;if(t<s.mp)return 0;if(s.sub)return 2;return t<s.bp?1:2;}
-function gradi(t){var x=Math.round(t*10)/10;return (x<0?'−':'')+String(Math.abs(x)).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' °C';}
+function gradi(t){var x=Math.round(t*100)/100;return (x<0?'−':'')+String(Math.abs(x)).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' °C';}
 
-var S={k:'acqua',u:0,t:20,stato:1,lento:false,primo:true};
+var S={k:'acqua',u:0,t:20,stato:1,lento:false,primo:true,zero:false};
 
 /* =========================== SCENA 3D =========================== */
 var BX=.75,BY=1,BZ=.75;           /* metà delle dimensioni del recipiente */
@@ -240,7 +249,7 @@ function Scena(el){
  elet.count=0;elet.frustumCulled=false;scene.add(elet);
 
  /* ---- stato delle particelle ---- */
- var s,N,d,mol,P,V,Q,W,H,HQ,FAS,modo,tr=0,trDa=null,tempo=0,orologio=0;
+ var s,N,d,mol,P,V,Q,W,H,HQ,FAS,modo,tr=0,trDa=null,tempo=0;
  var at=[],el2=[];                 /* plasma: atomi liberi ed elettroni */
  var m4=new THREE.Matrix4(),q=new THREE.Quaternion(),q2=new THREE.Quaternion(),v3=new THREE.Vector3(),sc=new THREE.Vector3(),e3=new THREE.Euler();
 
@@ -363,12 +372,10 @@ function Scena(el){
  function aggiorna(dt){
   tempo+=dt;var i;
   if(modo==='solido'){
-   /* fr va da 0 (temperatura più bassa del cursore) a 1 (punto di fusione): più freddo, vibrazione più piccola e più lenta */
-   var fr=clamp((S.t-s.min)/(s.mp-s.min),0,1),amp=VIB_MIN+(VIB_MAX-VIB_MIN)*Math.pow(fr,1.5);
-   orologio+=dt*(.35+.65*fr);
+   var amp=VIB_MAX*Math.sqrt(clamp(TK()/(s.mp+273.15),0,1));
    var u=liscio(tr=Math.min(1,tr+dt/T_CRISTALLO));
    for(i=0;i<N;i++){var f=FAS[i],h=H[i];
-    var ox=amp*Math.sin(f[3]*orologio+f[0]),oy=amp*Math.sin(f[4]*orologio+f[1]),oz=amp*Math.sin(f[5]*orologio+f[2]);
+    var ox=amp*Math.sin(f[3]*tempo+f[0]),oy=amp*Math.sin(f[4]*tempo+f[1]),oz=amp*Math.sin(f[5]*tempo+f[2]);
     var tx=h[0]+ox,ty=h[1]+oy,tz=h[2]+oz;
     if(trDa&&u<1){P[3*i]=trDa.P[3*i]+(tx-trDa.P[3*i])*u;P[3*i+1]=trDa.P[3*i+1]+(ty-trDa.P[3*i+1])*u;P[3*i+2]=trDa.P[3*i+2]+(tz-trDa.P[3*i+2])*u;
      q2.setFromEuler(e3.set(ox*2,oy*2,oz*2));q.copy(HQ[i]).multiply(q2);Q[i].copy(trDa.Q[i]).slerp(q,u);}
@@ -424,12 +431,12 @@ function legenda(){
 
 /* cursore: colori delle zone e tacche delle temperature di fusione ed ebollizione */
 function tacche(){
- var s=SOST[S.k],pc=function(t){return clamp((t-s.min)/(s.max-s.min)*U_PLASMA/10,0,100);};
+ var s=SOST[S.k],pc=function(t){return clamp(uDaT(s,t)/10,0,100);};
  var a=pc(s.mp),b=pc(s.bp),p=U_PLASMA/10,Z=STATI;
  var g='linear-gradient(90deg,'+Z[0].c+' 0%,'+Z[0].c+' '+a+'%,'
   +(s.sub?'':Z[1].c+' '+a+'%,'+Z[1].c+' '+b+'%,')+Z[2].c+' '+b+'%,'+Z[2].c+' '+p+'%,'+Z[3].c+' '+p+'%,'+Z[3].c+' 100%)';
  $('temp').style.background=g;
- var h='';
+ var h='<span style="left:0;transform:none;text-align:left"><b>−273 °C</b>zero assoluto</span>';
  if(s.sub)h+='<span style="left:'+a+'%"><b>'+gradi(s.mp)+'</b>sublima</span>';
  else h+='<span style="left:'+a+'%"><b>'+gradi(s.mp)+'</b>fonde</span><span style="left:'+b+'%"><b>'+gradi(s.bp)+'</b>bolle</span>';
  h+='<span style="left:'+(p+(100-p)/2)+'%"><b>migliaia</b>di gradi</span>';
@@ -467,6 +474,7 @@ var FRASI={
  ferro:'Il ferro fuso è così caldo che brilla di luce propria. Nelle fonderie si vede incandescente.',
  2:'Nel gas le particelle sono lontane e velocissime. Urtano le pareti e riempiono tutto il recipiente.',
  secco:'Il ghiaccio secco salta il liquido. Passa direttamente da solido a gas, è la sublimazione.',
+ zero:'Vicino allo zero assoluto, −273,15 °C, le particelle sono quasi ferme. È la temperatura più bassa possibile e non si raggiunge mai del tutto.',
  3:'A migliaia di gradi gli urti strappano elettroni agli atomi. È il plasma, il quarto stato, come nel Sole e nei fulmini.'};
 var POSE={0:'idle',1:'ok',2:'fine',3:'pensieroso'};
 function parla(){
@@ -477,12 +485,15 @@ function parla(){
  say(f,POSE[st],true);}
 
 function aggiornaTemp(){
- var s=SOST[S.k],raw=tDaU(s,S.u);S.t=raw===null?null:arrot(s,raw);
+ var s=SOST[S.k],raw=tDaU(s,S.u);S.t=raw===null?null:S.u===0?T0:arrot(s,raw);
  var nuovo=statoDi(s,S.t),vecchio=S.stato;
- $('tval').textContent=S.t===null?'migliaia di °C':gradi(S.t);
+ $('tval').innerHTML=S.t===null?'migliaia di °C':gradi(S.t)+' <span class="kel">'+(S.u===0?'0':String(Math.round(S.t+273.15)).replace(/\B(?=(\d{3})+(?!\d))/g,' '))+' K</span>';
  $('tstato').textContent=STATI[nuovo].n;$('tstato').style.color=STATI[nuovo].c;
  $('temp').setAttribute('aria-valuetext',$('tval').textContent+', '+STATI[nuovo].n);
  if(nuovo!==vecchio){S.stato=nuovo;if(scena)scena.cambiaStato(vecchio,nuovo);if(!S.primo)parla();legenda();}
+ /* vicino allo zero assoluto Prof. T lo fa notare una volta */
+ if(S.t!==null&&S.t<=-255&&!S.zero){S.zero=true;say(FRASI.zero,'pensieroso',true);}
+ if(S.t===null||S.t>-200)S.zero=false;
  if(scena)scena.ricolora();
  cruscotto();}
 
