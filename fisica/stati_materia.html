@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="author" content="Prof. T">
 <!-- © 2026 Prof. T. Tutti i diritti riservati. -->
-<meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gli stati della materia - Scienza in Movimento</title>
 <meta name="description" content="Gli stati della materia in 3D: solido, liquido, aeriforme e plasma, passaggi di stato e calore latente, con acqua, alcol, ferro e ghiaccio secco.">
@@ -177,7 +176,7 @@ button,input{font-family:inherit}
   <p class="nota" style="margin:2px 0 0">1 g d'acqua. Un gettone vale 42 J, l'energia che scalda 1 g d'acqua di 10 °C.</p>
  </div>
  <div class="card hide" id="schemaCard">
-  <svg id="schema" viewBox="0 0 660 352" role="group" aria-label="Schema dei passaggi di stato"></svg>
+  <svg id="schema" viewBox="0 0 660 396" role="group" aria-label="Schema dei passaggi di stato"></svg>
   <div class="leg2"><span><i style="background:#ff8a5b"></i>assorbe calore</span><span><i style="background:#6fc3ff"></i>cede calore</span></div>
  </div>
  <p class="hint">Trascina per ruotare la vista, pizzica o usa la rotella per avvicinarti.</p>
@@ -683,25 +682,21 @@ var Passaggi=(function(){
  var G={sel:null,u:1,attivo:false,scambiato:false};
 
  /* ---- schema: posizione e larghezza dei quattro stati, archi dei passaggi ---- */
- var Y=150,NODI=[{n:'Solido',x:76,w:116,c:STATI[0].c},{n:'Liquido',x:262,w:116,c:STATI[1].c},
+ var Y=172,NODI=[{n:'Solido',x:76,w:116,c:STATI[0].c},{n:'Liquido',x:262,w:116,c:STATI[1].c},
   {n:'Aeriforme',x:448,w:128,c:STATI[2].c},{n:'Plasma',x:594,w:88,c:STATI[3].c}];
  /* ogni passaggio: nome, x di partenza, x di arrivo, sopra (1) o sotto (0), livello (1 vicino, 2 più lontano).
-    Le linee sono a gomito con gli angoli arrotondati: salgono (o scendono), corrono in orizzontale, ridiscendono.
+    Le linee sono curve a ponte: partono e arrivano in verticale sugli stati.
     Il livello 2 (sublimazione e brinamento) passa oltre le scritte del livello 1, così nulla si sovrappone. */
- var ARCHI=[['fusione',100,238,1,1],['evaporazione',286,424,1,1],['ionizzazione',490,572,1,1],['sublimazione',52,456,1,2],
-  ['solidificazione',238,100,0,1],['condensazione',424,286,0,1],['ricombinazione',572,490,0,1],['brinamento',456,52,0,2]];
- var LIV={1:48,2:100};    /* distanza delle linee dal bordo degli stati, per i due livelli */
+ var ARCHI=[['fusione',100,238,1,1],['evaporazione',286,424,1,1],['ionizzazione',490,572,1,1],['sublimazione',40,462,1,2],
+  ['solidificazione',238,100,0,1],['condensazione',424,286,0,1],['ricombinazione',572,490,0,1],['brinamento',462,40,0,2]];
+ var LIV={1:48,2:122};    /* distanza delle linee dal bordo degli stati, per i due livelli */
  function arco(k,x1,x2,su,lv){
   var sg=su?-1:1,y0=Y+sg*20,yh=Y+sg*(20+LIV[lv]),dir=x2>x1?1:-1,c=P[k].caldo?CALDO:FREDDO;
   var on=G.sel===k||(k==='evaporazione'&&G.sel&&P[G.sel].vap),dim=G.sel&&!on;
-  /* FORMA: 'gomito' angoli arrotondati; 'ponte' curva continua con le estremità verticali; 'arco' mezza ellisse */
-  var d,ye=y0+sg*9,F=window.FORMA_SCHEMA||'gomito';
-  if(F==='ponte'){var cy=y0+(yh-y0)/0.75;   /* con due punti di controllo uguali il punto più alto è a 3/4: arriva proprio a yh */
-   d='M'+x1+' '+y0+' C'+x1+' '+cy+' '+x2+' '+cy+' '+x2+' '+ye;}
-  else if(F==='arco'){var rx=Math.abs(x2-x1)/2,ry=Math.abs(yh-y0);
-   d='M'+x1+' '+y0+' A'+rx+' '+ry+' 0 0 '+((su?1:0)^(dir<0?1:0))+' '+x2+' '+y0;}
-  else{var RG=F==='morbido'?24:10;d='M'+x1+' '+y0+' L'+x1+' '+(yh-sg*RG)+' Q'+x1+' '+yh+' '+(x1+dir*RG)+' '+yh
-   +' L'+(x2-dir*RG)+' '+yh+' Q'+x2+' '+yh+' '+x2+' '+(yh-sg*RG)+' L'+x2+' '+ye;}
+  /* curva a ponte: le estremità scendono verticali sugli stati, la parte alta è quasi piatta.
+     Con i due punti di controllo alla stessa altezza cy, il punto più alto della curva è a 3/4: arriva proprio a yh. */
+  var ye=y0+sg*9,cy=y0+(yh-y0)/0.75;
+  var d='M'+x1+' '+y0+' C'+x1+' '+cy+' '+x2+' '+cy+' '+x2+' '+ye;
   /* punta: triangolo che tocca il bordo dello stato di arrivo */
   var pu='M'+x2+' '+y0+' L'+(x2-6)+' '+(y0+sg*11)+' L'+(x2+6)+' '+(y0+sg*11)+' Z';
   var lx=(x1+x2)/2,ly=su?yh-9:yh+21;
@@ -716,7 +711,7 @@ var Passaggi=(function(){
   h+=NODI.map(function(n){return '<rect x="'+(n.x-n.w/2)+'" y="'+(Y-20)+'" width="'+n.w+'" height="40" rx="8" fill="#0d1626" stroke="'+n.c+'" stroke-width="2"/>'
    +'<text x="'+n.x+'" y="'+(Y+6)+'" text-anchor="middle" font-size="18" font-weight="700" fill="'+n.c+'">'+n.n+'</text>';}).join('');
   /* energia termica crescente verso destra */
-  var ye=Y+170;
+  var ye=Y+190;
   h+='<path d="M24 '+ye+' L620 '+ye+'" stroke="url(#gEn)" stroke-width="6" stroke-linecap="round"/>'
    +'<path d="M638 '+ye+' L618 '+(ye-9)+' L618 '+(ye+9)+' Z" fill="#ff3b2f"/>'
    +'<text x="24" y="'+(ye+24)+'" font-size="16" fill="#c8d3e3">energia termica delle particelle</text>';
