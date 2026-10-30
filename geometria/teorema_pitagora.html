@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Prof. T">
+<!-- © 2026 Prof. T. Tutti i diritti riservati. -->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Il teorema di Pitagora - Scienza in Movimento</title>
+<meta name="description" content="Il teorema di Pitagora dimostrato con i quadrati sui lati, la corda con 12 nodi e le terne pitagoriche, calcolatrice di ipotenusa e cateti ed esercizi.">
+<link rel="canonical" href="https://scienzainmovimento.it/geometria/teorema_pitagora.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Scienza in Movimento">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="Il teorema di Pitagora - Scienza in Movimento">
+<meta property="og:description" content="Il teorema di Pitagora dimostrato con i quadrati sui lati, la corda con 12 nodi e le terne pitagoriche, calcolatrice di ipotenusa e cateti ed esercizi.">
+<meta property="og:url" content="https://scienzainmovimento.it/geometria/teorema_pitagora.html">
+<meta property="og:image" content="https://scienzainmovimento.it/og_image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Prof. T - La Matematica e le Scienze in Movimento">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+/* ---- base della pagina (uguale in tutte le animazioni) ---- */
+:root{--bg:#0a0f1a;--panel:#111a2b;--line:#22304a;--txt:#e6ecf5;--mut:#8fa0b8;--warn:#FF8A80}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at 50% -10%,rgba(74,134,240,.14),transparent 60%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px),#0a0f1a;background-size:auto,36px 36px,36px 36px;color:var(--txt);font-family:Calibri,Carlito,"Segoe UI",system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 8px}
+.eyebrow{color:var(--disciplina);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px;color:#fff}
+.sub{color:var(--mut);margin:0 0 4px}
+button,input{font-family:inherit}
+/* riquadro a sinistra, pannello a destra; sotto 760 px colonna unica: riquadro, pannello, Prof. T */
+.layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:6px}
+.layout>*{min-width:0}
+@media(max-width:760px){.layout{display:flex;flex-direction:column}.layout>section,.layout>aside{display:contents}.stage{order:1}#panel{order:2;margin-top:12px}.prof{order:3}}
+.stage{position:relative;background:linear-gradient(#fbfaf6,#ece8dd);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.card .h{font:700 17px Cambria,Georgia,serif;color:var(--disciplina);margin-bottom:6px}
+.txt{font-size:16px;line-height:1.45}
+.sect{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:0 0 2px}
+.anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;line-height:1.45}
+/* Prof. T con il fumetto */
+.prof{display:flex;gap:12px;align-items:flex-end;position:relative;margin-bottom:12px}
+.prof img{height:150px;width:auto;flex:none}
+@media(max-width:760px){.prof{margin-top:12px}.prof img{height:110px}}
+.prof img.pop{animation:pop .6s ease-out}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.09) rotate(-2deg)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.prof img.pop{animation:none}}
+.bubble{position:relative;flex:1;background:#17233a;border:1px solid var(--line);border-radius:14px;padding:11px 14px;font-size:16px;line-height:1.4;min-height:56px;margin-bottom:22px}
+.bubble::before{content:"";position:absolute;left:-8px;bottom:22px;border:8px solid transparent;border-left:0;border-right-color:#17233a}
+/* ---- stili propri dell'animazione ---- */
+.cA{color:#7fb0ff;font-weight:700}.cB{color:#6fd08c;font-weight:700}.cC{color:#ffa94d;font-weight:700}
+.nota{color:var(--mut);font-size:14px;margin-top:6px;line-height:1.4}
+table.mis{width:100%;border-collapse:collapse;font-size:15px;margin-top:4px}
+table.mis th{color:var(--mut);font-weight:400;text-align:left;padding:3px 4px;border-bottom:1px solid var(--line)}
+table.mis td{padding:4px;border-bottom:1px solid #1a2640;white-space:nowrap}
+table.mis tr.on td{background:rgba(74,134,240,.18)}
+/* calcolatrice (scheda 03) */
+.calc{display:grid;grid-template-columns:auto 1fr auto;gap:8px 10px;align-items:center;margin-top:8px}
+.calc label{font-size:16px;color:var(--mut);white-space:nowrap}
+.calc label b{color:var(--txt);font-size:18px}
+.calc input{background:#0d1524;color:var(--txt);border:1px solid #3a4d70;border-radius:8px;padding:8px 10px;font-size:18px;width:100%;min-width:0}
+.calc input.dato{border-color:#4a86f0;box-shadow:0 0 0 2px rgba(74,134,240,.35)}
+.calc .u{color:var(--mut);font-size:15px}
+.ris{font-size:19px;margin-top:10px}
+.ris b{font:700 22px Cambria,Georgia,serif;color:#9cc5ff}
+.passi3{margin:4px 0 0;padding-left:18px;line-height:1.75;font-size:16px}
+.vuoto{color:var(--mut);font-size:14px}
+/* allenati (scheda 04) */
+.stat{color:var(--mut);font-size:14px;margin-bottom:6px}
+.q{font-size:18px;margin:4px 0 10px;line-height:1.4}
+.ans{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ans input{background:#0d1524;color:var(--txt);border:1px solid #3a4d70;border-radius:8px;padding:8px 10px;font-size:18px;width:130px}
+.unita{font-size:18px}
+.fb{margin-top:10px;font-size:16px;line-height:1.45}
+.fb .ok{color:#8ee0a6;font-weight:700}
+.fb .no{color:var(--warn);font-weight:700}
+.sol{margin-top:8px;padding:8px 10px;background:#0d1524;border-radius:8px;font-size:15px;line-height:1.6}
+.sol b{color:#9cc5ff}
+</style>
+<link rel="stylesheet" href="../animazioni.css">
+</head>
+<body style="--area:#6aa5ff;--disciplina:#4a86f0">
+<div class="wrap">
+<div class="eyebrow">Geometria</div>
+<h1>Il teorema di Pitagora</h1>
+<p class="sub" id="sub"></p>
+
+<!-- 1 schede: create dallo script (elenco SCHEDE) -->
+<nav class="schede" id="tabs" role="tablist" aria-label="Schede"></nav>
+
+<div class="layout">
+<section>
+ <div class="stage">
+  <svg id="svg" viewBox="0 0 560 400" role="img" aria-label="Triangolo rettangolo con i quadrati costruiti sui lati"></svg>
+ </div>
+</section>
+<aside>
+ <div class="prof"><img id="profImg" alt="Prof. T"><div class="bubble" id="bubble" aria-live="polite"></div></div>
+ <div id="panel"></div>
+</aside>
+</div>
+</div>
+
+<script src="../animazioni.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
+var liscio=function(u){u=clamp(u,0,1);return u*u*(3-2*u);};
+
+/* Tempi uniformi (millisecondi). Si cambiano solo qui.
+   T_MOVE = uno spostamento o un quadrato che cresce; T_SHOW = una figura o una scritta che compare;
+   T_BACK = ritorno con Indietro; T_PAUSE = pausa tra i passi di Riproduci. */
+var T_MOVE=1400, T_SHOW=1200, T_BACK=500, T_PAUSE=1500;
+
+/* Prof. T in versione greca (file in immagini/prof_t/) */
+var IMG={hi:'../immagini/prof_t/prof_t_greco_saluto.webp',idle:'../immagini/prof_t/prof_t_greco_braccia_conserte.webp',
+ ko:'../immagini/prof_t/prof_t_greco_pensieroso.webp',ok:'../immagini/prof_t/prof_t_greco_occhiolino_indica.webp',
+ quadrati:'../immagini/prof_t/prof_t_greco_quadrati.webp',corda:'../immagini/prof_t/prof_t_greco_corda.webp',
+ squadra:'../immagini/prof_t/prof_t_greco_squadra.webp',compasso:'../immagini/prof_t/prof_t_greco_compasso_alzato.webp',
+ fine:'../immagini/prof_t/prof_t_greco_eureka.webp'};
+precarica(IMG);
+function say(testo,posa,salto){var im=$('profImg');im.src=IMG[posa||'idle'];$('bubble').innerHTML=testo;
+ if(salto&&!reduce){im.classList.remove('pop');void im.offsetWidth;im.classList.add('pop');}}
+
+/* numeri all'italiana: virgola decimale */
+function num(x){var r=Math.round(x*10000)/10000;return String(r).replace('.',',');}
+function dec2(x){var r=Math.round(x*100)/100;return String(r).replace('.',',');}
+function intero(x){return Math.abs(x-Math.round(x))<1e-9;}
+function leggi(t){t=String(t).trim().replace(/\s/g,'').replace(',','.');if(t===''||isNaN(+t))return NaN;return +t;}
+function radice(q){var r=Math.sqrt(q);return intero(r)?String(Math.round(r)):'≈ '+dec2(r);}   /* "5" oppure "≈ 5,39" */
+
+/* colori: cateto a blu, cateto b verde, ipotenusa c arancione, triangoli lilla */
+var COL={a:'#4a86f0',b:'#3fa862',c:'#f08c2e',ta:'#2f6fd6',tb:'#2e8a4e',tc:'#d9731c',tri:'#cdbdf0',triS:'#6d4fa8',ink:'#1d2433',red:'#c43c3c'};
+
+/* ---------- disegno comune ---------- */
+/* adatta un riquadro in unità (bb) a un rettangolo in pixel (box) */
+function fit(bb,box){var s=Math.min(box.w/(bb.x1-bb.x0),box.h/(bb.y1-bb.y0));
+ return {s:s,ox:box.x+(box.w-s*(bb.x1-bb.x0))/2-s*bb.x0,oy:box.y+(box.h-s*(bb.y1-bb.y0))/2-s*bb.y0};}
+function mix(M0,M1,u){return {s:M0.s+(M1.s-M0.s)*u,ox:M0.ox+(M1.ox-M0.ox)*u,oy:M0.oy+(M1.oy-M0.oy)*u};}
+function mp(M,p){return [M.ox+M.s*p[0],M.oy+M.s*p[1]];}
+function f1(v){return v.toFixed(1);}
+function pts(M,arr){return arr.map(function(p){var q=mp(M,p);return f1(q[0])+','+f1(q[1]);}).join(' ');}
+function T(x,y,t,c,sz,an,ex){return '<text x="'+f1(x)+'" y="'+f1(y)+'" font-size="'+(sz||19)+'" fill="'+(c||COL.ink)+'"'+(an?' text-anchor="'+an+'"':' text-anchor="middle"')+(ex||'')+'>'+t+'</text>';}
+function add(p,q,k){k=k==null?1:k;return [p[0]+k*q[0],p[1]+k*q[1]];}
+function sub(p,q){return [p[0]-q[0],p[1]-q[1]];}
+function lerp(p,q,u){return [p[0]+(q[0]-p[0])*u,p[1]+(q[1]-p[1])*u];}
+/* fase di un'animazione: da 0 a 1 tra l'istante a e a + d (millisecondi) */
+function ph(t,a,d){return d?clamp((t-a)/d,0,1):(t>=a?1:0);}
+/* etichetta a metà del segmento pq (pixel), spostata di off pixel dalla parte opposta al punto g */
+/* il testo è allineato dalla parte del lato (a destra se sta a sinistra di un lato verticale e viceversa),
+   così una scritta lunga come "a = 3" o "12 cm" non tocca mai il lato; off negativo porta l'etichetta verso g */
+function etichetta(p,q,g,txt,col,off,sz){
+ var m=[(p[0]+q[0])/2,(p[1]+q[1])/2],n=[-(q[1]-p[1]),q[0]-p[0]],l=Math.hypot(n[0],n[1])||1;n=[n[0]/l,n[1]/l];
+ if((g[0]-m[0])*n[0]+(g[1]-m[1])*n[1]>0)n=[-n[0],-n[1]];
+ off=off||16;if(off<0){n=[-n[0],-n[1]];off=-off;}
+ var an=n[0]<-.45?'end':n[0]>.45?'start':'middle',k=an==='middle'?off:off*.55;
+ return T(m[0]+n[0]*k,m[1]+n[1]*k+(sz||19)*.35,txt,col,sz||19,an,' font-weight="700"');}
+function angoloRetto(M,O,u,v,k){   /* quadratino dell'angolo retto in O, lati lungo u e v (unità), lato k pixel */
+ var o=mp(M,O),s=k/M.s,a=mp(M,add(O,u,s)),b=mp(M,add(add(O,u,s),v,s)),c=mp(M,add(O,v,s));
+ return '<polyline points="'+f1(a[0])+','+f1(a[1])+' '+f1(b[0])+','+f1(b[1])+' '+f1(c[0])+','+f1(c[1])+'" fill="none" stroke="'+COL.ink+'" stroke-width="1.6"/>';}
+
+/* Figura del teorema: angolo retto in O(0,0), cateto a verticale verso l'alto fino ad A(0,-a),
+   cateto b orizzontale fino a B(b,0). Quadrati verso l'esterno: Qa a sinistra, Qb in basso, Qc sopra l'ipotenusa.
+   op: ua, ub, uc crescita dei quadrati (0-1), lab opacità delle scritte nei quadrati, griglia, alfa opacità generale,
+   val [a², b², c²] scritte, lati [ta, tb, tc] etichette dei lati, ignoto (lato in rosso) */
+function quadrati(a,b){return {Qa:{P:[0,0],Q:[0,-a],N:[-a,0],c:COL.a,t:COL.ta,n:'a'},Qb:{P:[0,0],Q:[b,0],N:[0,b],c:COL.b,t:COL.tb,n:'b'},
+ Qc:{P:[0,-a],Q:[b,0],N:[a,-b],c:COL.c,t:COL.tc,n:'c'}};}
+function bbA(a,b){return {x0:-a,y0:-a-b,x1:a+b,y1:b};}
+function figA(M,a,b,op){
+ var o='',Q=quadrati(a,b),c=Math.hypot(a,b),lato={a:a,b:b,c:c},al=op.alfa==null?1:op.alfa;
+ if(al<=0)return '';
+ ['Qa','Qb','Qc'].forEach(function(k){
+  var q=Q[k],u=op['u'+q.n];if(!(u>0))return;
+  var v=[q.P,q.Q,add(q.Q,q.N,u),add(q.P,q.N,u)];
+  o+='<polygon points="'+pts(M,v)+'" fill="'+q.c+'" fill-opacity="'+(op.chiaro?.12:.28)+'" stroke="'+q.c+'" stroke-width="2"/>';
+  var L=lato[q.n];
+  if(op.griglia&&intero(L)&&M.s>=6){   /* quadratini di lato 1 */
+   var k1=Math.round(L),g='',d=sub(q.Q,q.P);
+   for(var i=1;i<k1;i++){var p1=add(q.P,d,i/k1),p2=add(p1,q.N,u),a1=mp(M,p1),a2=mp(M,p2);g+='M'+f1(a1[0])+','+f1(a1[1])+'L'+f1(a2[0])+','+f1(a2[1]);
+    if(i/k1<=u+1e-9){var r1=add(q.P,q.N,i/k1),r2=add(r1,d),b1=mp(M,r1),b2=mp(M,r2);g+='M'+f1(b1[0])+','+f1(b1[1])+'L'+f1(b2[0])+','+f1(b2[1]);}}
+   o+='<path d="'+g+'" stroke="'+q.c+'" stroke-opacity=".55" stroke-width="1"/>';}
+  if(op.lab>0&&op.val){   /* scritta al centro del quadrato su un'etichetta chiara, sopra i quadratini */
+   var cen=mp(M,add(add(q.P,sub(q.Q,q.P),.5),q.N,.5*u)),S=M.s*L*u,
+    r1=op.nomi?op.nomi[k]:q.n+'² = '+op.val[k],r2=op.nomi?op.val[k]:'',
+    sz=Math.max(15,Math.min(22,S*.18)),wT=Math.max(r1.length,r2.length)*sz*.52+14;
+   if(!op.nomi&&wT>S*.92){r1=q.n+'²';r2=op.val[k];wT=Math.max(r1.length,r2.length)*sz*.6+14;}   /* quadrato stretto, su due righe */
+   var hT=(r2?2.2:1.25)*sz+6,y0=cen[1]-hT/2;
+   o+='<g opacity="'+op.lab.toFixed(2)+'"><rect x="'+f1(cen[0]-wT/2)+'" y="'+f1(y0)+'" width="'+f1(wT)+'" height="'+f1(hT)+'" rx="6" fill="#fbfaf6" fill-opacity=".9" stroke="'+q.c+'" stroke-width="1.2"/>'
+    +T(cen[0],y0+3+sz*.95,r1,op.nomi&&op.ignoto===q.n?COL.red:q.t,sz,'middle',' font-weight="700" font-family="Cambria,Georgia,serif"')
+    +(r2?T(cen[0],y0+3+sz*2.05,r2,q.t,sz,'middle',' font-weight="700"'):'')+'</g>';}});
+ /* triangolo */
+ var O=[0,0],A=[0,-a],B=[b,0];
+ if(op.noTri)return al<1?'<g opacity="'+al.toFixed(3)+'">'+o+'</g>':o;
+ o+='<polygon points="'+pts(M,[O,A,B])+'" fill="'+COL.tri+'" fill-opacity=".7" stroke="'+COL.ink+'" stroke-width="2.5" stroke-linejoin="round"/>';
+ o+=angoloRetto(M,O,[0,-1],[1,0],14);
+ if(op.lati){var g=mp(M,[b/3,-a/3]),pO=mp(M,O),pA=mp(M,A),pB=mp(M,B),ign=op.ignoto,sz=op.szLati||19;
+  var off=sz;   /* etichette fuori dal triangolo */
+  o+=etichetta(pO,pA,g,op.lati[0],ign==='a'?COL.red:COL.ta,off,sz);
+  o+=etichetta(pO,pB,g,op.lati[1],ign==='b'?COL.red:COL.tb,off,sz);
+  o+=etichetta(pA,pB,g,op.lati[2],ign==='c'?COL.red:COL.tc,off,sz);}
+ return al<1?'<g opacity="'+al.toFixed(3)+'">'+o+'</g>':o;}
+
+/* ---- schede ---- */
+var SCHEDE=[
+ {id:'quadrati',nome:'I quadrati sui lati',sub:'Una dimostrazione con quattro triangoli che si spostano.'},
+ {id:'terne',nome:'Le terne pitagoriche',sub:'La corda con i nodi e i triangoli con i lati interi.'},
+ {id:'calcolatrice',nome:'Calcolatrice',sub:'Trova l\'ipotenusa dai cateti o un cateto dall\'ipotenusa.'},
+ {id:'allenati',nome:'Allenati',sub:'Esercizi su triangoli rettangoli, rettangoli, quadrati, triangoli isosceli e rombi.'}];
+var S={scheda:'quadrati'};
+
+function disegnaSchede(){
+ var nav=$('tabs'),x0=nav.scrollLeft;
+ nav.innerHTML=SCHEDE.map(function(s,i){var on=s.id===S.scheda;
+  return '<button class="scheda'+(on?' attiva':'')+'" role="tab" aria-selected="'+on+'" data-s="'+s.id+'"><span class="num">0'+(i+1)+'</span>'+s.nome+'</button>';}).join('');
+ nav.scrollLeft=x0;centraScheda(nav);
+ $('sub').textContent=SCHEDE.filter(function(s){return s.id===S.scheda;})[0].sub;}
+$('tabs').addEventListener('click',function(e){var b=e.target.closest('[data-s]');if(b&&b.dataset.s!==S.scheda){S.scheda=b.dataset.s;mostra();}});
+
+/* animazione verso il passo scelto: avanzamento lineare, progresso sempre tra 0 e 1, intervallo mai negativo.
+   st è lo stato della scheda ({passo, p}), disegna la funzione che ridisegna con st.p */
+var raf=0;
+function anima(st,meta,dur,disegna,fine){
+ cancelAnimationFrame(raf);var da=st.p,last=performance.now(),u=0;if(reduce)dur=0;
+ (function frame(now){
+  var dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;
+  u=dur?clamp(u+dt*1000/dur,0,1):1;
+  st.p=da+(meta-da)*u;disegna();
+  if(u<1)raf=requestAnimationFrame(frame);else if(fine)fine();})(last);}
+
+/* Riproduci: rifà i passi dall'inizio, uno dopo l'altro con una pausa; si ferma se si tocca un altro comando */
+var gioco=0,inGioco=false;
+function fermaGioco(){inGioco=false;clearTimeout(gioco);}
+
+/* ================= 01 I QUADRATI SUI LATI =================
+   Passi: 0 il triangolo, 1 i quadrati sui lati, 2 quattro triangoli nel quadrato di lato a + b (resta c²),
+   3 gli stessi triangoli spostati in un quadrato uguale (restano a² e b²), 4 si tolgono i triangoli, 5 l'enunciato.
+   p va da 0 a 5 in modo continuo; la durata di ogni passo è la somma delle sue fasi. */
+var TRI1=[[3,4],[5,12],[2,5],[4,4]];
+var P1={passo:0,p:0,k:0};
+var D1=[0,3*T_MOVE+T_SHOW,6*T_SHOW,T_SHOW+3*T_MOVE+T_SHOW,2*T_SHOW,2*T_SHOW];
+function t1(s){return clamp(P1.p-(s-1),0,1)*D1[s];}   /* millisecondi trascorsi dentro il passo s */
+function ab1(){return TRI1[P1.k];}
+function valori(a,b){var c2=a*a+b*b;return {a2:a*a,b2:b*b,c2:c2,c:Math.sqrt(c2),cT:radice(c2)};}
+
+/* i quattro triangoli dentro il quadrato di lato a + b: vertice dell'angolo retto P, direzione u del cateto a;
+   il cateto b va lungo v = u ruotato di 90°. Prima disposizione (resta c²) e seconda (restano a² e b²):
+   T2 resta fermo, gli altri tre traslano senza ruotare. */
+function triangoliB(a,b){var s=a+b;
+ return [{P:[0,0],Q:[0,a],u:[1,0]},{P:[s,0],Q:[s,0],u:[0,1]},{P:[s,s],Q:[a,s],u:[-1,0]},{P:[0,s],Q:[a,a],u:[0,-1]}];}
+function verticiT(P,u,a,b){var v=[-u[1],u[0]];return [P,add(P,u,a),add(P,v,b)];}
+
+function disegna1(){
+ var a=ab1()[0],b=ab1()[1],V=valori(a,b),o='<rect width="560" height="400" fill="#f6f3ea"/>';
+ var tt=[0,t1(1),t1(2),t1(3),t1(4),t1(5)],TS=T_SHOW,TM=T_MOVE;
+ /* opacità delle due figure: A (triangolo con i quadrati) e B (i due quadrati grandi) */
+ var fB=ph(tt[2],0,TS)*(1-ph(tt[5],0,TS)),fA=1-fB;
+ var MA=fit(bbA(a,b),{x:20,y:18,w:520,h:364});
+ if(fA>0){
+  var ua=ph(tt[1],0,TM),ub=ph(tt[1],TM,TM),uc=ph(tt[1],2*TM,TM),lab=ph(tt[1],3*TM,TS);
+  o+=figA(MA,a,b,{ua:ua,ub:ub,uc:uc,lab:lab,griglia:true,alfa:fA,val:{Qa:String(V.a2),Qb:String(V.b2),Qc:String(V.c2)},
+   lati:ua>0?null:['a = '+a,'b = '+b,'c']});   /* con i quadrati le lettere sono già nelle etichette a², b², c² */
+  /* enunciato in alto a sinistra, nello spazio libero (passo 5) */
+  var e5=ph(tt[5],TS,TS);
+  if(e5>0)o+='<g opacity="'+e5.toFixed(2)+'" font-weight="700">'+T(18,40,'c² = a² + b²',COL.ink,24,'start',' font-family="Cambria,Georgia,serif"')
+   +T(18,68,V.c2+' = '+V.a2+' + '+V.b2,COL.ink,20,'start')+T(18,94,'c = √'+V.c2+(intero(V.c)?' = ':' ')+V.cT,COL.tc,20,'start')+'</g>';}
+ if(fB>0){
+  var L=210,y0=58,X=[40,310],sB=L/(a+b),Ms=X.map(function(x){return {s:sB,ox:x,oy:y0};});
+  var g='<g opacity="'+fB.toFixed(3)+'">',TR=triangoliB(a,b);
+  var tolti=1-.88*ph(tt[4],0,TS);   /* nel passo 4 i triangoli si tolgono (resta il contorno) */
+  [0,1].forEach(function(k){
+   var M=Ms[k],vis=k===0?1:ph(tt[3],0,TS);if(vis<=0)return;
+   g+='<g opacity="'+vis.toFixed(3)+'">';
+   /* spazi liberi colorati */
+   if(k===0){var uC=ph(tt[2],5*TS,TS);g+='<polygon points="'+pts(M,[[a,0],[a+b,a],[b,a+b],[0,b]])+'" fill="'+COL.c+'" fill-opacity="'+(.38*uC).toFixed(3)+'"/>';
+    if(uC>0){var cc=mp(M,[(a+b)/2,(a+b)/2]);g+='<g opacity="'+uC.toFixed(2)+'">'+T(cc[0],cc[1]+2,'c²',COL.tc,26,'middle',' font-weight="700" font-family="Cambria,Georgia,serif"')+T(cc[0],cc[1]+26,String(V.c2),COL.tc,19,'middle',' font-weight="700"')+'</g>';}}
+   else{var uR=ph(tt[3],TS+3*TM,TS);
+    g+='<rect x="'+f1(M.ox)+'" y="'+f1(M.oy)+'" width="'+f1(a*sB)+'" height="'+f1(a*sB)+'" fill="'+COL.a+'" fill-opacity="'+(.38*uR).toFixed(3)+'"/>'
+     +'<rect x="'+f1(M.ox+a*sB)+'" y="'+f1(M.oy+a*sB)+'" width="'+f1(b*sB)+'" height="'+f1(b*sB)+'" fill="'+COL.b+'" fill-opacity="'+(.38*uR).toFixed(3)+'"/>';
+    if(uR>0){var ca=mp(M,[a/2,a/2]),cb=mp(M,[a+b/2,a+b/2]),sa=Math.min(24,8+a*sB*.2);
+     g+='<g opacity="'+uR.toFixed(2)+'" font-weight="700">'+T(ca[0],ca[1]+(a*sB>60?2:7),'a²',COL.ta,sa,'middle',' font-family="Cambria,Georgia,serif"')+(a*sB>60?T(ca[0],ca[1]+24,String(V.a2),COL.ta,18):'')
+      +T(cb[0],cb[1]+2,'b²',COL.tb,24,'middle',' font-family="Cambria,Georgia,serif"')+T(cb[0],cb[1]+26,String(V.b2),COL.tb,19)+'</g>';}}
+   /* triangoli */
+   TR.forEach(function(t,j){
+    var P=t.P,op;
+    if(k===0)op=ph(tt[2],TS+j*TS,TS);
+    else{op=1;var ordine=[0,-1,1,2][j];if(ordine>=0)P=lerp(t.P,t.Q,liscio(ph(tt[3],TS+ordine*TM,TM)));}
+    if(op<=0)return;
+    g+='<polygon points="'+pts(M,verticiT(P,t.u,a,b))+'" fill="'+COL.tri+'" fill-opacity="'+(op*tolti).toFixed(3)+'" stroke="'+COL.triS+'" stroke-opacity="'+(op*(.35+.65*tolti)).toFixed(3)+'" stroke-width="1.8" stroke-linejoin="round"/>';});
+   /* contorno e lati a, b */
+   g+='<rect x="'+f1(M.ox)+'" y="'+f1(M.oy)+'" width="'+f1(L)+'" height="'+f1(L)+'" fill="none" stroke="'+COL.ink+'" stroke-width="2.5"/>';
+   var top=k===0?[['a',a,COL.ta],['b',b,COL.tb]]:[['a',a,COL.ta],['b',b,COL.tb]],sin=k===0?[['b',b,COL.tb],['a',a,COL.ta]]:[['a',a,COL.ta],['b',b,COL.tb]],x=0;
+   top.forEach(function(s){g+=T(M.ox+(x+s[1]/2)*sB,M.oy-10,s[0],s[2],18,'middle',' font-weight="700"')+'<line x1="'+f1(M.ox+x*sB)+'" y1="'+f1(M.oy-5)+'" x2="'+f1(M.ox+x*sB)+'" y2="'+f1(M.oy+5)+'" stroke="'+COL.ink+'"/>';x+=s[1];});
+   x=0;sin.forEach(function(s){g+=T(M.ox-12,M.oy+(x+s[1]/2)*sB+6,s[0],s[2],18,'middle',' font-weight="700"');x+=s[1];});
+   var mt=k===0?ph(tt[4],TS,TS):ph(tt[4],TS,TS);
+   g+=T(M.ox+L/2,M.oy+L+30,mt>0?(k===0?'c²':'a² + b²'):'lato a + b',mt>0?(k===0?COL.tc:COL.ink):'#5c6572',mt>0?22:17,'middle',mt>0?' font-weight="700" font-family="Cambria,Georgia,serif"':'');
+   g+='</g>';});
+  var eq=ph(tt[4],TS,TS);
+  if(eq>0)g+='<g opacity="'+eq.toFixed(2)+'" font-weight="700">'+T(280,y0+L/2+12,'=',COL.ink,44)+T(280,y0+L+70,'c² = a² + b²',COL.ink,22,'middle',' font-family="Cambria,Georgia,serif"')+T(280,y0+L+98,V.c2+' = '+V.a2+' + '+V.b2,COL.ink,20)+'</g>';
+  o+=g+'</g>';}
+ $('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';}
+
+function testo1(i){
+ var a=ab1()[0],b=ab1()[1],V=valori(a,b);
+ return [
+  {h:'Il triangolo rettangolo',t:'Ha un angolo retto. I due lati che lo formano sono i <b>cateti</b>, <span class="cA">a</span> e <span class="cB">b</span>. Il lato opposto all\'angolo retto è l\'<b>ipotenusa</b> <span class="cC">c</span>, il lato più lungo.'},
+  {h:'I quadrati sui lati',t:'Su ogni lato costruiamo un quadrato. Le aree sono <span class="cA">a² = '+V.a2+'</span>, <span class="cB">b² = '+V.b2+'</span> e <span class="cC">c² = '+V.c2+'</span>. Guarda, '+V.a2+' + '+V.b2+' fa proprio '+V.c2+'. Succede sempre?'},
+  {h:'Quattro triangoli in un quadrato',t:'Un quadrato di lato a + b con quattro copie del triangolo negli angoli. Lo spazio che resta libero è un quadrato di lato c, cioè <span class="cC">c²</span>.'},
+  {h:'Spostiamo i triangoli',t:'Un quadrato uguale con gli stessi quattro triangoli. Li spostiamo senza cambiarli. Ora lo spazio libero è formato da due quadrati, <span class="cA">a²</span> e <span class="cB">b²</span>.'},
+  {h:'Togliamo i triangoli',t:'I due quadrati grandi sono uguali e contengono quattro triangoli uguali. Togliendo i triangoli resta la stessa area, quindi <b>c² = a² + b²</b>.'},
+  {h:'Il teorema di Pitagora',t:'In ogni triangolo rettangolo il quadrato costruito sull\'ipotenusa è equivalente alla somma dei quadrati costruiti sui cateti. <b>c² = a² + b²</b>, quindi <b>c = √(a² + b²)</b> = √'+V.c2+(intero(V.c)?' = ':' ')+V.cT+'.'}][i];}
+function frase1(i){
+ return [['Ciao, sono Prof. T dall\'antica Grecia! Tocca <b>Avanti</b> e costruiamo i quadrati sui lati.','hi'],
+  ['Tre quadrati, uno per lato. Conta i quadratini!','quadrati'],
+  ['Il quadrato arancione ha il lato uguale all\'ipotenusa.','quadrati'],
+  ['Guarda dove vanno i triangoli. Non cambiano forma, si spostano soltanto.','quadrati'],
+  ['Stesso quadrato, stessi triangoli. Quello che resta deve essere uguale!','ok'],
+  ['Vale per ogni triangolo rettangolo. Prova a cambiarlo qui sotto.','compasso']][i];}
+
+function pannello1(){
+ var n=6,i=P1.passo,P=testo1(i);
+ $('panel').innerHTML='<div class="card"><div class="h">'+P.h+'</div><div class="txt">'+P.t+'</div>'
+  +passoHTML(i,n)+azioniHTML(i===0,i===n-1,'Riproduci')+'</div>'
+  +'<div class="card"><div class="sect">Cambia il triangolo</div><div class="chips" id="tri1" style="margin-top:6px">'
+  +TRI1.map(function(t,k){return '<button class="chip'+(k===P1.k?' attivo':'')+'" data-k="'+k+'" style="--chip:#cdbdf0">a = '+t[0]+', b = '+t[1]+'</button>';}).join('')+'</div></div>'
+  +'<div class="anchor"><b>c² = a² + b²</b>. Il quadrato sull\'ipotenusa è equivalente alla somma dei quadrati sui cateti.</div>';
+ $('bPrev').onclick=function(){vai1(i-1);};
+ $('bNext').onclick=function(){vai1(i+1);};
+ $('bNew').onclick=riproduci1;
+ $('tri1').onclick=function(e){var b=e.target.closest('[data-k]');if(!b)return;
+  fermaGioco();cancelAnimationFrame(raf);P1.k=+b.dataset.k;P1.p=P1.passo;pannello1();disegna1();
+  var V=valori(ab1()[0],ab1()[1]);say(V.a2+' + '+V.b2+' = '+V.c2+'. Funziona anche con questo triangolo.','ok');};}
+
+function vai1(i,fine){
+ if(!fine)fermaGioco();   /* un comando toccato a mano ferma Riproduci */
+ i=clamp(i,0,5);var avanti=i>P1.passo;
+ if(Math.abs(i-P1.passo)>1){P1.p=avanti?i-1:i+1;}   /* da Riproduci si parte sempre dal passo precedente */
+ P1.passo=i;pannello1();var f=frase1(i);say(f[0],f[1],i===5);
+ anima(P1,i,avanti?D1[i]:T_BACK,disegna1,fine);}
+function riproduci1(){
+ fermaGioco();cancelAnimationFrame(raf);inGioco=true;
+ P1.passo=0;P1.p=0;pannello1();disegna1();var f=frase1(0);say(f[0],f[1]);
+ gioco=setTimeout(function(){avanza1(1);},reduce?0:T_PAUSE);}
+function avanza1(i){
+ if(!inGioco)return;
+ vai1(i,function(){if(!inGioco)return;if(i<5)gioco=setTimeout(function(){avanza1(i+1);},reduce?0:T_PAUSE);else inGioco=false;});}
+
+/* ================= 02 LE TERNE PITAGORICHE =================
+   Una corda chiusa con a + b + c nodi alla stessa distanza (12 per la terna 3, 4, 5), disegnata dal codice
+   perché i nodi devono essere contati esatti. Passi: 0 la corda in cerchio, 1 la corda tesa a triangolo
+   (tre nodi negli angoli), 2 i quadrati divisi in quadratini. Cateto a verticale, cateto b orizzontale. */
+var TERNE=[[3,4,5],[6,8,10],[5,12,13],[8,15,17]];
+var P2={passo:0,p:0,k:0};
+var D2=[0,T_MOVE+T_SHOW,T_MOVE+3*T_MOVE+T_SHOW];
+function t2(s){return clamp(P2.p-(s-1),0,1)*D2[s];}
+
+function disegna2(){
+ var t=TERNE[P2.k],a=t[0],b=t[1],c=t[2],n=a+b+c,o='<rect width="560" height="400" fill="#f6f3ea"/>';
+ var tA=t2(1),tB=t2(2),TS=T_SHOW,TM=T_MOVE;
+ /* due inquadrature: solo il triangolo (grande) e triangolo con i quadrati; si passa dall'una all'altra nel passo 2 */
+ var s0=Math.min(380/b,270/a,2*Math.PI*150/n),M0={s:s0,ox:280-s0*b/2,oy:210+s0*a/2};
+ var M1=fit(bbA(a,b),{x:20,y:18,w:520,h:364}),M=mix(M0,M1,liscio(ph(tB,0,TM)));
+ /* quadrati con i quadratini */
+ var ua=ph(tB,TM,TM),ub=ph(tB,2*TM,TM),uc=ph(tB,3*TM,TM),lab=ph(tB,3*TM,TM);
+ if(ua>0)o+=figA(M,a,b,{ua:ua,ub:ub,uc:uc,lab:lab,griglia:true,val:{Qa:String(a*a),Qb:String(b*b),Qc:String(c*c)},noTri:true});
+ /* la corda: ogni punto ha un parametro s tra 0 e 1 lungo la corda; passa dal cerchio al triangolo */
+ var u=liscio(ph(tA,0,TM)),R=s0*n/(2*Math.PI),C0=[280,210];
+ function suTri(s){var d=s*n;var A=[0,-a],O=[0,0],B=[b,0];
+  if(d<=a)return mp(M,lerp(A,O,d/a));if(d<=a+b)return mp(M,lerp(O,B,(d-a)/b));return mp(M,lerp(B,A,(d-a-b)/c));}
+ function suCerchio(s){var th=-3*Math.PI/4-2*Math.PI*s;return [C0[0]+R*Math.cos(th),C0[1]+R*Math.sin(th)];}
+ function punto(s){return u>=1?suTri(s):lerp(suCerchio(s),suTri(s),u);}
+ if(u>=1)o+='<polygon points="'+pts(M,[[0,0],[0,-a],[b,0]])+'" fill="'+COL.tri+'" fill-opacity=".55"/>';
+ var cam=[],N=n*6;for(var i=0;i<=N;i++){var q=punto(i/N);cam.push(f1(q[0])+','+f1(q[1]));}
+ o+='<polyline points="'+cam.join(' ')+'" fill="none" stroke="#8a5a2b" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>'
+  +'<polyline points="'+cam.join(' ')+'" fill="none" stroke="#c49a5a" stroke-width="1.6" stroke-dasharray="3 5"/>';
+ /* nodi: i tre degli angoli in rosso */
+ var rN=Math.max(3.2,Math.min(6,M.s*.16));
+ for(var k=0;k<n;k++){var q2=punto(k/n),ang=k===0||k===a||k===a+b;
+  o+='<circle cx="'+f1(q2[0])+'" cy="'+f1(q2[1])+'" r="'+f1(ang?rN+1.6:rN)+'" fill="'+(ang?COL.red:'#5a3a1a')+'" stroke="#fff" stroke-width="1"/>';}
+ /* numeri dei nodi sul cerchio, solo se sono pochi */
+ var lb=1-ph(tA,0,TM*.4);
+ if(n<=24&&lb>0)for(var k2=0;k2<n;k2++){var th=-3*Math.PI/4-2*Math.PI*k2/n;
+  o+=T(C0[0]+(R+16)*Math.cos(th),C0[1]+(R+16)*Math.sin(th)+5,String(k2+1),'#5a3a1a',13,'middle',' opacity="'+lb.toFixed(2)+'"');}
+ if(lb>0)o+=T(C0[0],C0[1]+8,n+' nodi','#5a3a1a',26,'middle',' font-weight="700" opacity="'+lb.toFixed(2)+'"');
+ /* numero dei tratti su ogni lato e angolo retto */
+ var e1=ph(tA,TM,TS)*(1-ph(tB,0,TM));   /* con i quadrati i numeri dei lati lasciano il posto alle aree */
+ if(e1>0){var g=mp(M,[b/3,-a/3]),pO=mp(M,[0,0]),pA=mp(M,[0,-a]),pB=mp(M,[b,0]),off=ua>0?-20:20;
+  o+='<g opacity="'+e1.toFixed(2)+'">'+angoloRetto(M,[0,0],[0,-1],[1,0],16)
+   +etichetta(pO,pA,g,String(a),COL.ta,off,20)+etichetta(pO,pB,g,String(b),COL.tb,off,20)+etichetta(pA,pB,g,String(c),COL.tc,off,20)+'</g>';}
+ var eq=ph(tB,4*TM,TS);
+ if(eq>0)o+='<g opacity="'+eq.toFixed(2)+'" font-weight="700">'+T(18,40,a+'² + '+b+'² = '+c+'²',COL.ink,22,'start',' font-family="Cambria,Georgia,serif"')
+  +T(18,68,(a*a)+' + '+(b*b)+' = '+(c*c),COL.ink,20,'start')+'</g>';
+ $('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';}
+
+function testo2(i){
+ var t=TERNE[P2.k],a=t[0],b=t[1],c=t[2],n=a+b+c;
+ var nota=P2.k===1?' È la terna 3, 4, 5 moltiplicata per 2.':'';
+ return [
+  {h:'La corda con i nodi',t:'Una corda chiusa ha <b>'+n+' nodi</b> alla stessa distanza. Così è divisa in '+n+' tratti uguali.'},
+  {h:'La corda tesa',t:'Teniamo fermi tre nodi e tendiamo la corda. Si forma un triangolo con i lati di <span class="cA">'+a+'</span>, <span class="cB">'+b+'</span> e <span class="cC">'+c+'</span> tratti. L\'angolo tra i lati di '+a+' e '+b+' tratti è <b>retto</b>.'},
+  {h:'La verifica con i quadratini',t:'Sui lati costruiamo i quadrati divisi in quadratini. '+(a*a)+' + '+(b*b)+' = '+(c*c)+', cioè '+a+'² + '+b+'² = '+c+'². I numeri '+a+', '+b+', '+c+' formano una <b>terna pitagorica</b>.'+nota}][i];}
+function frase2(i){
+ var n=TERNE[P2.k].reduce(function(x,y){return x+y;});
+ return [['Una corda con '+n+' nodi. Tocca <b>Avanti</b> e la tendiamo.','corda'],
+  ['Tre nodi negli angoli, ed ecco un angolo retto!','corda'],
+  ['Conta i quadratini. Il conto torna sempre.','ok']][i];}
+
+function pannello2(){
+ var n=3,i=P2.passo,P=testo2(i);
+ $('panel').innerHTML='<div class="card"><div class="h">'+P.h+'</div><div class="txt">'+P.t+'</div>'
+  +passoHTML(i,n)+azioniHTML(i===0,i===n-1,'Altra terna')+'</div>'
+  +'<div class="card"><div class="sect">Scegli la terna</div><div class="chips" id="ter" style="margin-top:6px">'
+  +TERNE.map(function(t,k){return '<button class="chip'+(k===P2.k?' attivo':'')+'" data-k="'+k+'" style="--chip:#c49a5a">'+t.join(', ')+'</button>';}).join('')+'</div>'
+  +'<table class="mis">'+TERNE.map(function(t,k){return '<tr'+(k===P2.k?' class="on"':'')+'><td>'+t[0]+'² + '+t[1]+'² = '+(t[0]*t[0])+' + '+(t[1]*t[1])+' = '+(t[2]*t[2])+' = '+t[2]+'²</td></tr>';}).join('')+'</table></div>'
+  +'<div class="card"><div class="sect">Un po\' di storia</div><div class="txt" style="font-size:15px">Una tavoletta babilonese di circa 3800 anni fa, oggi chiamata Plimpton 322, contiene numeri legati alle terne pitagoriche. Il teorema porta il nome di Pitagora (VI secolo a.C.), ma non sappiamo chi lo dimostrò per primo. La dimostrazione più antica che conosciamo è negli <i>Elementi</i> di Euclide (libro I, proposizione 47), intorno al 300 a.C. Si racconta che gli antichi Egizi tracciassero gli angoli retti con una corda a 12 nodi, ma è un\'ipotesi moderna che nessun documento conferma.</div></div>'
+  +'<div class="anchor">Una <b>terna pitagorica</b> è formata da tre numeri interi con a² + b² = c². Moltiplicando i tre numeri per lo stesso numero si ottiene un\'altra terna.</div>';
+ $('bPrev').onclick=function(){vai2(i-1);};
+ $('bNext').onclick=function(){vai2(i+1);};
+ $('bNew').onclick=function(){scegli2((P2.k+1)%TERNE.length);};
+ $('ter').onclick=function(e){var b=e.target.closest('[data-k]');if(b)scegli2(+b.dataset.k);};}
+function scegli2(k){cancelAnimationFrame(raf);P2.k=k;P2.passo=0;P2.p=0;pannello2();disegna2();var f=frase2(0);say(f[0],f[1]);}
+function vai2(i){
+ i=clamp(i,0,2);var avanti=i>P2.passo;P2.passo=i;
+ pannello2();var f=frase2(i);say(f[0],f[1],i===2);
+ anima(P2,i,avanti?D2[i]:T_BACK,disegna2);}
+
+/* ================= 03 CALCOLATRICE =================
+   Due richieste: l'ipotenusa dai due cateti, oppure un cateto dall'ipotenusa e dall'altro cateto.
+   I passaggi mostrano i quadrati, la somma o la differenza e la radice quadrata. */
+var P3={cerca:'c',x:'3',y:'4',xc:'5',yc:'3'};
+function pannello3(){
+ var ip=P3.cerca==='c';
+ var campi=ip?[['x','cateto <b>a</b>'],['y','cateto <b>b</b>']]:[['xc','ipotenusa <b>c</b>'],['yc','cateto <b>b</b>']];
+ $('panel').innerHTML='<div class="card"><div class="sect">Che cosa cerchi?</div><div class="chips" id="cerca" style="margin-top:6px">'
+  +'<button class="chip'+(ip?' attivo':'')+'" data-c="c" style="--chip:'+COL.c+'">L\'ipotenusa</button>'
+  +'<button class="chip'+(ip?'':' attivo')+'" data-c="a" style="--chip:'+COL.a+'">Un cateto</button></div>'
+  +'<div class="calc">'+campi.map(function(c){return '<label for="c_'+c[0]+'">'+c[1]+'</label><input id="c_'+c[0]+'" data-k="'+c[0]+'" inputmode="decimal" autocomplete="off" value="'+P3[c[0]]+'"><span class="u">cm</span>';}).join('')+'</div>'
+  +tastierinaHTML({virgola:true,verifica:false,id:'pad3'})
+  +'<div class="ris" id="ris3"></div></div>'
+  +'<div class="card"><div class="sect">Come si calcola</div><div id="come3"></div></div>'
+  +'<div class="anchor">Ipotenusa <b>c = √(a² + b²)</b>, i quadrati si sommano. Cateto <b>a = √(c² − b²)</b>, i quadrati si sottraggono.</div>';
+ $('cerca').onclick=function(e){var b=e.target.closest('[data-c]');if(!b||b.dataset.c===P3.cerca)return;P3.cerca=b.dataset.c;pannello3();
+  say(P3.cerca==='c'?'Dai cateti all\'ipotenusa, i quadrati si sommano.':'Per un cateto i quadrati si sottraggono. L\'ipotenusa è il lato più lungo!','squadra');};
+ var caselle=campi.map(function(c){return $('c_'+c[0]);}),attiva=caselle[0];
+ caselle.forEach(function(c){
+  if(TOUCH)tastierinaCampo(c);
+  c.addEventListener('focus',function(){attiva=c;segna3(c);});
+  c.addEventListener('click',function(){attiva=c;segna3(c);});
+  c.addEventListener('input',function(){P3[c.dataset.k]=c.value;calcola3(true);});});
+ if(TOUCH){tastierinaCollega($('pad3'),function(){return attiva;},{max:7,nuovoSeEsterno:true});segna3(attiva);}
+ calcola3(false);}
+function segna3(c){Array.prototype.forEach.call(document.querySelectorAll('.calc input'),function(x){x.classList.toggle('dato',x===c);});}
+
+function calcola3(daUtente){
+ var ip=P3.cerca==='c',x=leggi(ip?P3.x:P3.xc),y=leggi(ip?P3.y:P3.yc),ris=$('ris3'),come=$('come3');
+ if(!(x>0)||!(y>0)){ris.innerHTML='';come.innerHTML='<div class="vuoto">Scrivi due numeri maggiori di zero.</div>';disegna3(null);
+  if(daUtente)say('Mi servono due numeri maggiori di zero.','ko');return;}
+ if(!ip&&y>=x){ris.innerHTML='';come.innerHTML='<div class="vuoto">L\'ipotenusa è il lato più lungo. Il cateto deve essere più corto dell\'ipotenusa.</div>';disegna3(null);
+  if(daUtente)say('Un cateto più lungo dell\'ipotenusa? Non esiste un triangolo così!','ko');return;}
+ var x2=x*x,y2=y*y,q=ip?x2+y2:x2-y2,r=Math.sqrt(q),rT=intero(r)?num(r):'≈ '+dec2(r),N=ip?'c':'a';
+ ris.innerHTML=(ip?'Ipotenusa':'Cateto')+' <b>'+N+' '+(intero(r)?'= ':'')+rT+' cm</b>';
+ var righe=ip?[N+' = √(a² + b²)',N+' = √('+num(x)+'² + '+num(y)+'²)',N+' = √('+num(x2)+' + '+num(y2)+')',N+' = √'+num(q),N+' '+(intero(r)?'= ':'')+rT+' cm']
+  :[N+' = √(c² − b²)',N+' = √('+num(x)+'² − '+num(y)+'²)',N+' = √('+num(x2)+' − '+num(y2)+')',N+' = √'+num(q),N+' '+(intero(r)?'= ':'')+rT+' cm'];
+ come.innerHTML='<ol class="passi3">'+righe.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ol>'
+  +(intero(r)?'':'<div class="nota">La radice non è un numero intero, il risultato è arrotondato al centesimo.</div>');
+ disegna3(ip?{a:x,b:y,c:r,ign:'c'}:{a:r,b:y,c:x,ign:'a'});
+ if(daUtente)say(intero(r)?'Radice esatta! I tre numeri formano una terna pitagorica.':'Fatto! Guarda i passaggi qui sotto.',intero(r)&&intero(x)&&intero(y)?'ok':'squadra');}
+
+function disegna3(E){
+ var o='<rect width="560" height="400" fill="#f6f3ea"/>';
+ if(!E){o+=T(280,200,'Scrivi due misure','#5c6572',22);$('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';return;}
+ var M=fit(bbA(E.a,E.b),{x:20,y:18,w:520,h:364}),fmt=function(v){return intero(v)?num(v):dec2(v);};
+ var va=E.a*E.a,vb=E.b*E.b,vc=va+vb;
+ o+=figA(M,E.a,E.b,{ua:1,ub:1,uc:1,lab:1,chiaro:true,val:{Qa:'a² = '+num(Math.round(va*100)/100),Qb:'b² = '+num(Math.round(vb*100)/100),Qc:'c² = '+num(Math.round(vc*100)/100)},
+  nomi:{Qa:'a = '+(E.ign==='a'?'?':fmt(E.a)),Qb:'b = '+fmt(E.b),Qc:'c = '+(E.ign==='c'?'?':fmt(E.c))},
+  ignoto:E.ign});
+ o+=T(18,40,E.ign==='c'?'c = √(a² + b²)':'a = √(c² − b²)',COL.ink,22,'start',' font-weight="700" font-family="Cambria,Georgia,serif"')
+  +T(18,68,(E.ign==='c'?'c':'a')+' '+(intero(E.ign==='c'?E.c:E.a)?'= ':'≈ ')+fmt(E.ign==='c'?E.c:E.a)+' cm',COL.red,20,'start',' font-weight="700"');
+ $('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';}
+
+/* ================= 04 ALLENATI =================
+   Giri da 6 esercizi che diventano più difficili da soli. Giro 1 ipotenusa, giro 2 cateti, giro 3 problemi
+   (diagonale di rettangolo e quadrato, altezza di triangolo isoscele ed equilatero, lato del rombo, scala),
+   giro 4 problemi a più passi, poi giri misti. Due tentativi; al secondo errore si mostra la soluzione.
+   Ogni esercizio ha gli errori tipici (sb, valore e messaggio) e un tipo (ip o cat) che aggiunge le diagnosi comuni:
+   somma dei lati invece dei quadrati, radice dimenticata, sottrazione al posto della somma e viceversa,
+   ipotenusa più corta di un cateto. Risultati arrotondati al centesimo e accettati con tolleranza. */
+var LIVELLI=['L\'ipotenusa','I cateti','Problemi','Problemi a più passi'];
+var PRIM=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],[9,40,41],[12,35,37]];
+function ri(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+function sc1(a){return a[Math.floor(Math.random()*a.length)];}
+function mescola(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function terna(max){   /* terna pitagorica con l'ipotenusa fino a max: [cateto, cateto, ipotenusa] */
+ var v=[];PRIM.forEach(function(t){for(var k=1;k*t[2]<=max;k++)v.push([k*t[0],k*t[1],k*t[2]]);});
+ var t=sc1(v);return Math.random()<.5?t:[t[1],t[0],t[2]];}
+function nonQuadrato(f){var r;do{r=f();}while(intero(Math.sqrt(r.q)));return r;}
+function d2(x){return dec2(x);}
+function rad(q){var r=Math.sqrt(q);return intero(r)?'√'+num(q)+' = '+num(r):'√'+num(q)+' ≈ '+dec2(r);}
+
+var GEN={
+ ipInt:function(){var t=terna(50),a=t[0],b=t[1];return {q:'In un triangolo rettangolo i cateti misurano '+a+' cm e '+b+' cm. Quanto misura l\'ipotenusa?',u:'cm',ans:t[2],ip:[a,b],sb:[],
+  sol:['c = √(a² + b²)','c = √('+a+'² + '+b+'²) = √('+(a*a)+' + '+(b*b)+') = '+rad(a*a+b*b)+' cm'],fig:{t:'tri',A:a,B:b,la:a+' cm',lb:b+' cm',lc:'?'}};},
+ ipDec:function(){var r=nonQuadrato(function(){var a=ri(2,12),b=ri(2,12);return {a:a,b:b,q:a*a+b*b};}),a=r.a,b=r.b;
+  return {q:'Calcola l\'ipotenusa di un triangolo rettangolo con i cateti di '+a+' cm e '+b+' cm.',u:'cm',ans:Math.sqrt(r.q),ip:[a,b],sb:[],
+  sol:['c = √(a² + b²)','c = √('+a+'² + '+b+'²) = √('+(a*a)+' + '+(b*b)+') = '+rad(r.q)+' cm'],fig:{t:'tri',A:a,B:b,la:a+' cm',lb:b+' cm',lc:'?'}};},
+ catInt:function(){var t=terna(50),a=t[0],b=t[1],c=t[2];return {q:'L\'ipotenusa di un triangolo rettangolo misura '+c+' cm e un cateto misura '+b+' cm. Quanto misura l\'altro cateto?',u:'cm',ans:a,cat:[c,b],sb:[],
+  sol:['a = √(c² − b²)','a = √('+c+'² − '+b+'²) = √('+(c*c)+' − '+(b*b)+') = '+rad(c*c-b*b)+' cm'],fig:{t:'tri',A:a,B:b,la:'?',lb:b+' cm',lc:c+' cm'}};},
+ catDec:function(){var r=nonQuadrato(function(){var c=ri(6,20),b=ri(2,c-1);return {c:c,b:b,q:c*c-b*b};}),c=r.c,b=r.b,a=Math.sqrt(r.q);
+  return {q:'Un triangolo rettangolo ha l\'ipotenusa di '+c+' cm e un cateto di '+b+' cm. Calcola l\'altro cateto.',u:'cm',ans:a,cat:[c,b],sb:[],
+  sol:['a = √(c² − b²)','a = √('+c+'² − '+b+'²) = √('+(c*c)+' − '+(b*b)+') = '+rad(r.q)+' cm'],fig:{t:'tri',A:a,B:b,la:'?',lb:b+' cm',lc:c+' cm'}};},
+ /* problemi */
+ rett:function(){var t=Math.random()<.6?terna(40):[ri(3,12),ri(3,12),0],b=Math.max(t[0],t[1]),h=Math.min(t[0],t[1]);if(b===h)b++;var q=b*b+h*h;
+  return {q:'Un rettangolo ha la base di '+b+' cm e l\'altezza di '+h+' cm. Quanto misura la sua diagonale?',u:'cm',ans:Math.sqrt(q),ip:[b,h],sb:[],
+  sol:['La diagonale divide il rettangolo in due triangoli rettangoli. I cateti sono la base e l\'altezza.','d = √(b² + h²) = √('+(b*b)+' + '+(h*h)+') = '+rad(q)+' cm'],fig:{t:'rett',B:b,H:h,lb:b+' cm',lh:h+' cm',ld:'d = ?'}};},
+ quad:function(){var l=ri(3,15);return {q:'Quanto misura la diagonale di un quadrato con il lato di '+l+' cm?',u:'cm',ans:l*Math.SQRT2,ip:[l,l],sb:[[l*l,'Questa è l\'area del quadrato. La diagonale è l\'ipotenusa di un triangolo con i cateti uguali al lato.']],
+  sol:['d = √(l² + l²) = √('+(l*l)+' + '+(l*l)+') = '+rad(2*l*l)+' cm','Scorciatoia, d = l · √2 ≈ l · 1,41.'],fig:{t:'rett',B:l,H:l,lb:l+' cm',lh:l+' cm',ld:'d = ?'}};},
+ iso:function(){var t=terna(40),m=t[0],h=t[1],L=t[2],B=2*m;
+  return {q:'Un triangolo isoscele ha la base di '+B+' cm e i lati obliqui di '+L+' cm. Quanto misura l\'altezza relativa alla base?',u:'cm',ans:h,cat:[L,m],
+  sb:L>B?[[Math.sqrt(L*L-B*B),'L\'altezza divide la base a metà. Il cateto del triangolo rettangolo è metà della base, non la base intera.']]:[],
+  sol:['L\'altezza divide il triangolo in due triangoli rettangoli. L\'ipotenusa è il lato obliquo, un cateto è metà della base, '+B+' / 2 = '+m+' cm.','h = √(l² − (b/2)²) = √('+(L*L)+' − '+(m*m)+') = '+rad(L*L-m*m)+' cm'],
+  fig:{t:'iso',B:B,H:h,lb:B+' cm',ll:L+' cm',lh:'h = ?'}};},
+ equi:function(){var l=2*ri(2,10),m=l/2;return {q:'Quanto misura l\'altezza di un triangolo equilatero con il lato di '+l+' cm?',u:'cm',ans:Math.sqrt(l*l-m*m),cat:[l,m],sb:[],
+  sol:['L\'altezza divide il triangolo in due triangoli rettangoli con l\'ipotenusa di '+l+' cm e un cateto di '+m+' cm.','h = √('+(l*l)+' − '+(m*m)+') = '+rad(l*l-m*m)+' cm','Scorciatoia, h = l · √3 / 2 ≈ l · 0,866.'],
+  fig:{t:'iso',B:l,H:Math.sqrt(l*l-m*m),lb:l+' cm',ll:l+' cm',lh:'h = ?'}};},
+ rombo:function(){var t=terna(30),m=t[0],n=t[1],D=2*Math.max(m,n),d=2*Math.min(m,n);
+  return {q:'Le diagonali di un rombo misurano '+D+' cm e '+d+' cm. Quanto misura il lato del rombo?',u:'cm',ans:t[2],ip:[D/2,d/2],
+  sb:[[Math.sqrt(D*D+d*d),'Hai usato le diagonali intere. I cateti sono le metà delle diagonali.']],
+  sol:['Le diagonali si tagliano a metà ad angolo retto. Il lato è l\'ipotenusa di un triangolo con i cateti '+(D/2)+' cm e '+(d/2)+' cm.','l = √('+(D*D/4)+' + '+(d*d/4)+') = '+rad(D*D/4+d*d/4)+' cm'],
+  fig:{t:'rombo',D:D,d:d,lD:D+' cm',ld:d+' cm',ll:'l = ?'}};},
+ scala:function(){var s=sc1([[5,3,4],[2.5,0.7,2.4],[6.5,2.5,6],[2.6,1,2.4],[3.4,1.6,3],[10,6,8]]),L=s[0],x=s[1];
+  return {q:'Una scala lunga '+num(L)+' m è appoggiata a un muro. Il piede della scala è a '+num(x)+' m dal muro. A che altezza arriva la cima della scala?',u:'m',ans:s[2],cat:[L,x],sb:[],
+  sol:['Muro e pavimento formano un angolo retto. La scala è l\'ipotenusa.','h = √('+num(L)+'² − '+num(x)+'²) = √('+num(L*L)+' − '+num(x*x)+') = '+rad(L*L-x*x)+' m'],
+  fig:{t:'scala',L:L,X:x,H:s[2],ll:num(L)+' m',lx:num(x)+' m',lh:'h = ?'}};},
+ /* problemi a più passi */
+ perTri:function(){var t=terna(40),a=t[0],b=t[1],c=t[2];return {q:'Un triangolo rettangolo ha un cateto di '+b+' cm e l\'ipotenusa di '+c+' cm. Quanto misura il suo perimetro?',u:'cm',ans:a+b+c,
+  sb:[[a,'Questo è l\'altro cateto. Il perimetro è la somma dei tre lati.'],[b+c,'Manca il terzo lato. Prima trova l\'altro cateto con il teorema di Pitagora.'],[b+c+(c-b),'Il cateto non è la differenza tra ipotenusa e cateto. Usa il teorema di Pitagora.'],[b+c+Math.sqrt(c*c+b*b),'Per trovare un cateto i quadrati si sottraggono, non si sommano.']],
+  sol:['a = √(c² − b²) = √('+(c*c)+' − '+(b*b)+') = '+rad(c*c-b*b)+' cm','2p = '+a+' + '+b+' + '+c+' = '+(a+b+c)+' cm'],fig:{t:'tri',A:a,B:b,la:'',lb:b+' cm',lc:c+' cm',centro:'2p = ?'}};},
+ perRombo:function(){var t=terna(30),m=t[0],n=t[1],D=2*Math.max(m,n),d=2*Math.min(m,n),l=t[2];
+  return {q:'Un rombo ha le diagonali di '+D+' cm e '+d+' cm. Calcola il suo perimetro.',u:'cm',ans:4*l,
+  sb:[[l,'Questo è il lato. Il perimetro del rombo è 4 volte il lato.'],[4*Math.sqrt(D*D+d*d),'Hai usato le diagonali intere. I cateti sono le metà delle diagonali.'],[Math.sqrt(D*D+d*d),'Hai usato le diagonali intere, e manca il perimetro.'],[2*(D+d),'Il perimetro non si trova sommando le diagonali. Serve il lato.'],[4*(m+n),'Hai sommato le metà delle diagonali. Si sommano i loro quadrati, poi si fa la radice.']],
+  sol:['l = √('+(D/2)+'² + '+(d/2)+'²) = √('+(D*D/4)+' + '+(d*d/4)+') = '+rad(D*D/4+d*d/4)+' cm','2p = 4 · '+l+' = '+(4*l)+' cm'],fig:{t:'rombo',D:D,d:d,lD:D+' cm',ld:d+' cm',ll:'',centro:'2p = ?'}};},
+ areaIso:function(){var t=terna(30),m=t[0],h=t[1],L=t[2],B=2*m;return {q:'Un triangolo isoscele ha la base di '+B+' cm e i lati obliqui di '+L+' cm. Calcola la sua area.',u:'cm²',ans:B*h/2,
+  sb:[[h,'Questa è l\'altezza. Ora calcola l\'area, base · altezza / 2.'],[B*h,'Manca la divisione per 2.'],[L>B?B*Math.sqrt(L*L-B*B)/2:-1,'Il cateto del triangolo rettangolo è metà della base, non la base intera.'],[B*L/2,'Il lato obliquo non è l\'altezza. Prima trova l\'altezza con il teorema di Pitagora.']],
+  sol:['h = √('+L+'² − '+m+'²) = √('+(L*L)+' − '+(m*m)+') = '+rad(L*L-m*m)+' cm','A = b · h / 2 = '+B+' · '+h+' / 2 = '+(B*h/2)+' cm²'],fig:{t:'iso',B:B,H:h,lb:B+' cm',ll:L+' cm',lh:'',centro:'A = ?'}};},
+ latoQuad:function(){var d=ri(4,20);return {q:'La diagonale di un quadrato misura '+d+' cm. Quanto misura il lato?',u:'cm',ans:d/Math.SQRT2,
+  sb:[[d/2,'Il lato non è metà della diagonale. Da d² = l² + l² = 2 · l² si ricava l² = d² / 2.'],[d*d/2,'Questo è l², il quadrato del lato. Manca la radice quadrata.'],[d*Math.SQRT2,'Così hai trovato la diagonale di un quadrato con il lato di '+d+' cm. Qui la diagonale è il dato.']],
+  sol:['d² = l² + l² = 2 · l², quindi l² = d² / 2 = '+(d*d)+' / 2 = '+num(d*d/2),'l = '+rad(d*d/2)+' cm'],fig:{t:'rett',B:1,H:1,lb:'l = ?',lh:'',ld:'d = '+d+' cm'}};},
+ areaRett:function(){var t=terna(40),b=Math.max(t[0],t[1]),h=Math.min(t[0],t[1]),d=t[2];return {q:'La diagonale di un rettangolo misura '+d+' cm e la base '+b+' cm. Calcola l\'area del rettangolo.',u:'cm²',ans:b*h,
+  sb:[[h,'Questa è l\'altezza. L\'area del rettangolo è base · altezza.'],[b*h/2,'Il rettangolo non è un triangolo. L\'area è base · altezza, senza dividere per 2.'],[b*Math.sqrt(d*d+b*b),'Per trovare un cateto i quadrati si sottraggono, non si sommano.'],[b*(d-b),'L\'altezza non è la differenza tra diagonale e base. Usa il teorema di Pitagora.']],
+  sol:['h = √(d² − b²) = √('+(d*d)+' − '+(b*b)+') = '+rad(d*d-b*b)+' cm','A = b · h = '+b+' · '+h+' = '+(b*h)+' cm²'],fig:{t:'rett',B:b,H:h,lb:b+' cm',lh:'',ld:d+' cm',centro:'A = ?'}};},
+ perRett:function(){var t=terna(40),b=Math.max(t[0],t[1]),h=Math.min(t[0],t[1]),d=t[2];return {q:'Un rettangolo ha la diagonale di '+d+' cm e la base di '+b+' cm. Quanto misura il suo perimetro?',u:'cm',ans:2*(b+h),
+  sb:[[b+h,'Questo è il semiperimetro. Il perimetro è il doppio.'],[h,'Questa è l\'altezza. Manca il perimetro.'],[2*(b+d),'La diagonale non è un lato del rettangolo. Serve l\'altezza.'],[2*(b+Math.sqrt(d*d+b*b)),'Per trovare un cateto i quadrati si sottraggono, non si sommano.']],
+  sol:['h = √(d² − b²) = √('+(d*d)+' − '+(b*b)+') = '+rad(d*d-b*b)+' cm','2p = 2 · ('+b+' + '+h+') = '+(2*(b+h))+' cm'],fig:{t:'rett',B:b,H:h,lb:b+' cm',lh:'',ld:d+' cm',centro:'2p = ?'}};}
+};
+var LIV=[['ipInt','ipInt','ipInt','ipInt','ipDec','ipDec'],['catInt','catInt','catInt','catInt','catDec','catDec'],
+ ['rett','quad','iso','equi','rombo','scala'],['perTri','perRombo','areaIso','latoQuad','areaRett','perRett']];
+var P4={fatti:0,giusti:0,es:null,giro:0,pos:6,ordine:[]};
+
+function vicino(v,x){return Math.abs(v-x)<=Math.max(.011,Math.abs(x)*.006);}
+function nuovoEs(){
+ if(P4.pos>=6){if(P4.ordine.length)P4.giro++;
+  P4.ordine=P4.giro<4?mescola(LIV[P4.giro].slice()):mescola([].concat(LIV[0],LIV[1],LIV[2],LIV[3])).slice(0,6);P4.pos=0;}
+ var k=P4.ordine[P4.pos],E=GEN[k]();P4.pos++;
+ E.k=k;E.err=0;E.fatto=false;E.n=P4.pos;E.L=P4.giro<4?P4.giro:-1;P4.es=E;}
+
+/* diagnosi: prima gli errori propri dell'esercizio, poi quelli comuni del teorema */
+function diagnosi(E,v){
+ for(var i=0;i<E.sb.length;i++)if(E.sb[i][0]>0&&vicino(v,E.sb[i][0]))return E.sb[i][1];
+ if(E.ip){var x=E.ip[0],y=E.ip[1];
+  if(vicino(v,x+y))return 'Hai sommato i lati. Il teorema dice di sommare i <b>quadrati</b> dei cateti e poi fare la radice quadrata.';
+  if(vicino(v,x*x+y*y))return 'Questo è il quadrato dell\'ipotenusa. Manca la radice quadrata.';
+  if(x!==y&&vicino(v,Math.sqrt(Math.abs(x*x-y*y))))return 'Per l\'ipotenusa i quadrati dei cateti si sommano, non si sottraggono.';
+  if(v<=Math.max(x,y))return 'L\'ipotenusa è il lato più lungo del triangolo rettangolo. Deve venire più lunga di ogni cateto.';}
+ if(E.cat){var c=E.cat[0],k=E.cat[1];
+  if(vicino(v,c-k))return 'Hai fatto la differenza tra i lati. Bisogna sottrarre i loro <b>quadrati</b> e poi fare la radice quadrata.';
+  if(vicino(v,c*c-k*k))return 'Questo è il quadrato del cateto. Manca la radice quadrata.';
+  if(vicino(v,Math.sqrt(c*c+k*k)))return 'Per trovare un cateto i quadrati si sottraggono, non si sommano.';
+  if(vicino(v,c+k))return 'Hai sommato i lati. Per un cateto si sottraggono i quadrati, poi si fa la radice.';
+  if(v>=c)return 'Un cateto è sempre più corto dell\'ipotenusa. Ricontrolla, qui i quadrati vanno sottratti.';}
+ return null;}
+
+function conta4(){return 'Esercizi completati '+P4.fatti+', al primo colpo '+P4.giusti;}
+function solHTML(E){return '<div class="sol"><b>Soluzione</b><br>'+E.sol.join('<br>')+'</div>';}
+function pannello4(){
+ if(!P4.es)nuovoEs();var E=P4.es;
+ var giro='Giro '+(P4.giro+1)+', '+(E.L>=0?LIVELLI[E.L].toLowerCase():'misto');
+ $('panel').innerHTML='<div class="card"><div class="stat">'+giro+' · esercizio '+E.n+' di 6</div><div class="q">'+E.q+'</div>'
+  +'<div class="ans"><input id="inA" inputmode="decimal" autocomplete="off" aria-label="Risposta"><span class="unita">'+E.u+'</span>'
+  +(TOUCH?'':'<button class="azione primaria" id="bOk">Verifica</button>')+'</div>'
+  +tastierinaHTML({virgola:true,idVerifica:'bOk'})
+  +'<div class="nota">Se il risultato non è intero, arrotonda al centesimo.</div>'
+  +'<div class="fb" id="fb" aria-live="polite"></div><div class="azioni"><button class="azione link" id="bNx">↻ Nuovo esercizio</button></div></div>'
+  +'<div class="card"><div class="sect">Il tuo allenamento</div><div class="stat" id="conta4" style="margin:0">'+conta4()+'</div></div>'
+  +'<div class="anchor"><b>c = √(a² + b²)</b> per l\'ipotenusa, <b>a = √(c² − b²)</b> per un cateto.</div>';
+ $('bOk').onclick=verifica4;
+ $('inA').onkeydown=function(e){if(e.key==='Enter')verifica4();};
+ if(TOUCH)tastierinaCollega($('pad'),$('inA'),{max:8});   /* il tasto Verifica della tastierina ha id bOk */
+ $('bNx').onclick=function(){nuovoEs();pannello4();say(fraseNuovo(),'idle');};
+ disegna4();}
+function fraseNuovo(){var E=P4.es;
+ if(E.n===1)return 'Nuovo giro, '+(E.L>=0?LIVELLI[E.L].toLowerCase():'tutti i tipi mescolati')+'.';
+ if(E.ip)return 'Cerchi il lato più lungo? Allora i quadrati si sommano.';
+ if(E.cat)return 'Cerchi un cateto? Allora i quadrati si sottraggono.';
+ return 'Prima trova il lato che manca, poi il resto.';}
+function finito(E,giusto){
+ E.fatto=true;P4.fatti++;if(giusto&&E.err===0)P4.giusti++;$('conta4').textContent=conta4();
+ var b=$('bNx');b.classList.remove('link');b.classList.add('primaria');$('bOk').disabled=true;$('inA').disabled=true;
+ if(E.n===6)say('Giro completato! '+(P4.giro<3?'Il prossimo è più difficile, '+LIVELLI[P4.giro+1].toLowerCase()+'.':'Ora si continua con esercizi misti.'),'fine',true);
+ else if(giusto)say(E.err?'Ce l\'hai fatta. Rivedi i passaggi qui sotto.':'Perfetto!','ok');
+ else say('Guarda la soluzione con calma, poi prova il prossimo.','ko');}
+function verifica4(){
+ var E=P4.es;if(!E||E.fatto)return;var v=leggi($('inA').value);if(isNaN(v))return;
+ if(vicino(v,E.ans)){$('fb').innerHTML='<div class="ok">Esatto.</div>'+solHTML(E);finito(E,true);return;}
+ E.err++;var msg=diagnosi(E,v)||'Ricontrolla i calcoli. Scrivi prima la formula, poi sostituisci i numeri.';
+ if(E.err>=2){$('fb').innerHTML='<div class="no">Non ancora.</div>'+msg+solHTML(E);finito(E,false);}
+ else{$('fb').innerHTML='<div class="no">Non ancora.</div>'+msg+' Riprova.';say('Riprova, ci sei quasi.','ko');}}
+
+/* disegno dell'esercizio con i dati del testo; il dato da trovare è in rosso */
+function disegna4(){
+ var F=P4.es.fig,o='<rect width="560" height="400" fill="#f6f3ea"/>',box={x:70,y:50,w:420,h:300},ink=COL.ink;
+ var colL=function(t){return /\?/.test(t)?COL.red:ink;};
+ var lab=function(p,q,g,t,off){return t?etichetta(p,q,g,t,colL(t),off||22,22):'';};
+ var poli=function(M,v,fill){return '<polygon points="'+pts(M,v)+'" fill="'+(fill||COL.tri)+'" fill-opacity=".6" stroke="'+ink+'" stroke-width="2.5" stroke-linejoin="round"/>';};
+ var seg=function(M,p,q,col,w,dash){var a=mp(M,p),b=mp(M,q);return '<line x1="'+f1(a[0])+'" y1="'+f1(a[1])+'" x2="'+f1(b[0])+'" y2="'+f1(b[1])+'" stroke="'+col+'" stroke-width="'+(w||2.5)+'"'+(dash?' stroke-dasharray="8 6"':'')+'/>';};
+ var M,g,P;
+ if(F.t==='tri'){var A=F.A,B=F.B;M=fit({x0:0,y0:-A,x1:B,y1:0},box);P=[[0,0],[0,-A],[B,0]].map(function(p){return mp(M,p);});g=mp(M,[B/3,-A/3]);
+  o+=poli(M,[[0,0],[0,-A],[B,0]])+angoloRetto(M,[0,0],[0,-1],[1,0],16)+lab(P[0],P[1],g,F.la)+lab(P[0],P[2],g,F.lb)+lab(P[1],P[2],g,F.lc);}
+ else if(F.t==='rett'){var W=F.B,H=F.H;M=fit({x0:0,y0:0,x1:W,y1:H},box);var R=[[0,0],[W,0],[W,H],[0,H]];P=R.map(function(p){return mp(M,p);});g=mp(M,[W/2,H/2]);
+  o+=poli(M,R,'#dfe8fb')+seg(M,[0,H],[W,0],COL.c,3.5)+angoloRetto(M,[0,H],[1,0],[0,-1],14)+lab(P[3],P[2],g,F.lb)+lab(P[0],P[3],g,F.lh);
+  if(F.ld){var a1=mp(M,[0,H]),b1=mp(M,[W,0]),gd=mp(M,[W,H]);o+=etichetta(a1,b1,gd,F.ld,colL(F.ld).replace(ink,COL.tc),18,19);}}
+ else if(F.t==='iso'){var Bb=F.B,Hh=F.H;M=fit({x0:-Bb/2,y0:-Hh,x1:Bb/2,y1:0},box);P=[[-Bb/2,0],[Bb/2,0],[0,-Hh]].map(function(p){return mp(M,p);});g=mp(M,[0,-Hh/3]);
+  o+=poli(M,[[-Bb/2,0],[Bb/2,0],[0,-Hh]])+seg(M,[0,-Hh],[0,0],COL.c,3,true)+angoloRetto(M,[0,0],[1,0],[0,-1],12)
+   +lab(P[0],P[1],g,F.lb)+lab(P[1],P[2],g,F.ll)+lab(P[0],P[2],g,F.ll);
+  if(F.lh){var ph1=mp(M,[0,-Hh*.45]);o+=T(ph1[0]+10,ph1[1],F.lh,colL(F.lh),21,'start',' font-weight="700"');}}
+ else if(F.t==='rombo'){var D=F.D,d=F.d;M=fit({x0:-D/2,y0:-d/2,x1:D/2,y1:d/2},box);var Rv=[[-D/2,0],[0,-d/2],[D/2,0],[0,d/2]];P=Rv.map(function(p){return mp(M,p);});g=mp(M,[0,0]);
+  o+=poli(M,Rv)+seg(M,[-D/2,0],[D/2,0],'#5c6572',2,true)+seg(M,[0,-d/2],[0,d/2],'#5c6572',2,true)+angoloRetto(M,[0,0],[1,0],[0,-1],12);
+  var cD=mp(M,[D/4,0]),cd=mp(M,[0,d/4]);o+=T(cD[0],cD[1]+22,'D = '+F.lD,ink,20,'middle',' font-weight="700"')+T(cd[0]+8,cd[1]+6,'d = '+F.ld,ink,20,'start',' font-weight="700"');
+  if(F.ll)o+=lab(P[1],P[2],g,F.ll);}
+ else if(F.t==='scala'){var Xs=F.X,Hs=F.H;M=fit({x0:-.5,y0:-Hs,x1:Xs+.6,y1:.3},{x:70,y:40,w:420,h:320});
+  var mu1=mp(M,[0,-Hs*1.05]),mu2=mp(M,[0,0]),pv1=mp(M,[-.5,0]),pv2=mp(M,[Xs+.6,0]);
+  o+='<rect x="'+f1(mu1[0]-18)+'" y="'+f1(mu1[1])+'" width="18" height="'+f1(mu2[1]-mu1[1])+'" fill="#c9c2b2" stroke="#8a8272"/>'
+   +'<line x1="'+f1(pv1[0])+'" y1="'+f1(pv1[1])+'" x2="'+f1(pv2[0])+'" y2="'+f1(pv2[1])+'" stroke="#8a8272" stroke-width="3"/>';
+  var top=mp(M,[0,-Hs]),pie=mp(M,[Xs,0]);
+  for(var i=1;i<10;i++){var q=lerp(top,pie,i/10),n=[(pie[1]-top[1]),-(pie[0]-top[0])],l=Math.hypot(n[0],n[1]);n=[n[0]/l*9,n[1]/l*9];
+   o+='<line x1="'+f1(q[0]-n[0])+'" y1="'+f1(q[1]-n[1])+'" x2="'+f1(q[0]+n[0])+'" y2="'+f1(q[1]+n[1])+'" stroke="#8a5a2b" stroke-width="3"/>';}
+  o+='<line x1="'+f1(top[0])+'" y1="'+f1(top[1])+'" x2="'+f1(pie[0])+'" y2="'+f1(pie[1])+'" stroke="#8a5a2b" stroke-width="6" stroke-linecap="round"/>';
+  o+=seg(M,[.04,-Hs],[.04,0],COL.red,2,true)+angoloRetto(M,[0,0],[1,0],[0,-1],14);
+  g=mp(M,[Xs/3,-Hs/3]);o+=lab(mu2,pie,mp(M,[Xs/2,-1]),F.lx,18)+lab(top,pie,mp(M,[0,0]),F.ll,22);
+  var hm=mp(M,[0,-Hs/2]);o+=T(hm[0]-26,hm[1],F.lh,COL.red,21,'end',' font-weight="700"');}
+ if(F.centro){var cc=F.t==='tri'?mp(M,[F.B/3,-F.A/3]):F.t==='iso'?mp(M,[F.B/6,-F.H/3]):F.t==='rombo'?mp(M,[-F.D/4,-F.d/8]):mp(M,[F.B*.72,F.H*.62]);
+  o+=T(cc[0],cc[1]+7,F.centro,COL.red,22,'middle',' font-weight="700"');}
+ $('svg').innerHTML='<g font-family="Calibri,Carlito,sans-serif">'+o+'</g>';}
+
+if(/[?&]prova\b/.test(location.search)){window.__P4=P4;window.__GEN=GEN;window.__P1=P1;}   /* solo per le prove automatiche */
+
+function mostra(){
+ cancelAnimationFrame(raf);fermaGioco();
+ if(P1.p!==P1.passo)P1.p=P1.passo;if(P2.p!==P2.passo)P2.p=P2.passo;   /* un'animazione interrotta va alla fine del passo */
+ disegnaSchede();
+ if(S.scheda==='quadrati'){pannello1();disegna1();var f=frase1(P1.passo);say(f[0],f[1]);}
+ else if(S.scheda==='terne'){pannello2();disegna2();var g=frase2(P2.passo);say(g[0],g[1]);}
+ else if(S.scheda==='calcolatrice'){pannello3();say('Scrivi due misure e trovo il terzo lato. Tocca una casella per cambiarla.','squadra');}
+ else{pannello4();say(P4.fatti?fraseNuovo():'Gli esercizi diventano più difficili man mano che li risolvi.','hi');}}
+
+mostra();
+})();
+</script>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Il teorema di Pitagora dimostrato con i quadrati costruiti sui lati e con quattro triangoli che si spostano, le terne pitagoriche con la corda a nodi, il calcolo di ipotenusa e cateti ed esercizi su diagonali, altezze e rombi. Per ripassare le aree vai a <a href="aree_perimetri.html" style="color:#9cc5ff">Aree e perimetri dei poligoni</a>, per il cerchio a <a href="pi_greco_cerchio.html" style="color:#9cc5ff">Pi greco, circonferenza e cerchio</a>.</p>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T</div></div>
+<style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6aa5ff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(106,165,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
+<a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Geometria</a>
+<script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
