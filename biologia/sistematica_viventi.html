@@ -1739,7 +1739,7 @@ Viewer.prototype.applySel=function(){
   Object.keys(this.lbl).forEach(function(id){self.lbl[id].classList.toggle('on',id===self.sel)});
 };
 Viewer.prototype.frame=function(){
-  var now=performance.now(),dt=Math.min(.05,(now-this.last)/1000);this.last=now;
+  var now=performance.now(),dt=Math.max(0,Math.min(.05,(now-this.last)/1000));this.last=now;
   if(!view3dActive||!this.model)return;
   if(this.anim){this.t+=dt;this.model.update(this.t,dt)}
   if(this.auto&&Object.keys(this.pointers).length===0)this.s.th+=dt*.35;
