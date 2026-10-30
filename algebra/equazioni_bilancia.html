@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Prof. T">
+<!-- © 2026 Prof. T. Tutti i diritti riservati. -->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Le equazioni con la bilancia - Scienza in Movimento</title>
+<meta name="description" content="Equazioni di primo grado con la bilancia a due piatti. Principi di equivalenza, verifica della soluzione, esercizi guidati e le origini dell'algebra.">
+<link rel="canonical" href="https://scienzainmovimento.it/algebra/equazioni_bilancia.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Scienza in Movimento">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="Le equazioni con la bilancia - Scienza in Movimento">
+<meta property="og:description" content="Equazioni di primo grado con la bilancia a due piatti. Principi di equivalenza, verifica della soluzione, esercizi guidati e le origini dell'algebra.">
+<meta property="og:url" content="https://scienzainmovimento.it/algebra/equazioni_bilancia.html">
+<meta property="og:image" content="https://scienzainmovimento.it/og_image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Prof. T - La Matematica e le Scienze in Movimento">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+/* ---- base della pagina (uguale in tutte le animazioni) ---- */
+:root{--bg:#0a0f1a;--panel:#111a2b;--line:#22304a;--txt:#e6ecf5;--mut:#8fa0b8;--warn:#FF8A80}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at 50% -10%,rgba(106,165,255,.14),transparent 60%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px),#0a0f1a;background-size:auto,36px 36px,36px 36px;color:var(--txt);font-family:Calibri,Carlito,"Segoe UI",system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 8px}
+.eyebrow{color:var(--disciplina);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px;color:#fff}
+.sub{color:var(--mut);margin:0 0 4px}
+button,input{font-family:inherit}
+/* riquadro a sinistra, pannello a destra; sotto 760 px colonna unica: riquadro, pannello, Prof. T */
+.layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:14px}
+.layout>*{min-width:0}
+@media(max-width:760px){.layout{display:flex;flex-direction:column}.layout>section,.layout>aside{display:contents}.stage{order:1}#panel{order:2;display:flex;flex-direction:column;margin-top:12px}#panel .anchor{order:2}.prof{order:3}}
+.stage{position:relative;background:linear-gradient(#0d1628,#080d18);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.card .h{font:700 17px Cambria,Georgia,serif;color:var(--disciplina);margin-bottom:6px}
+.txt{font-size:16px;line-height:1.45}
+.anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;line-height:1.45}
+/* Prof. T con il fumetto */
+.prof{display:flex;gap:12px;align-items:flex-end;position:relative;margin-bottom:12px}
+.prof img{height:150px;width:auto;flex:none}
+@media(max-width:760px){.prof{margin-top:12px}.prof img{height:110px}}
+.prof img.pop{animation:pop .6s ease-out}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.09) rotate(-2deg)}100%{transform:scale(1)}}
+.bubble{position:relative;flex:1;background:#17233a;border:1px solid var(--line);border-radius:14px;padding:11px 14px;font-size:16px;line-height:1.4;min-height:56px;margin-bottom:22px}
+.bubble::before{content:"";position:absolute;left:-8px;bottom:22px;border:8px solid transparent;border-left:0;border-right-color:#17233a}
+.confetto{position:absolute;top:-4px;width:8px;height:12px;border-radius:2px;animation:fall 1.2s ease-in forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(200px) rotate(540deg);opacity:0}}
+/* Allenati */
+.stat{color:var(--mut);font-size:14px;margin-bottom:6px}
+.prob{font-size:16px;line-height:1.45;margin:2px 0 8px;padding:8px 10px;background:#0d1524;border-radius:8px}
+.q{font-size:18px;margin:4px 0 10px;line-height:1.35}
+.ans{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ans input{background:#0d1524;color:var(--txt);border:1px solid #3a4d70;border-radius:8px;padding:8px 10px;font-size:18px;width:110px}
+.fb{margin-top:10px;font-size:16px;line-height:1.4}
+.fb .ok{color:#8ee0a6;font-weight:700}
+.fb .no{color:var(--warn);font-weight:700}
+/* ---- stili propri dell'animazione ---- */
+.m{font-family:Cambria,Georgia,serif;white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.prof img.pop{animation:none}}
+</style>
+<link rel="stylesheet" href="../animazioni.css">
+</head>
+<body style="--area:#6aa5ff;--disciplina:#6aa5ff">
+<div class="wrap">
+<div class="eyebrow">Algebra</div>
+<h1>Le equazioni con la bilancia</h1>
+<p class="sub" id="sub"></p>
+
+<nav class="schede" id="tabs" role="tablist" aria-label="Schede"></nav>
+
+<div class="layout">
+<section>
+ <div class="stage">
+  <svg id="svg" viewBox="0 0 560 400" role="img" aria-label="Bilancia a due piatti con sacchetti e pesetti, e sotto la scrittura algebrica dell'equazione"></svg>
+ </div>
+</section>
+<aside>
+ <div class="prof" id="prof"><img id="profImg" alt="Prof. T"><div class="bubble" id="bubble"></div></div>
+ <div id="panel"></div>
+</aside>
+</div>
+</div>
+
+<script src="../animazioni.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var reduce=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+/* TEMPI UNIFORMI (millisecondi): per rallentare o accelerare tutto si cambiano solo queste costanti */
+var T_MOVE=1400,   // spostamento, arrivo o uscita di sacchetti e pesetti
+    T_TILT=1200,   // inclinazione della bilancia
+    T_SHOW=1200,   // comparsa di una scritta o di un evidenziato
+    T_BACK=500;    // ritorno a un passo precedente
+
+/* Prof. T vestito da al-Khwarizmi (file in immagini/prof_t/) */
+var P='../immagini/prof_t/prof_t_khwarizmi_';
+var IMG={hi:P+'saluto.webp',bil:P+'bilancia.webp',ko:P+'sbilanciata.webp',ok:P+'occhiolino_indica.webp',idle:P+'braccia_conserte.webp'};
+precarica(IMG);
+var lastImg='';
+function say(testo,posa,festa){
+ var img=$('profImg');posa=posa||'idle';
+ if(lastImg!==posa){img.src=IMG[posa];lastImg=posa;}
+ $('bubble').innerHTML=testo;
+ if(festa&&!reduce){img.classList.remove('pop');void img.offsetWidth;img.classList.add('pop');coriandoli();}}
+function coriandoli(){
+ var w=$('prof'),cols=['#6aa5ff','#ffb454','#6fd08c','#ff8a80','#c9aaff'];
+ for(var i=0;i<16;i++){var s=document.createElement('span');s.className='confetto';
+  s.style.left=(5+Math.random()*90)+'%';s.style.background=cols[i%cols.length];s.style.animationDelay=(Math.random()*.25)+'s';
+  w.appendChild(s);(function(el){setTimeout(function(){el.remove();},1600);})(s);}}
+
+/* ---------- piccoli aiuti ---------- */
+var R=function(a,b){return a+Math.floor(Math.random()*(b-a+1));};
+var pick=function(a){return a[Math.floor(Math.random()*a.length)];};
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){var t=b;b=a%b;a=t;}return a;}
+function num(v){return v<0?'−'+(-v):''+v;}                      // segno meno tipografico
+function side(a,b){var s='';if(a)s=(a===1?'':a)+'x';if(b)s+=s?' + '+b:''+b;return s||'0';}
+function eqs(a,b,c,d){return side(a,b)+' = '+side(c,d);}
+function mi(s){return '<span class="m">'+String(s).replace(/(^|[^A-Za-z])x(?![A-Za-z])/g,'$1<i>x</i>')+'</span>';}
+function pl(n,uno,tanti){return n+' '+(n===1?uno:tanti);}
+function pes(n){return pl(n,'pesetto','pesetti');}
+function sac(n){return pl(n,'sacchetto','sacchetti');}
+
+/* =========================================================
+   LA BILANCIA IN SVG
+   Una scena descrive cosa c'è sui piatti: L e R = [sacchetti, pesetti, pesetti mancanti],
+   G = numero di gruppi in cui sono divisi i piatti (secondo principio), xw = peso vero di un sacchetto,
+   lab = scritta sui sacchetti, hl = quanti oggetti evidenziare, lines = scrittura algebrica sotto.
+   ========================================================= */
+var INK='#e6ecf5',MUT='#8fa0b8',HL='#ffb454',OK='#8ee0a6',WARN='#FF8A80';
+var PIV={x:280,y:90},ARM=168,HANG=132,PW=184,MAXT=10;
+function tiltFor(d){return Math.abs(d)<1e-9?0:(d>0?1:-1)*Math.min(MAXT,3+1.5*Math.abs(d));}
+/* posizioni sul piatto (origine al centro della superficie del piatto, y verso l'alto negativo) */
+function layoutSide(nx,nu,ng,G){
+ var out={x:[],u:[],g:[],rects:[]},i,row,cnt,col;
+ if(!G||G<2){
+  var bpr=5,upr=9,y0=-Math.ceil(nx/bpr)*34,M=Math.max(nu,ng);
+  for(i=0;i<nx;i++){row=Math.floor(i/bpr);cnt=Math.min(bpr,nx-row*bpr);col=i%bpr;out.x.push({lx:(col-(cnt-1)/2)*32,ly:-row*34});}
+  for(i=0;i<M;i++){row=Math.floor(i/upr);cnt=Math.min(upr,M-row*upr);col=i%upr;var p={lx:(col-(cnt-1)/2)*19,ly:y0-row*18};
+   if(i<nu)out.u.push(p);if(i<ng)out.g.push(p);}
+  return out;}
+ var gw=(PW-8)/G,bg=nx/G,ug=nu/G,gb=Math.max(1,Math.floor((gw-2)/32)),gu=Math.max(1,Math.floor((gw-2)/19)),top=0;
+ function place(k,n,per,w,h,base,gx){var r=Math.floor(k/per),c2=Math.min(per,n-r*per);return {lx:gx+(k%per-(c2-1)/2)*w,ly:base-r*h};}
+ var hb=Math.ceil(bg/gb)*34,hu=Math.ceil(ug/gu)*18;top=hb+hu;
+ for(var g=0;g<G;g++){var gx=-(PW-8)/2+gw*(g+.5);
+  for(i=0;i<bg;i++)out.x.push(place(i,bg,gb,32,34,0,gx));
+  for(i=0;i<ug;i++)out.u.push(place(i,ug,gu,19,18,-hb,gx));
+  out.rects.push({x:gx-gw/2+2,w:gw-4,y:-top-6,h:top+9});}
+ return out;}
+function mk(o){
+ var s={L:o.L||[0,0,0],R:o.R||[0,0,0],G:o.G||0,xw:o.xw||0,lab:o.lab==null?'x':''+o.lab,hl:o.hl||{},
+  lines:o.lines||[],note:o.note||[],fade:!!o.fade,pos:{},rects:{}};
+ ['L','R'].forEach(function(sd){
+  var c=s[sd],ng=c[2]||0,Ly=layoutSide(c[0],c[1],ng,s.G),h=s.hl[sd]||{},i;
+  for(i=0;i<c[0];i++)s.pos[sd+'x'+i]={sd:sd,t:'x',lx:Ly.x[i].lx,ly:Ly.x[i].ly,hl:i>=c[0]-(h.x||0)};
+  for(i=0;i<c[1];i++)s.pos[sd+'u'+i]={sd:sd,t:'u',lx:Ly.u[i].lx,ly:Ly.u[i].ly,hl:i>=c[1]-(h.u||0)};
+  for(i=0;i<ng;i++)s.pos[sd+'g'+i]={sd:sd,t:'g',lx:Ly.g[i].lx,ly:Ly.g[i].ly,hl:false};
+  s.rects[sd]=Ly.rects;});
+ var w=function(c){return c[0]*s.xw+c[1]-(c[2]||0);};
+ s.tilt=o.tilt!=null?o.tilt:(s.fade?0:tiltFor(w(s.R)-w(s.L)));
+ return s;}
+function copia(s,tilt){var c={};for(var k in s)c[k]=s[k];c.tilt=tilt;return c;}
+function posKey(s){return Object.keys(s.pos).sort().map(function(k){var p=s.pos[k];return k+p.lx.toFixed(1)+','+p.ly.toFixed(1);}).join('|')+'G'+s.G+(s.fade?'f':'');}
+function contKey(s){return Object.keys(s.pos).sort().map(function(k){return k+(s.pos[k].hl?'*':'');}).join('|')+s.lab+'#'+s.lines.join('/')+'#'+s.note.join('/');}
+/* passaggio da una scena all'altra: prima si muovono gli oggetti (o compaiono le scritte), poi si inclina la bilancia */
+function trans(A,B){
+ var pd=posKey(A)!==posKey(B),cd=pd||contKey(A)!==contKey(B),td=Math.abs(A.tilt-B.tilt)>.01,r=[];
+ if(cd&&td){var C=copia(B,A.tilt);r.push({a:A,b:C,ms:pd?T_MOVE:T_SHOW},{a:C,b:B,ms:T_TILT});}
+ else if(td)r.push({a:A,b:B,ms:T_TILT});
+ else r.push({a:A,b:B,ms:pd?T_MOVE:T_SHOW});
+ return r;}
+function sequenza(lista){var r=[];for(var i=1;i<lista.length;i++)r=r.concat(trans(lista[i-1],lista[i]));return r;}
+
+/* andamento delle animazioni: progresso t sempre tra 0 e 1 */
+function ease(t){t=Math.max(0,Math.min(1,t));return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+function easeTilt(t){t=Math.max(0,Math.min(1,t));return 1-Math.pow(1-t,3)*Math.cos(2.5*Math.PI*t);}   // piccola oscillazione finale
+var lerp=function(a,b,t){return a+(b-a)*t;};
+
+function panPos(sd,tilt){var a=tilt*Math.PI/180,s=sd==='L'?-1:1;
+ var e={x:PIV.x+s*ARM*Math.cos(a),y:PIV.y+s*ARM*Math.sin(a)};return {ex:e.x,ey:e.y,cx:e.x,cy:e.y+HANG};}
+/* oggetti disegnati: sacchetto (incognita), pesetto da 1, pesetto mancante tratteggiato */
+function bag(x,y,lab,hl,op){
+ var p='M'+(x-13)+' '+y+'Q'+(x-17)+' '+(y-19)+' '+(x-7)+' '+(y-26)+'L'+(x-9)+' '+(y-32)+'L'+(x+9)+' '+(y-32)+'L'+(x+7)+' '+(y-26)+'Q'+(x+17)+' '+(y-19)+' '+(x+13)+' '+y+'Z';
+ var it=lab==='x';
+ return '<g opacity="'+op.toFixed(3)+'"><path d="'+p+'" fill="#c8a46e" stroke="'+(hl?HL:'#7d5f33')+'" stroke-width="'+(hl?3:1.5)+'"/>'
+  +'<path d="M'+(x-7)+' '+(y-26)+'L'+(x+7)+' '+(y-26)+'" stroke="#7d5f33" stroke-width="2.2"/>'
+  +'<text x="'+x+'" y="'+(y-7)+'" text-anchor="middle" font-family="Cambria,Georgia,serif" font-size="'+(it?17:15)+'" font-weight="700"'+(it?' font-style="italic"':'')+' fill="#2a1d0c">'+lab+'</text></g>';}
+function unit(x,y,hl,op){
+ return '<g opacity="'+op.toFixed(3)+'"><rect x="'+(x-8)+'" y="'+(y-16)+'" width="16" height="16" rx="2.5" fill="#6aa5ff" stroke="'+(hl?HL:'#2b5aa8')+'" stroke-width="'+(hl?3:1.2)+'"/>'
+  +'<text x="'+x+'" y="'+(y-4.5)+'" text-anchor="middle" font-family="Calibri,Carlito,sans-serif" font-size="10" font-weight="700" fill="#0a0f1a">1</text></g>';}
+function ghost(x,y,op){
+ return '<rect x="'+(x-8)+'" y="'+(y-16)+'" width="16" height="16" rx="2.5" fill="none" stroke="'+WARN+'" stroke-width="1.6" stroke-dasharray="3 2" opacity="'+op.toFixed(3)+'"/>';}
+
+/* scrittura algebrica: {testo} in ambra, [[k]] casella da riempire, [[n/d]] frazione con due caselle */
+var CTX={got:{},cur:null},ECHO='';
+var _cv=document.createElement('canvas').getContext('2d');
+function tw(s,sz){_cv.font='700 '+sz+'px Cambria,Georgia,serif';return _cv.measureText(String(s)).width;}
+function toks(line){return line.split(/(\{[^}]*\}|\[\[[^\]]+\]\])/).filter(function(p){return p!=='';}).map(function(p){
+ if(p.charAt(0)==='{')return {s:p.slice(1,-1),c:HL};
+ if(p.slice(0,2)==='[[')return {box:p.slice(2,-2)};
+ return {s:p};});}
+function boxVal(k){if(CTX.got[k]!=null)return {v:num(CTX.got[k]),st:'ok'};if(k===CTX.cur)return {v:ECHO?ECHO.replace('-','−'):'?',st:'cur'};return {v:'?',st:'off'};}
+function txt(x,y,s,sz,col,op){
+ var h='',parts=s.split(/((?:^|[^A-Za-z])x(?![A-Za-z]))/);
+ parts.forEach(function(p){if(!p)return;var m=p.match(/^(.?)x$/);
+  if(m&&/((?:^|[^A-Za-z])x(?![A-Za-z]))/.test(p)){if(m[1])h+='<tspan>'+m[1]+'</tspan>';h+='<tspan font-style="italic">x</tspan>';}
+  else h+='<tspan>'+p.replace(/</g,'&lt;')+'</tspan>';});
+ return '<text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" font-family="Cambria,Georgia,serif" font-size="'+sz+'" font-weight="700" fill="'+col+'" opacity="'+op.toFixed(3)+'" style="white-space:pre">'+h+'</text>';}
+function boxSVG(x,y,w,b,sz,op){   // y = linea di base del testo
+ var col=b.st==='ok'?OK:(b.st==='cur'?'#fff':MUT);
+ var r=b.st==='ok'?'':'<rect x="'+x.toFixed(1)+'" y="'+(y-sz*.95).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+(sz*1.25).toFixed(1)+'" rx="6" fill="'+(b.st==='cur'?'rgba(255,180,84,.16)':'#0d1524')+'" stroke="'+(b.st==='cur'?HL:'#3a4d70')+'" stroke-width="'+(b.st==='cur'?2.2:1.2)+'"/>';
+ return '<g opacity="'+op.toFixed(3)+'">'+r+'<text x="'+(x+w/2).toFixed(1)+'" y="'+y.toFixed(1)+'" text-anchor="middle" font-family="Cambria,Georgia,serif" font-size="'+sz+'" font-weight="700" fill="'+col+'">'+b.v+'</text></g>';}
+function lineSVG(line,y,sz,col,op){
+ var T=toks(line),W=0;
+ T.forEach(function(k){
+  if(k.box&&k.box.indexOf('/')>0){var q=k.box.split('/');k.f=[boxVal(q[0]),boxVal(q[1])];k.w=Math.max(44,tw(k.f[0].v,sz)+16,tw(k.f[1].v,sz)+16);}
+  else if(k.box){k.b=boxVal(k.box);k.w=k.b.st==='ok'?tw(k.b.v,sz)+4:Math.max(44,tw(k.b.v,sz)+16);}
+  else k.w=tw(k.s,sz);W+=k.w;});
+ var x=280-W/2,o='';
+ T.forEach(function(k){
+  if(k.f){o+=boxSVG(x,y-sz*.75,k.w,k.f[0],sz,op)+'<line x1="'+x.toFixed(1)+'" y1="'+(y-sz*.27).toFixed(1)+'" x2="'+(x+k.w).toFixed(1)+'" y2="'+(y-sz*.27).toFixed(1)+'" stroke="'+INK+'" stroke-width="2" opacity="'+op.toFixed(3)+'"/>'+boxSVG(x,y+sz*.85,k.w,k.f[1],sz,op);}
+  else if(k.b)o+=boxSVG(x,y,k.w,k.b,sz,op);
+  else o+=txt(x,y,k.s,sz,k.c||col,op);
+  x+=k.w;});
+ return o;}
+function lineList(lines){
+ var v=lines.slice(-3),seen={};
+ var fr=v.some(function(s){return s.indexOf('/')>0&&s.indexOf('[[')>=0;});
+ return v.map(function(s,j){seen[s]=(seen[s]||0)+1;return {s:s,key:s+'#'+seen[s],y:(fr?366:388)-(v.length-1-j)*(fr?56:32),last:j===v.length-1};});}
+
+/* disegno completo, a metà strada t tra la scena A e la scena B */
+function draw(A,B,t){
+ var e=ease(t),tilt=lerp(A.tilt,B.tilt,easeTilt(t)),fo=lerp(A.fade?.18:1,B.fade?.18:1,e),o='';
+ var Lp=panPos('L',tilt),Rp=panPos('R',tilt),pp={L:Lp,R:Rp};
+ /* quadrante con la lancetta */
+ o+='<g opacity="'+fo.toFixed(3)+'">';
+ var ra=function(g,r){var ga=(g-90)*Math.PI/180;return (PIV.x+r*Math.cos(ga)).toFixed(1)+' '+(PIV.y+r*Math.sin(ga)).toFixed(1);};
+ var NG=2.5;   // la lancetta amplifica l'inclinazione, così si vede anche uno squilibrio piccolo
+ o+='<path d="M'+ra(-30,62)+'A62 62 0 0 1 '+ra(30,62)+'" fill="none" stroke="#3a4d70" stroke-width="1.5"/>';
+ for(var g=-30;g<=30;g+=7.5)o+='<path d="M'+ra(g,g===0?50:55)+'L'+ra(g,62)+'" stroke="'+(g===0?OK:'#4a5f86')+'" stroke-width="'+(g===0?3:1.5)+'"/>';
+ o+='<rect x="274" y="'+PIV.y+'" width="12" height="'+(280-PIV.y)+'" rx="3" fill="#2a3a58" stroke="#3a4d70"/>'
+  +'<path d="M226 290L238 279H322L334 290Z" fill="#2a3a58" stroke="#3a4d70"/>';
+ var nc=Math.abs(tilt)<.3?OK:WARN;
+ o+='<line x1="'+PIV.x+'" y1="'+PIV.y+'" x2="'+PIV.x+'" y2="'+(PIV.y-58)+'" stroke="'+nc+'" stroke-width="3" stroke-linecap="round" transform="rotate('+(tilt*NG).toFixed(2)+' '+PIV.x+' '+PIV.y+')"/>'
+  +'<g transform="rotate('+tilt.toFixed(2)+' '+PIV.x+' '+PIV.y+')"><rect x="'+(PIV.x-ARM-6)+'" y="'+(PIV.y-4)+'" width="'+(2*ARM+12)+'" height="8" rx="4" fill="#c9d4e6" stroke="#5d6f8d"/></g>'
+  +'<circle cx="'+PIV.x+'" cy="'+PIV.y+'" r="7" fill="#8fa0b8" stroke="#0a0f1a" stroke-width="2"/>';
+ ['L','R'].forEach(function(sd){var p=pp[sd];
+  o+='<path d="M'+(p.cx-88).toFixed(1)+' '+p.cy.toFixed(1)+'L'+p.ex.toFixed(1)+' '+p.ey.toFixed(1)+'L'+(p.cx+88).toFixed(1)+' '+p.cy.toFixed(1)+'" fill="none" stroke="#5d6f8d" stroke-width="1.4"/>'
+   +'<circle cx="'+p.ex.toFixed(1)+'" cy="'+p.ey.toFixed(1)+'" r="4" fill="#c9d4e6"/>'
+   +'<path d="M'+(p.cx-PW/2).toFixed(1)+' '+p.cy.toFixed(1)+'H'+(p.cx+PW/2).toFixed(1)+'Q'+p.cx.toFixed(1)+' '+(p.cy+26).toFixed(1)+' '+(p.cx-PW/2).toFixed(1)+' '+p.cy.toFixed(1)+'Z" fill="#33476b" stroke="#8fa0b8" stroke-width="1.4"/>';});
+ /* gruppi del secondo principio */
+ function rects(S,op){if(!S.G||op<=0)return '';var h='';['L','R'].forEach(function(sd){var p=pp[sd];S.rects[sd].forEach(function(r){
+  h+='<rect x="'+(p.cx+r.x).toFixed(1)+'" y="'+(p.cy+r.y).toFixed(1)+'" width="'+r.w.toFixed(1)+'" height="'+r.h.toFixed(1)+'" rx="6" fill="none" stroke="'+HL+'" stroke-width="1.5" stroke-dasharray="5 4" opacity="'+op.toFixed(3)+'"/>';});});return h;}
+ if(A.G===B.G&&posKey(A)===posKey(B))o+=rects(B,1);else{o+=rects(A,1-e);o+=rects(B,e);}
+ /* oggetti: quelli presenti in tutte e due le scene si spostano, gli altri escono verso l'alto o arrivano dall'alto */
+ var ids={},k;for(k in A.pos)ids[k]=1;for(k in B.pos)ids[k]=1;
+ var lista=Object.keys(ids).sort(function(a,b){var ta=(A.pos[a]||B.pos[a]).t,tb=(A.pos[b]||B.pos[b]).t;return (ta==='g'?0:1)-(tb==='g'?0:1);});
+ lista.forEach(function(id){
+  var a=A.pos[id],b=B.pos[id],q,lx,ly,op=1,hl,lab=t<.5?A.lab:B.lab;
+  if(a&&b){lx=lerp(a.lx,b.lx,e);ly=lerp(a.ly,b.ly,e);q=b;hl=e<.5?a.hl:b.hl;}
+  else if(a){lx=a.lx;ly=a.ly-50*e;op=1-e;q=a;hl=a.hl;}
+  else{lx=b.lx;ly=b.ly-50*(1-e);op=e;q=b;hl=b.hl;}
+  var p=pp[q.sd],x=p.cx+lx,y=p.cy+ly;op*=fo;
+  if(op<=.003)return;
+  o+=q.t==='x'?bag(+x.toFixed(1),+y.toFixed(1),lab,hl,op):(q.t==='u'?unit(+x.toFixed(1),+y.toFixed(1),hl,op):ghost(x,y,op));});
+ o+='</g>';
+ /* nota in alto */
+ function note(S,op){if(!S.note.length||op<=0)return '';return S.note.map(function(s,i){return '<text x="16" y="'+(28+i*24)+'" font-family="Calibri,Carlito,sans-serif" font-size="20" font-style="italic" fill="'+HL+'" opacity="'+op.toFixed(3)+'">'+s+'</text>';}).join('');}
+ if(A.note.join('/')===B.note.join('/'))o+=note(B,1);else{o+=note(A,Math.max(0,1-2*t));o+=note(B,Math.max(0,2*t-1));}
+ /* scrittura algebrica: le righe uguali scorrono, le nuove compaiono */
+ var la=lineList(A.lines),lb=lineList(B.lines),ka={};
+ la.forEach(function(l){ka[l.key]=l;});
+ lb.forEach(function(l){var a=ka[l.key];
+  if(a){o+=lineSVG(l.s,lerp(a.y,l.y,e),27,(e<.5?a.last:l.last)?INK:MUT,1);delete ka[l.key];}
+  else o+=lineSVG(l.s,l.y,27,l.last?INK:MUT,e);});
+ for(k in ka)o+=lineSVG(ka[k].s,ka[k].y,27,ka[k].last?INK:MUT,1-e);
+ $('svg').innerHTML=o;}
+
+/* ---------- motore delle animazioni: fasi in fila, ciclo con intervallo mai negativo ---------- */
+var raf=0,PLAY=null,SHOWN=mk({});
+function play(fasi,fine){
+ cancelAnimationFrame(raf);
+ if(!fasi.length)return;
+ var i=0,u=0,last=performance.now();
+ PLAY={end:fasi[fasi.length-1].b,fine:fine};
+ draw(fasi[0].a,fasi[0].b,0);
+ function frame(now){
+  var dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;
+  var F=fasi[i];
+  u=(reduce||!F.ms)?1:Math.max(0,Math.min(1,u+dt*1000/F.ms));
+  draw(F.a,F.b,u);
+  if(u>=1){i++;u=0;if(i>=fasi.length){SHOWN=PLAY.end;var f=PLAY.fine;PLAY=null;if(f)f();return;}}
+  raf=requestAnimationFrame(frame);}
+ raf=requestAnimationFrame(frame);}
+function ferma(){if(PLAY){cancelAnimationFrame(raf);SHOWN=PLAY.end;PLAY=null;}}
+function mostraScena(S){ferma();SHOWN=S;draw(S,S,1);}
+
+/* =========================================================
+   SCHEDE
+   ========================================================= */
+var SCHEDE=[
+ {id:'bil',nome:'La bilancia',sub:'Un\'equazione è una bilancia in equilibrio.'},
+ {id:'pri',nome:'I principi',sub:'I due principi di equivalenza, sulla bilancia e nella scrittura algebrica.'},
+ {id:'all',nome:'Allenati',sub:'Esercizi guidati, una casella alla volta.'},
+ {id:'kwa',nome:'al-Khwarizmi',sub:'Le origini dell\'algebra, a Baghdad intorno all\'anno 820.'}];
+var S={scheda:'bil',visti:{}};
+
+/* ---------- 01 La bilancia ---------- */
+function stepsBilancia(E){
+ var a=E.a,b=E.b,s=E.s,c=a*s+b,p=E.p,q=E.q,eq=eqs(a,b,0,c),st=[];
+ var lw=function(v){return a+' · '+v+' + '+b+' = '+(a*v+b);};
+ st.push({h:'Il piatto più pesante scende',t:'Ogni pesetto pesa 1. A sinistra ci sono '+p+' pesetti, a destra '+q+'. Il piatto di destra pesa di più e scende.',
+  say:'Guarda la lancetta in alto. Se non è dritta, la bilancia non è in equilibrio. Tocca <b>Avanti</b>.',pose:'bil',
+  sc:[mk({L:[0,p],R:[0,q],lines:[p+' < '+q]})]});
+ st.push({h:'In equilibrio',t:'Aggiungiamo '+pes(q-p)+' a sinistra. Ora i due piatti pesano uguale, '+q+' e '+q+', e la bilancia è in equilibrio.',
+  say:'Lancetta dritta, piatti alla stessa altezza.',pose:'ok',
+  sc:[mk({L:[0,q],R:[0,q],lines:[p+' < '+q,p+' + '+(q-p)+' = '+q]})]});
+ st.push({h:'Un peso sconosciuto',t:'Ogni sacchetto contiene lo stesso peso, che non conosciamo. Lo chiamiamo '+mi('x')+'. La bilancia è in equilibrio, quindi i due piatti pesano uguale. Questa uguaglianza è un\'<b>equazione</b>. Il piatto di sinistra è il primo membro, quello di destra il secondo membro.',
+  say:'Quanto pesa un sacchetto? Proviamo qualche numero.',pose:'bil',
+  sc:[mk({L:[a,b],R:[0,c],xw:s,lines:[eq]})]});
+ st.push({h:'Proviamo '+mi('x = '+(s-1)),t:'Se un sacchetto pesasse '+(s-1)+', a sinistra ci sarebbero '+mi(lw(s-1))+'. Troppo poco, la bilancia penderebbe a destra. '+(s-1)+' non è la soluzione.',
+  say:'Sbilanciata! Il sacchetto deve pesare di più.',pose:'ko',
+  sc:[mk({L:[a,b],R:[0,c],xw:s-1,lab:s-1,lines:[eq,lw(s-1),(a*(s-1)+b)+' < '+c],note:['se x = '+(s-1)]})]});
+ st.push({h:'Proviamo '+mi('x = '+(s+1)),t:'Se un sacchetto pesasse '+(s+1)+', a sinistra ci sarebbero '+mi(lw(s+1))+'. Troppo, la bilancia penderebbe a sinistra. Nemmeno '+(s+1)+' è la soluzione.',
+  say:'Ora pesa troppo. Proviamo il numero in mezzo.',pose:'ko',
+  sc:[mk({L:[a,b],R:[0,c],xw:s+1,lab:s+1,lines:[eq,lw(s+1),(a*(s+1)+b)+' > '+c],note:['se x = '+(s+1)]})]});
+ st.push({h:'La soluzione',t:'Con '+s+' a sinistra ci sono '+mi(lw(s))+', come a destra. La <b>soluzione</b> dell\'equazione è il peso di un sacchetto che tiene la bilancia in equilibrio, '+mi('x = '+s)+'.',
+  say:'Equilibrio! Provare a caso funziona, ma è lento. Nella linguetta 02 c\'è un metodo sicuro.',pose:'ok',festa:true,
+  sc:[mk({L:[a,b],R:[0,s*a+b],xw:s,lab:s,lines:[eq,lw(s),c+' = '+c],note:['se x = '+s]})]});
+ return st;}
+function nuovaBilancia(prev){
+ var E;do{var a=R(2,4),s=R(2,6),b=R(1,5),p=R(1,5),q=R(p+1,8);E={a:a,b:b,s:s,p:p,q:q};}
+ while(a*s+b>20||a*(s+1)+b>24||(prev&&prev.a===E.a&&prev.s===E.s));
+ return E;}
+
+/* ---------- 02 I principi ---------- */
+function stepsPrincipi(E){
+ var a=E.a,b=E.b,c=E.c,d=E.d,s=E.s,a0=a,b0=b,eq=eqs(a,b,c,d),st=[],lines=[eq],nominato=false;
+ var prim='Questo è il <b>primo principio di equivalenza</b>, si può aggiungere o togliere la stessa quantità a tutti e due i membri.';
+ st.push({h:'L\'equazione',t:'La bilancia è in equilibrio, '+mi(eq)+'. Per trovare '+mi('x')+' bisogna lasciare un solo sacchetto da una parte e solo pesetti dall\'altra, senza mai sbilanciare.',
+  say:'Tocca <b>Avanti</b>. Quello che fai a un piatto, fallo anche all\'altro.',pose:'bil',sc:[mk({L:[a,b],R:[c,d],xw:s,lines:lines.slice()})]});
+ if(c>0){
+  var op1=side(a,b)+' {− '+side(c,0)+'} = '+side(c,d)+' {− '+side(c,0)+'}';
+  var H1=mk({L:[a,b],R:[c,d],xw:s,hl:{L:{x:c},R:{x:c}},lines:lines.concat([op1])});
+  a-=c;lines=lines.concat([op1,eqs(a,b,0,d)]);
+  st.push({h:'Primo principio, via i sacchetti',t:'Togliamo '+sac(c)+' da tutti e due i piatti e la bilancia resta in equilibrio. Nella scrittura si sottrae '+mi(side(c,0))+' a tutti e due i membri. '+prim,
+   say:'Ora i sacchetti sono da una parte sola.',pose:'bil',sc:[H1,mk({L:[a,b],R:[0,d],xw:s,lines:lines.slice()})]});nominato=true;}
+ if(b>0){
+  var op2=side(a,b)+' {− '+b+'} = '+d+' {− '+b+'}';
+  var H2=mk({L:[a,b],R:[0,d],xw:s,hl:{L:{u:b},R:{u:b}},lines:lines.concat([op2])});
+  d-=b;lines=lines.concat([op2,eqs(a,0,0,d)]);
+  st.push({h:'Primo principio, via i pesetti',t:'Togliamo '+pes(b)+' da tutti e due i piatti. L\'equilibrio resta. Nella scrittura '+mi('− '+b)+' compare in tutti e due i membri.'+(nominato?'':' '+prim),
+   say:'A sinistra restano solo sacchetti.',pose:'bil',sc:[H2,mk({L:[a,0],R:[0,d],xw:s,lines:lines.slice()})]});b=0;}
+ if(a>1){
+  var op3=side(a,0)+' {: '+a+'} = '+d+' {: '+a+'}';
+  var G=mk({L:[a,0],R:[0,d],G:a,xw:s,lines:lines.concat([op3])});
+  lines=lines.concat([op3,'x = '+s]);
+  st.push({h:'Secondo principio, dividere',t:'Dividiamo ogni piatto in '+a+' parti uguali e ne teniamo una. A sinistra resta un sacchetto, a destra '+pes(s)+'. Questo è il <b>secondo principio di equivalenza</b>, si possono moltiplicare o dividere tutti e due i membri per lo stesso numero, diverso da zero.',
+   say:'Un sacchetto pesa '+s+'.',pose:'bil',sc:[G,mk({L:[1,0],R:[0,s],xw:s,lines:lines.slice()})]});}
+ var vl=a0+' · '+s+(b0?' + '+b0:''),vr=c?(c===1?'':c+' · ')+s+' + '+E.d:''+E.d,tot=a0*s+b0;
+ lines=lines.concat([vl+' = '+vr,tot+' = '+tot]);
+ st.push({h:'La verifica',t:'Rimettiamo nei sacchetti il peso trovato, '+s+'. Primo membro e secondo membro danno tutti e due '+tot+', quindi '+mi('x = '+s)+' è la soluzione.',
+  say:'Verifica superata!',pose:'ok',festa:true,sc:[mk({L:[a0,b0],R:[c,E.d],xw:s,lab:s,lines:lines.slice(),note:['x = '+s]})]});
+ return st;}
+var PRI_LISTA=[{a:3,b:2,c:0,d:11,s:3},{a:5,b:1,c:2,d:7,s:2}],priN=0;
+function nuovaPrincipi(){
+ if(priN<PRI_LISTA.length)return PRI_LISTA[priN++];
+ var E,both=priN++%2===1;
+ do{if(both){var a=R(3,5),c=R(1,a-2),s=R(1,4),b=R(1,4);E={a:a,b:b,c:c,s:s,d:(a-c)*s+b};}
+  else{var a2=R(2,4),s2=R(1,5),b2=R(1,6);E={a:a2,b:b2,c:0,s:s2,d:a2*s2+b2};}}
+ while(E.d>(both?16:20)||(E.d-E.b)/(E.a-E.c)>6);
+ return E;}
+
+/* ---------- 04 al-Khwarizmi ---------- */
+function stepsKhwarizmi(){
+ var st=[],w1=['tre cose e due dirham','sono uguali a undici dirham'];
+ st.push({h:'Un libro di Baghdad',t:'Intorno all\'anno 820, a Baghdad, Muhammad ibn Musa al-Khwarizmi lavorava nella Casa della Sapienza, un grande centro di studi. Scrisse un libro per risolvere problemi di calcolo, molti dei quali su eredità e misure di aree.',
+  say:'Ecco perché oggi sono vestito così. Tocca <b>Avanti</b>.',pose:'hi',sc:[mk({L:[3,2],R:[0,11],xw:3,lines:w1})]});
+ st.push({h:'Tutto a parole',t:'Nel libro non ci sono lettere né simboli, tutto è scritto a parole. Il numero sconosciuto si chiama «la cosa» e le unità si contano in dirham, una moneta. Oggi la stessa equazione si scrive in una riga, '+mi('3x + 2 = 11')+'.',
+  say:'I simboli sono arrivati molti secoli dopo.',pose:'bil',sc:[mk({L:[3,2],R:[0,11],xw:3,lines:w1.concat(['3x + 2 = 11'])})]});
+ var w3=['una cosa meno tre dirham','è uguale a cinque dirham','x − 3 = 5'];
+ st.push({h:'Al-jabr, completare',t:'Al-jabr vuol dire rimettere a posto, completare. Nell\'equazione '+mi('x − 3 = 5')+' al primo membro mancano 3 pesetti, disegnati tratteggiati.',
+  say:'Al primo membro manca qualcosa. Come si completa?',pose:'bil',sc:[mk({L:[1,0,3],R:[0,5],xw:8,lines:w3})]});
+ st.push({h:'Completare',t:'Si aggiungono 3 pesetti a tutti e due i piatti. A sinistra riempiono la parte mancante, a destra diventano 8. Quindi '+mi('x = 8')+'. È il primo principio, usato per aggiungere.',
+  say:'Completato! Un sacchetto pesa 8.',pose:'ok',
+  sc:[mk({L:[1,3,3],R:[0,8],xw:8,lines:['x − 3 = 5','x − 3 {+ 3} = 5 {+ 3}']}),mk({L:[1,0,0],R:[0,8],xw:8,lines:['x − 3 = 5','x − 3 {+ 3} = 5 {+ 3}','x = 8']})]});
+ var e5='5x + 1 = 2x + 7',o5='5x + 1 {− 2x − 1} = 2x + 7 {− 2x − 1}';
+ st.push({h:'Al-muqabala, bilanciare',t:'Al-muqabala vuol dire mettere a confronto, bilanciare. Si tolgono da tutti e due i membri le quantità uguali, qui 2 sacchetti e 1 pesetto. Resta '+mi('3x = 6')+', quindi '+mi('x = 2')+'.',
+  say:'Le stesse cose da tutte e due le parti si tolgono.',pose:'bil',
+  sc:[mk({L:[5,1],R:[2,7],xw:2,lines:[e5]}),mk({L:[5,1],R:[2,7],xw:2,hl:{L:{x:2,u:1},R:{x:2,u:1}},lines:[e5,o5]}),mk({L:[3,0],R:[0,6],xw:2,lines:[e5,o5,'3x = 6']})]});
+ st.push({h:'Da al-jabr ad algebra',t:'Il titolo del libro conteneva le parole al-jabr e al-muqabala. Nel 1145 Roberto di Chester lo tradusse in latino e da al-jabr è nata la parola <b>algebra</b>. Dal nome di al-Khwarizmi, scritto in latino, viene invece la parola <b>algoritmo</b>.',
+  say:'Ogni volta che risolvi un\'equazione, usi una parola nata più di mille anni fa.',pose:'ok',festa:true,
+  sc:[mk({L:[3,0],R:[0,6],xw:2,lines:['al-jabr → algebra','al-Khwarizmi → algoritmo']})]});
+ return st;}
+
+/* ---------- Esplora generico: passi con Indietro, Avanti e "nuovo" ---------- */
+function esploratore(cfg){
+ var X={steps:null,i:0,E:null};
+ X.nuovo=function(){X.E=cfg.gen?cfg.gen(X.E):null;X.steps=cfg.build(X.E);X.i=0;};
+ X.fin=function(i){var sc=X.steps[i].sc;return sc[sc.length-1];};
+ X.pannello=function(){
+  var n=X.steps.length,i=X.i,st=X.steps[i];
+  $('panel').innerHTML='<div class="anchor">'+cfg.anchor+'</div><div class="card"><div class="h">'+st.h+'</div><div class="txt">'+st.t+'</div>'
+   +passoHTML(i,n)+azioniHTML(i===0,i===n-1,cfg.nuovo)+'</div>';
+  $('bPrev').onclick=function(){X.vai(i-1);};
+  $('bNext').onclick=function(){X.vai(i+1);};
+  $('bNew').onclick=function(){X.nuovo();X.entra();};};
+ X.parla=function(){var st=X.steps[X.i];say(st.say,st.pose,st.festa);};
+ X.vai=function(j){
+  j=Math.max(0,Math.min(X.steps.length-1,j));if(j===X.i&&!PLAY)return;
+  ferma();var da=SHOWN,avanti=j===X.i+1;X.i=j;X.pannello();X.parla();
+  if(avanti)play(sequenza([da].concat(X.steps[j].sc)));
+  else play([{a:da,b:X.fin(j),ms:T_BACK}]);};
+ X.entra=function(){   // primo ingresso o nuovo esempio: il passo 1 si anima dalla bilancia vuota
+  ferma();X.pannello();X.parla();play(sequenza([mk({})].concat(X.steps[0].sc)));};
+ X.mostra=function(){if(!X.steps){X.nuovo();X.entra();return;}X.pannello();X.parla();mostraScena(X.fin(X.i));};
+ return X;}
+var BIL=esploratore({anchor:'Un\'equazione è una bilancia in equilibrio. La soluzione è il peso di un sacchetto.',nuovo:'Nuovo esempio',
+ gen:function(prev){return prev?nuovaBilancia(prev):{a:3,b:2,s:3,p:3,q:5};},build:stepsBilancia});
+var PRI=esploratore({anchor:'Quello che fai a un piatto, fallo anche all\'altro.',nuovo:'Nuova equazione',gen:nuovaPrincipi,build:stepsPrincipi});
+var KWA=esploratore({anchor:'Al-jabr completa, al-muqabala bilancia. Da al-jabr viene la parola algebra.',nuovo:'Ricomincia',build:stepsKhwarizmi});
+
+/* =========================================================
+   03 ALLENATI: una casella alla volta, difficoltà che cresce da sola
+   livello 1 ax = b, 2 x + a = b, 3 ax + b = c, 4 sacchetti sui due piatti, 5 problemi, 6 soluzioni negative o frazionarie
+   ========================================================= */
+var NOTE_NEG=['Con i pesetti non si fanno pesi negativi.','La bilancia non basta, ma i principi valgono lo stesso.'];
+var NOTE_FR=['Mezzo pesetto? Sulla bilancia non si può.','La bilancia non basta, ma i principi valgono lo stesso.'];
+function msgUnSolo(n,cosa){return 'Hai tolto '+n+' '+cosa+' da un solo membro. Vanno tolti da tutti e due, altrimenti la bilancia si sbilancia.';}
+function msgSegno(n){return 'Hai aggiunto '+n+' invece di toglierlo. Per eliminare '+mi('+ '+n)+' si toglie '+n+' da tutti e due i membri.';}
+function stepDividi(a,k,s){return {key:'x',q:'Dividi tutti e due i membri per '+a+'. Quanto vale '+mi('x')+'?',ans:s,
+ check:function(v){
+  if(v===k)return {msg:'Hai diviso solo il primo membro. Anche il secondo va diviso per '+a+', '+num(k)+' : '+a+'.'};
+  if(v===k-a)return {msg:mi(a+'x')+' vuol dire '+a+' · '+mi('x')+'. Per lasciare un solo sacchetto si divide per '+a+', non si toglie '+a+'.'};
+  if(v===k*a)return {msg:'Hai moltiplicato. Per lasciare un solo sacchetto si divide per '+a+'.'};
+  if(v===-s)return {msg:'Attento al segno. '+num(k)+' : '+a+' = '+num(s)+'.'};
+  return {msg:'Calcola '+num(k)+' : '+a+'.'};}};}
+function stepTogli(b,c,key,q){var r=c-b;return {key:key,q:q,ans:r,
+ check:function(v){
+  if(v===c)return {msg:msgUnSolo(b,b===1?'pesetto':'pesetti')};
+  if(v===c+b)return {msg:msgSegno(b)};
+  if(v===-r)return {msg:'Attento al segno. '+c+' − '+b+' = '+num(r)+'.'};
+  return {msg:'Calcola '+c+' − '+b+'.'};}};}
+function stepFrazione(k,a){var g=gcd(k,a),n=k/g,d=a/g;return [
+ {key:'n',q:'Dividi per '+a+'. '+mi('x')+' è una frazione ridotta ai minimi termini. Qual è il numeratore?',ans:n,
+  check:function(v){if(g>1&&v===k)return {msg:'Si può ridurre. '+k+' e '+a+' si dividono tutti e due per '+g+'.'};
+   if(v===a||v===d)return {msg:'Il numeratore viene dal secondo membro, '+k+'. Il denominatore è il numero che moltiplica '+mi('x')+'.'};
+   return {msg:mi('x')+' = '+k+' : '+a+', cioè la frazione con '+k+' al numeratore e '+a+' al denominatore, ridotta.'};}},
+ {key:'d',q:'E il denominatore?',ans:d,
+  check:function(v){if(g>1&&v===a)return {msg:'Riduci anche il denominatore, '+a+' : '+g+'.'};
+   if(v===k||v===n)return {msg:'Al denominatore va il numero che moltiplica '+mi('x')+', '+a+(g>1?', ridotto':'')+'.'};
+   return {msg:'Il denominatore è '+a+' diviso per '+g+'.'};}}];}
+var ESERCIZI={
+ 1:function(){var a=R(2,5),s=R(2,a>=5?4:6),b=a*s,eq=eqs(a,0,0,b),L=[eq,'x = [[x]]'];
+  return {eq:eq,sol:num(s),ver:a+' · '+s+' = '+b,intro:'Quanto pesa un sacchetto?',
+   steps:[stepDividi(a,b,s)],
+   sc:[[mk({L:[a,0],R:[0,b],xw:s,lines:L})],[mk({L:[a,0],R:[0,b],G:a,xw:s,lines:L}),mk({L:[1,0],R:[0,s],xw:s,lines:L})]]};},
+ 2:function(){var a=R(1,6),s=R(1,8),b=s+a,eq=eqs(1,a,0,b),L=[eq,'x = [[x]]'],st=stepTogli(a,b,'x','Togli '+pes(a)+' da tutti e due i piatti. Quanto vale '+mi('x')+'?');
+  return {eq:eq,sol:num(s),ver:s+' + '+a+' = '+b,intro:'Libera il sacchetto.',steps:[st],
+   sc:[[mk({L:[1,a],R:[0,b],xw:s,lines:L})],[mk({L:[1,a],R:[0,b],xw:s,hl:{L:{u:a},R:{u:a}},lines:L}),mk({L:[1,0],R:[0,s],xw:s,lines:L})]]};},
+ 3:function(){
+  if(Math.random()<.4){   // si divide prima: nessuno deve dividere un solo termine
+   var a,m,s,b,c;do{a=R(2,4);m=R(1,3);s=R(1,4);b=a*m;c=a*(s+m);}while(c>20);
+   var eq=eqs(a,b,0,c),L1=[eq,'x + [[bb]] = [[cc]]'],L2=L1.concat(['x = [[x]]']);
+   return {eq:eq,sol:num(s),ver:a+' · '+s+' + '+b+' = '+c,intro:'Questa volta conviene dividere subito.',
+    steps:[{key:'bb',q:'Dividi tutti e due i membri per '+a+'. Quanti pesetti restano a sinistra?',ans:m,
+      check:function(v){if(v===b)return {msg:'Hai diviso solo i sacchetti. Vanno divisi per '+a+' anche i pesetti, '+b+' : '+a+'.'};return {msg:'Calcola '+b+' : '+a+'.'};}},
+     {key:'cc',q:'E quanti pesetti restano a destra?',ans:s+m,
+      check:function(v){if(v===c)return {msg:'Anche il secondo membro va diviso per '+a+', '+c+' : '+a+'.'};return {msg:'Calcola '+c+' : '+a+'.'};}},
+     stepTogli(m,s+m,'x','Togli '+pes(m)+' da tutti e due i piatti. Quanto vale '+mi('x')+'?')],
+    sc:[[mk({L:[a,b],R:[0,c],xw:s,lines:L1})],[mk({L:[a,b],R:[0,c],xw:s,lines:L1})],
+     [mk({L:[a,b],R:[0,c],G:a,xw:s,lines:L1}),mk({L:[1,m],R:[0,s+m],xw:s,lines:L2})],
+     [mk({L:[1,m],R:[0,s+m],xw:s,hl:{L:{u:m},R:{u:m}},lines:L2}),mk({L:[1,0],R:[0,s],xw:s,lines:L2})]]};}
+  var a3,s3,b3,c3;do{a3=R(2,4);s3=R(1,5);b3=R(1,6);c3=a3*s3+b3;}while(c3>20);
+  var eq3=eqs(a3,b3,0,c3),M1=[eq3,a3+'x = [[r]]'],M2=M1.concat(['x = [[x]]']);
+  return {eq:eq3,sol:num(s3),ver:a3+' · '+s3+' + '+b3+' = '+c3,intro:'Prima i pesetti, poi i sacchetti.',
+   steps:[stepTogli(b3,c3,'r','Togli '+pes(b3)+' da tutti e due i piatti. Quanti pesetti restano a destra?'),stepDividi(a3,c3-b3,s3)],
+   sc:[[mk({L:[a3,b3],R:[0,c3],xw:s3,lines:M1})],
+    [mk({L:[a3,b3],R:[0,c3],xw:s3,hl:{L:{u:b3},R:{u:b3}},lines:M1}),mk({L:[a3,0],R:[0,c3-b3],xw:s3,lines:M2})],
+    [mk({L:[a3,0],R:[0,c3-b3],G:a3,xw:s3,lines:M2}),mk({L:[1,0],R:[0,s3],xw:s3,lines:M2})]]};},
+ 4:function(){var a,c,s,b,d;do{a=R(3,5);c=R(1,a-2);s=R(1,4);b=R(1,4);d=(a-c)*s+b;}while(d>16);
+  var k=a-c,eq=eqs(a,b,c,d),L1=[eq,'[[ca]]x + '+b+' = '+d],L2=L1.concat(['[[ca]]x = [[r]]']),L3=L2.concat(['x = [[x]]']);
+  return {eq:eq,sol:num(s),ver:a+' · '+s+' + '+b+' = '+(a*s+b)+' e '+(c===1?'':c+' · ')+s+' + '+d+' = '+(c*s+d),intro:'Sacchetti su tutti e due i piatti. Prima mettili da una parte sola.',
+   steps:[{key:'ca',q:'Togli '+sac(c)+' da tutti e due i piatti. Quanti sacchetti restano a sinistra?',ans:k,
+     check:function(v){if(v===a+c)return {msg:'Togliendo sacchetti, quelli a sinistra diminuiscono, '+a+' − '+c+'.'};
+      if(v===a)return {msg:msgUnSolo(c,c===1?'sacchetto':'sacchetti')};return {msg:'Calcola '+a+' − '+c+'.'};}},
+    stepTogli(b,d,'r','Togli '+pes(b)+' da tutti e due i piatti. Quanti pesetti restano a destra?'),
+    stepDividi(k,d-b,s)],
+   sc:[[mk({L:[a,b],R:[c,d],xw:s,lines:L1})],
+    [mk({L:[a,b],R:[c,d],xw:s,hl:{L:{x:c},R:{x:c}},lines:L1}),mk({L:[k,b],R:[0,d],xw:s,lines:L2})],
+    [mk({L:[k,b],R:[0,d],xw:s,hl:{L:{u:b},R:{u:b}},lines:L2}),mk({L:[k,0],R:[0,d-b],xw:s,lines:L3})],
+    [mk({L:[k,0],R:[0,d-b],G:k,xw:s,lines:L3}),mk({L:[1,0],R:[0,s],xw:s,lines:L3})]]};},
+ 5:function(){var a,s,b,c;do{a=R(2,4);s=R(2,6);b=R(1,6);c=a*s+b;}while(c>24);
+  var molt={2:'Il doppio',3:'Il triplo',4:'Il quadruplo'};
+  var testi=['Penso un numero, lo moltiplico per '+a+' e aggiungo '+b+'. Ottengo '+c+'. Che numero ho pensato?',
+   a+' quaderni dello stesso prezzo e una gomma da '+b+' euro costano in tutto '+c+' euro. Quanto costa un quaderno?',
+   'In un cesto ci sono '+a+' sacchetti di farina uguali e '+b+' kg di zucchero. In tutto pesano '+c+' kg. Quanto pesa un sacchetto di farina?',
+   molt[a]+' di un numero, aumentato di '+b+', è '+c+'. Qual è il numero?'];
+  var F=[mk({fade:true,lines:['[[a]]x + [[b]] = [[c]]'],note:['Prima scrivi l\'equazione.']})],
+   L2=['[[a]]x + [[b]] = [[c]]','[[a]]x = [[r]]'],L3=L2.concat(['x = [[x]]']);
+  var rilet=function(cosa){return function(v){if(v===a||v===b||v===c)return {msg:'Rileggi il problema. '+cosa};return {msg:cosa};};};
+  return {eq:eqs(a,b,0,c),sol:num(s),ver:a+' · '+s+' + '+b+' = '+c,prob:pick(testi),intro:'Un problema. Prima scrivi l\'equazione, poi risolvila.',
+   steps:[{key:'a',q:'Scrivi l\'equazione. Quale numero moltiplica '+mi('x')+'?',ans:a,check:rilet('Il numero che moltiplica '+mi('x')+' dice quante volte compare il numero sconosciuto.')},
+    {key:'b',q:'Quale numero si aggiunge?',ans:b,check:rilet('È la quantità che si aggiunge al prodotto.')},
+    {key:'c',q:'Quanto fa in tutto?',ans:c,check:rilet('Al secondo membro va il totale.')},
+    stepTogli(b,c,'r','Togli '+b+' da tutti e due i membri. Quanto resta a destra?'),stepDividi(a,c-b,s)],
+   sc:[F,F,F,[mk({L:[a,b],R:[0,c],xw:s,lines:L2})],
+    [mk({L:[a,b],R:[0,c],xw:s,hl:{L:{u:b},R:{u:b}},lines:L2}),mk({L:[a,0],R:[0,c-b],xw:s,lines:L3})],
+    [mk({L:[a,0],R:[0,c-b],G:a,xw:s,lines:L3}),mk({L:[1,0],R:[0,s],xw:s,lines:L3})]]};},
+ 6:function(){
+  var tipo=pick(['neg1','neg2','fr1','fr2']),a,b,c,s,k,eq,L,F;
+  if(tipo==='neg1'){a=R(3,9);b=R(1,a-1);s=b-a;eq=eqs(1,a,0,b);L=[eq,'x = [[x]]'];F=mk({fade:true,lines:L,note:NOTE_NEG});
+   return {eq:eq,sol:num(s),ver:num(s)+' + '+a+' = '+b,intro:'Ora la bilancia non basta più. Usa i principi, valgono anche qui.',
+    steps:[stepTogli(a,b,'x','Togli '+a+' da tutti e due i membri. Quanto vale '+mi('x')+'?')],sc:[[F],[F]]};}
+  if(tipo==='neg2'){do{a=R(2,4);s=-R(1,4);c=R(1,6);b=c-a*s;}while(b>14);k=c-b;eq=eqs(a,b,0,c);
+   L=[eq,a+'x = [[r]]'];var L2=L.concat(['x = [[x]]']);
+   return {eq:eq,sol:num(s),ver:a+' · ('+num(s)+') + '+b+' = '+c,intro:'Soluzione negativa in vista. I principi valgono lo stesso.',
+    steps:[stepTogli(b,c,'r','Togli '+b+' da tutti e due i membri. Quanto resta a destra?'),stepDividi(a,k,s)],
+    sc:[[mk({fade:true,lines:L,note:NOTE_NEG})],[mk({fade:true,lines:L2,note:NOTE_NEG})],[mk({fade:true,lines:L2,note:NOTE_NEG})]]};}
+  if(tipo==='fr1'){do{a=R(2,6);k=R(1,12);}while(k%a===0);eq=eqs(a,0,0,k);L=[eq,'x = [[n/d]]'];F=mk({fade:true,lines:L,note:NOTE_FR});
+   var g=gcd(k,a);
+   return {eq:eq,sol:(k/g)+'/'+(a/g),intro:'La soluzione questa volta è una frazione.',steps:stepFrazione(k,a),sc:[[F],[F],[F]]};}
+  do{a=R(2,5);k=R(1,12);b=R(1,6);}while(k%a===0);c=k+b;eq=eqs(a,b,0,c);L=[eq,a+'x = [[r]]'];var L3=L.concat(['x = [[n/d]]']),g2=gcd(k,a);
+  return {eq:eq,sol:(k/g2)+'/'+(a/g2),intro:'Alla fine arriva una frazione.',
+   steps:[stepTogli(b,c,'r','Togli '+b+' da tutti e due i membri. Quanto resta a destra?')].concat(stepFrazione(k,a)),
+   sc:[[mk({fade:true,lines:L,note:NOTE_FR})],[mk({fade:true,lines:L3,note:NOTE_FR})],[mk({fade:true,lines:L3,note:NOTE_FR})],[mk({fade:true,lines:L3,note:NOTE_FR})]]};}};
+
+var T={lv:1,pulite:0,nelLv:0,fatti:0,ex:null,k:0,prove:0,err:0,fb:'',finito:false,primo:true};
+var LODI=['Esatto!','Giusto!','Perfetto!','Bene così!'];
+function statoEx(k){var l=T.ex.sc[k];return l[l.length-1];}
+function nuovoEsercizio(){
+ T.ex=ESERCIZI[T.lv]();T.k=0;T.prove=0;T.err=0;T.fb='';T.finito=false;
+ T.ctx={got:{},cur:T.ex.steps[0].key};CTX=T.ctx;ECHO='';
+ pannelloAllenati();mostraScena(statoEx(0));
+ if(T.primo){say('Gli esercizi diventano più difficili man mano che li risolvi.','hi');T.primo=false;}
+ else say(T.ex.intro,'idle');}
+function verifica(){
+ if(T.finito||!$('inA'))return;
+ var s=$('inA').value.trim().replace('−','-');
+ if(!/^-?\d+$/.test(s)){T.fb='<span class="no">Scrivi un numero intero, anche con il segno meno.</span>';pannelloAllenati();return;}
+ var v=parseInt(s,10),st=T.ex.steps[T.k];
+ if(v!==st.ans){
+  var r=st.check(v)||{msg:''};T.err++;T.prove++;
+  if(T.prove>=2){T.fb='<span class="no">Non ancora.</span> '+r.msg+' La risposta è <b>'+num(st.ans)+'</b>.';say('Ecco la risposta. Guardala nello schema e andiamo avanti.','ko');accetta(st.ans);return;}
+  T.fb='<span class="no">Non ancora.</span> '+r.msg;ECHO='';if(!PLAY)draw(SHOWN,SHOWN,1);say(pick(['La bilancia si è sbilanciata. Leggi il suggerimento e riprova.','Quasi! Riprova.','Guarda bene la bilancia e riprova.']),'ko');
+  pannelloAllenati();return;}
+ T.fb='<span class="ok">'+pick(LODI)+'</span>';say(pick(LODI),'ok');accetta(v);}
+function accetta(v){
+ var st=T.ex.steps[T.k],da=statoEx(T.k);
+ CTX.got[st.key]=v;T.prove=0;T.k++;ECHO='';
+ if(T.k>=T.ex.steps.length){
+  T.finito=true;CTX.cur=null;T.fatti++;T.nelLv++;
+  if(T.err===0)T.pulite++;else T.pulite=0;
+  var su='';
+  if(T.lv<6&&(T.pulite>=2||T.nelLv>=3)){T.lv++;T.pulite=0;T.nelLv=0;su=' Il prossimo sarà un po\' più difficile.';}
+  say((T.err===0?'Esercizio completo, senza errori!':'Esercizio completo.')+su,'ok',T.err===0);}
+ else CTX.cur=T.ex.steps[T.k].key;
+ pannelloAllenati();
+ ferma();play(sequenza([da].concat(T.ex.sc[T.k])));}
+function pannelloAllenati(){
+ var E=T.ex,body;
+ if(T.finito)body='<div class="q">'+mi(E.eq)+', quindi '+mi('x = '+E.sol)+'.</div>'+(E.ver?'<div class="txt">Verifica, '+mi(E.ver)+'.</div>':'')
+  +'<div class="azioni"><button class="azione primaria" id="bNx">Nuovo esercizio</button></div>';
+ else body=(E.prob?'<div class="prob">'+E.prob+'</div>':'')+'<div class="q">'+E.steps[T.k].q+'</div>'
+  +'<div class="ans"><input id="inA" inputmode="numeric" autocomplete="off" aria-label="Risposta">'+(TOUCH?'':'<button class="azione primaria" id="bOk">Verifica</button>')+'</div>'
+  +tastierinaHTML({meno:true});
+ $('panel').innerHTML='<div class="anchor">Quello che fai a un piatto, fallo anche all\'altro.</div>'
+  +'<div class="card"><div class="stat">'+(T.fatti===1?'1 esercizio completato':T.fatti+' esercizi completati')+'</div>'+body+(T.fb?'<div class="fb">'+T.fb+'</div>':'')+'</div>';
+ if(T.finito){$('bNx').onclick=nuovoEsercizio;
+  setTimeout(function(){if($('bNx'))$('bNx').focus({preventScroll:true});},300);return;}   // dopo l'Invio, così lo stesso tasto non apre subito un nuovo esercizio
+ var inp=$('inA');
+ if($('bOk'))$('bOk').onclick=verifica;
+ inp.onkeydown=function(e){if(e.key==='Enter')verifica();};
+ inp.addEventListener('input',function(){ECHO=inp.value.replace(/[^0-9\-−]/g,'').slice(0,4);if(!PLAY)draw(SHOWN,SHOWN,1);});
+ if(TOUCH)tastierinaCollega($('pad'),inp,{max:4,alVerifica:verifica});
+ else if(document.activeElement&&document.activeElement.tagName!=='BODY')inp.focus({preventScroll:true});}
+var ALL={mostra:function(){if(!T.ex){nuovoEsercizio();return;}CTX=T.ctx;pannelloAllenati();mostraScena(statoEx(T.k));say(T.finito?'Tocca <b>Nuovo esercizio</b>.':T.ex.intro,'idle');}};
+
+/* ---------- linguette ---------- */
+function disegnaSchede(){
+ var nav=$('tabs'),x0=nav.scrollLeft;
+ nav.innerHTML=SCHEDE.map(function(s,i){var on=s.id===S.scheda;
+  return '<button class="scheda'+(on?' attiva':'')+'" role="tab" aria-selected="'+on+'" data-s="'+s.id+'"><span class="num">'+(i<9?'0':'')+(i+1)+'</span>'+s.nome+'</button>';}).join('');
+ nav.scrollLeft=x0;centraScheda(nav);
+ $('sub').textContent=SCHEDE.filter(function(s){return s.id===S.scheda;})[0].sub;}
+$('tabs').addEventListener('click',function(e){var b=e.target.closest('[data-s]');if(b&&b.dataset.s!==S.scheda){S.scheda=b.dataset.s;mostra();}});
+function mostra(){
+ ferma();disegnaSchede();ECHO='';
+ CTX={got:{},cur:null};
+ ({bil:BIL,pri:PRI,all:ALL,kwa:KWA})[S.scheda].mostra();}
+mostra();
+say('Ciao, sono Prof. T, oggi vestito da al-Khwarizmi! Tocca <b>Avanti</b> per vedere il passo successivo.','hi');
+})();
+</script>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Le equazioni di primo grado con una bilancia a due piatti. L'equazione come bilancia in equilibrio, i due principi di equivalenza con la scrittura algebrica passo per passo, la verifica, esercizi guidati con suggerimenti sugli errori e le origini della parola algebra con al-Khwarizmi. Per i numeri relativi c'è il <a href="../aritmetica/reattore_relativi.html" style="color:#6aa5ff">Reattore dei numeri</a>.</p>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T</div></div>
+<style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6aa5ff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(106,165,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
+<a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Algebra</a>
+<script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
