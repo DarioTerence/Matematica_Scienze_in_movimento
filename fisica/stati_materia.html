@@ -358,7 +358,7 @@ function Scena(el){
     var x=i*a1[0]+j*a2[0]+o[0]+b,z=i*a1[1]+j*a2[1]+o[1];cand.push([x,z,x*x+z*z,o[2]]);});
    cand.sort(function(p,r){return p[2]-r[2];});
    var per=N/3,strato=cand.slice(0,per);
-   for(var l=0;l<3;l++)strato.forEach(function(p){pts.push([p[0],-BY+d/2+l*d*.95,p[1],p[3]]);});
+   for(var l=0;l<3;l++)strato.forEach(function(p){pts.push([p[0],-BY+d/2+l*d*.95,p[1],p[3],l]);});
   }else{
    var n=Math.round(Math.cbrt(N)),k=0,off=(n-1)/2*d;
    for(var y=0;y<n&&k<N;y++)for(var x2=0;x2<n&&k<N;x2++)for(var z=0;z<n&&k<N;z++,k++)
@@ -383,7 +383,7 @@ function Scena(el){
   ORD=H.map(function(h,i){return [i,h[0]*h[0]+h[2]*h[2]+1.6*(h[1]-cy)*(h[1]-cy)+(h[1]>cy?.01:0)];})
    .sort(function(x,y){return y[1]-x[1];}).map(function(x){return x[0];});
   at=[];el2=[];plasma=false;
-  PT=new Map();DAGAS=null;CRIST=new Uint8Array(N);vicini();
+  PT=new Map();DAGAS=null;CRIST=new Uint8Array(N);vicini();if(PONTI&&s.lat==='esa')orientaGhiaccio();
   if(stato===0){for(i=0;i<N;i++){P[3*i]=H[i][0];P[3*i+1]=H[i][1];P[3*i+2]=H[i][2];Q[i].copy(HQ[i]);}}
   else{
    K.fill(stato===1?1:2);
@@ -394,8 +394,8 @@ function Scena(el){
    if(stato===3){entraPlasma();plasma=true;}
    if(stato===1)for(var r=0;r<240;r++)passo(1/120);   /* il liquido si deposita prima di comparire */
   }
-  if(stato===0){DAGAS=new Float32Array(N).fill(99);cntP=new Uint8Array(N);
-   VIC.forEach(function(key){var i=Math.floor(key/N),j=key%N;if(cntP[i]<MAXM[0]&&cntP[j]<MAXM[0]){PT.set(key,{i:i,j:j,st:1,a:T_PONTE,c:0,s:true});cntP[i]++;cntP[j]++;}});}
+  if(stato===0){DAGAS=new Float32Array(N).fill(99);cntP=new Uint8Array(N);OCC=new Int32Array(3*N);ACC=new Uint8Array(N);
+   LAT.forEach(function(L,key){PT.set(key,{i:Math.floor(key/N),j:key%N,d:L.d,h:L.h,st:1,a:T_PONTE,c:0,s:true});});}
   ricolora();}
 
  /* ---- velocità tipiche (unità al secondo) in funzione della temperatura assoluta ---- */
@@ -499,45 +499,101 @@ function Scena(el){
     1 spezzato da un passaggio di stato (lampo arancione), 2 riformato da un passaggio di stato (lampo azzurro). */
  /* MAXM = ponti al massimo per molecola, 4 nel ghiaccio e 3 nel liquido: così il liquido ha un po' meno ponti del ghiaccio */
  var SC_PONTI=.8,MAXM=[4,3],FORMA=1.08,ROMPE=1.32;
- var PT=new Map(),VIC=[],DAGAS=null,cntP=null;
- function vicini(){                  /* coppie di vicine nel reticolo del ghiaccio */
-  VIC=[];for(var i=0;i<N;i++)for(var j=i+1;j<N;j++){var dx=H[i][0]-H[j][0],dy=H[i][1]-H[j][1],dz=H[i][2]-H[j][2];
-   if(dx*dx+dy*dy+dz*dz<1.12*1.12*d*d)VIC.push(i*N+j);}
-  VIC=new Set(VIC);}
+ var PT=new Map(),VIC=new Set(),LAT=new Map(),DAGAS=null,cntP=null,OCC=null,ACC=null;
+ /* coppie di vicine nel reticolo del ghiaccio. Come nel ghiaccio vero, ogni molecola ha 4 vicine: 3 nel suo strato
+    e 1 nello strato sopra o sotto (metà delle molecole di uno strato si lega in su, l'altra metà in giù). */
+ function vicini(){
+  var L=[];for(var i=0;i<N;i++)for(var j=i+1;j<N;j++){var a=H[i],b=H[j],dx=a[0]-b[0],dy=a[1]-b[1],dz=a[2]-b[2];
+   if(dx*dx+dy*dy+dz*dz>=1.12*1.12*d*d)continue;
+   if(a[4]!==undefined&&a[4]!==b[4]){var basso=Math.min(a[4],b[4]);if(a[3]!==(basso===0?60:120))continue;}
+   L.push(i*N+j);}
+  VIC=new Set(L);LAT=new Map();}
+ /* regole del ghiaccio: in ogni ponte c'è un solo idrogeno, ogni molecola dà al massimo 2 ponti (i suoi 2 idrogeni)
+    e ne riceve al massimo 2. Per trovare chi dà e chi riceve si percorrono i ponti in giri chiusi (circuito di Euler,
+    con un nodo in più collegato alle molecole che hanno un numero dispari di vicine): ogni giro entra ed esce da una
+    molecola lo stesso numero di volte, quindi ognuna dà e riceve al massimo 2 ponti. Poi si gira ogni molecola
+    in modo che i suoi idrogeni puntino verso le molecole a cui danno il ponte. */
+ function orientaGhiaccio(){
+  var E=[],adj=[],deg=new Array(N+1).fill(0),i;
+  VIC.forEach(function(k){E.push([Math.floor(k/N),k%N,k]);});
+  E.forEach(function(e){deg[e[0]]++;deg[e[1]]++;});
+  for(i=0;i<N;i++)if(deg[i]%2)E.push([i,N,-1]);
+  for(i=0;i<=N;i++)adj.push([]);
+  E.forEach(function(e,n){adj[e[0]].push(n);adj[e[1]].push(n);});
+  var usato=new Uint8Array(E.length),pt=new Array(N+1).fill(0),dona=[];
+  for(i=0;i<N;i++)dona.push([]);
+  for(var v=0;v<=N;v++){var pila=[v];
+   while(pila.length){var u=pila[pila.length-1];
+    while(pt[u]<adj[u].length&&usato[adj[u][pt[u]]])pt[u]++;
+    if(pt[u]===adj[u].length){pila.pop();continue;}
+    var n=adj[u][pt[u]],e=E[n],w=e[0]===u?e[1]:e[0];usato[n]=1;
+    if(e[2]>=0)dona[u].push([w,e[2]]);           /* il ponte va da u (idrogeno) a w (ossigeno) */
+    pila.push(w);}}
+  var cx=0,cz=0;H.forEach(function(h){cx+=h[0];cz+=h[2];});cx/=N;cz/=N;
+  var X=new THREE.Vector3(),Y=new THREE.Vector3(),Z=new THREE.Vector3(),a=new THREE.Vector3(),b=new THREE.Vector3(),m=new THREE.Matrix4();
+  var dir=function(i,j,out){return out.set(H[j][0]-H[i][0],H[j][1]-H[i][1],H[j][2]-H[i][2]).normalize();};
+  var ANG=2*Math.atan2(.075,.058);                 /* angolo H-O-H del modello */
+  for(i=0;i<N;i++){var D=dona[i];if(!D.length)continue;
+   dir(i,D[0][0],a);
+   if(D.length>1)dir(i,D[1][0],b);
+   else{  /* un solo ponte dato: il secondo idrogeno punta lontano dalle vicine, verso l'esterno */
+    Z.set(H[i][0]-cx,0,H[i][2]-cz);if(Z.lengthSq()<1e-6)Z.set(0,1,0);
+    Z.addScaledVector(a,-Z.dot(a));
+    if(Z.lengthSq()<1e-4){Z.set(0,1,0).addScaledVector(a,-a.y);if(Z.lengthSq()<1e-4)Z.set(1,0,0).addScaledVector(a,-a.x);}   /* l'esterno coincide con il ponte */
+    Z.normalize();
+    b.copy(a).multiplyScalar(Math.cos(ANG)).addScaledVector(Z,Math.sin(ANG));}
+   X.subVectors(a,b).normalize();Y.addVectors(a,b).normalize();Z.crossVectors(X,Y);
+   HQ[i].setFromRotationMatrix(m.makeBasis(X,Y,Z));
+   D.forEach(function(x,k){LAT.set(x[1],{d:i,h:k+1});});}}
+
+ /* OCC[3i+h] = ponte che usa l'idrogeno h della molecola i (−1 se libero); ACC[i] = ponti ricevuti dall'ossigeno di i */
+ function contaPosti(){
+  cntP.fill(0);OCC.fill(-1);ACC.fill(0);
+  PT.forEach(function(b,key){if(b.st<0)return;cntP[b.i]++;cntP[b.j]++;OCC[3*b.d+b.h]=key;ACC[b.d===b.i?b.j:b.i]++;});}
+ function spegni(b,c){b.st=-1;b.a=0;b.c=c;}
+ function nasce(key,i,j,dd,h,c,lat){PT.set(key,{i:i,j:j,d:dd,h:h,st:1,a:0,c:c,s:lat});cntP[i]++;cntP[j]++;OCC[3*dd+h]=key;ACC[dd===i?j:i]++;}
+ /* nel liquido: tra i due idrogeni liberi di una molecola e l'ossigeno dell'altra (se ha ancora posto), la coppia più vicina */
+ function scegliH(i,j){var best=1e9,r=null;
+  [[i,j],[j,i]].forEach(function(c){if(ACC[c[1]]>=2)return;atomo(c[1],0,vC);
+   for(var k=1;k<3;k++){if(OCC[3*c[0]+k]>=0)continue;var x=atomo(c[0],k,vD).distanceTo(vC);if(x<best){best=x;r={d:c[0],h:k};}}});
+  return r;}
+
  function aggiornaPonti(dt){
-  if(!DAGAS||DAGAS.length!==N){DAGAS=new Float32Array(N).fill(99);cntP=new Uint8Array(N);}
+  if(!DAGAS||DAGAS.length!==N){DAGAS=new Float32Array(N).fill(99);cntP=new Uint8Array(N);OCC=new Int32Array(3*N);ACC=new Uint8Array(N);}
   var i,j,key,b;
   for(i=0;i<N;i++){if(K[i]===2)DAGAS[i]=0;else DAGAS[i]+=dt;}
-  cntP.fill(0);PT.forEach(function(b){if(b.st>0){cntP[b.i]++;cntP[b.j]++;}});
   /* ponti esistenti: restano o si rompono.
-     Tra due molecole ferme nel reticolo restano solo i ponti tra vicine; se c'è di mezzo una molecola di vapore si
+     Tra due molecole ferme nel reticolo restano solo i ponti del reticolo; se c'è di mezzo una molecola di vapore si
      rompono; negli altri casi (liquido, oppure ghiaccio e liquido a contatto) restano finché le molecole sono vicine. */
   PT.forEach(function(b,key){
    if(b.st<0){b.a+=dt;if(b.a>=T_PONTE)PT.delete(key);return;}
    b.a+=dt;var ki=K[b.i],kj=K[b.j],resta;
    if(ki===2||kj===2)resta=false;
-   else if(!ki&&!kj&&TR[b.i]>=.9&&TR[b.j]>=.9){resta=VIC.has(key);if(resta)b.s=true;}
+   else if(!ki&&!kj&&TR[b.i]>=.9&&TR[b.j]>=.9){var L=LAT.get(key);resta=!!L&&L.d===b.d&&L.h===b.h;if(resta)b.s=true;}
    else resta=dP(b.i,b.j)<ROMPE*d;
    if(resta){if(ki===1&&kj===1)b.s=false;return;}      /* fondendo, i ponti tra vicine che restano vicine non si rompono */
-   b.st=-1;b.a=0;cntP[b.i]--;cntP[b.j]--;
    /* arancione: una molecola vola via come vapore, oppure fondendo si stacca dal ghiaccio */
-   b.c=(ki===2||kj===2||b.s)?1:0;});
+   spegni(b,(ki===2||kj===2||b.s)?1:0);});
+  contaPosti();
   /* ponti nuovi */
-  for(i=0;i<N;i++){var ki=K[i];if(ki===2||cntP[i]>=MAXM[ki])continue;
-   for(j=i+1;j<N;j++){var kj=K[j];if(kj===2||cntP[j]>=MAXM[kj])continue;key=i*N+j;
+  for(i=0;i<N;i++){var ki=K[i];if(ki===2)continue;
+   for(j=i+1;j<N;j++){var kj=K[j];if(kj===2)continue;key=i*N+j;
     b=PT.get(key);if(b&&b.st>0)continue;
     var fermi=!ki&&!kj&&TR[i]>=.9&&TR[j]>=.9;
-    if(!(fermi?VIC.has(key):dP(i,j)<FORMA*d))continue;
     /* azzurro se nasce da un passaggio di stato: una molecola appena tornata nel reticolo o appena condensata */
     var c=(fermi&&(CRIST[i]||CRIST[j]))||DAGAS[i]<2||DAGAS[j]<2?2:0;
-    PT.set(key,{i:i,j:j,st:1,a:0,c:c,s:fermi});cntP[i]++;cntP[j]++;
-    if(cntP[i]>=MAXM[ki])break;}}
+    if(fermi){var L=LAT.get(key);if(!L)continue;
+     /* il ponte del reticolo ha la precedenza: se il suo idrogeno o il suo ossigeno sono occupati da un ponte
+        nato nel liquido, quel ponte si scioglie */
+     var ac=L.d===i?j:i,o=OCC[3*L.d+L.h],cambia=o>=0;
+     if(o>=0)spegni(PT.get(o),0);
+     if(ACC[ac]>=2)PT.forEach(function(x){if(x.st>0&&!x.s&&(x.d===x.i?x.j:x.i)===ac&&ACC[ac]>=2){spegni(x,0);ACC[ac]--;cambia=true;}});
+     if(cambia)contaPosti();
+     nasce(key,i,j,L.d,L.h,c,true);continue;}
+    if(cntP[i]>=MAXM[ki]||cntP[j]>=MAXM[kj]||dP(i,j)>=FORMA*d)continue;
+    var sc=scegliH(i,j);if(!sc)continue;
+    nasce(key,i,j,sc.d,sc.h,c,false);}}
   for(i=0;i<N;i++)if(TR[i]>=1)CRIST[i]=0;}
- /* l'idrogeno del ponte si sceglie una volta sola, quando il ponte nasce: il più vicino all'ossigeno dell'altra molecola.
-    Sceglierlo a ogni fotogramma lo farebbe saltare da un atomo all'altro con la vibrazione, come se il ponte si rompesse. */
- function scegliH(b){var best=1e9;
-  [[b.i,b.j],[b.j,b.i]].forEach(function(c){atomo(c[1],0,vC);for(var k=1;k<3;k++){var r=atomo(c[0],k,vD).distanceTo(vC);
-   if(r<best){best=r;b.d=c[0];b.h=k;}}});}
  function dP(i,j){return Math.hypot(P[3*j]-P[3*i],P[3*j+1]-P[3*i+1],P[3*j+2]-P[3*i+2]);}
  /* posizione dell'atomo k della molecola i */
  function atomo(i,k,out){var a=mol[k];out.set(a[1],a[2],a[3]).applyQuaternion(Q[i]);out.x+=P[3*i];out.y+=P[3*i+1];out.z+=P[3*i+2];return out;}
@@ -547,8 +603,7 @@ function Scena(el){
  function disegnaPonti(){
   var n=0;
   if(PONTI&&!plasma)PT.forEach(function(b){
-   /* tra i quattro idrogeni delle due molecole, quello più vicino all'ossigeno dell'altra */
-   if(b.d===undefined)scegliH(b);
+   /* dall'idrogeno h della molecola d (fissato quando il ponte è nato) all'ossigeno dell'altra */
    atomo(b.d,b.h,vA);atomo(b.d===b.i?b.j:b.i,0,vB);
    var u=Math.min(1,b.a/T_PONTE),sp=1,c=C_BASE;
    if(b.st>0){if(b.c===2){c=col.copy(C_FREDDO).lerp(C_BASE,u);sp=2-u;}else if(b.c===0)sp=u;else sp=1;}
