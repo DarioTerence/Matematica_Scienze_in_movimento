@@ -533,6 +533,11 @@ function Scena(el){
     PT.set(key,{i:i,j:j,st:1,a:0,c:c,s:fermi});cntP[i]++;cntP[j]++;
     if(cntP[i]>=MAXM[ki])break;}}
   for(i=0;i<N;i++)if(TR[i]>=1)CRIST[i]=0;}
+ /* l'idrogeno del ponte si sceglie una volta sola, quando il ponte nasce: il più vicino all'ossigeno dell'altra molecola.
+    Sceglierlo a ogni fotogramma lo farebbe saltare da un atomo all'altro con la vibrazione, come se il ponte si rompesse. */
+ function scegliH(b){var best=1e9;
+  [[b.i,b.j],[b.j,b.i]].forEach(function(c){atomo(c[1],0,vC);for(var k=1;k<3;k++){var r=atomo(c[0],k,vD).distanceTo(vC);
+   if(r<best){best=r;b.d=c[0];b.h=k;}}});}
  function dP(i,j){return Math.hypot(P[3*j]-P[3*i],P[3*j+1]-P[3*i+1],P[3*j+2]-P[3*i+2]);}
  /* posizione dell'atomo k della molecola i */
  function atomo(i,k,out){var a=mol[k];out.set(a[1],a[2],a[3]).applyQuaternion(Q[i]);out.x+=P[3*i];out.y+=P[3*i+1];out.z+=P[3*i+2];return out;}
@@ -543,9 +548,8 @@ function Scena(el){
   var n=0;
   if(PONTI&&!plasma)PT.forEach(function(b){
    /* tra i quattro idrogeni delle due molecole, quello più vicino all'ossigeno dell'altra */
-   var best=1e9,h=null,o=null;
-   [[b.i,b.j],[b.j,b.i]].forEach(function(c){atomo(c[1],0,vC);for(var k=1;k<3;k++){atomo(c[0],k,vD);var r=vD.distanceTo(vC);
-    if(r<best){best=r;vA.copy(vD);vB.copy(vC);}}});
+   if(b.d===undefined)scegliH(b);
+   atomo(b.d,b.h,vA);atomo(b.d===b.i?b.j:b.i,0,vB);
    var u=Math.min(1,b.a/T_PONTE),sp=1,c=C_BASE;
    if(b.st>0){if(b.c===2){c=col.copy(C_FREDDO).lerp(C_BASE,u);sp=2-u;}else if(b.c===0)sp=u;else sp=1;}
    else{if(b.c===1){c=col.copy(C_CALDO);sp=1.8*(1-u);}else sp=1-u;}
@@ -586,6 +590,8 @@ function Scena(el){
 
  /* ---- camera: un dito ruota, due dita o la rotella fanno lo zoom ---- */
  var V0={th:-.55,ph:1.22,rad:4.3},th=V0.th,ph=V0.ph,rad=V0.rad,fit=1;
+ /* inquadratura: VI.y = altezza del punto guardato, VI.k = fattore di distanza; la camera li raggiunge in modo morbido */
+ var VI={y:-.1,k:1},LY=-.1,LK=1;
  var cv=R.domElement,ptr=new Map(),pd=0;
  var dist=function(){var a=Array.from(ptr.values());return Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);};
  cv.addEventListener('pointerdown',function(e){cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);});
@@ -602,7 +608,8 @@ function Scena(el){
   var dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;     /* intervallo mai negativo */
   if(el.offsetParent===null||!s)return;
   aggiorna(dt*(S.lento?LENTO:1)*(reduce?.5:1));
-  var dd=rad*fit;cam.position.set(dd*Math.sin(ph)*Math.sin(th),dd*Math.cos(ph)-.05,dd*Math.sin(ph)*Math.cos(th));cam.lookAt(0,-.1,0);R.render(scene,cam);})(last);
+  var a=Math.min(1,dt*2.5);LY+=(VI.y-LY)*a;LK+=(VI.k-LK)*a;
+  var dd=rad*fit*LK;cam.position.set(dd*Math.sin(ph)*Math.sin(th),dd*Math.cos(ph)+LY+.05,dd*Math.sin(ph)*Math.cos(th));cam.lookAt(0,LY,0);R.render(scene,cam);})(last);
  resize();
  return {imposta:imposta,cambiaStato:cambiaStato,ricolora:ricolora,resize:resize,
   fasi:function(fs,fg,cas){fasi(Math.round(fs*N),Math.round(fg*N),cas);},
@@ -610,7 +617,11 @@ function Scena(el){
   piastra:function(c){fondo.material.color.set(c||0x1a2740);fondo.material.opacity=c?.85:.7;},
   /* ponti a idrogeno visibili (scheda 03); vale dal prossimo imposta */
   ponti:function(on){PONTI=on;if(!on){PT=new Map();pmesh.count=0;}},
-  reset:function(){th=V0.th;ph=V0.ph;rad=V0.rad;},zoom:function(f){rad=clamp(rad*f,2,8);}};
+  reset:function(){th=V0.th;ph=V0.ph;rad=V0.rad;},
+  /* inquadratura della scheda: ph0 = inclinazione di partenza (null = quella normale), y e k come in VI; subito = senza transizione */
+  vista:function(y,k,ph0,subito){VI.y=y;VI.k=k;
+   if(ph0!==undefined){V0.ph=ph0===null?1.22:ph0;th=V0.th;ph=V0.ph;rad=V0.rad;}
+   if(subito){LY=y;LK=k;}},zoom:function(f){rad=clamp(rad*f,2,8);}};
 }
 var scena=Scena($('stage'));
 
@@ -859,6 +870,7 @@ var Passaggi=(function(){
 var Fornello=(function(){
  var T_GETTONE=.6;            /* secondi per ogni gettone: il termometro e il grafico avanzano sempre alla stessa velocità */
  var J=42,TOT=74;
+ var VISTA={y:-.7,k:.64,ph:1.02};   /* inquadratura con ghiaccio e acqua: altezza del punto guardato, distanza, inclinazione */
  var SEG=[{e0:0,e1:1,t0:-20,t1:0,c:'#7fb2ff'},{e0:1,e1:9,t0:0,t1:0,c:'#a6d9f2',n:'fusione'},
   {e0:9,e1:19,t0:0,t1:100,c:'#4fc3c7'},{e0:19,e1:73,t0:100,t1:100,c:'#ffb454',n:'ebollizione'},{e0:73,e1:74,t0:100,t1:120,c:'#ffd08a'}];
  /* play = 1 scalda da solo, −1 raffredda da solo, 0 fermo; riprendi = verso da riprendere dopo una scommessa */
@@ -961,6 +973,8 @@ var Fornello=(function(){
   F.riprendi=F.play;F.play=0;F.dom=D;azioni();
   say(D.id===1?'Prima di mettere il gettone, scommetti. Che cosa farà il termometro?':'Scommetti di nuovo prima di continuare.','pensieroso');
   return true;}
+ /* camera vicina al fondo, un po' dall'alto; quando l'acqua bolle si allontana per inquadrare tutto il vapore */
+ function inquadra(fg,subito){if(scena)scena.vista(VISTA.y+(-.1-VISTA.y)*fg,VISTA.k+(1-VISTA.k)*fg,undefined,subito);}
  function metti(k){var m=clamp(F.meta+k,0,TOT);if(m===F.meta)return;F.meta=m;F.verso=k>0?1:-1;moneta(k>0?'entra':'esce');ui();}
  function azzera(){F.E=F.meta=0;F.verso=1;F.dom=null;F.play=F.riprendi=0;S.t=-20;if(scena)scena.imposta('acqua',0);grafico();ui();}
 
@@ -1001,13 +1015,13 @@ var Fornello=(function(){
   if(Math.abs(F.E-F.meta)<1e-6)return;
   var a=F.E,st=dt/T_GETTONE;
   F.E=F.E<F.meta?Math.min(F.meta,F.E+st):Math.max(F.meta,F.E-st);
-  S.t=TdaE(F.E);var f=fasiDaE(F.E);if(scena)scena.fasi(f[0],f[1]);
+  S.t=TdaE(F.E);var f=fasiDaE(F.E);if(scena){scena.fasi(f[0],f[1]);inquadra(f[1],false);}
   grafico();ui();messaggi(a,F.E);
   if(Math.abs(F.E-F.meta)<1e-6&&!F.play)azioni();})(last);
 
  return {
-  apri:function(){F.attivo=true;if(scena)scena.ponti(true);statico();fornello();azzera();legenda();azioni();say(MSG.start,'fornello');},
-  chiudi:function(){if(F.attivo&&scena)scena.ponti(false);F.attivo=false;F.play=F.riprendi=0;}};
+  apri:function(){F.attivo=true;if(scena){scena.ponti(true);scena.vista(VISTA.y,VISTA.k,VISTA.ph,true);}statico();fornello();azzera();legenda();azioni();say(MSG.start,'fornello');},
+  chiudi:function(){if(F.attivo&&scena){scena.ponti(false);scena.vista(-.1,1,null,true);}F.attivo=false;F.play=F.riprendi=0;}};
 })();
 
 /* =========================== 04 ALLENATI ===========================
