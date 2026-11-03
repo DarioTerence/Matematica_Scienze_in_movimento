@@ -265,7 +265,7 @@ var MOL={
   ['C',.01,.05,0],['H',.02,.11,.07],['H',.02,.11,-.07],['O',.13,-.02,0],['H',.2,.03,0]]};
 
 /* ---- sostanze: temperature di fusione (mp) ed ebollizione (bp) in °C a pressione normale ----
-   Valori verificati il 28 ott 2026 (scheda claude/progetto_stati_materia.md).
+   Valori verificati il 28 ott 2026 su Wikipedia, voci Ethanol, Iron e Dry ice (il ferro bolle a 2861 °C, per alcune fonti 2862 °C).
    d = diametro efficace di una particella, N = numero di particelle, lat = tipo di reticolo nel solido. */
 var SOST={
  acqua:{n:'Acqua',f:'H₂O',c:'#5bc8f0',mp:0,bp:100,min:-40,max:140,passo:1,N:72,d:.27,mol:'h2o',lat:'esa',
@@ -920,7 +920,9 @@ var Passaggi=(function(){
 
 /* =========================== 03 IL CALORE LATENTE (fornello a gettoni) ===========================
    1 g d'acqua da −20 a 120 °C. Un gettone = 42 J, l'energia che scalda 1 g d'acqua di 10 °C.
-   Gettoni per tratto (valori nella scheda di progetto): ghiaccio da −20 a 0 °C 1, fusione 8,
+   Calori latenti e specifici dell'acqua da tabelle standard: fusione 334 J/g, vaporizzazione 2257 J/g (molte fonti 2260),
+   ghiaccio 2,09, acqua 4,18, vapore circa 2,01 J/(g·°C).
+   Gettoni per tratto: ghiaccio da −20 a 0 °C 1, fusione 8,
    acqua da 0 a 100 °C 10, ebollizione 54, vapore da 100 a 120 °C 1; in tutto 74. */
 var Fornello=(function(){
  var T_GETTONE=.6;            /* secondi per ogni gettone: il termometro e il grafico avanzano sempre alla stessa velocità */
