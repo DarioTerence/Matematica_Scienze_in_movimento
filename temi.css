@@ -46,10 +46,53 @@
   to   { top: 100%; transform: rotate(calc(var(--giro) + 360deg)) translateX(0); }
 }
 
+/* ---------- Musica dei temi (qualunque tema che la usi) ---------- */
+/* Altoparlante discreto in basso a sinistra della caricatura; accanto, la nota che sta suonando */
+[data-tema] .musica {
+  position: absolute;
+  left: -6px;
+  bottom: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+[data-tema] .musica-tasto {
+  width: 34px;
+  height: 34px;
+  padding: 7px;
+  border: 1px solid var(--linea);
+  border-radius: 50%;
+  background: rgba(17, 26, 43, 0.85);
+  color: var(--testo-dim);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+[data-tema] .musica-tasto:hover,
+[data-tema] .musica-tasto:focus-visible { color: var(--testo-soft); border-color: var(--testo-dim); outline: none; }
+[data-tema] .musica-tasto svg { display: block; width: 100%; height: 100%; }
+[data-tema] .musica-tasto path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+[data-tema] .musica-tasto .cassa { fill: currentColor; fill-opacity: 0.25; }
+[data-tema] .musica .acceso { display: none; }
+[data-tema] .musica.acceso .acceso { display: inline; }
+[data-tema] .musica.acceso .spento { display: none; }
+[data-tema] .musica.acceso .musica-tasto { color: var(--testo-soft); }
+[data-tema] .musica-nota {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--testo-dim);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+[data-tema] .musica-nota.visibile { opacity: 1; }
+
 /* Chi preferisce meno movimento vede i coriandoli fermi, sparsi nella zona del titolo */
 @media (prefers-reduced-motion: reduce) {
   [data-tema="compleanno"] .coriandoli span { animation: none; top: var(--y); transform: rotate(var(--giro)); }
   [data-tema="compleanno"] .cappellino { transition: none; }
+  [data-tema] .musica-nota { transition: none; }
   [data-tema="compleanno"] .mascotte-link:hover .cappellino,
   [data-tema="compleanno"] .mascotte-link:focus-visible .cappellino { transform: rotate(16deg); }
 }

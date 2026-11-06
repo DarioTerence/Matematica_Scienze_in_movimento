@@ -94,6 +94,132 @@
       }
       hero.insertBefore(box, hero.firstChild);
     }
+
+    // Melodia di "Tanti auguri a te" (Good Morning to All, sorelle Hill, 1893: pubblico dominio).
+    // Ogni nota e' [nome, durata in battiti]; tempo in 3/4.
+    musica([{
+      bpm: 100,
+      note: [
+        ['G4', .75], ['G4', .25], ['A4', 1], ['G4', 1], ['C5', 1], ['B4', 2],
+        ['G4', .75], ['G4', .25], ['A4', 1], ['G4', 1], ['D5', 1], ['C5', 2],
+        ['G4', .75], ['G4', .25], ['G5', 1], ['E5', 1], ['C5', 1], ['B4', 1], ['A4', 2],
+        ['F5', .75], ['F5', .25], ['E5', 1], ['C5', 1], ['D5', 1], ['C5', 3]
+      ]
+    }]);
+  }
+
+  /* ---------- Musica dei temi ----------
+     Altoparlante accanto alla caricatura, spento all'apertura: i browser non lasciano partire
+     un suono senza un tocco di chi visita (e in classe e' meglio cosi').
+     Al tocco suona i brani dell'elenco uno dopo l'altro, con una pausa tra un brano e l'altro,
+     poi ricomincia; un altro tocco ferma tutto. Il suono e' generato nel codice (Web Audio API),
+     nota per nota, con un timbro morbido da carillon: nessun file audio, nessun diritto sulle registrazioni.
+     Mentre suona, accanto all'altoparlante compaiono la nota e la sua frequenza. */
+  function musica(brani) {
+    var VOLUME = 0.07;            // volume generale, basso (1 = massimo)
+    var PAUSA = 20;               // secondi di silenzio tra un brano e il successivo
+    var NOMI = { C: 'Do', D: 'Re', E: 'Mi', F: 'Fa', G: 'Sol', A: 'La', B: 'Si' };
+    var SEMITONI = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+
+    var persona = document.querySelector('.hero .persona');
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!persona || !AC) return;   // browser senza Web Audio: niente altoparlante
+
+    var box = document.createElement('div');
+    box.className = 'musica';
+    box.innerHTML =
+      '<button type="button" class="musica-tasto" aria-pressed="false" aria-label="Accendi la musica" title="Musica">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+          '<path class="cassa" d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/>' +
+          '<path class="spento" d="M15.5 9.5l5 5M20.5 9.5l-5 5"/>' +
+          '<path class="acceso" d="M15.5 9.2a4 4 0 0 1 0 5.6M18 7a7.2 7.2 0 0 1 0 10"/>' +
+        '</svg>' +
+      '</button>' +
+      '<span class="musica-nota" aria-hidden="true"></span>';
+    persona.appendChild(box);
+    var tasto = box.querySelector('.musica-tasto');
+    var etichetta = box.querySelector('.musica-nota');
+
+    var ctx = null, uscita = null, timer = [], acceso = false;
+
+    // Da "G4" alla frequenza: La4 = 440 Hz, ogni semitono moltiplica per la radice dodicesima di 2
+    function frequenza(nota) {
+      var midi = 12 * (+nota.slice(-1) + 1) + SEMITONI[nota[0]] + (nota[1] === '#' ? 1 : 0);
+      return 440 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    // Una nota da carillon: suono puro piu' un'ottava sopra molto leggera, attacco rapido e spegnimento dolce
+    function suona(f, t0, durata) {
+      var g = ctx.createGain();
+      g.gain.setValueAtTime(0, t0);
+      g.gain.linearRampToValueAtTime(1, t0 + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.001, t0 + durata + 0.8);
+      g.connect(uscita);
+      [[f, 1], [2 * f, 0.15]].forEach(function (p) {
+        var o = ctx.createOscillator(), v = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.value = p[0];
+        v.gain.value = p[1];
+        o.connect(v); v.connect(g);
+        o.start(t0);
+        o.stop(t0 + durata + 0.9);
+      });
+    }
+
+    // Suona il brano n, poi aspetta la pausa e passa al successivo (dopo l'ultimo torna al primo)
+    function brano(n) {
+      if (!acceso) return;
+      var b = brani[n], battito = 60 / b.bpm;
+      var t = ctx.currentTime + 0.1, inizio = t;
+      b.note.forEach(function (nota) {
+        var f = frequenza(nota[0]), d = nota[1] * battito;
+        suona(f, t, d);
+        timer.push(setTimeout(function () {
+          etichetta.textContent = NOMI[nota[0][0]] + ' ' + Math.round(f) + ' Hz';
+          etichetta.classList.add('visibile');
+        }, (t - ctx.currentTime) * 1000));
+        t += d;
+      });
+      var fine = (t - inizio) * 1000 + 100;
+      timer.push(setTimeout(function () { etichetta.classList.remove('visibile'); }, fine + 600));
+      timer.push(setTimeout(function () { brano((n + 1) % brani.length); }, fine + PAUSA * 1000));
+    }
+
+    function accendi() {
+      if (!ctx) ctx = new AC();
+      if (ctx.resume) ctx.resume();
+      uscita = ctx.createGain();
+      uscita.gain.value = VOLUME;
+      uscita.connect(ctx.destination);
+      acceso = true;
+      aggiorna();
+      brano(0);
+    }
+
+    // Ferma i brani programmati e abbassa il volume in un attimo, senza scatti
+    function spegni() {
+      acceso = false;
+      timer.forEach(clearTimeout);
+      timer = [];
+      if (uscita) {
+        var vecchia = uscita;
+        vecchia.gain.setTargetAtTime(0, ctx.currentTime, 0.05);
+        setTimeout(function () { vecchia.disconnect(); }, 400);
+        uscita = null;
+      }
+      etichetta.classList.remove('visibile');
+      aggiorna();
+    }
+
+    function aggiorna() {
+      box.classList.toggle('acceso', acceso);
+      tasto.setAttribute('aria-pressed', acceso ? 'true' : 'false');
+      tasto.setAttribute('aria-label', acceso ? 'Spegni la musica' : 'Accendi la musica');
+    }
+
+    tasto.addEventListener('click', function () { acceso ? spegni() : accendi(); });
+    // se si cambia scheda o si lascia la pagina, la musica si ferma
+    document.addEventListener('visibilitychange', function () { if (document.hidden && acceso) spegni(); });
   }
 
   // Numeri romani (da 1 a 3999)
