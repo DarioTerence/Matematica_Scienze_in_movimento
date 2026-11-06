@@ -97,7 +97,15 @@ DNS del dominio `scienzainmovimento.it` (pannello del registrar):
 - quattro record A sul dominio principale: 185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153;
 - quattro record AAAA: 2606:50c0:8000::153, 2606:50c0:8001::153, 2606:50c0:8002::153, 2606:50c0:8003::153;
 - CNAME `www` verso `darioterence.github.io`;
-- TXT `_github-pages-challenge-darioterence` per la verifica del dominio su GitHub (non eliminare).
+- TXT `_github-pages-challenge-darioterence` per la verifica del dominio su GitHub (non eliminare);
+- TXT sul dominio principale `google-site-verification=...` per Search Console (non eliminare).
+
+Posta (dal 6 nov 2026): il dominio non ha caselle; `prof.t@scienzainmovimento.it` è un inoltro gratuito di ImprovMX verso una casella Gmail dedicata (indirizzo nelle note private, non qui). Nel pannello Aruba, scheda "Record MX", sono attivi i Record MX personalizzati al posto di quelli Aruba:
+- MX `@` verso `mx1.improvmx.com`, priorità 10;
+- MX `@` verso `mx2.improvmx.com`, priorità 20;
+- TXT `@` `v=spf1 include:spf.improvmx.com ~all` (SPF), accanto agli altri TXT.
+
+Alias e inoltri si gestiscono su improvmx.com (account con la casella Gmail dedicata). Cambiare gli MX non tocca il sito; passare il dominio ad Aruba Hosting o SuperSite invece azzera i DNS e manda offline sia il sito sia la posta.
 
 In GitHub: dominio verificato nelle impostazioni dell'account, dominio personalizzato nelle impostazioni Pages del repository, "Enforce HTTPS" attivo. `www` e il vecchio indirizzo github.io rimandano al dominio principale.
 
