@@ -1,5 +1,5 @@
 /* Stile condiviso del sito "La Matematica e le Scienze in Movimento" (Prof. T)
-   Tema scuro, ispirato alla strumentazione scientifica. Solo CSS; l'unico script del sito e' frasi.js (frasi della home). */
+   Tema scuro, ispirato alla strumentazione scientifica. Solo CSS; gli script del sito sono frasi.js (frasi della home) e poche righe in chi_e_prof_t.html (indirizzo email). */
 
 :root {
   /* Base */
@@ -187,6 +187,16 @@ a { color: inherit; text-decoration: none; }
   86%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.3) rotate(70deg); }
 }
 
+/* La caricatura e' un link alla pagina "Chi è Prof. T": al passaggio del mouse (o con la tastiera)
+   si solleva di poco e fa subito l'occhiolino */
+.mascotte-link { display: block; border-radius: 12px; }
+.mascotte-link .mascotte { transition: transform 0.2s ease; }
+.mascotte-link:hover .mascotte,
+.mascotte-link:focus-visible .mascotte { transform: translateY(-4px); }
+.mascotte-link:hover .occhiolino,
+.mascotte-link:focus-visible .occhiolino { animation: none; opacity: 1; }
+.mascotte-link:focus-visible { outline: 1px solid var(--testo-dim); outline-offset: 4px; }
+
 /* Fumetto di Prof. T: sotto titolo e caricatura, con la codina rivolta verso di lui.
    Le frasi sono sovrapposte nella stessa cella della griglia: il fumetto ha l'altezza della frase piu' lunga
    e la pagina non "salta" quando la frase cambia. Le gestisce frasi.js (senza JavaScript resta la frase .attiva). */
@@ -246,6 +256,7 @@ a { color: inherit; text-decoration: none; }
   color: var(--testo-dim);
 }
 .frasi .disc { color: var(--colore, var(--testo-soft)); }   /* colore della disciplina, dalla classe del <li> */
+.frasi .invito { --colore: var(--aritmetica); }              /* frase che invita a scoprire chi è Prof. T */
 
 /* ---------- Intestazione pagine interne ---------- */
 .testata {
@@ -388,6 +399,78 @@ a.card:focus-visible {
 .card.in-arrivo h3 { opacity: 0.6; }
 .card.in-arrivo p { color: var(--testo-dim); }
 
+/* ---------- Pagina "Chi è Prof. T" ---------- */
+.racconto { max-width: 680px; }
+.racconto h2 {
+  margin: 34px 0 10px;
+  padding: 2px 0 2px 12px;
+  font-size: 1.35rem;
+  font-weight: 500;
+  border-left: 3px solid var(--area-numeri);
+}
+.racconto p, .racconto li { color: var(--testo-card); }
+.racconto p { margin: 0 0 14px; }
+.racconto strong { color: var(--testo); font-weight: 600; }
+.racconto a {
+  color: #9cc5ff;
+  text-decoration: underline;
+  text-decoration-color: rgba(156, 197, 255, 0.4);
+  text-underline-offset: 3px;
+}
+.racconto a:hover, .racconto a:focus-visible { color: #c6dcff; text-decoration-color: currentColor; }
+.racconto .date { margin: 0 0 14px; padding-left: 22px; }
+.racconto .date li { margin: 0 0 8px; }
+
+/* Galleria dei costumi: figure che vanno a capo da sole, ognuna porta alla sua animazione */
+.costumi-titolo { margin: 26px 0 10px; }
+.costumi {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+.costume {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px 10px;
+  background: var(--pannello);
+  border: 1px solid var(--linea);
+  border-radius: 2px;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.costume img { height: 120px; width: auto; max-width: 100%; object-fit: contain; margin-bottom: 8px; }
+.costume .nome { font: 500 1rem Cambria, Georgia, "Times New Roman", serif; color: var(--colore, var(--testo)); }
+.costume .dove { margin-top: 2px; font-size: 0.8rem; line-height: 1.3; color: var(--testo-soft); }
+.costume:hover, .costume:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--colore);
+  box-shadow: 0 0 18px -4px var(--colore);
+  outline: none;
+}
+
+/* Riga Fonti nel piè di pagina (stesso aspetto di quella delle animazioni, in animazioni.css) */
+.fonti { display: inline; }
+.fonti summary { display: inline; cursor: pointer; list-style: none; color: inherit; border-radius: 3px; }
+.fonti summary::-webkit-details-marker { display: none; }
+.fonti summary::marker { content: ""; }
+.fonti summary:hover, .fonti summary:focus-visible { text-decoration: underline dotted; text-underline-offset: 3px; }
+.fonti summary:focus-visible { outline: 1px solid var(--testo-dim); outline-offset: 2px; }
+.fonti ul {
+  display: block;
+  max-width: 560px;
+  margin: 10px auto 0;
+  padding: 0 16px 0 34px;
+  text-align: left;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--testo-soft);
+  overflow-wrap: anywhere;
+}
+.fonti li { margin: 0 0 5px; }
+.fonti a { color: #9fb3d1; text-decoration: underline; text-decoration-color: rgba(159, 179, 209, .4); text-underline-offset: 2px; }
+.fonti a:hover, .fonti a:focus-visible { color: #c6d4ea; text-decoration-color: currentColor; }
+
 /* ---------- Piè di pagina ---------- */
 footer {
   margin-top: 48px;
@@ -483,6 +566,10 @@ footer .firma-home:focus-visible .firma-img {
 @media (prefers-reduced-motion: reduce) {
   .card { transition: none; }
   a.card:hover, a.card:focus-visible { transform: none; }
+  .costume { transition: none; }
+  .costume:hover, .costume:focus-visible { transform: none; }
+  .mascotte-link .mascotte { transition: none; }
+  .mascotte-link:hover .mascotte, .mascotte-link:focus-visible .mascotte { transform: none; }
   .mascotte .occhiolino, .mascotte .bagliore { animation: none; }
   /* le frasi cambiano con una semplice dissolvenza, senza il leggero spostamento */
   .frasi li, .frasi li.attiva { transform: none; }
