@@ -86,6 +86,10 @@ Le frasi sono un elenco `<ul class="frasi">` in `index.html`. Per aggiungerne un
 
 Massimo circa 150 caratteri. Un solo `<li>` ha la classe `attiva` (la frase visibile senza JavaScript). Citazioni con autore solo se verificabili, indicando fonte e se si tratta di parafrasi o traduzione.
 
+Frasi con data (anniversari, ricorrenze): aggiungere al `<li>` gli attributi `data-dal="MM-GG"` e `data-al="MM-GG"`, estremi compresi. La frase compare solo in quei giorni, ogni anno, secondo la data del dispositivo di chi visita, ed è la prima mostrata all'apertura della home; funziona anche a cavallo di Capodanno (`data-dal="12-08" data-al="01-06"`). Nel testo la data dell'evento, mai il numero di anni trascorsi, perché la frase torna da sola. Una frase con data non ha mai la classe `attiva`. Se il giorno cade nel fine settimana, allargare il periodo a un giorno di scuola. Anteprima: `index.html?data=MM-GG` fa comportare la home come in quel giorno.
+
+`<li class="astronomia" data-dal="11-20" data-al="11-22"><p class="frase">TESTO</p><p class="fonte"><span class="disc">Astronomia</span> · Fonte (21/11/1676)</p></li>`
+
 ## Rigenerare le immagini
 - `og_image.jpg`: da rifare se cambiano titolo, sottotitolo, firma o caricatura. Modificare `immagini/og_image/og_image.html` e lanciare `genera_og_image.py` (Chromium tramite Playwright; istruzioni nel commento iniziale dello script). Cambria e Calibri sono sostituiti da Caladea e Carlito, di uguali misure. Le anteprime già condivise restano in cache: per aggiornarle usare il Debugger di condivisione di Facebook ("Scrape again").
 - `apple-touch-icon.png`: da rifare se cambia la favicon. Modificare `immagini/apple_touch_icon/apple_touch_icon.svg` e lanciare `genera_apple_touch_icon.py`.
