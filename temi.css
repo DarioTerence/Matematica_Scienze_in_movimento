@@ -1,0 +1,55 @@
+/* Temi stagionali e ricorrenze della home (Prof. T).
+   Tutte le regole valgono solo quando temi.js segna la pagina con data-tema="nome" su <html>:
+   negli altri giorni questo file non cambia nulla. */
+
+/* ---------- Compleanno del sito (3-5 ottobre) ---------- */
+
+/* Cappellino a cono sulla caricatura, con le strisce nei colori delle quattro aree */
+[data-tema="compleanno"] .mascotte-link { position: relative; }
+[data-tema="compleanno"] .cappellino {
+  position: absolute;
+  left: 49%;
+  top: -19%;
+  width: 30%;
+  transform: rotate(16deg);
+  transform-origin: 50% 100%;
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+[data-tema="compleanno"] .cappellino svg { display: block; width: 100%; height: auto; }
+/* si solleva insieme alla caricatura al passaggio del mouse */
+[data-tema="compleanno"] .mascotte-link:hover .cappellino,
+[data-tema="compleanno"] .mascotte-link:focus-visible .cappellino { transform: translateY(-4px) rotate(16deg); }
+
+/* Coriandoli: piccoli e lenti, solo nella zona del titolo, dietro al testo */
+[data-tema="compleanno"] .hero { position: relative; }
+[data-tema="compleanno"] .hero > * { position: relative; z-index: 1; }
+[data-tema="compleanno"] .hero > .coriandoli {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+[data-tema="compleanno"] .coriandoli span {
+  position: absolute;
+  top: -12px;
+  width: 6px;
+  height: 9px;
+  border-radius: 1px;
+  opacity: 0.55;
+  animation: coriandolo var(--durata) linear var(--ritardo) infinite;
+}
+@keyframes coriandolo {
+  from { top: -12px; transform: rotate(var(--giro)) translateX(0); }
+  50%  { transform: rotate(calc(var(--giro) + 180deg)) translateX(14px); }
+  to   { top: 100%; transform: rotate(calc(var(--giro) + 360deg)) translateX(0); }
+}
+
+/* Chi preferisce meno movimento vede i coriandoli fermi, sparsi nella zona del titolo */
+@media (prefers-reduced-motion: reduce) {
+  [data-tema="compleanno"] .coriandoli span { animation: none; top: var(--y); transform: rotate(var(--giro)); }
+  [data-tema="compleanno"] .cappellino { transition: none; }
+  [data-tema="compleanno"] .mascotte-link:hover .cappellino,
+  [data-tema="compleanno"] .mascotte-link:focus-visible .cappellino { transform: rotate(16deg); }
+}

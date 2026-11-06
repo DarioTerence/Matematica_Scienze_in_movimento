@@ -22,6 +22,8 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="temi.css">
+  <script src="temi.js" defer></script>
   <script src="frasi.js" defer></script>
 </head>
 <body>
@@ -46,11 +48,12 @@
   <!--
     FRASI: il fumetto di Prof. T mostra una frase alla volta, in ordine casuale (le gestisce frasi.js).
     PER AGGIUNGERNE UNA: copia un <li> qui sotto e cambia il testo, la fonte e la classe della disciplina
-    (aritmetica, algebra, geometria, statistica, fisica, chimica, biologia, anatomia, ecologia, terra, astronomia):
+    (aritmetica, algebra, geometria, statistica, informatica, fisica, chimica, biologia, anatomia, ecologia, terra, astronomia):
     la classe colora il nome della disciplina. Lunghezza massima consigliata: 150 caratteri.
     Il <li> con class="attiva" e' quello che si vede se JavaScript e' disattivato: ne deve restare uno solo.
     FRASI CON DATA: data-dal="MM-GG" data-al="MM-GG" sul <li> la fa comparire solo in quei giorni, ogni anno,
     e per prima all'apertura; mai class="attiva" su una frase con data. Anteprima: index.html?data=MM-GG
+    Il testo della frase con class="frase-eta" (compleanno) lo scrive temi.js con l'eta' del sito; ?anno=AAAA per provarla.
   -->
   <div class="fumetto">
     <ul class="frasi">
@@ -90,6 +93,9 @@
       <li class="astronomia"><p class="frase">La luce impiega poco più di un secondo per andare dalla Luna alla Terra e circa otto minuti per arrivare dal Sole.</p><p class="fonte"><span class="disc">Astronomia</span> · La velocità della luce</p></li>
       <li class="astronomia"><p class="frase">Rette parallele tagliate da una trasversale formano angoli alterni interni uguali. Così Eratostene misurò la Terra.</p><p class="fonte"><span class="disc">Astronomia</span> · Eratostene (III secolo a.C.), dal racconto di Cleomede</p></li>
       <li class="astronomia" data-dal="11-20" data-al="11-22"><p class="frase">Il 21 novembre 1676 Ole Rømer annunciò che la luce non arriva in un istante: lo rivelavano i ritardi delle eclissi di Io, luna di Giove.</p><p class="fonte"><span class="disc">Astronomia</span> · Ole Rømer, Accademia delle Scienze di Parigi (21/11/1676)</p></li>
+      <li class="astronomia" data-dal="10-03" data-al="10-05"><p class="frase">Il 4 ottobre 1957 lo Sputnik, il primo satellite artificiale, cominciò a girare intorno alla Terra. Lo stesso giorno, nel 2026, è nato questo sito.</p><p class="fonte"><span class="disc">Astronomia</span> · Sputnik 1 (4/10/1957)</p></li>
+      <li class="invito" data-dal="10-03" data-al="10-05"><p class="frase frase-eta">Il 4 ottobre questo sito compie gli anni.</p><p class="fonte"><span class="disc">Prof. T</span> · Buon compleanno!</p></li>
+      <li class="informatica" data-dal="10-13" data-al="10-15"><p class="frase">Il 14 ottobre 1965 l'Olivetti presentò a New York la Programma 101, costruita a Ivrea: il calcolo passava dai laboratori alla scrivania.</p><p class="fonte"><span class="disc">Informatica</span> · Olivetti Programma 101 (14/10/1965)</p></li>
     </ul>
   </div>
   <div class="filo"></div>

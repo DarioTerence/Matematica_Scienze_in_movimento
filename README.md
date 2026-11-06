@@ -8,6 +8,7 @@ Sito: https://scienzainmovimento.it/
 - `index.html`: home con le quattro aree (Numeri e forme, Materia ed energia, Viventi, Terra e cosmo) e il fumetto con le frasi
 - `style.css`: stile condiviso, tema scuro
 - `frasi.js`: rotazione casuale delle frasi nel fumetto della home
+- `temi.js` e `temi.css`: temi stagionali e ricorrenze della home (compleanno del sito)
 - `animazioni.css`, `animazioni.js`: componenti condivisi dei comandi delle animazioni (vedi "Comandi delle animazioni")
 - `modello/`: pagine di partenza per le nuove animazioni (non collegate e non indicizzate): `modello_passi.html` (procedure a passi con Esplora e Allenati) e `modello_scena.html` (scena 3D o 2D da esplorare, parti da scegliere, Opzioni, quiz)
 - `favicon.svg`: icona del sito
@@ -21,7 +22,7 @@ Sito: https://scienzainmovimento.it/
 - `sitemap.xml`, `robots.txt`: elenco delle pagine per i motori di ricerca
 - `LICENSE`: licenza (tutti i diritti riservati)
 
-Il sito è statico: solo HTML e CSS scritti a mano, nessun framework e nessuna build. Uniche eccezioni nelle pagine del sito: `frasi.js` e il contatore anonimo GoatCounter. Le animazioni hanno il loro JavaScript e usano i file condivisi `animazioni.css` e `animazioni.js`: non sono più file autonomi, funzionano dentro la loro cartella del sito.
+Il sito è statico: solo HTML e CSS scritti a mano, nessun framework e nessuna build. Uniche eccezioni nelle pagine del sito: `frasi.js`, `temi.js` (con `temi.css`), il contatore anonimo GoatCounter e, nella pagina `chi_e_prof_t.html`, poche righe che compongono l'indirizzo email. Le animazioni hanno il loro JavaScript e usano i file condivisi `animazioni.css` e `animazioni.js`: non sono più file autonomi, funzionano dentro la loro cartella del sito.
 
 Nomi di file e cartelle: minuscolo, senza accenti, parole separate da underscore (es. `vita_stelle.html`).
 
@@ -89,6 +90,17 @@ Massimo circa 150 caratteri. Un solo `<li>` ha la classe `attiva` (la frase visi
 Frasi con data (anniversari, ricorrenze): aggiungere al `<li>` gli attributi `data-dal="MM-GG"` e `data-al="MM-GG"`, estremi compresi. La frase compare solo in quei giorni, ogni anno, secondo la data del dispositivo di chi visita, ed è la prima mostrata all'apertura della home; funziona anche a cavallo di Capodanno (`data-dal="12-08" data-al="01-06"`). Nel testo la data dell'evento, mai il numero di anni trascorsi, perché la frase torna da sola. Una frase con data non ha mai la classe `attiva`. Se il giorno cade nel fine settimana, allargare il periodo a un giorno di scuola. Anteprima: `index.html?data=MM-GG` fa comportare la home come in quel giorno.
 
 `<li class="astronomia" data-dal="11-20" data-al="11-22"><p class="frase">TESTO</p><p class="fonte"><span class="disc">Astronomia</span> · Fonte (21/11/1676)</p></li>`
+
+Frasi con data presenti: 3-5 ottobre Sputnik e compleanno del sito, 13-15 ottobre Programma 101, 20-22 novembre Rømer. La frase di compleanno ha la classe `frase-eta`: il testo nell'HTML è solo un segnaposto, quello vero lo scrive `temi.js` con l'età del sito in binario, in base dieci e in numeri romani. La classe `informatica` (grigio neutro, `--informatica` in `style.css`) colora le frasi di informatica, che non ha ancora una disciplina.
+
+## Temi stagionali della home
+`temi.js` e `temi.css` (radice) accendono e spengono da soli i temi della home secondo la data del dispositivo; le animazioni e le pagine di disciplina non li hanno. Lo script legge il calendario `TEMI` all'inizio del file (nome, `dal` e `al` come "MM-GG", estremi compresi, anche a cavallo di Capodanno) e, se oggi cade in un periodo, scrive `data-tema="nome"` sull'elemento `<html>`; le regole di `temi.css` cominciano tutte con `[data-tema="nome"]`, quindi negli altri giorni non cambiano nulla. Movimenti sempre fermi con `prefers-reduced-motion`.
+
+Temi presenti: `compleanno` (3-5 ottobre): cappellino SVG sulla caricatura, coriandoli nella zona del titolo, età del sito nella frase `frase-eta`.
+
+Per aggiungere un tema: una riga nel calendario `TEMI`, le decorazioni in una funzione di `temi.js` richiamata con il nome del tema, le regole in `temi.css` sotto `[data-tema="nome"]`, eventuali frasi con data nel fumetto con lo stesso periodo.
+
+Anteprima: `index.html?data=MM-GG` (stesso parametro delle frasi) o `index.html?tema=nome`; `?anno=AAAA` fa calcolare l'età come in quell'anno (es. `?data=10-04&anno=2028` mostra "10 anni… in binario").
 
 ## Rigenerare le immagini
 - `og_image.jpg`: da rifare se cambiano titolo, sottotitolo, firma o caricatura. Modificare `immagini/og_image/og_image.html` e lanciare `genera_og_image.py` (Chromium tramite Playwright; istruzioni nel commento iniziale dello script). Cambria e Calibri sono sostituiti da Caladea e Carlito, di uguali misure. Le anteprime già condivise restano in cache: per aggiornarle usare il Debugger di condivisione di Facebook ("Scrape again").

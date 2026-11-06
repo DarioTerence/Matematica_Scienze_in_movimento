@@ -1,5 +1,5 @@
 /* Stile condiviso del sito "La Matematica e le Scienze in Movimento" (Prof. T)
-   Tema scuro, ispirato alla strumentazione scientifica. Solo CSS; gli script del sito sono frasi.js (frasi della home) e poche righe in chi_e_prof_t.html (indirizzo email). */
+   Tema scuro, ispirato alla strumentazione scientifica. Solo CSS; gli script del sito sono frasi.js (frasi della home), temi.js (temi stagionali della home, stile in temi.css) e poche righe in chi_e_prof_t.html (indirizzo email). */
 
 :root {
   /* Base */
@@ -24,6 +24,7 @@
   --algebra: #6aa5ff;
   --geometria: #4a86f0;
   --statistica: #3470d8;
+  --informatica: #b4bfcd;   /* grigio neutro, fuori dalle quattro aree (per ora solo nelle frasi della home) */
 
   --fisica: #ffd08a;
   --chimica: #e0902a;
@@ -382,6 +383,7 @@ a.card:focus-visible {
 .algebra    { --colore: var(--algebra); }
 .geometria  { --colore: var(--geometria); }
 .statistica { --colore: var(--statistica); }
+.informatica { --colore: var(--informatica); }
 .fisica     { --colore: var(--fisica); }
 .chimica    { --colore: var(--chimica); }
 .biologia   { --colore: var(--biologia); }
