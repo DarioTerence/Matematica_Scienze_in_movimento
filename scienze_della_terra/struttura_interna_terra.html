@@ -412,6 +412,8 @@ float D(float k){return mix(k/6371.,dEx(k),uEx);}
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
 float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<5;i++){s+=a*noise(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return s;}
+float fbm3(vec2 p){float s=0.,a=.5;for(int i=0;i<3;i++){s+=a*noise(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return s/.875;}
+const float V_NUCLEO=.10;   /* velocità della corrente nel nucleo esterno (radianti al secondo nel disegno, non in scala) */
 float line(float d,float b,float w){return 1.-smoothstep(0.,w,abs(d-b));}
 void main(){
  float r=length(vP);if(r>1.)discard;
@@ -430,8 +432,27 @@ void main(){
  else if(cid<1.5){col=mix(vec3(.17,.18,.21),vec3(.32,.33,.37),fbm(vP*80.));}
  else if(cid<2.5){float t=(d-bC)/(b6-bC);col=mix(vec3(.42,.12,.07),vec3(.55,.17,.09),t);col*=.82+.36*fbm(vec2(lat*9.,d*60.));}
  else if(cid<3.5){float t=(d-b6)/(bG-b6);col=mix(vec3(.78,.30,.11),vec3(.92,.45,.15),t);col*=.86+.28*fbm(vec2(lat*6.,d*22.)+vec2(0.,uTime*.01));}
- else if(cid<4.5){float t=(d-bG)/(bI-bG);float f=fbm(vec2(lat*4.+uTime*.06,d*10.-uTime*.09));col=mix(vec3(1.,.66,.16),vec3(1.,.82,.36),f*.8+t*.3);}
- else{float t=clamp((d-bI)/(1.-bI),0.,1.);col=mix(vec3(1.,.93,.68),vec3(1.,.99,.93),t*t);col*=.94+.12*fbm(vP*18.);}
+ else if(cid<4.5){
+  /* nucleo esterno liquido: il ferro fuso scorre intorno al nucleo interno. Coordinate (arco, raggio) intorno al centro;
+     la velocità cambia con la profondità (più veloce a metà strato), così la corrente si stira come un fluido */
+  float t=(d-bG)/(bI-bG),rr=1.-d;
+  float vel=V_NUCLEO*(.55+.45*sin(t*3.14159));
+  vec2 q=vec2((lat-uTime*vel)*rr*9.,rr*16.);
+  vec2 wv=vec2(fbm3(q+vec2(0.,uTime*.10)),fbm3(q+vec2(5.2,1.3)-vec2(uTime*.08,0.)));
+  float f=fbm3(q+1.7*wv);
+  float fil=smoothstep(.56,.80,fbm3(vec2(q.x*.7,q.y*2.6)+2.2*wv));   /* filamenti chiari trascinati dalla corrente */
+  col=mix(vec3(.86,.42,.08),vec3(1.,.74,.22),smoothstep(.25,.75,f));
+  col=mix(col,vec3(1.,.93,.62),fil*.75);
+  col*=.92+.10*t;}
+ else{
+  /* nucleo interno solido: grana cristallina ferma, nessun movimento */
+  float t=clamp((d-bI)/(1.-bI),0.,1.);
+  vec2 g=vP*46.;vec2 gi=floor(g);float md=8.,md2=8.,cell=0.;
+  for(int i=-1;i<=1;i++)for(int j=-1;j<=1;j++){vec2 o=vec2(float(i),float(j));vec2 c=o+vec2(hash(gi+o),hash(gi+o+vec2(3.1,7.7)));float dd=length(g-gi-c);
+   if(dd<md){md2=md;md=dd;cell=hash(gi+o+vec2(9.,2.));}else if(dd<md2)md2=dd;}
+  col=mix(vec3(1.,.90,.62),vec3(1.,.98,.88),t*t);
+  col*=.90+.10*cell;col*=1.-.16*(1.-smoothstep(0.,.08,md2-md));
+  col=mix(col,vec3(1.,.62,.16),.5*(1.-smoothstep(0.,.006,d-bI)));}   /* bordo bagnato dal ferro liquido */
  if(cid>1.5&&cid<3.5)col*=1.-.3*uConv;
  float w=uLW;   /* da vicino la linea non deve coprire la crosta oceanica, spessa meno di 0,002 */
  float ln=max(max(line(d,bC,w),line(d,b6,w)),max(line(d,bG,w),line(d,bI,w)));
