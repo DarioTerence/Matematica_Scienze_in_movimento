@@ -116,7 +116,7 @@ DNS del dominio `scienzainmovimento.it` (pannello del registrar):
 - quattro record AAAA: 2606:50c0:8000::153, 2606:50c0:8001::153, 2606:50c0:8002::153, 2606:50c0:8003::153;
 - CNAME `www` verso `darioterence.github.io`;
 - TXT `_github-pages-challenge-darioterence` per la verifica del dominio su GitHub (non eliminare);
-- TXT sul dominio principale `google-site-verification=...` per Search Console (non eliminare).
+- due TXT sul dominio principale `google-site-verification=...` per Search Console, uno per ciascun proprietario verificato (non eliminare: togliendone uno, quell'account perde la verifica).
 
 Posta (dal 6 nov 2026): il dominio non ha caselle; `prof.t@scienzainmovimento.it` è un inoltro gratuito di ImprovMX verso una casella Gmail dedicata (indirizzo nelle note private, non qui). Nel pannello Aruba, scheda "Record MX", sono attivi i Record MX personalizzati al posto di quelli Aruba:
 - MX `@` verso `mx1.improvmx.com`, priorità 10;
@@ -136,7 +136,7 @@ Se un giorno cambiasse il dominio, l'indirizzo va sostituito in `CNAME`, canonic
 
 ## Statistiche e motori di ricerca
 - GoatCounter (senza cookie, anonimo), codice `scienzainmovimento`; i conteggi per pagina sono nella tabella dei percorsi della dashboard. Per non contare le proprie visite: nella console del browser (F12), aprendo il sito su scienzainmovimento.it, `localStorage.skipgc = 't'` (una volta per browser e dispositivo).
-- Google Search Console: proprietà di tipo Dominio. Dopo aver aggiornato `sitemap.xml` si può reinviarla oppure lasciare che Google la rilegga.
+- Google Search Console: proprietà di tipo Dominio, con due proprietari verificati (l'account personale dell'autore e, dal 7 nov 2026, l'account Gmail dedicato al sito), ciascuno con il proprio TXT di verifica. Dopo aver aggiornato `sitemap.xml` si può reinviarla oppure lasciare che Google la rilegga. La richiesta di indicizzazione si fa una volta per pagina (pagina nuova o cambiata molto): ripeterla non serve.
 
 ## Crediti
 La firma "Prof. T" (`firma.svg`) è ricavata dal font Nothing You Could Do di Kimberly Geswein, licenza SIL Open Font License 1.1.
