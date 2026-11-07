@@ -193,7 +193,7 @@ function durPasso(i){return i===1?T_ROLL:i===2?3*T_MOVE+T_SHOW:i===3?T_SHOW:0;}
 
 function testoPasso(i){
  var o=OGGETTI[S.obj],r=o.C/o.d,avanzo=num(r-3,2);
- if(i===0)return {h:'Il diametro',t:o.art+' ha il diametro <span class="cD">d = '+num(o.d)+' mm</span>. Il diametro è il segmento che passa per il centro e unisce due punti della circonferenza.'};
+ if(i===0)return {h:'Il diametro',t:o.art+(o.id==='piatto'||o.id==='ruota'?' ha in genere il diametro':' ha il diametro')+' <span class="cD">d = '+num(o.d)+' mm</span>. Il diametro è il segmento che passa per il centro e unisce due punti della circonferenza.'};
  if(i===1)return {h:'Un giro completo',t:'L\'oggetto rotola sul metro per un giro esatto, dal punto rosso al punto rosso. La striscia arancione stesa sul metro è lunga quanto la circonferenza, <span class="cC">C = '+num(o.C)+' mm</span>.'};
  if(i===2)return {h:'Quanti diametri?',t:'Riportiamo il diametro sulla circonferenza stesa. Ci sta <b>3 volte</b> e avanza un <span class="cR">pezzetto</span>, circa '+avanzo+' di diametro.'
   +(o.id==='tubo'?' Il tubo contiene 3 palline, quindi è alto circa 3 diametri (210 mm). La circonferenza è più lunga dell\'altezza, te lo aspettavi?':'')};
