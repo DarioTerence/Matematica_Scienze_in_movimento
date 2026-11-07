@@ -238,7 +238,7 @@ input[type=range]{accent-color:var(--acc);height:28px}
     <div class="sect">Due tipi di onde</div>
     <div class="wcard"><b style="color:#5BC8F0">Onde P</b> (prime): comprimono e dilatano la roccia, come una molla spinta avanti e indietro. Sono le più veloci e attraversano solidi e liquidi.</div>
     <div class="wcard"><b style="color:#ff8fc8">Onde S</b> (seconde): scuotono la roccia di lato, come una corda agitata. Sono più lente e attraversano solo i solidi.</div>
-    <div class="ancora"><b>Che cosa ci dicono</b>Le onde S non arrivano oltre circa 104° dall'epicentro, nel nucleo esterno si fermano, quindi è liquido. Tra circa 104° e 140° c'è una zona d'ombra senza onde dirette: anche le P, entrando nel nucleo, vengono deviate.</div>
+    <div class="ancora"><b>Che cosa ci dicono</b>Le onde S non arrivano oltre circa 105° dall'epicentro, nel nucleo esterno si fermano, quindi è liquido. Tra circa 105° e 140° c'è una zona d'ombra senza onde dirette: anche le P, entrando nel nucleo, vengono deviate.</div>
     <div class="sect">Sismografi</div>
     <div class="chips" id="o-stations" style="margin:0 0 10px"></div>
     <div class="pdesc" id="o-st"><span class="hint" style="margin:0">Tocca un sismografo (i triangoli sulla superficie) per vedere che cosa registra.</span></div>
@@ -310,19 +310,19 @@ document.querySelectorAll('.scheda').forEach(t=>t.addEventListener('click',()=>{
 const LAYERS={
  0:{n:"Crosta continentale",c:"#a58a6a",stato:"solida",dati:[["Profondità","da 0 a 30-40 km, fino a 70 km sotto le grandi montagne"],["Fatta di","rocce leggere, ricche di silicio e alluminio, come il granito"],["Densità","circa 2,7 g/cm³"],["Temperatura","sale con la profondità, a 12 km, nel pozzo più profondo mai scavato, circa 180 °C"]],t:"È la crosta dei continenti: più spessa e più leggera della crosta oceanica."},
  1:{n:"Crosta oceanica",c:"#4f535e",stato:"solida",dati:[["Profondità","circa 10 km sotto il fondo del mare"],["Fatta di","basalto, una roccia scura e più pesante del granito"],["Densità","circa 2,9 g/cm³"]],t:"Forma il fondo degli oceani. È sottile: in scala reale, su questa Terra, sarebbe più sottile di un capello."},
- 2:{n:"Mantello superiore",c:"#b0452a",stato:"solido",dati:[["Profondità","dalla base della crosta a circa 660 km"],["Fatto di","rocce ricche di ferro e magnesio"],["Densità","da circa 3,3 a 4 g/cm³"],["Temperatura","già oltre 1000 °C a circa 100 km <span class=stima>(stima)</span>"]],t:"La sua parte alta è rigida e fa parte della litosfera; più sotto la roccia è più calda e plastica (astenosfera).",a:"Il mantello è solido, non è magma liquido. Il magma dei vulcani si forma solo in piccole zone, dove la roccia fonde in parte."},
- 3:{n:"Mantello inferiore",c:"#d0622c",stato:"solido",dati:[["Profondità","da 660 a 2890 km"],["Fatto di","rocce molto compresse, ricche di ferro e magnesio"],["Densità","da circa 4,4 a 5,6 g/cm³"],["Temperatura","alla base circa 3500-4000 °C <span class=stima>(stima)</span>"],["Pressione","alla base circa 1,3 milioni di volte quella dell'aria"]],t:"È lo strato più grande della Terra. Il calore che sale dal nucleo lo rimescola lentissimamente: sono i moti convettivi."},
+ 2:{n:"Mantello superiore",c:"#b0452a",stato:"solido",dati:[["Profondità","dalla base della crosta a circa 670 km"],["Fatto di","rocce ricche di ferro e magnesio"],["Densità","da circa 3,3 a 4 g/cm³"],["Temperatura","già oltre 1000 °C a circa 100 km <span class=stima>(stima)</span>"]],t:"La sua parte alta è rigida e fa parte della litosfera; più sotto la roccia è più calda e plastica (astenosfera).",a:"Il mantello è solido, non è magma liquido. Il magma dei vulcani si forma solo in piccole zone, dove la roccia fonde in parte."},
+ 3:{n:"Mantello inferiore",c:"#d0622c",stato:"solido",dati:[["Profondità","da 670 a 2890 km"],["Fatto di","rocce molto compresse, ricche di ferro e magnesio"],["Densità","da circa 4,4 a 5,6 g/cm³"],["Temperatura","alla base circa 3500-4000 °C <span class=stima>(stima)</span>"],["Pressione","alla base circa 1,3 milioni di volte quella dell'aria"]],t:"È lo strato più grande della Terra. Il calore che sale dal nucleo lo rimescola lentissimamente: sono i moti convettivi."},
  4:{n:"Nucleo esterno",c:"#f59a2e",stato:"liquido",dati:[["Profondità","da 2890 a 5150 km"],["Fatto di","ferro e nichel fusi"],["Densità","da circa 10 a 12 g/cm³"],["Temperatura","da circa 4000 a oltre 5000 °C <span class=stima>(stima)</span>"]],t:"È l'unico strato liquido. Il ferro fuso si muove continuamente e genera il campo magnetico terrestre: è per questo che la bussola funziona."},
  5:{n:"Nucleo interno",c:"#ffe3a0",stato:"solido",dati:[["Profondità","da 5150 km al centro, a 6371 km"],["Raggio","circa 1220 km"],["Fatto di","ferro e nichel solidi"],["Densità","circa 13 g/cm³"],["Temperatura","circa 5000-6000 °C <span class=stima>(stima)</span>"],["Pressione","circa 3,6 milioni di volte quella dell'aria"]],t:"È più caldo del nucleo esterno, eppure è solido: l'enorme pressione impedisce al ferro di fondere. Lo scoprì nel 1936 la sismologa Inge Lehmann."},
  6:{n:"Litosfera",c:"#8ea3c4",stato:"rigida",dati:[["Spessore","circa 100 km, meno sotto gli oceani, di più sotto i continenti"],["Comprende","la crosta e la parte alta del mantello superiore"]],t:"È lo strato esterno rigido. È spezzata in grandi lastre, le placche, che si muovono lentamente."},
- 7:{n:"Astenosfera",c:"#e0884a",stato:"plastica",dati:[["Profondità","da circa 100 km a circa 660 km"],["Com'è","solida ma plastica: si deforma lentamente, come la plastilina"],["Parte più plastica","quella alta, fino a circa 250 km, dove la roccia è in piccola parte fusa"]],t:"Sopra l'astenosfera la litosfera può scivolare: per questo le placche si muovono.",a:"Plastica non vuol dire liquida: l'astenosfera è roccia solida che, in tempi lunghissimi, può scorrere."},
- 8:{n:"Mesosfera",c:"#c2552a",stato:"rigida",dati:[["Profondità","da circa 660 km a 2890 km"],["Com'è","solida e rigida per l'enorme pressione"]],t:"È la parte del mantello sotto l'astenosfera, fino al nucleo: coincide con il mantello inferiore."}
+ 7:{n:"Astenosfera",c:"#e0884a",stato:"plastica",dati:[["Profondità","da circa 100 km a circa 670 km"],["Com'è","solida ma plastica: si deforma lentamente, come la plastilina"],["Parte più plastica","quella alta, dove la roccia è in piccola parte fusa"]],t:"Sopra l'astenosfera la litosfera può scivolare: per questo le placche si muovono.",a:"Plastica non vuol dire liquida: l'astenosfera è roccia solida che, in tempi lunghissimi, può scorrere."},
+ 8:{n:"Mesosfera",c:"#c2552a",stato:"rigida",dati:[["Profondità","da circa 670 km a 2890 km"],["Com'è","solida e rigida per l'enorme pressione"]],t:"È la parte del mantello sotto l'astenosfera, fino al nucleo: coincide con il mantello inferiore."}
 };
 const SET_COMP=[0,1,2,3,4,5],SET_RIG=[6,7,8,4,5];
 
 /* ---------- Profondità: dal km reale alla posizione nel disegno ---------- */
 /* In "scala ingrandita" crosta e mantello superiore sono allungati (la crosta più del resto), il mantello inferiore è un po' compresso; dal nucleo in giù la scala è reale. */
-const KN=[[0,0],[40,.024],[660,.179],[2890,2890/6371]];
+const KN=[[0,0],[40,.024],[670,.179],[2890,2890/6371]];
 function dEx(k){if(k>=2890)return k/6371;for(let i=1;i<KN.length;i++)if(k<KN[i][0]){const a=KN[i-1],b=KN[i];return a[1]+(k-a[0])*(b[1]-a[1])/(b[0]-a[0])}return k/6371}
 function dMix(k,ex){return (1-ex)*k/6371+ex*dEx(k)}
 
@@ -405,8 +405,8 @@ uniform float uEx,uSel,uMode,uTime,uLon,uShade,uConv,uLW;
 uniform sampler2D uElev,uLand;
 float dEx(float k){
  if(k<40.)return k*(.024/40.);
- if(k<660.)return .024+(k-40.)*(.155/620.);
- if(k<2890.)return .179+(k-660.)*((2890./6371.-.179)/2230.);
+ if(k<670.)return .024+(k-40.)*(.155/620.);
+ if(k<2890.)return .179+(k-670.)*((2890./6371.-.179)/2230.);
  return k/6371.;}
 float D(float k){return mix(k/6371.,dEx(k),uEx);}
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
@@ -422,7 +422,7 @@ void main(){
  float crustKm=mix(8.,30.+40.*e,land);
  float lithKm=mix(90.,130.,land);
  float d=1.-r;
- float bC=D(crustKm),bL=D(lithKm),bA=D(660.),b6=D(660.),bG=D(2890.),bI=D(5150.);
+ float bC=D(crustKm),bL=D(lithKm),bA=D(670.),b6=D(670.),bG=D(2890.),bI=D(5150.);
  float cid=d<bC?(land>.5?0.:1.):(d<b6?2.:(d<bG?3.:(d<bI?4.:5.)));
  float rid=d<bL?6.:(d<bA?7.:(d<bG?8.:cid));
  vec3 col;
@@ -482,9 +482,9 @@ void main(){
  function layerAt(f,r,lat){
   const e=elevAt(faceLon(f),lat),land=e>=.035||terraAt(faceLon(f),lat),ex=S.ex;
   const crust=land?30+40*e:8,lith=land?130:90,d=1-r,D=k=>dMix(k,ex);
-  const cid=d<D(crust)?(land?0:1):d<D(660)?2:d<D(2890)?3:d<D(5150)?4:5;
+  const cid=d<D(crust)?(land?0:1):d<D(670)?2:d<D(2890)?3:d<D(5150)?4:5;
   if(S.mode===0)return cid;
-  return d<D(lith)?6:d<D(660)?7:d<D(2890)?8:cid;
+  return d<D(lith)?6:d<D(670)?7:d<D(2890)?8:cid;
  }
 
  /* etichette */
@@ -540,7 +540,7 @@ void main(){
  /* volo verso uno strato (chip): la camera guarda la faccia mobile dello spicchio, nel punto dell'etichetta,
     da una distanza proporzionale allo spessore dello strato, così si vede intero anche in scala reale.
     [profondità in km di inizio e fine strato]; crosta e litosfera dipendono dal rilievo nel punto. */
- const SPESS={2:[35,660],3:[660,2890],4:[2890,5150],5:[5150,6371],7:[100,660],8:[660,2890]};
+ const SPESS={2:[35,670],3:[670,2890],4:[2890,5150],5:[5150,6371],7:[100,670],8:[670,2890]};
  function voloVerso(k){
   const A=ANCH[k];if(!A)return;S.vola=k;
   if(S.openT<1)setOpen(true);
@@ -679,15 +679,15 @@ if(window.terra){
  const NS='http://www.w3.org/2000/svg',RE=6371;
  const mk=(tag,at,par)=>{const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e};
  /* profili lungo la profondità (km). Densità e pressione dal modello PREM, arrotondate; temperatura: stima schematica */
- const PT=[[0,15],[35,500],[100,1300],[660,1600],[2700,2500],[2890,3700],[5150,5200],[6371,5400]];
- const PP=[[0,0],[35,1],[100,3.1],[400,13.5],[660,23.8],[2890,135.8],[5150,328.9],[6371,363.9]];
- const PD=[[0,2.7],[35,2.9],[35,3.3],[660,4.0],[660,4.38],[2890,5.57],[2890,9.9],[5150,12.17],[5150,12.76],[6371,13.09]];
+ const PT=[[0,15],[35,500],[100,1300],[670,1600],[2700,2500],[2890,3700],[5150,5200],[6371,5400]];
+ const PP=[[0,0],[35,1],[100,3.1],[400,13.5],[670,23.8],[2890,135.8],[5150,328.9],[6371,363.9]];
+ const PD=[[0,2.7],[35,2.9],[35,3.3],[670,4.0],[670,4.38],[2890,5.57],[2890,9.9],[5150,12.17],[5150,12.76],[6371,13.09]];
  function ip(P,k){for(let i=1;i<P.length;i++)if(k<=P[i][0]){const a=P[i-1],b=P[i];return b[0]===a[0]?b[1]:a[1]+(k-a[0])*(b[1]-a[1])/(b[0]-a[0])}return P[P.length-1][1]}
  const COL={crosta:'#a58a6a',msup:'#8a3019',minf:'#c9562a',nest:'#f5a032',nint:'#fff0c4'};
  function strato(k){
   if(k<35)return ['crosta (litosfera)','solido'];
   if(k<100)return ['mantello superiore (litosfera)','solido e rigido'];
-  if(k<660)return ['mantello superiore (astenosfera)','solido ma plastico'];
+  if(k<670)return ['mantello superiore (astenosfera)','solido ma plastico'];
   if(k<2890)return ['mantello inferiore (mesosfera)','solido'];
   if(k<5150)return ['nucleo esterno','liquido'];
   return ['nucleo interno','solido'];
@@ -695,7 +695,7 @@ if(window.terra){
  const NOTE=[
   [35,"<b>Crosta</b><br>Roccia solida. Più scendi, più fa caldo: nei primi chilometri la temperatura sale di circa 3 °C ogni 100 m."],
   [100,"<b>Mantello superiore, parte rigida</b><br>Insieme alla crosta forma la litosfera, divisa in placche."],
-  [660,"<b>Astenosfera</b><br>Roccia solida ma plastica: in tempi lunghissimi può scorrere lentamente."],
+  [670,"<b>Astenosfera</b><br>Roccia solida ma plastica: in tempi lunghissimi può scorrere lentamente."],
   [2890,"<b>Mantello inferiore</b><br>Roccia solida, compressa dall'enorme peso degli strati sopra. Il calore la rimescola lentissimamente."],
   [5150,"<b>Nucleo esterno</b><br>Ferro e nichel liquidi. Il loro movimento genera il campo magnetico terrestre: è per questo che la bussola funziona."],
   [6372,"<b>Nucleo interno</b><br>Ferro e nichel solidi, anche se qui fa più caldo che nel nucleo esterno."]];
@@ -703,7 +703,7 @@ if(window.terra){
   [12,'Pozzo di Kola',"<b>Pozzo di Kola, 12 km</b><br>È il buco più profondo mai scavato (Russia, 1989). Laggiù la roccia è a circa 180 °C. Eppure è appena lo 0,2% del viaggio fino al centro."],
   [35,'Moho',"<b>Discontinuità di Mohorovičić</b><br>Finisce la crosta e comincia il mantello. Sotto i continenti è a circa 30-40 km, sotto gli oceani a circa 10 km."],
   [100,'Base della litosfera',"<b>Base della litosfera, circa 100 km</b><br>Sotto comincia l'astenosfera, più calda e plastica."],
-  [660,'660 km',"<b>660 km, mantello inferiore</b><br>La roccia è così compressa che i suoi minerali si riorganizzano in forme più compatte."],
+  [670,'670 km',"<b>670 km, mantello inferiore</b><br>La roccia è così compressa che i suoi minerali si riorganizzano in forme più compatte."],
   [2890,'Gutenberg',"<b>Discontinuità di Gutenberg, 2890 km</b><br>Dalla roccia del mantello al ferro liquido del nucleo esterno: la densità quasi raddoppia."],
   [5150,'Lehmann',"<b>Discontinuità di Lehmann, 5150 km</b><br>Il ferro torna solido. Perché, se fa ancora più caldo? Apri il riquadro qui sotto."],
   [6371,'Centro',"<b>Il centro della Terra, 6371 km</b><br>La pressione è circa 3,6 milioni di volte quella dell'aria."]];
@@ -721,18 +721,18 @@ if(window.terra){
  function sector(k1,k2){const r1=rp(k1),r2=Math.max(.01,rp(k2)),s=Math.sin(HA),c=Math.cos(HA);
   return `M${CX-r1*s},${CY-r1*c} A${r1},${r1} 0 0 1 ${CX+r1*s},${CY-r1*c} L${CX+r2*s},${CY-r2*c} A${r2},${r2} 0 0 0 ${CX-r2*s},${CY-r2*c}Z`}
  const gL=mk('g',{},svg);
- [[0,35,COL.crosta],[35,660,COL.msup],[660,2890,COL.minf],[2890,5150,COL.nest],[5150,6371,COL.nint]].forEach(([a,b,c])=>mk('path',{d:sector(a,b),fill:c,stroke:'#05060a','stroke-width':.8},gL));
+ [[0,35,COL.crosta],[35,670,COL.msup],[670,2890,COL.minf],[2890,5150,COL.nest],[5150,6371,COL.nint]].forEach(([a,b,c])=>mk('path',{d:sector(a,b),fill:c,stroke:'#05060a','stroke-width':.8},gL));
  /* etichette a destra della sezione */
  const lab=(k,txt,dy)=>{const r=rp(k),x=CX+r*Math.sin(HA)+8,y=CY-r*Math.cos(HA)+(dy||0);mk('line',{x1:x-6,y1:CY-r*Math.cos(HA),x2:x-1,y2:y-4,stroke:'#8fa0b8','stroke-width':.8},svg);const t=mk('text',{x,y,fill:'#e6ecf5','font-size':14,'font-family':'Calibri,Carlito,sans-serif'},svg);t.textContent=txt};
  lab(18,'crosta',-6);lab(330,'mantello superiore',0);lab(1800,'mantello inferiore',0);lab(4000,'nucleo esterno',0);lab(5800,'nucleo interno',0);
  /* riquadro con i primi 800 km ingranditi */
  const IX=6,IY=262,IW=112,IH=150,ks=IH/800,gI=mk('g',{},svg);
  mk('text',{x:IX,y:IY-8,fill:'#8fa0b8','font-size':10.5,'font-family':'Calibri,Carlito,sans-serif'},gI).textContent='primi 800 km, ingranditi';
- [[0,35,COL.crosta],[35,660,COL.msup],[660,800,COL.minf]].forEach(([a,b,c])=>mk('rect',{x:IX,y:IY+a*ks,width:IW,height:(b-a)*ks,fill:c},gI));
+ [[0,35,COL.crosta],[35,670,COL.msup],[670,800,COL.minf]].forEach(([a,b,c])=>mk('rect',{x:IX,y:IY+a*ks,width:IW,height:(b-a)*ks,fill:c},gI));
  mk('rect',{x:IX,y:IY,width:IW,height:IH,fill:'none',stroke:'#3a4d70'},gI);
  mk('line',{x1:IX,y1:IY+100*ks,x2:IX+IW,y2:IY+100*ks,stroke:'#e6ecf5','stroke-dasharray':'4 3','stroke-width':1},gI);
  const it=(x,y,s,a)=>{const t=mk('text',{x,y,fill:'#e6ecf5','font-size':10,'font-family':'Calibri,Carlito,sans-serif','text-anchor':a||'start'},gI);t.textContent=s};
- it(IX+IW-3,IY+14,'litosfera','end');it(IX+IW-3,IY+70,'astenosfera','end');it(IX+IW-3,IY+660*ks-3,'660 km','end');
+ it(IX+IW-3,IY+14,'litosfera','end');it(IX+IW-3,IY+70,'astenosfera','end');it(IX+IW-3,IY+670*ks-3,'670 km','end');
  mk('line',{x1:IX+8,y1:IY,x2:IX+8,y2:IY+12*ks+1.5,stroke:'#fff','stroke-width':2.5},gI);mk('line',{x1:IX+8,y1:IY+3,x2:IX+14,y2:IY+27,stroke:'#e6ecf5','stroke-width':.8},gI);it(IX+12,IY+37,'pozzo di Kola, 12 km');
  const iProbe=mk('line',{x1:IX,x2:IX+IW,stroke:'#9a6fe8','stroke-width':2.5},gI);
  /* sonda */
@@ -812,8 +812,8 @@ window.onde=(function(){
  const RE=6371,RC=3480,RI=1221;
  /* modello semplificato di velocità (km/s), simile al modello di riferimento PREM: [profondità km, P, S].
     Due righe alla stessa profondità = discontinuità (sopra, sotto). Nel nucleo esterno liquido S = 0. */
- const VM=[[0,5.8,3.2],[35,6.8,3.9],[35,8.11,4.49],[220,8.03,4.42],[220,8.56,4.64],[410,8.91,4.77],[410,9.13,4.93],[660,10.27,5.57],[660,10.75,5.95],[1000,11.42,6.31],[1500,12.13,6.62],[2000,12.66,6.84],[2500,13.18,7.04],[2741,13.68,7.27],[2891,13.72,7.26],[2891,8.06,0],[5150,10.36,0],[5150,11.03,3.5],[6371,11.26,3.67]];
- const BD=[35,220,410,660,2891,5150];
+ const VM=[[0,5.8,3.2],[35,6.8,3.9],[35,8.11,4.49],[220,8.03,4.42],[220,8.56,4.64],[410,8.91,4.77],[410,9.13,4.93],[670,10.27,5.57],[670,10.75,5.95],[1000,11.42,6.31],[1500,12.13,6.62],[2000,12.66,6.84],[2500,13.18,7.04],[2741,13.68,7.27],[2891,13.72,7.26],[2891,8.06,0],[5150,10.36,0],[5150,11.03,3.5],[6371,11.26,3.67]];
+ const BD=[35,220,410,670,2891,5150];
  function vel(d,k,below){for(let i=0;i<VM.length-1;i++){const a=VM[i],b=VM[i+1];if(a[0]===b[0])continue;
   if((d>=a[0]&&d<b[0])||(d===b[0]&&!below)){const t=(d-a[0])/(b[0]-a[0]);return a[k]+t*(b[k]-a[k])}}return VM[VM.length-1][k]}
  /* raggio sismico: il parametro p = r·sen(i)/v resta costante (legge della rifrazione in una sfera a strati).
@@ -837,7 +837,7 @@ window.onde=(function(){
  /* tabella fitta per i tempi di arrivo */
  const TAB=[];for(let a=.2;a<=60;a+=(a<1?.2:a>5.4&&a<6.6?.02:.25)){for(const k of [1,2]){const t=trace(k,a,8);if(t.D!==null)TAB.push({k,D:t.D,T:t.T,core:t.core,inner:t.inner})}}
  /* tempo di arrivo a una distanza D: si interpola tra due raggi vicini dello stesso tipo che stanno a cavallo di D */
- function arrival(k,D,lehmann){if(k===1&&D>=104&&D<140&&!lehmann)return null;let best=null;
+ function arrival(k,D,lehmann){if(k===1&&D>=105&&D<140&&!lehmann)return null;let best=null;
   for(let i=1;i<TAB.length;i++){let a=null;for(let j=i-1;j>=0&&j>=i-3;j--)if(TAB[j].k===k){a=TAB[j];break}const b=TAB[i];if(!a||b.k!==k||a.core!==b.core||a.inner!==b.inner)continue;
    const da=Math.min(a.D,360-a.D),db=Math.min(b.D,360-b.D);if((da-D)*(db-D)>0||da===db)continue;const T=a.T+(b.T-a.T)*(D-da)/(db-da);if(best===null||T<best)best=T}
   if(best===null){let nd=3;for(const r of TAB){if(r.k!==k)continue;const dd=Math.min(r.D,360-r.D);if(Math.abs(dd-D)<nd){nd=Math.abs(dd-D);best=r.T}}}
@@ -873,7 +873,7 @@ window.onde=(function(){
   }
   /* zone di arrivo, quando le onde hanno attraversato la Terra */
   const za=Math.max(0,Math.min(1,(S.tA-19)/3));
-  if(za>0){ctx.globalAlpha=za;for(const side of [1,-1]){zoneArc(0,104,'#6fd08c',null,side);zoneArc(104,140,'#8fa0b8',[3,4],side);zoneArc(140,180,'#5BC8F0',null,side)}
+  if(za>0){ctx.globalAlpha=za;for(const side of [1,-1]){zoneArc(0,105,'#6fd08c',null,side);zoneArc(105,140,'#8fa0b8',[3,4],side);zoneArc(140,180,'#5BC8F0',null,side)}
    ctx.fillStyle='#e6ecf5';ctx.font='700 12px Calibri,Carlito,sans-serif';for(const side of [1,-1]){const [x,y]=P(RE*.9,122*Math.PI/180,side);ctx.fillText("zona d'ombra",x,y)}
    ctx.globalAlpha=1}
   /* sismografi */
@@ -895,12 +895,12 @@ window.onde=(function(){
  const box=document.getElementById('o-st'),seis=document.getElementById('o-seis'),sb=document.getElementById('o-stations');
  ST.forEach((d,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=d+'°';b.setAttribute('aria-label','Sismografo a '+d+' gradi');b.addEventListener('click',()=>selStation(i));sb.appendChild(b)});
  function selStation(i){S.sel=i;sb.querySelectorAll('.chip').forEach((b,j)=>b.classList.toggle('attivo',j===i));draw();
-  const d=ST[i],shadow=d>=104&&d<140,tP=arrival(1,d,S.leh),tS=d<104?arrival(2,d):null;
+  const d=ST[i],shadow=d>=105&&d<140,tP=arrival(1,d,S.leh),tS=d<105?arrival(2,d):null;
   let txt=`<b>Sismografo a ${d}° dall'epicentro</b><br>`;
-  if(d<104)txt+=`Registra le onde P e poi le onde S. Le P arrivano dopo circa ${Math.round(tP)} minuti, le S dopo circa ${Math.round(tS)}.`;
+  if(d<105)txt+=`Registra le onde P e poi le onde S. Le P arrivano dopo circa ${Math.round(tP)} minuti, le S dopo circa ${Math.round(tS)}.`;
   else if(shadow)txt+=(S.leh&&tP?`È nella zona d'ombra: nessuna onda diretta. Arrivano però deboli onde P, deviate dal nucleo interno (dopo circa ${Math.round(tP)} minuti): sono quelle notate da Inge Lehmann.`:"È nella zona d'ombra: non arriva nessuna onda diretta. Le S si fermano nel nucleo liquido, le P vengono deviate altrove.");
   else txt+=`Registra solo le onde P, che hanno attraversato il nucleo (dopo circa ${Math.round(tP)} minuti). Le onde S non arrivano: il nucleo esterno liquido le ha fermate.`;
-  box.innerHTML=txt;seis.classList.remove('hide');drawSeis(d<104||!shadow||S.leh?tP:null,tS,shadow)}
+  box.innerHTML=txt;seis.classList.remove('hide');drawSeis(d<105||!shadow||S.leh?tP:null,tS,shadow)}
  function drawSeis(tP,tS,shadow){const w=seis.clientWidth,h=seis.clientHeight,dp=Math.min(2,window.devicePixelRatio||1);seis.width=w*dp;seis.height=h*dp;const c=seis.getContext('2d');c.setTransform(dp,0,0,dp,0,0);c.clearRect(0,0,w,h);
   const x0=8,x1=w-8,X=t=>x0+(x1-x0)*t/25,y0=h/2-6;
   c.strokeStyle='#22304a';c.fillStyle='#8fa0b8';c.font='10px Calibri,Carlito,sans-serif';c.textAlign='center';
@@ -940,7 +940,7 @@ window.onde=(function(){
   {q:"Quale crosta è più spessa?",o:[["la crosta continentale",null],["la crosta oceanica","La crosta oceanica è sottile, circa 10 km; quella continentale è di 30-40 km."],["sono uguali","Sono diverse, circa 10 km sotto gli oceani, 30-40 km sotto i continenti."],["dipende dalla stagione","Lo spessore della crosta non cambia con le stagioni."]],e:"Sotto le grandi montagne la crosta continentale arriva anche a 70 km."},
   {q:"Di quale roccia è fatta soprattutto la crosta oceanica?",o:[["basalto",null],["granito","Il granito è tipico della crosta continentale, più leggera."],["ferro","Il ferro si trova soprattutto nel nucleo."],["sale","Il sale è disciolto nell'acqua del mare, non forma la crosta."]],e:"Il basalto è una roccia scura e più pesante del granito."},
   {q:"Che cosa fanno le onde S quando arrivano a un liquido?",o:[["si fermano",null],["lo attraversano più velocemente","Le onde S non attraversano i liquidi: lì si fermano."],["diventano più forti","Al contrario: nei liquidi le onde S si fermano."],["tornano indietro sempre tutte","Non è questo il punto: le S non riescono a propagarsi nei liquidi."]],e:"Le onde S scuotono la roccia di lato e si propagano solo nei solidi."},
-  {q:"Come sappiamo che il nucleo esterno è liquido?",o:[["perché le onde S non lo attraversano",null],["perché ci siamo arrivati con una trivella","Il pozzo più profondo arriva a circa 12 km, il nucleo è a 2890 km."],["perché i vulcani eruttano ferro fuso","Il magma dei vulcani viene da poche decine di km di profondità, non dal nucleo."],["perché è caldissimo","Il caldo non basta: il nucleo interno è ancora più caldo ed è solido."]],e:"Lo dicono i terremoti, oltre circa 104° dall'epicentro le onde S non arrivano."},
+  {q:"Come sappiamo che il nucleo esterno è liquido?",o:[["perché le onde S non lo attraversano",null],["perché ci siamo arrivati con una trivella","Il pozzo più profondo arriva a circa 12 km, il nucleo è a 2890 km."],["perché i vulcani eruttano ferro fuso","Il magma dei vulcani viene da poche decine di km di profondità, non dal nucleo."],["perché è caldissimo","Il caldo non basta: il nucleo interno è ancora più caldo ed è solido."]],e:"Lo dicono i terremoti, oltre circa 105° dall'epicentro le onde S non arrivano."},
   {q:"Quanto è profondo il pozzo più profondo mai scavato?",o:[["circa 12 km",null],["circa 120 km","Molto meno, circa 12 km. Non siamo neppure usciti dalla crosta continentale."],["circa 1200 km","Molto meno, circa 12 km, appena lo 0,2% del viaggio fino al centro."],["arriva al mantello","Il pozzo più profondo (Kola, circa 12 km) è ancora nella crosta."]],e:"Il pozzo di Kola, in Russia, raggiunse 12 km nel 1989."},
   {q:"Chi scoprì nel 1936 che il nucleo interno è solido?",o:[["Inge Lehmann",null],["Galileo Galilei","Galileo visse nel Seicento e studiò il cielo e il moto dei corpi, non i terremoti."],["Andrija Mohorovičić","Il suo nome indica il confine tra crosta e mantello."],["Beno Gutenberg","Il suo nome indica il confine tra mantello e nucleo."]],e:"La sismologa danese Inge Lehmann notò onde P dove non dovevano arrivare."},
   {q:"Che cosa genera il campo magnetico terrestre?",o:[["il movimento del ferro liquido nel nucleo esterno",null],["una grande calamita ferma al centro","Il campo magnetico nasce dal ferro liquido in movimento, non da una calamita ferma."],["la crosta ricca di metalli","La crosta contiene metalli, ma il campo magnetico nasce nel nucleo esterno."],["il Sole","Il Sole ha un suo campo magnetico, ma quello terrestre nasce dentro la Terra."]],e:"Il ferro fuso che si muove nel nucleo esterno funziona come una dinamo."},
@@ -949,9 +949,9 @@ window.onde=(function(){
   {q:"Nei moti convettivi del mantello, il materiale che risale è…",o:[["più caldo",null],["più freddo","Sale il materiale più caldo e leggero; quello più freddo scende."],["liquido","Il mantello resta solido: scorre lentissimamente, ma non è liquido."],["fermo","Si muove, anche se di pochi centimetri all'anno."]],e:"Il materiale caldo sale, si raffredda e poi scende: un ciclo continuo."},
   {q:"Le onde P…",o:[["attraversano sia i solidi sia i liquidi",null],["attraversano solo i solidi","Questo vale per le onde S. Le P passano anche nei liquidi."],["non escono mai dal mantello","Le onde P attraversano anche il nucleo e arrivano dall'altra parte della Terra."],["sono più lente delle onde S","Al contrario: le P sono le più veloci e arrivano per prime."]],e:"Le onde P comprimono e dilatano la roccia, come una molla."},
   {q:"La discontinuità di Mohorovičić separa…",o:[["la crosta dal mantello",null],["il mantello dal nucleo","Quella è la discontinuità di Gutenberg, a 2890 km."],["il nucleo esterno dal nucleo interno","Quella è la discontinuità di Lehmann, a 5150 km."],["la litosfera dall'astenosfera","La Moho è più in alto: segna la base della crosta."]],e:"Si trova a circa 30-40 km sotto i continenti e a circa 10 km sotto gli oceani."},
-  {fig:60,q:"Un sismografo è a 60° dall'epicentro. Che cosa registra?",o:[["onde P e onde S",null],["solo onde P","Fino a circa 104° arrivano sia le P sia le S."],["nessuna onda","La zona d'ombra comincia oltre circa 104°."],["solo onde S","Le P arrivano sempre prima delle S, quando arrivano entrambe."]],e:"Prima arrivano le P, più veloci, poi le S."},
-  {fig:120,q:"Un sismografo è a 120° dall'epicentro. Che cosa registra?",o:[["nessuna onda diretta",null],["onde P e onde S","A 120° siamo nella zona d'ombra, tra circa 104° e 140°."],["solo onde S","Le onde S non arrivano oltre circa 104°: il nucleo liquido le ferma."],["solo onde P","Le P dirette arrivano solo oltre circa 140°, dopo aver attraversato il nucleo."]],e:"È la zona d'ombra: le S si fermano nel nucleo liquido, le P vengono deviate."},
-  {fig:160,q:"Un sismografo è a 160° dall'epicentro. Che cosa registra?",o:[["solo onde P",null],["onde P e onde S","Le S non attraversano il nucleo esterno liquido, oltre circa 104° non arrivano."],["nessuna onda","Oltre circa 140° arrivano di nuovo le P, che hanno attraversato il nucleo."],["solo onde S","Le S si fermano nel nucleo liquido: non possono arrivare così lontano."]],e:"Le onde P attraversano il nucleo e arrivano dall'altra parte della Terra."},
+  {fig:60,q:"Un sismografo è a 60° dall'epicentro. Che cosa registra?",o:[["onde P e onde S",null],["solo onde P","Fino a circa 105° arrivano sia le P sia le S."],["nessuna onda","La zona d'ombra comincia oltre circa 105°."],["solo onde S","Le P arrivano sempre prima delle S, quando arrivano entrambe."]],e:"Prima arrivano le P, più veloci, poi le S."},
+  {fig:120,q:"Un sismografo è a 120° dall'epicentro. Che cosa registra?",o:[["nessuna onda diretta",null],["onde P e onde S","A 120° siamo nella zona d'ombra, tra circa 105° e 140°."],["solo onde S","Le onde S non arrivano oltre circa 105°: il nucleo liquido le ferma."],["solo onde P","Le P dirette arrivano solo oltre circa 140°, dopo aver attraversato il nucleo."]],e:"È la zona d'ombra: le S si fermano nel nucleo liquido, le P vengono deviate."},
+  {fig:160,q:"Un sismografo è a 160° dall'epicentro. Che cosa registra?",o:[["solo onde P",null],["onde P e onde S","Le S non attraversano il nucleo esterno liquido, oltre circa 105° non arrivano."],["nessuna onda","Oltre circa 140° arrivano di nuovo le P, che hanno attraversato il nucleo."],["solo onde S","Le S si fermano nel nucleo liquido: non possono arrivare così lontano."]],e:"Le onde P attraversano il nucleo e arrivano dall'altra parte della Terra."},
   {ord:["crosta","mantello superiore","mantello inferiore","nucleo esterno","nucleo interno"],q:"Tocca gli strati in ordine, dalla superficie al centro.",e:"Crosta, mantello superiore, mantello inferiore, nucleo esterno, nucleo interno."},
   {ord:["litosfera","astenosfera","mesosfera","nucleo esterno","nucleo interno"],q:"Strati per rigidità: toccali in ordine, dalla superficie al centro.",e:"Litosfera rigida, astenosfera plastica, mesosfera rigida, nucleo esterno liquido, nucleo interno solido."},
   {q:"Che cosa vuol dire che l'astenosfera è «plastica»?",o:[["è solida ma si deforma lentamente",null],["è liquida","Plastica non vuol dire liquida: l'astenosfera è roccia solida."],["è fatta di plastica","«Plastica» qui indica un comportamento: si deforma lentamente, come la plastilina."],["è rigida come la litosfera","È proprio la differenza: la litosfera è rigida, l'astenosfera è plastica."]],e:"In tempi lunghissimi la roccia dell'astenosfera può scorrere."}
@@ -1003,7 +1003,7 @@ window.onde=(function(){
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">La Terra in 3D aperta a spicchi: crosta continentale e oceanica, mantello superiore e inferiore, nucleo esterno e interno, litosfera, astenosfera e mesosfera, moti convettivi; viaggio dalla superficie al centro con temperatura, pressione e densità; onde sismiche P e S, zona d'ombra e scoperta del nucleo interno; quiz finale. Immagine della superficie: NASA Visible Earth.</p>
-<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Crosta oceanica circa 10 km, continentale 30-40 km, fino a circa 70 km sotto le grandi montagne. Densità della crosta circa 2,7-2,9 g/cm³, del mantello superiore 3,3-4, del nucleo interno circa 13. <a href="https://static.treccani.it/export/sites/default/Portale/resources/multimedia/Lezioni_Geologia2/struttura_interna/LEZIONE__STRUTTURA_TERRA.pdf" target="_blank" rel="noopener">Treccani, lezione La struttura interna della Terra</a>, <a href="https://en.wikipedia.org/wiki/Internal_structure_of_Earth" target="_blank" rel="noopener">Wikipedia, Internal structure of Earth</a>, <a href="https://en.wikipedia.org/wiki/Earth" target="_blank" rel="noopener">Wikipedia, Earth</a></li><li>Litosfera spessa circa 100 km, alla sua base la temperatura è di circa 1300 °C. <a href="https://static.treccani.it/export/sites/default/Portale/resources/multimedia/Lezioni_Geologia2/struttura_interna/LEZIONE__STRUTTURA_TERRA.pdf" target="_blank" rel="noopener">Treccani, lezione La struttura interna della Terra</a>, <a href="https://en.wikipedia.org/wiki/Lithosphere%E2%80%93asthenosphere_boundary" target="_blank" rel="noopener">Wikipedia, Lithosphere-asthenosphere boundary</a>, <a href="https://en.wikipedia.org/wiki/Asthenosphere" target="_blank" rel="noopener">Wikipedia, Asthenosphere</a></li><li>Mantello superiore fino a 660 km (670 km per Treccani), discontinuità di Gutenberg a 2890 km, nucleo esterno spesso circa 2260 km, discontinuità di Lehmann a 5150 km, raggio del nucleo interno circa 1220 km, raggio della Terra 6371 km. <a href="https://static.treccani.it/export/sites/default/Portale/resources/multimedia/Lezioni_Geologia2/struttura_interna/LEZIONE__STRUTTURA_TERRA.pdf" target="_blank" rel="noopener">Treccani, lezione La struttura interna della Terra</a>, <a href="https://en.wikipedia.org/wiki/Internal_structure_of_Earth" target="_blank" rel="noopener">Wikipedia, Internal structure of Earth</a>, <a href="https://en.wikipedia.org/wiki/Core%E2%80%93mantle_boundary" target="_blank" rel="noopener">Wikipedia, Core-mantle boundary</a></li><li>Temperatura alla base del mantello circa 3500-4000 °C (stima, la fonte dà 2700-4200 °C nella parte alta del nucleo esterno), al centro circa 5000-6000 °C (stima, fino a circa 6000 °C). <a href="https://en.wikipedia.org/wiki/Earth%27s_outer_core" target="_blank" rel="noopener">Wikipedia, Earth's outer core</a>, <a href="https://en.wikipedia.org/wiki/Earth" target="_blank" rel="noopener">Wikipedia, Earth</a></li><li>Pressione alla base del mantello circa 1,3 milioni di volte quella dell'aria (circa 136-140 GPa), al centro circa 3,6 milioni (circa 360 GPa). <a href="https://en.wikipedia.org/wiki/Internal_structure_of_Earth" target="_blank" rel="noopener">Wikipedia, Internal structure of Earth</a>, <a href="https://en.wikipedia.org/wiki/Earth" target="_blank" rel="noopener">Wikipedia, Earth</a></li><li>Nei primi chilometri la temperatura sale di circa 3 °C ogni 100 m (25-30 °C per km). <a href="https://en.wikipedia.org/wiki/Geothermal_gradient" target="_blank" rel="noopener">Wikipedia, Geothermal gradient</a></li><li>Il pozzo di Kola, in Russia, raggiunse circa 12 km (12 262 m) nel 1989, la roccia era a circa 180 °C. <a href="https://en.wikipedia.org/wiki/Kola_Superdeep_Borehole" target="_blank" rel="noopener">Wikipedia, Kola Superdeep Borehole</a></li><li>Nel 1936 la sismologa danese Inge Lehmann scoprì che il nucleo interno è solido. <a href="https://25anni.ingv.it/mostra-5sensi/vista/interno-della-terra" target="_blank" rel="noopener">INGV, Interno della Terra</a>, <a href="https://en.wikipedia.org/wiki/Inge_Lehmann" target="_blank" rel="noopener">Wikipedia, Inge Lehmann</a></li><li>Le onde S non arrivano oltre circa 104° dall'epicentro, la zona d'ombra delle onde P è tra circa 104° e 140° (105° e 140° per Treccani). <a href="https://static.treccani.it/export/sites/default/Portale/resources/multimedia/Lezioni_Geologia2/struttura_interna/LEZIONE__STRUTTURA_TERRA.pdf" target="_blank" rel="noopener">Treccani, lezione La struttura interna della Terra</a>, <a href="https://en.wikipedia.org/wiki/Shadow_zone" target="_blank" rel="noopener">Wikipedia, Shadow zone</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1. Texture della Terra da <a href="https://visibleearth.nasa.gov/collection/1484/blue-marble" target="_blank" rel="noopener">NASA Visible Earth, Blue Marble</a>.</li></ul></details></div></div>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Crosta oceanica circa 10 km, continentale 30-40 km, fino a circa 70 km sotto le grandi montagne. Densità della crosta circa 2,7-2,9 g/cm³, del mantello superiore 3,3-4, del nucleo interno circa 13. <a href="https://static.treccani.it/export/sites/default/Portale/resources/multimedia/Lezioni_Geologia2/struttura_interna/LEZIONE__STRUTTURA_TERRA.pdf" target="_blank" rel="noopener">Treccani, lezione La struttura interna della Terra</a>, <a href="https://en.wikipedia.org/wiki/Internal_structure_of_Earth" target="_blank" rel="noopener">Wikipedia, Internal structure of Earth</a>, <a href="https://en.wikipedia.org/wiki/Earth" target="_blank" rel="noopener">Wikipedia, Earth</a></li><li>Litosfera spessa circa 100 km, alla sua base la temperatura è di circa 1300 °C. <a href="https://static.treccani.it/export/sites/default/Portale/resources/multimedia/Lezioni_Geologia2/struttura_interna/LEZIONE__STRUTTURA_TERRA.pdf" target="_blank" rel="noopener">Treccani, lezione La struttura interna della Terra</a>, <a href="https://en.wikipedia.org/wiki/Lithosphere%E2%80%93asthenosphere_boundary" target="_blank" rel="noopener">Wikipedia, Lithosphere-asthenosphere boundary</a>, <a href="https://en.wikipedia.org/wiki/Asthenosphere" target="_blank" rel="noopener">Wikipedia, Asthenosphere</a></li><li>Mantello superiore fino a 670 km (valore di Treccani, Wikipedia indica 660 km), discontinuità di Gutenberg a 2890 km, nucleo esterno spesso circa 2260 km, discontinuità di Lehmann a 5150 km, raggio del nucleo interno circa 1220 km, raggio della Terra 6371 km. <a href="https://static.treccani.it/export/sites/default/Portale/resources/multimedia/Lezioni_Geologia2/struttura_interna/LEZIONE__STRUTTURA_TERRA.pdf" target="_blank" rel="noopener">Treccani, lezione La struttura interna della Terra</a>, <a href="https://en.wikipedia.org/wiki/Internal_structure_of_Earth" target="_blank" rel="noopener">Wikipedia, Internal structure of Earth</a>, <a href="https://en.wikipedia.org/wiki/Core%E2%80%93mantle_boundary" target="_blank" rel="noopener">Wikipedia, Core-mantle boundary</a></li><li>Temperatura alla base del mantello circa 3500-4000 °C (stima, la fonte dà 2700-4200 °C nella parte alta del nucleo esterno), al centro circa 5000-6000 °C (stima, fino a circa 6000 °C). <a href="https://en.wikipedia.org/wiki/Earth%27s_outer_core" target="_blank" rel="noopener">Wikipedia, Earth's outer core</a>, <a href="https://en.wikipedia.org/wiki/Earth" target="_blank" rel="noopener">Wikipedia, Earth</a></li><li>Pressione alla base del mantello circa 1,3 milioni di volte quella dell'aria (circa 136-140 GPa), al centro circa 3,6 milioni (circa 360 GPa). <a href="https://en.wikipedia.org/wiki/Internal_structure_of_Earth" target="_blank" rel="noopener">Wikipedia, Internal structure of Earth</a>, <a href="https://en.wikipedia.org/wiki/Earth" target="_blank" rel="noopener">Wikipedia, Earth</a></li><li>Nei primi chilometri la temperatura sale di circa 3 °C ogni 100 m (25-30 °C per km). <a href="https://en.wikipedia.org/wiki/Geothermal_gradient" target="_blank" rel="noopener">Wikipedia, Geothermal gradient</a></li><li>Il pozzo di Kola, in Russia, raggiunse circa 12 km (12 262 m) nel 1989, la roccia era a circa 180 °C. <a href="https://en.wikipedia.org/wiki/Kola_Superdeep_Borehole" target="_blank" rel="noopener">Wikipedia, Kola Superdeep Borehole</a></li><li>Nel 1936 la sismologa danese Inge Lehmann scoprì che il nucleo interno è solido. <a href="https://25anni.ingv.it/mostra-5sensi/vista/interno-della-terra" target="_blank" rel="noopener">INGV, Interno della Terra</a>, <a href="https://en.wikipedia.org/wiki/Inge_Lehmann" target="_blank" rel="noopener">Wikipedia, Inge Lehmann</a></li><li>Le onde S non arrivano oltre circa 105° dall'epicentro, la zona d'ombra delle onde P è tra circa 105° e 140° (valori di Treccani, Wikipedia indica 104°). <a href="https://static.treccani.it/export/sites/default/Portale/resources/multimedia/Lezioni_Geologia2/struttura_interna/LEZIONE__STRUTTURA_TERRA.pdf" target="_blank" rel="noopener">Treccani, lezione La struttura interna della Terra</a>, <a href="https://en.wikipedia.org/wiki/Shadow_zone" target="_blank" rel="noopener">Wikipedia, Shadow zone</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1. Texture della Terra da <a href="https://visibleearth.nasa.gov/collection/1484/blue-marble" target="_blank" rel="noopener">NASA Visible Earth, Blue Marble</a>.</li></ul></details></div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#b38cff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(179,140,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Scienze della Terra</a>
 <script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
