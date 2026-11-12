@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Prof. T">
+<!-- © 2026 Prof. T. Tutti i diritti riservati. -->
+<!-- PROTOTIPO in lavorazione: per ora contiene solo il blocco delle Ande (margine convergente oceano-continente).
+     Finché c'è la riga robots qui sotto la pagina non va collegata né messa nella sitemap. -->
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La Terra in movimento: placche, vulcani e terremoti - Scienza in Movimento</title>
+<meta name="description" content="Tettonica delle placche, vulcani e terremoti in 3D: i margini delle placche con esempi veri, dalle Ande al Giappone all'Italia.">
+<link rel="canonical" href="https://scienzainmovimento.it/scienze_della_terra/terra_in_movimento.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Scienza in Movimento">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="La Terra in movimento: placche, vulcani e terremoti - Scienza in Movimento">
+<meta property="og:description" content="Tettonica delle placche, vulcani e terremoti in 3D: i margini delle placche con esempi veri, dalle Ande al Giappone all'Italia.">
+<meta property="og:url" content="https://scienzainmovimento.it/scienze_della_terra/terra_in_movimento.html">
+<meta property="og:image" content="https://scienzainmovimento.it/og_image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Prof. T - La Matematica e le Scienze in Movimento">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+/* ---- base della pagina (uguale in tutte le animazioni) ---- */
+:root{--bg:#0a0f1a;--panel:#111a2b;--line:#22304a;--txt:#e6ecf5;--mut:#8fa0b8;--warn:#FF8A80}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at 50% -10%,rgba(106,165,255,.14),transparent 60%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px),#0a0f1a;background-size:auto,36px 36px,36px 36px;color:var(--txt);font-family:Calibri,Carlito,"Segoe UI",system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 8px}
+.eyebrow{color:var(--disciplina);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px;color:#fff}
+.sub{color:var(--mut);margin:0 0 4px}
+button{font-family:inherit}
+.hide{display:none!important}
+.layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:start}
+.layout>*{min-width:0}
+@media(max-width:760px){.layout{grid-template-columns:1fr}}
+.stage{position:relative;height:clamp(300px,58vh,600px);background:radial-gradient(ellipse at 50% 30%,#101a30,#05070d 75%);border:1px solid var(--line);border-radius:12px;overflow:hidden;touch-action:none}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.cap{position:absolute;left:10px;bottom:8px;font-size:12px;color:#8fa0b8;pointer-events:none;text-shadow:0 1px 3px #000}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.card h2{font:700 20px/1.2 Cambria,Georgia,serif;margin:0 0 6px;color:var(--disciplina)}
+.card p{margin:0 0 8px;line-height:1.45}
+.sect{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:4px 0 6px}
+.hint{color:var(--mut);font-size:14px;margin:8px 2px 0}
+.anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;line-height:1.45}
+.fail{padding:24px;color:#e6ecf5}
+/* ---- stili propri dell'animazione ---- */
+.etich{position:absolute;left:0;top:0;pointer-events:none;font:700 12px/1 Calibri,Carlito,"Segoe UI",sans-serif;color:#fff;background:rgba(8,12,22,.62);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:4px 8px;white-space:nowrap;transform:translate(-50%,-50%);will-change:transform;transition:opacity .25s}
+.etich.sez{background:rgba(8,12,22,.45);border-color:transparent;font-weight:400;font-style:italic}
+.tempo{margin:10px 0 2px}
+.tempo .estremi{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin:0 2px 2px}
+.tempo input[type=range]{width:100%;accent-color:var(--disciplina);margin:0}
+.fase{min-height:2.9em;margin:6px 2px 0;line-height:1.4}
+.proft{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:end;margin-bottom:12px}
+.proft img{width:84px;height:auto}
+.fumetto{background:var(--panel);border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:9px 12px;line-height:1.4;font-size:15px}
+@media(max-width:760px){.stage{height:clamp(260px,40vh,380px)}}
+</style>
+<link rel="stylesheet" href="../animazioni.css">
+</head>
+<body style="--area:#b38cff;--disciplina:#9a6fe8">
+<div class="wrap">
+<div class="eyebrow">Scienze della Terra</div>
+<h1>La Terra in movimento</h1>
+<p class="sub" id="sub">Dove due placche si scontrano, una scende sotto l'altra. Guarda che cosa succede sotto le Ande.</p>
+
+<nav class="schede" role="tablist" aria-label="Schede">
+ <button class="scheda" role="tab" aria-selected="false" disabled><span class="num">01</span>Il puzzle della Terra</button>
+ <button class="scheda attiva" role="tab" aria-selected="true"><span class="num">02</span>I margini delle placche</button>
+ <button class="scheda" role="tab" aria-selected="false" disabled><span class="num">03</span>I vulcani</button>
+ <button class="scheda" role="tab" aria-selected="false" disabled><span class="num">04</span>I terremoti</button>
+ <button class="scheda" role="tab" aria-selected="false" disabled><span class="num">05</span>Allenati</button>
+</nav>
+
+<section id="p-margini">
+ <div class="layout">
+  <div>
+   <div class="stage" id="stage">
+    <div class="cap">Ande centrali. Rilievi esagerati 6 volte</div>
+    <button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+    <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
+    <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+   </div>
+   <div class="tempo">
+    <div class="estremi"><span>inizio della subduzione</span><span>oggi</span></div>
+    <input type="range" id="rTempo" min="0" max="1000" value="1000" aria-label="Scorri nel tempo">
+   </div>
+   <div class="azioni">
+    <button class="azione" id="bInd" style="flex:1">&#9664; Indietro nel tempo</button>
+    <button class="azione primaria" id="bAv" style="flex:1" disabled>Avanti nel tempo &#9654;</button>
+   </div>
+   <p class="fase" id="fase" aria-live="polite"></p>
+   <details class="opzioni">
+    <summary><b>Opzioni</b></summary>
+    <button class="levetta" role="switch" id="oEt" aria-checked="true">Etichette</button>
+    <button class="levetta" role="switch" id="oTer" aria-checked="true">Terremoti</button>
+    <button class="levetta" role="switch" id="oRot" aria-checked="false">Rotazione automatica</button>
+   </details>
+  </div>
+  <aside>
+   <div class="card" aria-live="polite"><h2 id="infoT"></h2><p id="infoD" style="margin:0"></p></div>
+   <div class="card"><div class="sect">Che cosa c'è nel blocco</div><div class="chips" id="parti" style="margin:0"></div></div>
+   <div class="anchor"><b>Margine convergente (distruttivo)</b><br>La placca oceanica, più pesante, scende sotto quella continentale e torna nel mantello.</div>
+   <div class="proft"><img id="prof" src="../immagini/prof_t/prof_t_geologo_placche.webp" alt="Prof. T geologo"><div class="fumetto" id="fum">Trascina il blocco per girarlo. Poi premi «Indietro nel tempo» e guarda come è cominciato tutto.</div></div>
+  </aside>
+ </div>
+</section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../animazioni.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
+var sstep=function(a,b,x){var t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+
+/* ---- immagini: superficie (NASA Blue Marble) e rilievo con i fondali (NOAA ETOPO1) ---- */
+var IMG_SUP='../immagini/terra/ande_superficie_nasa.jpg';
+var IMG_RIL='../immagini/terra/ande_rilievo_noaa.png';   /* quota in metri = (rosso·256 + verde) − 10000 */
+
+/* ---- costanti del modello. Le lunghezze sono in km, come le coordinate della scena ---- */
+var LX=1540,LZ=1000;       /* lati del blocco: da 77° a 62° ovest, da 18° a 27° sud */
+var FONDO=-380;            /* base del blocco */
+var EX=6;                  /* esagerazione dei rilievi */
+var NX=301,NZ=181;         /* punti della superficie */
+var S_TIP0=40,S_CORSA=900; /* lunghezza della placca scesa all'inizio e strada fatta fino a oggi */
+var T_TOTALE=26;           /* secondi per andare dall'inizio a oggi con i pulsanti automatici */
+var V_MAGMA=.07,V_FLUIDI=.22,V_FUMO=.11;   /* velocità delle cose che si muovono sempre */
+var TAN=.5774,LC=150,TH=85;                /* pendenza finale (30°), lunghezza della curva e spessore della placca */
+
+/* ---- parti del blocco: chip, testo e inquadratura (bersaglio in km, angoli, distanza) ---- */
+var PARTI=[
+ {id:1,n:'Placca di Nazca',c:'#5f7fb0',t:'Placca di Nazca, oceanica',d:'È fatta di rocce scure e pesanti. Si muove verso est di pochi centimetri all\'anno. Arrivata alla fossa si piega e scende nel mantello, sotto il Sud America.',v:[-380,-70,330,-.78,1.08,1500]},
+ {id:2,n:'Placca sudamericana',c:'#c2a57c',t:'Placca sudamericana, continentale',d:'La sua crosta è più leggera e più spessa, per questo resta sopra. Il suo bordo viene schiacciato e sollevato, così crescono le Ande.',v:[330,-30,260,.3,1.02,1550]},
+ {id:3,n:'Fossa',c:'#3fa0d8',t:'Fossa del Perù-Cile',d:'È il solco dove la placca oceanica comincia a scendere. Qui il fondale supera gli 8000 metri di profondità.',v:[-190,-40,470,-.3,1.2,820]},
+ {id:4,n:'Terremoti',c:'#fff3a8',t:'Terremoti',d:'Le due placche si incastrano, accumulano energia e poi scattano. I terremoti nascono lungo la placca che scende, superficiali vicino alla fossa e sempre più profondi sotto il continente.',v:[60,-150,500,0,1.47,1120]},
+ {id:5,n:'Magma',c:'#ff9a3c',t:'Magma',d:'Scendendo, la placca oceanica porta con sé acqua. Intorno ai 100 km di profondità l\'acqua esce e fa fondere in parte le rocce del mantello che stanno sopra. Il magma, più leggero, risale.',v:[110,-75,500,.04,1.44,760]},
+ {id:6,n:'Vulcani delle Ande',c:'#ff6a4a',t:'Vulcani delle Ande',d:'Il magma si raccoglie sotto i vulcani e ogni tanto esce in superficie. I vulcani si allineano in una catena parallela alla fossa. Il Láscar, in Cile, è il più attivo di questa zona.',v:[150,25,330,-.2,1.1,820]},
+ {id:7,n:'Astenosfera',c:'#c4582a',t:'Astenosfera',d:'È la parte del mantello che sta sotto le placche. È solida ma plastica, e su di lei la litosfera può scorrere.',v:[-230,-250,500,0,1.5,1300]}];
+var INFO0={t:'Oceano contro continente',d:'La placca di Nazca, oceanica, scivola sotto il Sud America. Così nascono la fossa, i terremoti, il magma e i vulcani delle Ande. Tocca un elemento per saperne di più.'};
+var FASI=[[.08,'La placca oceanica comincia a piegarsi e a scendere.'],[.40,'La placca scende nel mantello. Il bordo del continente si solleva.'],[.56,'Intorno ai 100 km di profondità nasce il magma.'],[.999,'Il magma alimenta i vulcani. Le Ande crescono.'],[2,'Oggi. La subduzione continua.']];
+var S={u:1,dir:0,sel:0,et:true,ter:true};
+
+/* ---- pannello ---- */
+$('parti').innerHTML=PARTI.map(function(p){return '<button class="chip" data-k="'+p.id+'" style="--chip:'+p.c+'">'+p.n+'</button>';}).join('');
+$('parti').addEventListener('click',function(e){var b=e.target.closest('[data-k]');if(b)scegli(S.sel===+b.dataset.k?0:+b.dataset.k);});
+function scegli(id){
+ S.sel=id;var p=PARTI.filter(function(x){return x.id===id;})[0];
+ $('infoT').textContent=p?p.t:INFO0.t;$('infoD').textContent=p?p.d:INFO0.d;
+ Array.prototype.forEach.call($('parti').children,function(b){b.classList.toggle('attivo',+b.dataset.k===id);});
+ if(scena)scena.evidenzia(p||null);}
+function mostraTempo(){
+ $('rTempo').value=Math.round(S.u*1000);
+ for(var i=0;i<FASI.length;i++)if(S.u<=FASI[i][0]){$('fase').textContent=FASI[i][1];break;}
+ $('bInd').innerHTML=S.dir<0?'&#10074;&#10074; Ferma':'&#9664; Indietro nel tempo';
+ $('bAv').innerHTML=S.dir>0?'&#10074;&#10074; Ferma':'Avanti nel tempo &#9654;';
+ $('bInd').disabled=S.u<=0&&S.dir===0;$('bAv').disabled=S.u>=1&&S.dir===0;
+ $('bAv').classList.toggle('primaria',S.u<1||S.dir>0);$('bInd').classList.toggle('primaria',S.u>=1&&S.dir===0);}
+$('rTempo').addEventListener('input',function(){S.dir=0;S.u=this.value/1000;mostraTempo();});
+$('bInd').onclick=function(){S.dir=S.dir<0?0:-1;mostraTempo();};
+$('bAv').onclick=function(){S.dir=S.dir>0?0:1;mostraTempo();};
+
+/* ================= SCENA 3D ================= */
+function Scena(el){
+ if(typeof THREE==='undefined'){el.insertAdjacentHTML('beforeend','<div class="fail">Il modello 3D richiede la connessione a internet. Riprova più tardi.</div>');return null;}
+ var R;try{R=new THREE.WebGLRenderer({antialias:true,alpha:true});}catch(e){el.insertAdjacentHTML('beforeend','<div class="fail">Questo browser non supporta il 3D (WebGL).</div>');return null;}
+ R.setPixelRatio(Math.min(devicePixelRatio||1,2));el.insertBefore(R.domElement,el.firstChild);
+ var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(34,1,20,14000);
+ var V0=[35,-140,230,-.36,1.24,2330];       /* inquadratura di partenza */
+ var C={tx:V0[0],ty:V0[1],tz:V0[2],th:V0[3],ph:V0[4],d:V0[5]},CT=null,fit=1,auto=false,pronta=false;
+ /* valori condivisi da tutti i materiali */
+ var U={uTime:{value:0},uTip:{value:S_TIP0+S_CORSA},uOff:{value:S_CORSA},uMg:{value:1},uGrow:{value:1},uGrowN:{value:1},uSel:{value:0},uQk:{value:1},uEx:{value:EX}};
+
+ var RUMORE='float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\n'
+  +'float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}\n'
+  +'float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*noise(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return s/.9375;}\n';
+
+ /* ---------- superficie: rilievo vero, con le montagne che crescono nel tempo ---------- */
+ var supVS='attribute float aH;attribute vec2 aSl;attribute float aXr;uniform float uGrow,uEx;varying vec2 vUv;varying float vH,vXr;varying vec3 vN;\n'
+  +'void main(){float g=aH>0.?uGrow:1.;vec3 p=position;p.y=aH*uEx*g;vUv=uv;vH=aH;vXr=aXr;vN=normalize(vec3(-aSl.x*uEx*g,1.,-aSl.y*uEx*g));gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}';
+ var supFS='precision highp float;uniform sampler2D uMap;uniform float uGrowN,uSel;varying vec2 vUv;varying float vH,vXr;varying vec3 vN;\n'+RUMORE
+  +'void main(){vec3 c=texture2D(uMap,vUv).rgb;\n'
+  +' float lam=max(dot(normalize(vN),normalize(vec3(-.55,.75,-.35))),0.);\n'
+  +' if(vH>0.){c*=.70+.46*lam;\n'
+  +'  /* prima che le Ande crescano: una pianura */\n'
+  +'  vec3 pian=mix(vec3(.30,.37,.20),vec3(.50,.46,.31),fbm(vUv*vec2(60.,40.)));c=mix(c,pian*(.8+.3*lam),(1.-uGrowN)*smoothstep(.3,2.4,vH));}\n'
+  +' else{c=mix(vec3(dot(c,vec3(.3,.5,.2))),c,.55)*(1.15+.9*lam);}\n'
+  +' float att=1.;if(uSel>.5&&uSel<1.5)att=vXr<0.?1.:.45;else if(uSel>1.5&&uSel<2.5)att=vXr>0.?1.:.4;else if(uSel>6.5)att=.5;\n'
+  +' gl_FragColor=vec4(c*att,1.);}';
+
+ /* ---------- mare: velo trasparente, con le frecce del movimento della placca oceanica ---------- */
+ var mareVS='varying vec2 vUv;varying vec3 vP;void main(){vUv=uv;vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}';
+ var mareFS='precision highp float;uniform sampler2D uMask;uniform float uOff,uSel,uMoto;varying vec2 vUv;varying vec3 vP;\n'
+  +'void main(){vec4 m=texture2D(uMask,vUv);float terra=smoothstep(.35,.65,m.g);if(terra>.98)discard;\n'
+  +' float dep=m.r;vec3 c=mix(vec3(.20,.52,.72),vec3(.03,.13,.30),smoothstep(0.,.75,dep));float a=mix(.34,.60,smoothstep(0.,.6,dep));\n'
+  +' /* frecce: solo a ovest della fossa, si spostano insieme alla placca */\n'
+  +' float xr=m.b*1600.-800.;float fx=fract((vP.x-uOff)/150.);float fz=abs(fract(vP.z/170.)-.5)*2.;\n'
+  +' float ch=smoothstep(.07,.0,abs(fx-.5+fz*.22-.11))*step(fz,.62)*smoothstep(-25.,-70.,xr);\n'
+  +' c=mix(c,vec3(.85,.95,1.),ch*(.22+.4*uMoto));a=max(a,ch*(.3+.4*uMoto));\n'
+  +' float att=(uSel>1.5&&uSel<2.5)||uSel>6.5?.5:1.;\n'
+  +' gl_FragColor=vec4(c*att,a*(1.-terra));}';
+
+ /* ---------- facce del blocco: gli strati disegnati da uno shader ---------- */
+ var facVS='attribute float aTop,aH,aXr,aES,aC;uniform float uGrow,uEx;varying float vY,vS,vXr,vES,vC;\n'
+  +'void main(){float s=aH*uEx*(aH>0.?uGrow:1.);vec3 p=position;p.y=aTop>.5?max(s,0.):'+FONDO.toFixed(1)+';vY=p.y;vS=s;vXr=aXr;vES=aES;vC=aC;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}';
+ var facFS='precision highp float;varying float vY,vS,vXr,vES,vC;\n'
+  +'uniform float uTime,uTip,uOff,uMg,uGrowN,uSel,uQk,uArc,uST,uArcES,uAtt;uniform vec2 uSx[5];\n'+RUMORE
+  +'const float TAN='+TAN+',LC='+LC.toFixed(1)+',TH='+TH.toFixed(1)+',CR=9.;\n'
+  +'float dipf(float x){return TAN*(x-LC*(1.-exp(-x/LC)));}\n'
+  +'float lin(float d,float w){return 1.-smoothstep(0.,w,abs(d));}\n'
+  +'void main(){\n'
+  +' float x=vXr,y=vY;\n'
+  +' if(y>vS+.01){ /* sopra il fondale: acqua */\n'
+  +'  if(vS>=0.)discard;float t=clamp(y/min(vS,-1.),0.,1.);vec3 w=mix(vec3(.17,.47,.68),vec3(.03,.12,.28),t);\n'
+  +'  gl_FragColor=vec4(w*((uSel>1.5&&uSel<2.5)||uSel>3.5?.5:1.),1.);return;}\n'
+  +' /* placca oceanica che scende: curva del suo lato superiore a est della fossa */\n'
+  +' float xs=max(x,0.),d=dipf(xs),yT=uST-d;\n'
+  +' float sl=TAN*(1.-exp(-xs/LC)),cs=1./sqrt(1.+sl*sl);\n'
+  +' float n=x>0.?(yT-y)*cs:(vS-y);      /* profondità dentro la placca, perpendicolare */\n'
+  +' float s=x>0.?xs+.268*d:x;           /* strada percorsa lungo la placca dalla fossa */\n'
+  +' float q=2.*clamp(n/TH,0.,1.)-1.;float tipL=uTip-TH*.5*(1.-sqrt(max(0.,1.-q*q)));\n'
+  +' bool oce=n>=0.&&n<TH&&(x<=0.||s<tipL);\n'
+  +' bool sotto=x>0.&&n>=TH&&s<uTip;\n'
+  +' float cb=-(36.+(vES>0.?7.*vES*uGrowN:3.5*vES));   /* base della crosta continentale, con la radice sotto le montagne */\n'
+  +' float yL=-(105.-42.*exp(-pow((x-uArc)/140.,2.))*uMg);   /* base della litosfera continentale */\n'
+  +' float id;vec3 col;float a=s-uOff;\n'
+  +' if(oce){id=1.;\n'
+  +'  if(n<CR){col=mix(vec3(.15,.17,.22),vec3(.27,.30,.36),fbm(vec2(a*.05,n*.5)));col*=.86+.22*step(.5,fract(a/70.));}\n'
+  +'  else{col=mix(vec3(.27,.31,.36),vec3(.40,.44,.47),fbm(vec2(a*.022,n*.06)));col*=.93+.09*step(.5,fract(a/140.));}\n'
+  +'  col*=1.-.5*lin(n-CR,1.1);}\n'
+  +' else if(sotto||x<=0.){id=7.;}\n'
+  +' else if(y>cb){id=2.;float t=clamp((vS-y)/max(vS-cb,1.),0.,1.);col=mix(vec3(.72,.61,.46),vec3(.52,.42,.32),t);col*=.84+.30*fbm(vec2(vC*.016,y*.11));col*=.95+.07*sin(y*.55+fbm(vec2(vC*.01,3.))*9.);}\n'
+  +' else if(y>yL){id=2.;col=mix(vec3(.38,.33,.28),vec3(.50,.44,.36),fbm(vec2(vC*.02,y*.06)));col*=1.-.5*lin(y-cb,1.1);}\n'
+  +' else{id=7.;}\n'
+  +' if(id>6.5){float t=smoothstep(-40.,'+FONDO.toFixed(1)+',y);col=mix(vec3(.50,.17,.08),vec3(.74,.30,.10),t);col*=.84+.30*fbm(vec2(vC*.011,y*.013));\n'
+  +'  float bl=x<=0.?lin(n-TH,1.6):(sotto?lin(n-TH,1.6):lin(y-yL,1.6));col=mix(col,vec3(.95,.9,.8),bl*step(.5,fract((vC+y)*.035))*.55);}\n'
+  +' if(x>0.&&!oce)col*=1.-.55*lin(n,1.3)*step(s,uTip);     /* contatto tra le due placche */\n'
+  +' float att=1.;\n'
+  +' if(uSel>.5){if(uSel<2.5)att=abs(id-uSel)<.5?1.:.3;else if(uSel<3.5)att=.75;else if(uSel<4.5)att=.42;else if(uSel<5.5)att=.42;else if(uSel<6.5)att=(id>1.5&&id<2.5)?.9:.4;else att=id>6.5?1.:.3;}\n'
+  +' col*=att*uAtt;\n'
+  +' /* fossa scelta: un anello sul punto dove la placca comincia a scendere */\n'
+  +' if(uSel>2.5&&uSel<3.5){float dd=length(vec2(x,y-uST));col+=vec3(.3,.75,1.)*lin(dd-(26.+5.*sin(uTime*3.)),2.2)*uAtt;}\n'
+  +' /* ---- acqua che esce dalla placca e magma che risale ---- */\n'
+  +' if(uMg>.01&&x>0.){\n'
+  +'  float dp=-yT;float h=y-yT;\n'
+  +'  if(!oce&&h>0.&&h<20.&&dp>84.&&dp<138.&&s<uTip){float ix=floor(x/11.),fx=(fract(x/11.)-.5)*11.;float hh=fract(uTime*'+V_FLUIDI.toFixed(2)+'+hash(vec2(ix,3.)))*18.;\n'
+  +'   float g=smoothstep(2.2,.5,length(vec2(fx+sin(h*.3+ix)*1.2,h-hh)));col=mix(col,vec3(.62,.86,1.),g*(1.-hh/18.)*.95*uMg);}\n'
+  +'  float cbA=-(36.+7.*uArcES*uGrowN);\n'
+  +'  if(!oce&&y<cb+3.){float gl=0.;\n'
+  +'   for(int k=0;k<5;k++){vec2 p0=uSx[k]+vec2(0.,9.),p1=vec2(uArc+(float(k)-2.)*13.,cbA-3.);\n'
+  +'    for(int j=0;j<3;j++){float t=fract(uTime*'+V_MAGMA.toFixed(2)+'+float(k)*.37+float(j)/3.);vec2 pp=mix(p0,p1,t);pp.x+=sin(t*9.+float(k)*2.)*7.*(1.-t);\n'
+  +'     float r=mix(4.,7.5,t);vec2 dv=vec2(x,y)-pp;dv.y*=dv.y<0.?.55:1.;gl=max(gl,smoothstep(r,r*.25,length(dv))*smoothstep(0.,.08,t)*smoothstep(1.,.9,t));}}\n'
+  +'   col=mix(col,mix(vec3(1.,.42,.08),vec3(1.,.86,.35),gl),gl*uMg);\n'
+  +'   float pz=length(vec2((x-uArc)/48.,(y-cbA+2.)/7.));col=mix(col,mix(vec3(.95,.38,.07),vec3(1.,.72,.22),fbm(vec2(x*.09-uTime*.3,y*.2))),smoothstep(1.,.75,pz)*uMg);}\n'
+  +'  if(y>cbA-2.){\n'
+  +'   float camY=-14.;float pc=length(vec2((x-uArc)/25.,(y-camY)/8.5));\n'
+  +'   float dk=0.;if(y<camY){dk=max(lin(x-uArc-9.-sin(y*.21)*3.,1.5),lin(x-uArc+10.-sin(y*.17+2.)*3.5,1.5));}\n'
+  +'   else{dk=lin(x-uArc-sin(y*.14)*1.6,1.7);}\n'
+  +'   float fl=.72+.28*sin(y*.55-uTime*4.);\n'
+  +'   col=mix(col,vec3(1.,.55,.12)*fl+vec3(.0,.18,.05),dk*uMg);\n'
+  +'   vec2 qv=vec2(x*.10,y*.22);float sw=fbm(qv+vec2(uTime*.25,fbm(qv*1.7-uTime*.2)*2.));\n'
+  +'   col=mix(col,mix(vec3(.93,.30,.05),vec3(1.,.84,.30),sw),smoothstep(1.,.8,pc)*uMg);\n'
+  +'   col=mix(col,vec3(.25,.08,.03),lin(pc-1.,.09)*.6*uMg);}}\n'
+  +' /* ---- terremoti: lampi lungo la placca che scende ---- */\n'
+  +' if(uQk>.01&&x>-30.){\n'
+  +'  float smax=min(uTip,720.);vec3 qc=vec3(0.);float qa=0.;\n'
+  +'  for(int i=0;i<6;i++){float per=2.3+float(i)*.41;float ph=uTime/per+float(i)*.31;float cy=floor(ph),t=fract(ph);\n'
+  +'   float r1=hash(vec2(cy,float(i)*7.3));float sq=12.+(smax-12.)*r1*r1;float xq=sq/1.12;xq=sq-.268*dipf(xq);xq=sq-.268*dipf(xq);\n'
+  +'   vec2 pq=vec2(xq,uST-dipf(xq)-4.);float dd=length(vec2(x,y)-pq);\n'
+  +'   float ring=lin(dd-(4.+52.*t),1.6+2.*t)*(1.-t)*(1.-t);float core=smoothstep(5.,0.,dd)*(1.-smoothstep(0.,.5,t));qa=max(qa,max(ring*.9,core));}\n'
+  +'  if(uSel>3.5&&uSel<4.5&&x>0.&&n>-3.&&n<16.&&s<smax){vec2 g=vec2(s,n)/7.;vec2 gi=floor(g);float hsh=hash(gi);float thr=.38+.5*smoothstep(0.,720.,s);\n'
+  +'   if(hsh>thr){vec2 c=gi+.5+.5*(vec2(hash(gi+3.1),hash(gi+7.7))-.5);qa=max(qa,smoothstep(.2,.08,length(g-c))*.85);}}\n'
+  +'  col=mix(col,vec3(1.,.97,.70),qa*uQk*uAtt);}\n'
+  +' gl_FragColor=vec4(col,1.);}';
+
+ /* ---------- fumo dei vulcani ---------- */
+ var fumoVS='attribute float aSeed;uniform float uTime,uMg,uPx,uGrow;varying float vA;\n'
+  +'void main(){float t=fract(uTime*'+V_FUMO.toFixed(2)+'+aSeed);vec3 p=position;p.y=p.y*uGrow+t*85.;p.x+=sin(aSeed*43.+t*4.)*t*10.+t*t*46.;p.z+=cos(aSeed*27.+t*3.)*t*9.;\n'
+  +' vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;gl_PointSize=uPx*(9.+50.*t)*(1000./-mv.z);vA=smoothstep(0.,.08,t)*(1.-t)*.42*uMg;}';
+ var fumoFS='precision mediump float;varying float vA;void main(){float d=length(gl_PointCoord-.5);float a=smoothstep(.5,.12,d)*vA;if(a<.01)discard;gl_FragColor=vec4(vec3(.86,.85,.83),a);}';
+
+ var gruppo=new THREE.Group();scene.add(gruppo);
+ var matFacce=[],matMare=null,matFumo=null,xTf=0,xArcF=0,arcTop=0,punti={};
+
+ function costruisci(sup,ril){
+  /* 1. il rilievo: dall'immagine alle quote in km */
+  var W=ril.width,H=ril.height,cv=document.createElement('canvas');cv.width=W;cv.height=H;var cx=cv.getContext('2d');cx.drawImage(ril,0,0);
+  var px=cx.getImageData(0,0,W,H).data,hg=new Float32Array(W*H);
+  for(var i=0;i<W*H;i++)hg[i]=((px[i*4]*256+px[i*4+1])-10000)/1000;
+  function hAt(fx,fz){var x=clamp(fx,0,1)*(W-1),z=clamp(fz,0,1)*(H-1),x0=Math.floor(x),z0=Math.floor(z),x1=Math.min(W-1,x0+1),z1=Math.min(H-1,z0+1),a=x-x0,b=z-z0;
+   return (hg[z0*W+x0]*(1-a)+hg[z0*W+x1]*a)*(1-b)+(hg[z1*W+x0]*(1-a)+hg[z1*W+x1]*a)*b;}
+  /* 2. la fossa: per ogni riga il punto più profondo a ovest, poi una linea lisciata */
+  var fos=new Float32Array(H),tmp=new Float32Array(H);
+  for(var r=0;r<H;r++){var m=1e9,im=0;for(var c=0;c<Math.round(W*.62);c++){var v=hg[r*W+c];if(v<m){m=v;im=c;}}tmp[r]=im/(W-1)*LX-LX/2;}
+  for(r=0;r<H;r++){var s=0,k=0;for(var j=-9;j<=9;j++){var rr=r+j;if(rr>=0&&rr<H){s+=tmp[rr];k++;}}fos[r]=s/k;}
+  function fossaAt(fz){var z=clamp(fz,0,1)*(H-1),z0=Math.floor(z),z1=Math.min(H-1,z0+1);return fos[z0]*(1-(z-z0))+fos[z1]*(z-z0);}
+
+  /* 3. superficie */
+  var g=new THREE.BufferGeometry(),P=new Float32Array(NX*NZ*3),UV=new Float32Array(NX*NZ*2),AH=new Float32Array(NX*NZ),SL=new Float32Array(NX*NZ*2),XR=new Float32Array(NX*NZ),I=[];
+  var ex=1/(NX-1),ez=1/(NZ-1);
+  for(var iz=0;iz<NZ;iz++)for(var ix=0;ix<NX;ix++){var n=iz*NX+ix,fx=ix*ex,fz=iz*ez,x=fx*LX-LX/2,z=fz*LZ-LZ/2;
+   P[n*3]=x;P[n*3+1]=0;P[n*3+2]=z;UV[n*2]=fx;UV[n*2+1]=1-fz;AH[n]=hAt(fx,fz);
+   SL[n*2]=(hAt(fx+ex,fz)-hAt(fx-ex,fz))/(2*ex*LX);SL[n*2+1]=(hAt(fx,fz+ez)-hAt(fx,fz-ez))/(2*ez*LZ);XR[n]=x-fossaAt(fz);}
+  for(iz=0;iz<NZ-1;iz++)for(ix=0;ix<NX-1;ix++){var a=iz*NX+ix,b=a+1,c2=a+NX,d=c2+1;I.push(a,c2,b,b,c2,d);}
+  g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('uv',new THREE.BufferAttribute(UV,2));g.setAttribute('aH',new THREE.BufferAttribute(AH,1));
+  g.setAttribute('aSl',new THREE.BufferAttribute(SL,2));g.setAttribute('aXr',new THREE.BufferAttribute(XR,1));g.setIndex(I);
+  var tex=new THREE.Texture(sup);tex.needsUpdate=true;tex.anisotropy=Math.min(8,R.capabilities.getMaxAnisotropy());
+  var ms=new THREE.Mesh(g,new THREE.ShaderMaterial({uniforms:{uMap:{value:tex},uGrow:U.uGrow,uGrowN:U.uGrowN,uEx:U.uEx,uSel:U.uSel},vertexShader:supVS,fragmentShader:supFS}));
+  ms.frustumCulled=false;gruppo.add(ms);
+
+  /* 4. mare: maschera con profondità (rosso), terra (verde) e distanza dalla fossa (blu) */
+  var md=new Uint8Array(W*H*4);
+  for(r=0;r<H;r++)for(c=0;c<W;c++){var o=((H-1-r)*W+c)*4,hh=hg[r*W+c];md[o]=clamp(-hh/8,0,1)*255;md[o+1]=hh>0?255:0;md[o+2]=clamp((c/(W-1)*LX-LX/2-fos[r]+800)/1600,0,1)*255;md[o+3]=255;}
+  var mt=new THREE.DataTexture(md,W,H,THREE.RGBAFormat);mt.magFilter=mt.minFilter=THREE.LinearFilter;mt.needsUpdate=true;
+  var gm=new THREE.PlaneGeometry(LX,LZ);gm.rotateX(-Math.PI/2);
+  matMare=new THREE.ShaderMaterial({uniforms:{uMask:{value:mt},uOff:U.uOff,uSel:U.uSel,uMoto:{value:0}},vertexShader:mareVS,fragmentShader:mareFS,transparent:true,depthWrite:false});
+  var mm=new THREE.Mesh(gm,matMare);mm.position.y=-.4;mm.renderOrder=2;gruppo.add(mm);
+
+  /* 5. facce: per ogni lato il profilo del rilievo e le grandezze che servono allo shader */
+  function faccia(lato){
+   var lungo=lato==='S'||lato==='N',N=lungo?NX:NZ,prof=[],xs=[];
+   for(var i=0;i<N;i++){var f=i/(N-1),fx=lungo?f:(lato==='O'?0:1),fz=lungo?(lato==='S'?1:0):f;
+    prof.push({x:fx*LX-LX/2,z:fz*LZ-LZ/2,h:hAt(fx,fz),xr:fx*LX-LX/2-fossaAt(fz)});}
+   var xT=0,sT=0,xArc=-9999,es=[];
+   if(lungo){var mn=1e9,ia=0;prof.forEach(function(p,i){if(p.x<60&&p.h<mn){mn=p.h;ia=i;}});xT=prof[ia].x;sT=mn*EX;
+    prof.forEach(function(p){p.xr=p.x-xT;});
+    var mx=-1e9;prof.forEach(function(p){if(p.xr>230&&p.xr<420&&p.h>mx){mx=p.h;xArc=p.xr;}});}
+   /* quota lisciata (per la radice delle montagne) */
+   var passo=(lungo?LX:LZ)/(N-1),sig=70/passo,w=Math.ceil(sig*2.5);
+   for(i=0;i<N;i++){var sm=0,sk=0;for(var j=-w;j<=w;j++){var q=clamp(i+j,0,N-1),ww=Math.exp(-j*j/(2*sig*sig));sm+=prof[q].h*ww;sk+=ww;}es.push(sm/sk);}
+   var esArc=0;if(lungo){var best=1e9;prof.forEach(function(p,i){var dd=Math.abs(p.xr-xArc);if(dd<best){best=dd;esArc=es[i];}});}
+   var g=new THREE.BufferGeometry(),P=new Float32Array(N*2*3),T=new Float32Array(N*2),Hh=new Float32Array(N*2),Xr=new Float32Array(N*2),Es=new Float32Array(N*2),Cc=new Float32Array(N*2),I=[];
+   for(i=0;i<N;i++)for(var t=0;t<2;t++){var n=i*2+t,p=prof[i];P[n*3]=p.x;P[n*3+1]=0;P[n*3+2]=p.z;T[n]=t;Hh[n]=p.h;Xr[n]=p.xr;Es[n]=es[i];Cc[n]=lungo?p.x:p.z;}
+   for(i=0;i<N-1;i++){var a=i*2,b=a+1,c=a+2,d=a+3;I.push(a,c,b,b,c,d);}
+   g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('aTop',new THREE.BufferAttribute(T,1));g.setAttribute('aH',new THREE.BufferAttribute(Hh,1));
+   g.setAttribute('aXr',new THREE.BufferAttribute(Xr,1));g.setAttribute('aES',new THREE.BufferAttribute(Es,1));g.setAttribute('aC',new THREE.BufferAttribute(Cc,1));g.setIndex(I);
+   /* punti di partenza del magma: dove la placca è a 90, 100, 110, 120 e 130 km sotto il livello del mare */
+   var sx=[];for(var k=0;k<5;k++){var dep=90+k*10,lo=0,hi=900;for(j=0;j<30;j++){var mid=(lo+hi)/2;if(-(sT-TAN*(mid-LC*(1-Math.exp(-mid/LC))))<dep)lo=mid;else hi=mid;}sx.push(new THREE.Vector2(lo,-dep));}
+   var m=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uTip:U.uTip,uOff:U.uOff,uMg:lungo?U.uMg:{value:0},uGrow:U.uGrow,uGrowN:U.uGrowN,uEx:U.uEx,uSel:U.uSel,uQk:lungo?U.uQk:{value:0},
+     uArc:{value:xArc},uST:{value:lungo?sT:-40},uArcES:{value:esArc},uAtt:{value:lungo?1:.82},uSx:{value:sx}},vertexShader:facVS,fragmentShader:facFS,side:THREE.DoubleSide});
+   var me=new THREE.Mesh(g,m);me.frustumCulled=false;gruppo.add(me);matFacce.push(m);
+   return {xT:xT,sT:sT,xArc:xArc,prof:prof};}
+  var fs=faccia('S');faccia('N');faccia('O');faccia('E');
+  xTf=fs.xT;xArcF=fs.xT+fs.xArc;
+  var hArc=0;fs.prof.forEach(function(p){if(Math.abs(p.xr-fs.xArc)<3)hArc=Math.max(hArc,p.h);});arcTop=hArc*EX;
+  /* fondo del blocco */
+  var gf=new THREE.PlaneGeometry(LX,LZ);gf.rotateX(Math.PI/2);var mf=new THREE.Mesh(gf,new THREE.MeshBasicMaterial({color:0x5a1f0c}));mf.position.y=FONDO;gruppo.add(mf);
+
+  /* 6. fumo: sul vulcano della faccia davanti e sul Láscar (23,37° S, 67,73° O) */
+  var lasX=(-67.73+77)/15*LX-LX/2,lasZ=(-18+23.37)/9*LZ-LZ/2,lasH=0;
+  for(var dz=-3;dz<=3;dz++)for(var dx=-3;dx<=3;dx++)lasH=Math.max(lasH,hAt((lasX+LX/2)/LX+dx/(W-1),(lasZ+LZ/2)/LZ+dz/(H-1)));
+  var vul=[[xArcF,arcTop,LZ/2-6],[lasX,lasH*EX,lasZ]],NP=46,FP=new Float32Array(vul.length*NP*3),FS=new Float32Array(vul.length*NP);
+  vul.forEach(function(v,k){for(var i=0;i<NP;i++){var n=k*NP+i;FP[n*3]=v[0];FP[n*3+1]=v[1];FP[n*3+2]=v[2];FS[n]=Math.random();}});
+  var gp=new THREE.BufferGeometry();gp.setAttribute('position',new THREE.BufferAttribute(FP,3));gp.setAttribute('aSeed',new THREE.BufferAttribute(FS,1));
+  matFumo=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uMg:U.uMg,uGrow:U.uGrow,uPx:{value:1}},vertexShader:fumoVS,fragmentShader:fumoFS,transparent:true,depthWrite:false});
+  var pf=new THREE.Points(gp,matFumo);pf.frustumCulled=false;pf.renderOrder=3;gruppo.add(pf);
+  punti.vulcani=vul;
+
+  /* 7. etichette: punto della scena (km) a cui restano agganciate */
+  var zf=LZ/2;
+  etichette([
+   {lg:1,t:'Oceano Pacifico',p:[-520,6,-240],c:''},
+   {t:'placca di Nazca &rarr;',p:[-470,6,180],c:''},
+   {t:'placca sudamericana',p:[470,26,-260],c:''},
+   {lg:1,t:'Ande',p:[xArcF+60,arcTop+26,330],c:'',gr:.55},
+   {lg:1,t:'Láscar',p:[lasX,lasH*EX+38,lasZ],c:'',mg:1},
+   {t:'fossa',p:[xTf,16,zf],c:''},
+   {lg:1,t:'crosta oceanica',p:[-560,fs.prof[20].h*EX-5,zf],c:'sez'},
+   {t:'litosfera',p:[-560,fs.prof[20].h*EX-50,zf],c:'sez'},
+   {t:'astenosfera',p:[-470,-270,zf],c:'sez'},
+   {lg:1,t:'crosta continentale',p:[xArcF+290,-14,zf],c:'sez'},
+   {t:'litosfera',p:[xArcF+290,-72,zf],c:'sez'},
+   {t:'magma',p:[xArcF-78,-88,zf],c:'sez',mg:1},
+   {lg:1,t:'placca che scende',p:[xTf+560,-318,zf],c:'sez',tip:680}]);
+  pronta=true;resize();}
+
+ /* etichette HTML sopra la scena */
+ var ET=[],v3=new THREE.Vector3();
+ function etichette(l){l.forEach(function(e){var d=document.createElement('div');d.className='etich '+e.c;d.innerHTML=e.t;el.appendChild(d);e.el=d;ET.push(e);});}
+ function aggiornaEtichette(w,h){
+  var stretto=w<520;
+  ET.forEach(function(e,i){
+   v3.set(e.p[0],e.p[1],e.p[2]);
+   if(e.p[1]>0&&e.c!=='sez')v3.y=Math.max(6,e.p[1]*(.25+.75*U.uGrowN.value));
+   v3.project(cam);var x=(v3.x*.5+.5)*w,y=(-v3.y*.5+.5)*h;
+   var vis=S.et&&v3.z<1&&x>30&&x<w-30&&y>14&&y<h-22&&(!e.mg||U.uMg.value>.6)&&(!e.tip||U.uTip.value>e.tip)&&(!e.gr||U.uGrowN.value>e.gr)&&!(stretto&&e.lg);
+   e.el.style.opacity=vis?1:0;e.el.style.transform='translate(-50%,-50%) translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)';});}
+
+ /* ---- puntatore: un dito ruota, due dita fanno lo zoom ---- */
+ var cv=R.domElement,ptr=new Map(),pd=0;
+ var dist=function(){var a=Array.from(ptr.values());return Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);};
+ var DMIN=520,DMAX=3800;
+ cv.addEventListener('pointerdown',function(e){cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);CT=null;});
+ cv.addEventListener('pointermove',function(e){if(!ptr.has(e.pointerId))return;var o=ptr.get(e.pointerId),n=[e.clientX,e.clientY];
+  if(ptr.size===1){C.th-=(n[0]-o[0])*.007;C.ph=clamp(C.ph-(n[1]-o[1])*.007,.3,1.56);}
+  ptr.set(e.pointerId,n);
+  if(ptr.size===2){var d=dist();if(pd)C.d=clamp(C.d*pd/d,DMIN,DMAX);pd=d;}});
+ var su=function(e){ptr.delete(e.pointerId);pd=0;};
+ cv.addEventListener('pointerup',su);cv.addEventListener('pointercancel',su);
+ cv.addEventListener('wheel',function(e){e.preventDefault();CT=null;C.d=clamp(C.d*Math.exp(e.deltaY*.0011),DMIN,DMAX);},{passive:false});
+ function resize(){var w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();fit=Math.max(1,1.3/cam.aspect);
+  if(matFumo)matFumo.uniforms.uPx.value=h/520*R.getPixelRatio();}
+ if(window.ResizeObserver)new ResizeObserver(resize).observe(el);else window.addEventListener('resize',resize);
+
+ /* ---- ciclo ---- */
+ var last=performance.now(),tempo=0,motoV=0,uPrec=S.u;
+ (function loop(now){requestAnimationFrame(loop);
+  var dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;     /* intervallo mai negativo */
+  if(!pronta||el.offsetParent===null)return;
+  if(S.dir!==0){S.u=clamp(S.u+S.dir*dt/T_TOTALE,0,1);if(S.u<=0||S.u>=1)S.dir=0;mostraTempo();}
+  if(!reduce)tempo+=dt;
+  var u=S.u;U.uTime.value=tempo;U.uTip.value=S_TIP0+S_CORSA*u;U.uOff.value=S_CORSA*u;
+  U.uGrowN.value=sstep(.12,1,u);U.uGrow.value=.12+.88*U.uGrowN.value;U.uMg.value=sstep(.40,.55,u);
+  U.uQk.value=S.ter?1:0;
+  var inMoto=Math.abs(u-uPrec)>1e-6?1:0;uPrec=u;motoV+=(inMoto-motoV)*(1-Math.exp(-dt/.25));if(matMare)matMare.uniforms.uMoto.value=motoV;
+  if(auto&&!reduce&&!ptr.size)C.th+=dt*.12;
+  if(CT){var f=1-Math.exp(-dt/.45),fine=true;['tx','ty','tz','th','ph','d'].forEach(function(k){C[k]+=(CT[k]-C[k])*f;if(Math.abs(CT[k]-C[k])>(k==='th'||k==='ph'?.002:1.5))fine=false;});if(fine)CT=null;}
+  var d=C.d*fit;cam.position.set(C.tx+d*Math.sin(C.ph)*Math.sin(C.th),C.ty+d*Math.cos(C.ph),C.tz+d*Math.sin(C.ph)*Math.cos(C.th));cam.lookAt(C.tx,C.ty,C.tz);
+  R.render(scene,cam);aggiornaEtichette(el.clientWidth,el.clientHeight);})(last);
+
+ /* ---- caricamento delle due immagini ---- */
+ var imgS=new Image(),imgR=new Image(),ok=0;
+ var fatto=function(){if(++ok===2){try{costruisci(imgS,imgR);}catch(e){console.error(e);el.insertAdjacentHTML('beforeend','<div class="fail">Non riesco a costruire il modello su questo dispositivo.</div>');}}};
+ var errore=function(){el.insertAdjacentHTML('beforeend','<div class="fail">Non riesco a caricare le immagini del modello. Controlla la connessione e ricarica la pagina.</div>');};
+ imgS.onload=fatto;imgR.onload=fatto;imgS.onerror=imgR.onerror=errore;imgS.src=IMG_SUP;imgR.src=IMG_RIL;
+
+ function vai(v){var th=v[3];while(th-C.th>Math.PI)th-=2*Math.PI;while(C.th-th>Math.PI)th+=2*Math.PI;CT={tx:v[0],ty:v[1],tz:v[2],th:th,ph:v[4],d:v[5]};}
+ return {resize:resize,
+  evidenzia:function(p){U.uSel.value=p?p.id:0;vai(p?p.v:V0);},
+  reset:function(){vai(V0);},
+  zoom:function(f){CT=null;C.d=clamp(C.d*f,DMIN,DMAX);},
+  ruota:function(on){auto=on;}};
+}
+var scena=Scena($('stage'));
+
+$('bReset').onclick=function(){if(scena)scena.reset();};
+$('bPiu').onclick=function(){if(scena)scena.zoom(.8);};
+$('bMeno').onclick=function(){if(scena)scena.zoom(1.25);};
+function levetta(id,f){$(id).onclick=function(){var on=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',on);f(on);};}
+levetta('oEt',function(on){S.et=on;});
+levetta('oTer',function(on){S.ter=on;});
+levetta('oRot',function(on){if(scena)scena.ruota(on);});
+precarica(['../immagini/prof_t/prof_t_geologo_placche.webp']);
+scegli(0);mostraTempo();
+})();
+</script>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Prototipo in lavorazione. Per ora mostra il margine convergente tra la placca di Nazca e il Sud America: fossa, subduzione, terremoti, magma e vulcani delle Ande.</p>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Láscar, in Cile, il vulcano più attivo delle Ande cilene settentrionali, a 23,37° S e 67,73° O. <a href="https://volcano.si.edu/volcano.cfm?vn=355100" target="_blank" rel="noopener">Global Volcanism Program, Smithsonian Institution</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1. Superficie della Terra, <a href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/" target="_blank" rel="noopener">NASA Earth Observatory, Blue Marble Next Generation</a>. Rilievo e fondali, <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener">NOAA NCEI, ETOPO1</a>.</li></ul></details></div></div>
+<style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#b38cff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(179,140,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
+<a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Scienze della Terra</a>
+<script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
