@@ -836,7 +836,7 @@ function Scena(el){
 
  /* ---- caricamento di un blocco: le due immagini, poi la costruzione ---- */
  var cache={};
- function immagine(src){return cache[src]||(cache[src]=new Promise(function(ok,ko){var i=new Image();i.onload=function(){ok(i);};i.onerror=ko;i.src=src;}));}
+ function immagine(src){return cache[src]||(cache[src]=new Promise(function(ok,ko){var i=new Image();i.crossOrigin='anonymous';i.onload=function(){ok(i);};i.onerror=ko;i.src=src;}));}
  function carica(c){
   var io=++turno;pronta=false;cfg=c;tipo=TIPI[c.tipo];svuota();R.clear();U.uSel.value=0;$('attesa').classList.remove('hide');
   var vecchio=el.querySelector('.fail');if(vecchio)vecchio.remove();
