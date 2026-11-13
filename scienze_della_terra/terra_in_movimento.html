@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="author" content="Prof. T">
 <!-- © 2026 Prof. T. Tutti i diritti riservati. -->
-<!-- PAGINA in lavorazione: per ora contiene le schede 01 (il globo) e 02 (i sei blocchi dei margini).
+<!-- PAGINA in lavorazione: per ora contiene le schede 01 (il globo), 02 (i sei blocchi dei margini) e 03 (i vulcani).
      Finché c'è la riga robots qui sotto la pagina non va collegata né messa nella sitemap. -->
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -97,7 +97,7 @@ button{font-family:inherit}
 <nav class="schede" role="tablist" aria-label="Schede">
  <button class="scheda" role="tab" aria-selected="false" data-s="1"><span class="num">01</span>Il puzzle della Terra</button>
  <button class="scheda" role="tab" aria-selected="false" data-s="2"><span class="num">02</span>I margini delle placche</button>
- <button class="scheda" role="tab" aria-selected="false" disabled><span class="num">03</span>I vulcani</button>
+ <button class="scheda" role="tab" aria-selected="false" data-s="3"><span class="num">03</span>I vulcani</button>
  <button class="scheda" role="tab" aria-selected="false" disabled><span class="num">04</span>I terremoti</button>
  <button class="scheda" role="tab" aria-selected="false" disabled><span class="num">05</span>Allenati</button>
 </nav>
@@ -166,6 +166,38 @@ button{font-family:inherit}
    <div class="card"><div class="sect">Che cosa c'è nel blocco</div><div class="chips" id="parti" style="margin:0"></div></div>
    <div class="anchor" id="ancora"></div>
    <div class="proft"><img id="prof" src="../immagini/prof_t/prof_t_geologo_placche.webp" alt="Prof. T geologo"><div class="fumetto" id="fum">Premi il pulsante rotondo per rivedere tutto dall'inizio, oppure trascina il cursore del tempo. Il blocco si gira con un dito.</div></div>
+  </aside>
+ </div>
+</section>
+
+<section id="p-vulcani" class="hide">
+ <div class="margini" id="tipiV" role="group" aria-label="Tipo di vulcano"></div>
+ <div class="layout">
+  <div>
+   <div class="stage" id="stageV">
+    <div class="cap" id="capV">Modello in sezione, non in scala</div>
+    <button class="comando-scena" id="vReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+    <button class="comando-scena" id="vPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
+    <button class="comando-scena" id="vMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+   </div>
+   <div class="tempo">
+    <button class="play" id="vPlay" aria-label="Avvia" title="Avvia"></button>
+    <div class="barra">
+     <input type="range" id="vTempo" min="0" max="1000" value="0" aria-label="Scorri nel tempo">
+     <div class="estremi"><span id="vIni">inizio</span><span id="vFin">fine</span></div>
+    </div>
+   </div>
+   <p class="fase" id="faseV" aria-live="polite"></p>
+   <details class="opzioni">
+    <summary><b>Opzioni</b></summary>
+    <button class="levetta" role="switch" id="vEt" aria-checked="true">Etichette</button>
+   </details>
+  </div>
+  <aside>
+   <div class="card" aria-live="polite"><h2 id="vT"></h2><p id="vD" style="margin:0"></p></div>
+   <div class="card"><div class="sect">Che cosa c'è da sapere</div><div class="chips" id="partiV" style="margin:0"></div></div>
+   <div class="anchor" id="ancoraV"></div>
+   <div class="proft"><img src="../immagini/prof_t/prof_t_geologo_vulcano.webp" alt="Prof. T geologo"><div class="fumetto">Premi il pulsante rotondo per far partire l'eruzione. Tocca un elemento per capire com'è fatto il vulcano.</div></div>
   </aside>
  </div>
 </section>
@@ -1082,22 +1114,223 @@ levetta('gEta',function(on){GS.eta=on;if(on&&globo)globo.eta();testoGlobo();});
 levetta('gEt',function(on){GS.et=on;});
 levetta('gRot',function(on){if(globo)globo.ruota(on);});
 
+/* ================= scheda 03, i vulcani ================= */
+var T_VULC=18;             /* secondi per vedere tutta un'eruzione */
+var CAM='È il serbatoio in cui si raccoglie il magma, sotto il vulcano.',CMN='È il condotto da cui il magma risale fino al cratere.';
+/* per ogni vulcano: cam = centro, mezza larghezza e mezza altezza della camera magmatica; w = mezza larghezza del camino; v = altezza guardata e distanza della vista
+   parti: 1 camera, 2 camino, 3 strati, 4 quello che resta sui fianchi, 5 quello che vola, da 6 in su solo testo */
+var VULC=[
+ {id:'scudo',tipo:0,nome:'A scudo',luogo:'Mauna Loa',cam:[-3.4,3,.9],w:.2,v:[-.6,27],tempo:['inizio','fine dell\'eruzione'],
+  sub:'I vulcani non sono tutti uguali, la forma dipende dal magma. Guarda un vulcano a scudo come il Mauna Loa, alle Hawaii.',
+  info0:{t:'Largo e poco ripido',d:'Il magma è molto fluido. Esce senza grandi esplosioni e scorre lontano prima di raffreddarsi. Colata dopo colata nasce una montagna larghissima, con pendii dolci. Il Mauna Loa è il più grande vulcano attivo della Terra.'},
+  ancora:'<b>Vulcano a scudo</b><br>Magma fluido, eruzioni effusive, cioè tranquille. Pendii dolci, come uno scudo appoggiato a terra.',
+  fasi:['Il vulcano è tranquillo. Sotto, la camera magmatica è piena.','Il magma risale nel camino.','Dal cratere escono fontane di lava. La lava scorre lungo i fianchi.','Le colate, fluide, arrivano molto lontano.','L\'eruzione finisce. La lava si raffredda e aggiunge un nuovo strato al vulcano.'],
+  parti:[{id:1,n:'Camera magmatica',c:'#ff9a3c',d:CAM},{id:2,n:'Camino',c:'#ffc45a',d:CMN},{id:3,n:'Strati',c:'#8d8078',d:'Il vulcano è fatto di tante colate sottili di lava, una sopra l\'altra.'},
+   {id:4,n:'Colate di lava',c:'#ff6a4a',d:'La lava fluida scorre come un fiume e si allontana molto dal cratere. Per questo il vulcano diventa largo e basso.'},
+   {id:5,n:'Fontane di lava',c:'#ffe14d',d:'Il gas che esce dal magma lo lancia in alto come uno zampillo.'}],
+  et:[{t:'camera magmatica',p:[0,-3.4,0],c:'sez'},{t:'camino',p:[.9,-1.2,0],c:'sez'},{t:'cratere',p:[0,2.5,-.3],u1:.14},{t:'fontane di lava',p:[0,4.4,-.3],u0:.24,u1:.8},{t:'colata di lava',p:[-4.2,1.2,-3],u0:.45}]},
+ {id:'strato',tipo:1,nome:'Stratovulcano',luogo:'Vesuvio',cam:[-3.6,2,1.15],w:.15,v:[1.6,36],tempo:['inizio','fine dell\'eruzione'],
+  sub:'Guarda uno stratovulcano come il Vesuvio. Sono stratovulcani anche l\'Etna, lo Stromboli e il Fuji.',
+  info0:{t:'Un cono ripido',d:'Il magma è viscoso, cioè denso e appiccicoso, e trattiene il gas. La pressione cresce finché l\'eruzione diventa esplosiva. Il cono è ripido ed è fatto di strati di lava alternati a strati di cenere e lapilli.'},
+  ancora:'<b>Stratovulcano</b><br>Magma viscoso, eruzioni esplosive. Cono ripido fatto a strati. In Italia Vesuvio, Etna, Stromboli e Vulcano.',
+  fasi:['Il vulcano è tranquillo. Sotto, la camera magmatica è piena.','Il magma risale e il gas preme.','Esplosione. Una colonna di gas, cenere e lapilli sale per chilometri.','La cenere ricade sui fianchi del vulcano. Dal cratere scende anche una colata di lava.','L\'eruzione finisce. Al cono si aggiungono uno strato di cenere e uno di lava.'],
+  parti:[{id:1,n:'Camera magmatica',c:'#ff9a3c',d:CAM},{id:2,n:'Camino',c:'#ffc45a',d:CMN},{id:3,n:'Strati di lava e di cenere',c:'#8d8078',d:'Ogni eruzione lascia uno strato di cenere e lapilli e uno di lava. Da qui il nome stratovulcano.'},
+   {id:4,n:'Cenere e colata',c:'#b9b3ab',d:'La cenere ricade e copre tutto. La lava, viscosa, scorre lenta e si ferma vicino al cratere. Per questo il cono cresce ripido.'},
+   {id:5,n:'Colonna eruttiva',c:'#9aa3ad',d:'È fatta di gas, cenere e lapilli. Nel 79 d.C. una colonna così, dal Vesuvio, seppellì Pompei ed Ercolano. La descrisse Plinio il Giovane, per questo le eruzioni di questo tipo si chiamano pliniane.'},
+   {id:6,n:'Nomi italiani',c:'#b38cff',d:'Dai vulcani italiani vengono nomi usati in tutto il mondo. Eruzione stromboliana, dallo Stromboli. Vulcaniana, dall\'isola di Vulcano. Pliniana, dall\'eruzione del Vesuvio del 79 d.C.'},
+   {id:7,n:'Sorveglianza',c:'#6fd08c',d:'Il Vesuvio ha eruttato l\'ultima volta nel 1944. Oggi è tranquillo ed è sorvegliato di continuo dall\'Osservatorio Vesuviano dell\'INGV.'}],
+  et:[{t:'camera magmatica',p:[0,-3.6,0],c:'sez'},{t:'camino',p:[.9,-.6,0],c:'sez'},{t:'strati',p:[-1.7,.7,0],c:'sez',lg:1},{t:'cratere',p:[0,3.5,-.3],u1:.18},{t:'colonna eruttiva',p:[.6,8.2,-.3],u0:.3,u1:.8},{t:'cenere',p:[-3.6,1.2,-3],u0:.6}]},
+ {id:'caldera',tipo:2,nome:'Caldera',luogo:'Campi Flegrei',cam:[-2.9,4,1.2],w:.22,v:[1.2,36],tempo:['40 000 anni fa','oggi'],
+  sub:'Una caldera è una grande conca lasciata da un\'eruzione enorme. In Italia la più nota è quella dei Campi Flegrei, vicino a Napoli.',
+  info0:{t:'Un vulcano senza montagna',d:'Quando un\'eruzione enorme svuota la camera magmatica, il tetto resta senza sostegno e sprofonda. Al posto della montagna resta una conca larga chilometri. Ai Campi Flegrei è successo circa 40 000 anni fa.'},
+  ancora:'<b>Caldera</b><br>Un\'eruzione enorme svuota la camera magmatica e il tetto sprofonda. Resta una grande conca.',
+  fasi:['Circa 40 000 anni fa. Sotto il vulcano c\'è una grande camera magmatica.','Comincia un\'eruzione enorme.','La camera magmatica si svuota in fretta.','Il tetto, rimasto senza sostegno, sprofonda. Nasce la caldera.','Oggi. Dentro la caldera ci sono piccoli coni e fumarole. Il vulcano è ancora attivo.'],
+  parti:[{id:1,n:'Camera magmatica',c:'#ff9a3c',d:'È grande e poco profonda. Durante l\'eruzione si svuota in gran parte.'},{id:3,n:'Tetto',c:'#8d8078',d:'È la roccia sopra la camera magmatica. Quando la camera si svuota, sprofonda e forma la conca.'},
+   {id:5,n:'Colonna eruttiva e fumarole',c:'#9aa3ad',d:'Durante la grande eruzione sale una colonna di gas e cenere. Oggi dal suolo escono solo fumarole, cioè getti di vapore e gas caldi.'},
+   {id:6,n:'Bradisismo',c:'#b38cff',d:'Ai Campi Flegrei il suolo si alza e si abbassa lentamente. Questo movimento si chiama bradisismo.'},
+   {id:7,n:'Sorveglianza',c:'#6fd08c',d:'L\'ultima eruzione, nel 1538, ha fatto nascere il Monte Nuovo. Oggi la caldera è sorvegliata di continuo dall\'Osservatorio Vesuviano dell\'INGV.'}],
+  et:[{t:'camera magmatica',p:[0,-2.9,0],c:'sez'},{t:'tetto',p:[-1.6,-.9,0],c:'sez'},{t:'colonna eruttiva',p:[.6,8.6,-.3],u0:.2,u1:.52},{t:'caldera',p:[3.2,1.3,-4.5],u0:.8},{t:'fumarole',p:[-1.5,1.4,-1.2],u0:.93}]},
+ {id:'lineare',tipo:3,nome:'Lineare',luogo:'Islanda',cam:[-4.6,5.5,.8],w:.1,v:[-1,27],tempo:['inizio','fine dell\'eruzione'],
+  sub:'Non sempre la lava esce da un cratere. In Islanda può uscire da una spaccatura lunga chilometri.',
+  info0:{t:'Una spaccatura al posto del cratere',d:'Dove le placche si allontanano la crosta si apre e il magma, fluido, esce lungo tutta la frattura. Non nasce un cono ma una distesa di lava. Nel 1783, in Islanda, la frattura del Laki era lunga 27 km.'},
+  ancora:'<b>Eruzione lineare</b><br>Magma fluido che esce da una lunga frattura e copre la pianura. Tipica dei margini divergenti, come in Islanda.',
+  fasi:['La pianura è tranquilla. In profondità il magma preme.','Il magma risale in una lama sottile e il suolo si apre.','Lungo tutta la frattura si alzano fontane di lava.','La lava fluida copre la pianura dalle due parti.','L\'eruzione finisce. Lungo la frattura resta una fila di piccoli coni.'],
+  parti:[{id:1,n:'Serbatoio di magma',c:'#ff9a3c',d:'Il magma si raccoglie in profondità, sotto la zona in cui la crosta si sta aprendo.'},{id:2,n:'Dicco',c:'#ffc45a',d:'È la lama di magma che riempie la frattura. Qui la vedi di taglio, per questo sembra un filo.'},
+   {id:3,n:'Strati di lava',c:'#8d8078',d:'La pianura è fatta delle colate delle eruzioni precedenti, una sopra l\'altra.'},{id:4,n:'Distesa di lava',c:'#ff6a4a',d:'La lava esce da tutta la frattura e si allarga dalle due parti. Non costruisce una montagna ma un tavolato.'},
+   {id:5,n:'Fontane di lava',c:'#ffe14d',d:'Si alzano una accanto all\'altra lungo la frattura, come una tenda di fuoco.'},
+   {id:6,n:'Laki, 1783',c:'#b38cff',d:'L\'eruzione del Laki durò otto mesi, dal giugno 1783 al febbraio 1784, ed emise circa 15 km³ di lava.'}],
+  et:[{t:'serbatoio di magma',p:[0,-4.6,0],c:'sez'},{t:'dicco',p:[.9,-2,0],c:'sez'},{t:'frattura',p:[0,.9,-5],u0:.16,u1:.26},{t:'fontane di lava',p:[0,2.6,-4],u0:.26,u1:.8},{t:'distesa di lava',p:[-3.5,.6,-4],u0:.5}]}];
+var VS={u:0,play:false,sel:0,et:true,v:null},vulc=null;
+
+$('tipiV').innerHTML=VULC.map(function(v){return '<button class="chip" data-v="'+v.id+'" style="--chip:#9a6fe8">'+v.nome+' <small>'+v.luogo+'</small></button>';}).join('');
+$('tipiV').addEventListener('click',function(e){var k=e.target.closest('[data-v]');if(k&&(!VS.v||VS.v.id!==k.dataset.v))apriV(k.dataset.v);});
+function apriV(id){
+ var v=VULC.filter(function(x){return x.id===id;})[0];VS.v=v;VS.u=0;VS.play=false;
+ var st=$('tipiV');Array.prototype.forEach.call(st.children,function(k){k.classList.toggle('attivo',k.dataset.v===id);});
+ var at=st.querySelector('.attivo');if(at&&st.scrollWidth>st.clientWidth)st.scrollLeft=at.offsetLeft-st.clientWidth/2+at.offsetWidth/2;
+ $('sub').textContent=v.sub;$('ancoraV').innerHTML=v.ancora;$('vIni').textContent=v.tempo[0];$('vFin').textContent=v.tempo[1];
+ $('partiV').innerHTML=v.parti.map(function(p){return '<button class="chip" data-k="'+p.id+'" style="--chip:'+p.c+'">'+p.n+'</button>';}).join('');
+ scegliV(0);tempoV();if(vulc)vulc.carica(v);}
+$('partiV').addEventListener('click',function(e){var b=e.target.closest('[data-k]');if(b)scegliV(VS.sel===+b.dataset.k?0:+b.dataset.k);});
+function scegliV(id){VS.sel=id;var p=VS.v.parti.filter(function(x){return x.id===id;})[0];
+ $('vT').textContent=p?p.n:VS.v.info0.t;$('vD').textContent=p?p.d:VS.v.info0.d;
+ Array.prototype.forEach.call($('partiV').children,function(b){b.classList.toggle('attivo',+b.dataset.k===id);});}
+var statoV='';
+function tempoV(){$('vTempo').value=Math.round(VS.u*1000);var u=VS.u;$('faseV').textContent=VS.v.fasi[u<.15?0:u<.3?1:u<.6?2:u<.88?3:4];
+ var s=VS.play?'ferma':u>=1?'rifai':'vai';if(s!==statoV){statoV=s;var b=$('vPlay'),t=s==='ferma'?'Ferma':s==='rifai'?'Rivedi dall\'inizio':'Avvia';b.innerHTML=ICONE[s];b.title=t;b.setAttribute('aria-label',t);}}
+$('vPlay').onclick=function(){if(VS.play)VS.play=false;else{if(VS.u>=1)VS.u=0;VS.play=true;}tempoV();};
+$('vTempo').oninput=function(){VS.play=false;VS.u=this.value/1000;tempoV();};
+levetta('vEt',function(on){VS.et=on;});
+
+function Vulcano(el){
+ var R;try{R=new THREE.WebGLRenderer({antialias:true,alpha:true});}catch(e){R=null;}
+ if(!R){el.insertAdjacentHTML('beforeend','<div class="fail">Su questo dispositivo non riesco a mostrare il modello in 3D.</div>');return null;}
+ R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));el.insertBefore(R.domElement,el.firstChild);
+ var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(35,1,.5,200),L=10,GIU=-6,NXV=161,NZV=81,NP=512;
+ /* rumore per il terreno */
+ function hs(i,j){var s=Math.sin(i*127.1+j*311.7)*43758.5453;return s-Math.floor(s);}
+ function vn(x,y){var i=Math.floor(x),j=Math.floor(y),fx=x-i,fy=y-j;fx=fx*fx*(3-2*fx);fy=fy*fy*(3-2*fy);return (hs(i,j)*(1-fx)+hs(i+1,j)*fx)*(1-fy)+(hs(i,j+1)*(1-fx)+hs(i+1,j+1)*fx)*fy;}
+ function fb(x,y){return vn(x,y)*.5+vn(x*2.1,y*2.1)*.3+vn(x*4.3,y*4.3)*.2-.5;}
+ var ex=Math.exp,q2=function(a){return a*a;};
+ /* altezza del terreno: k=0 all'inizio, k=1 alla fine */
+ function alt(t,k,x,z){var r=Math.hypot(x,z),n=fb(x*.5+t*17,z*.5),h=0;
+  if(t===0)h=1.9*ex(-q2(r/5.2))-.3*ex(-q2(r/.75))+n*.14;
+  else if(t===1)h=3.6*ex(-r/2.3)-.75*ex(-q2(r/.5))+.12*Math.sin(Math.atan2(z,x)*13)*ex(-q2((r-2)/2))+n*.18;
+  else if(t===2)h=k?.95*ex(-q2((r-4.6)/1.5))-.22*sstep(3.6,2.4,r)+.42*ex(-(q2(x-1.7)+q2(z+2.2))/.5)+n*.14:1.5*ex(-q2(r/4.2))+.3*ex(-q2(r/1.2))-.25*ex(-q2(r/.4))+n*.16;
+  else h=n*.18+(k?.34*ex(-q2(x/.45))*(.75+.5*vn(z*1.7,3))+.1*sstep(7.5,2,Math.abs(x)):0);
+  return h*sstep(10,9,Math.max(Math.abs(x),Math.abs(z)));}
+
+ var UV={uTime:{value:0},uTipo:{value:0},uMorph:{value:0},uSel:{value:0},uFlow:{value:0},uHot:{value:1},uAsh:{value:0},uLiv:{value:0},uVuoto:{value:0},uI:{value:0},uVap:{value:0},uTop:{value:0},uPx:{value:1},
+  uCam:{value:new THREE.Vector3()},uW:{value:.2},uProf:{value:null}};
+ var RUM='float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\nfloat vn(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),f.y);}\nfloat fbm(vec2 p){return vn(p)*.5+vn(p*2.1)*.3+vn(p*4.3)*.2;}\n';
+ /* la superficie: mezza, la parte davanti è tagliata via */
+ var gS=new THREE.BufferGeometry(),ps=new Float32Array(NXV*NZV*3),h0=new Float32Array(NXV*NZV),h1=new Float32Array(NXV*NZV),ix=[],i,j,n=0;
+ for(j=0;j<NZV;j++)for(i=0;i<NXV;i++){ps[n*3]=-L+2*L*i/(NXV-1);ps[n*3+2]=-L+L*j/(NZV-1);n++;}
+ for(j=0;j<NZV-1;j++)for(i=0;i<NXV-1;i++){var a=j*NXV+i;ix.push(a,a+NXV,a+1,a+1,a+NXV,a+NXV+1);}
+ gS.setAttribute('position',new THREE.BufferAttribute(ps,3));gS.setAttribute('h0',new THREE.BufferAttribute(h0,1));gS.setAttribute('h1',new THREE.BufferAttribute(h1,1));gS.setIndex(ix);
+ var mS=new THREE.ShaderMaterial({uniforms:UV,extensions:{derivatives:true},
+  vertexShader:'attribute float h0;attribute float h1;uniform float uMorph;varying vec3 vP;void main(){vP=vec3(position.x,mix(h0,h1,uMorph),position.z);gl_Position=projectionMatrix*viewMatrix*vec4(vP,1.);}',
+  fragmentShader:RUM+'uniform float uTipo;uniform float uTime;uniform float uFlow;uniform float uHot;uniform float uAsh;uniform float uSel;uniform float uMorph;varying vec3 vP;\nvoid main(){vec3 nn=normalize(cross(dFdx(vP),dFdy(vP)));if(nn.y<0.)nn=-nn;float r=length(vP.xz);float f=fbm(vP.xz*.9);\n'
+   +'vec3 verde=mix(vec3(.2,.33,.15),vec3(.37,.42,.2),f);vec3 roccia=mix(vec3(.4,.33,.27),vec3(.23,.21,.2),fbm(vP.xz*2.3));\n'
+   +'float q=smoothstep(.3,1.6,vP.y)+(1.-nn.y)*1.6;if(uTipo<.5)q=smoothstep(6.5,2.5,r)*.9;if(uTipo>2.5){q=.35+.4*f;verde=mix(vec3(.3,.36,.2),vec3(.42,.4,.26),f);}if(uTipo>1.5&&uTipo<2.5)q=mix(q,.25+.3*f,uMorph);\n'
+   +'vec3 c=mix(verde,roccia,clamp(q,0.,1.));c=mix(c,vec3(.56,.54,.51),uAsh*smoothstep(9.,1.5,r)*.8);\n'
+   +'float ang=atan(vP.z,vP.x);float m=0.;float g=0.;\n'
+   +'if(uTipo<2.5){float lim=(uTipo<.5?9.2:3.2)*uFlow*(.45+.55*vn(vec2(ang*3.+uTipo*5.,2.)));float lin=smoothstep(.38,.54,vn(vec2(ang*2.3+uTipo*7.,1.3)));m=lin*smoothstep(lim,lim-.5,r)*step(.001,uFlow)*step(uTipo,1.5);g=vn(vec2(ang*26.,r*2.2-uTime*.9));}\n'
+   +'else{float lim=7.6*uFlow*(.55+.45*vn(vec2(vP.z*.55,sign(vP.x)*3.+5.)));m=smoothstep(lim,lim-.5,abs(vP.x))*step(.001,uFlow);g=vn(vec2(vP.z*3.,abs(vP.x)*2.2-uTime*.9));}\n'
+   +'float lu=.5+.5*max(dot(nn,normalize(vec3(.45,.8,.4))),0.);c*=lu;\n'
+   +'vec3 lava=mix(vec3(.1,.085,.08)*lu*1.6,mix(vec3(.9,.24,.03),vec3(1.,.78,.22),g),uHot*(.3+.7*g));\n'
+   +'if(uSel>.5&&abs(uSel-4.)>.5&&uSel<5.5){c*=.42;lava*=.5;}c=mix(c,lava,m);gl_FragColor=vec4(c,1.);}'});
+ var oS=new THREE.Mesh(gS,mS);oS.frustumCulled=false;scene.add(oS);
+
+ /* la sezione davanti e i due fianchi del blocco. Il profilo del terreno arriva in una piccola immagine, due righe: inizio e fine */
+ var prof=new Uint8Array(NP*2*4),tP=new THREE.DataTexture(prof,NP,2,THREE.RGBAFormat);tP.minFilter=tP.magFilter=THREE.NearestFilter;UV.uProf.value=tP;
+ var gF=new THREE.BufferGeometry(),SU=11;
+ gF.setAttribute('position',new THREE.BufferAttribute(new Float32Array([-L,GIU,0,L,GIU,0,L,SU,0,-L,SU,0, -L,GIU,-L,-L,GIU,0,-L,0,0,-L,0,-L, L,GIU,0,L,GIU,-L,L,0,-L,L,0,0]),3));
+ gF.setAttribute('lato',new THREE.BufferAttribute(new Float32Array([0,0,0,0,1,1,1,1,1,1,1,1]),1));gF.setIndex([0,1,2,0,2,3,4,5,6,4,6,7,8,9,10,8,10,11]);
+ var mF=new THREE.ShaderMaterial({uniforms:UV,side:THREE.DoubleSide,
+  vertexShader:'attribute float lato;varying vec2 vQ;void main(){vQ=lato>.5?vec2(40.+position.z,position.y):position.xy;gl_Position=projectionMatrix*viewMatrix*vec4(position,1.);}',
+  fragmentShader:RUM+'uniform sampler2D uProf;uniform float uTipo;uniform float uTime;uniform float uMorph;uniform float uSel;uniform float uLiv;uniform float uVuoto;uniform vec3 uCam;uniform float uW;varying vec2 vQ;\n'
+   +'float dec(float s,float riga){vec4 t=texture2D(uProf,vec2((s+.5)/512.,riga));return (t.r*65280.+t.g*255.)/65535.*8.-2.;}\n'
+   +'float riga(float x,float rg){float f=clamp((x/20.+.5)*512.-.5,0.,511.);float i=floor(f);return mix(dec(i,rg),dec(min(i+1.,511.),rg),f-i);}\n'
+   +'float quota(float x){return mix(riga(x,.25),riga(x,.75),uMorph);}\n'
+   +'void main(){float x=vQ.x;float y=vQ.y;float h=quota(x);if(y>h)discard;float id=0.;float prof=h-y;\n'
+   +'float n1=fbm(vec2(x*.45,y*2.5));vec3 c=mix(vec3(.44,.37,.3),vec3(.31,.27,.24),step(.5,fract(y*.5+n1*.7+.06*sin(x*.6))));c*=.82+.36*fbm(vec2(x*3.,y*3.));\n'
+   +'float ed=uTipo<.5?step(-.6,y):uTipo<1.5?step(-.3,y):uTipo<2.5?step(-1.1,y)*step(abs(x),6.5):step(-.9,y);\n'
+   +'if(ed>.5){id=3.;float passo=uTipo<.5?.13:uTipo<1.5?.24:uTipo<2.5?.3:.16;float b=step(.5,fract(prof/passo+fbm(vec2(x*.8,y*.4))*.35));\n'
+   +' vec3 c1=uTipo<.5?vec3(.2,.18,.18):uTipo<1.5?vec3(.27,.22,.2):uTipo<2.5?vec3(.52,.46,.3):vec3(.19,.17,.17);vec3 c2=uTipo<.5?vec3(.29,.25,.24):uTipo<1.5?vec3(.6,.54,.44):uTipo<2.5?vec3(.42,.37,.26):vec3(.27,.24,.23);\n'
+   +' c=mix(c1,c2,b)*(.85+.3*fbm(vec2(x*4.,y*4.)));}\n'
+   +'float gl=fbm(vec2(x*2.,y*2.-uTime*.45));vec3 magma=mix(vec3(.82,.19,.02),vec3(1.,.8,.25),gl*gl*1.5);\n'
+   +'float ry=uCam.z*(1.-.72*uVuoto);float e=length(vec2(x/uCam.y,(y-uCam.x+uCam.z-ry)/ry))+(fbm(vec2(x,y)*1.1)-.5)*.22;\n'
+   +'float xc=.14*sin(y*1.3);float top=quota(xc);float liv=mix(uCam.x,top-.02,uLiv);float dc=abs(x-xc);\n'
+   +'if(y>uCam.x&&dc<uW){id=2.;c=y<liv?magma:vec3(.1,.09,.09);}else if(y>uCam.x&&dc<uW*1.7){c*=.6;}\n'
+   +'if(e<1.){id=1.;c=magma;}else if(e<1.13){c=mix(c,vec3(.45,.16,.08),.55);}\n'
+   +'float e0=length(vec2(x/uCam.y,(y-uCam.x)/uCam.z));if(uVuoto>.01&&e0<.96&&e>=1.){id=1.;c=vec3(.2,.17,.16)*(.8+.4*fbm(vec2(x*5.,y*5.)));}\n'
+   +'c=mix(c,vec3(.07),smoothstep(.08,0.,prof)*.65);if(uSel>.5&&uSel<5.5&&abs(uSel-id)>.5)c*=.4;gl_FragColor=vec4(c,1.);}'});
+ var oF=new THREE.Mesh(gF,mF);oF.frustumCulled=false;scene.add(oF);
+
+ /* quello che vola: fontane di lava, colonna di cenere, fumarole. Ogni granello ripete il suo viaggio */
+ var NG=1700,sd=new Float32Array(NG*4);for(i=0;i<NG*4;i++)sd[i]=Math.random();
+ var gP=new THREE.BufferGeometry();gP.setAttribute('position',new THREE.BufferAttribute(new Float32Array(NG*3),3));gP.setAttribute('seed',new THREE.BufferAttribute(sd,4));
+ var mP=new THREE.ShaderMaterial({uniforms:UV,transparent:true,depthWrite:false,
+  vertexShader:'attribute vec4 seed;uniform float uTipo;uniform float uTime;uniform float uI;uniform float uVap;uniform float uTop;uniform float uPx;uniform float uSel;varying float vA;varying vec3 vC;\n'
+   +'void main(){vec3 p=vec3(0.,-50.,0.);float a=0.;float sz=4.;vec3 col=vec3(1.,.5,.1);float fam=seed.w;float ang=seed.z*6.2832;\n'
+   +'if(uTipo<.5||uTipo>2.5||fam>.8){float T=1.5+seed.y;float t=fract(seed.x+uTime/T);float lin=uTipo>2.5?1.:0.;float sp=(.3+.9*seed.y)*mix(1.,.5,lin);float vy=(3.4+2.4*fract(seed.w*9.7))*mix(1.,.62,lin);float tt=t*1.5;\n'
+   +' p=vec3(cos(ang)*sp*tt,uTop+vy*tt-2.7*tt*tt,-abs(sin(ang))*sp*tt-lin*fract(seed.x*7.31)*9.4);a=uI*(1.-t*t)*step(uTop-.25,p.y);col=mix(vec3(1.,.86,.32),vec3(.8,.14,.02),t);sz=5.;}\n'
+   +'else{float T=5.+3.*seed.y;float t=fract(seed.x+uTime/T);float H=uTipo>1.5?8.8:7.2;float rad=(.2+.55*t+2.7*smoothstep(.55,1.,t))*sqrt(seed.y)*(uTipo>1.5?1.5:1.);float an=ang+t*2.;\n'
+   +' p=vec3(cos(an)*rad+1.9*smoothstep(.5,1.,t)*t,uTop+H*(1.-pow(1.-t,2.2)),-abs(sin(an))*rad);a=uI*smoothstep(0.,.05,t)*(1.-smoothstep(.72,1.,t))*.5;float gr=.26+.34*seed.y;col=vec3(gr,gr*.97,gr*.93)+vec3(.55,.2,0.)*(1.-smoothstep(0.,.1,t));sz=13.+36.*t;}\n'
+   +'if(uVap>.01&&fam<.22){float t=fract(seed.x+uTime/(3.+2.*seed.y));float k=floor(seed.z*3.);p=vec3(-1.6+k*1.5+.25*sin(t*5.+seed.y*6.),uTop+.25+1.9*t,-1.+(k-1.)*.9-.3*seed.y);a=uVap*.34*smoothstep(0.,.1,t)*(1.-t);col=vec3(.92,.94,.96);sz=7.+16.*t;}\n'
+   +'if(uSel>.5&&uSel<5.5&&abs(uSel-5.)>.5)a*=.3;vA=a;vC=col;gl_Position=projectionMatrix*viewMatrix*vec4(p,1.);gl_PointSize=sz*uPx;}',
+  fragmentShader:'varying float vA;varying vec3 vC;void main(){float r=length(gl_PointCoord-.5)*2.;if(r>1.||vA<.004)discard;gl_FragColor=vec4(vC,vA*(1.-r*r));}'});
+ var oP=new THREE.Points(gP,mP);oP.frustumCulled=false;scene.add(oP);
+
+ /* etichette */
+ var etich=[],v3=new THREE.Vector3();
+ function etichette(lista){etich.forEach(function(e){e.el.remove();});etich=lista.map(function(e){var d=document.createElement('div');d.className='etich'+(e.c?' '+e.c:'');d.textContent=e.t;d.style.opacity=0;el.appendChild(d);return {el:d,e:e};});}
+
+ var cfg=null,C={th:.42,ph:1.02,d:30,ty:1},CT=null,asp=1.5,top0=0,top1=0;
+ var casa=function(){return {th:.42,ph:1.02,d:cfg.v[1]*Math.max(1,1.15/asp),ty:cfg.v[0]};};
+ function carica(c){cfg=c;var t=c.tipo,k,x;
+  for(k=0;k<NXV*NZV;k++){h0[k]=alt(t,0,ps[k*3],ps[k*3+2]);h1[k]=alt(t,1,ps[k*3],ps[k*3+2]);}
+  gS.attributes.h0.needsUpdate=true;gS.attributes.h1.needsUpdate=true;
+  for(k=0;k<2;k++)for(i=0;i<NP;i++){x=((i+.5)/NP-.5)*20;var v=Math.round(clamp((alt(t,k,x,0)+2)/8,0,1)*65535),o=(k*NP+i)*4;prof[o]=v>>8;prof[o+1]=v&255;prof[o+3]=255;}
+  tP.needsUpdate=true;top0=alt(t,0,0,0);top1=alt(t,1,0,0);
+  UV.uTipo.value=t;UV.uCam.value.set(c.cam[0],c.cam[1],c.cam[2]);UV.uW.value=c.w;etichette(c.et);C=casa();CT=null;}
+ var cv=R.domElement,ptr=new Map(),pd=0;
+ var dist=function(){var a=Array.from(ptr.values());return Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);};
+ cv.addEventListener('pointerdown',function(e){cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);CT=null;});
+ cv.addEventListener('pointermove',function(e){if(!ptr.has(e.pointerId))return;var o=ptr.get(e.pointerId),nn=[e.clientX,e.clientY];
+  if(ptr.size===1){C.th=clamp(C.th-(nn[0]-o[0])*.007,-1.05,1.05);C.ph=clamp(C.ph-(nn[1]-o[1])*.007,.75,1.5);}
+  ptr.set(e.pointerId,nn);if(ptr.size===2){var dd=dist();if(pd)C.d=clamp(C.d*pd/dd,12,70);pd=dd;}});
+ var su=function(e){ptr.delete(e.pointerId);pd=0;};cv.addEventListener('pointerup',su);cv.addEventListener('pointercancel',su);
+ cv.addEventListener('wheel',function(e){e.preventDefault();CT=null;C.d=clamp(C.d*Math.exp(e.deltaY*.0011),12,70);},{passive:false});
+ function resize(){var w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;R.setSize(w,h,false);var prima=asp;asp=w/h;cam.aspect=asp;cam.updateProjectionMatrix();if(cfg&&!ptr.size&&Math.abs(prima-asp)>.01)C.d=casa().d;}
+ if(window.ResizeObserver)new ResizeObserver(resize).observe(el);else window.addEventListener('resize',resize);resize();
+
+ var last=performance.now(),tempo=0;
+ (function loop(now){requestAnimationFrame(loop);
+  var dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;     /* intervallo mai negativo */
+  if(!cfg||el.offsetParent===null)return;
+  if(VS.play){VS.u=clamp(VS.u+dt/T_VULC,0,1);if(VS.u>=1)VS.play=false;tempoV();}
+  if(!reduce)tempo+=dt;
+  var u=VS.u,t=cfg.tipo,s=sstep,fine=1-.25*s(.88,1,u);
+  /* che cosa succede in ogni momento: livello del magma nel camino, forza dell'eruzione, colate, cenere, crollo */
+  UV.uTime.value=tempo;UV.uSel.value=VS.sel;
+  UV.uLiv.value=t===2?s(0,.1,u)*(1-s(.5,.62,u)):s(0,t===1?.18:.15,u)*fine;
+  UV.uI.value=t===2?s(.1,.18,u)*(1-s(.45,.58,u)):s(t===1?.18:.14,t===1?.26:.23,u)*(1-s(t===1?.72:.78,.9,u));
+  UV.uFlow.value=t===0||t===3?s(.2,.9,u):t===1?s(.5,.95,u):0;UV.uHot.value=1-.88*s(.86,1,u);
+  UV.uAsh.value=t===1?s(.3,.9,u):t===2?s(.2,.6,u):0;UV.uVuoto.value=t===2?s(.15,.55,u):0;
+  UV.uMorph.value=t===2?s(.5,.78,u):t===3?s(.2,.9,u):0;UV.uVap.value=t===2?s(.86,.96,u):0;
+  UV.uTop.value=top0+(top1-top0)*UV.uMorph.value;UV.uPx.value=R.getPixelRatio()*el.clientHeight/520*30/C.d;
+  if(CT){var f=1-Math.exp(-dt/.4),ok=true;['th','ph','d','ty'].forEach(function(k){C[k]+=(CT[k]-C[k])*f;if(Math.abs(CT[k]-C[k])>.01)ok=false;});if(ok)CT=null;}
+  cam.position.set(C.d*Math.sin(C.ph)*Math.sin(C.th),C.ty+C.d*Math.cos(C.ph),-2+C.d*Math.sin(C.ph)*Math.cos(C.th));cam.lookAt(0,C.ty,-2);
+  R.render(scene,cam);
+  var w=el.clientWidth,h=el.clientHeight,stretto=w<520;
+  etich.forEach(function(x){var e=x.e;v3.set(e.p[0],e.p[1],e.p[2]).project(cam);var px=(v3.x*.5+.5)*w,py=(-v3.y*.5+.5)*h;
+   var vis=VS.et&&px>30&&px<w-30&&py>14&&py<h-22&&(e.u0===undefined||u>=e.u0)&&(e.u1===undefined||u<=e.u1)&&!(stretto&&e.lg);
+   x.el.style.opacity=vis?1:0;x.el.style.transform='translate(-50%,-50%) translate('+px.toFixed(1)+'px,'+py.toFixed(1)+'px)';});})(last);
+ return {carica:carica,reset:function(){CT=casa();},zoom:function(f){CT=null;C.d=clamp(C.d*f,12,70);}};
+}
+$('vReset').onclick=function(){if(vulc)vulc.reset();};
+$('vPiu').onclick=function(){if(vulc)vulc.zoom(.8);};
+$('vMeno').onclick=function(){if(vulc)vulc.zoom(1.25);};
+
 /* ================= le schede ================= */
-var navS=document.querySelector('.schede'),SEZ={1:'p-globo',2:'p-margini'};
+var navS=document.querySelector('.schede'),SEZ={1:'p-globo',2:'p-margini',3:'p-vulcani'};
 function scheda(n,blocco){
  Object.keys(SEZ).forEach(function(k){$(SEZ[k]).classList.toggle('hide',+k!==n);});
  Array.prototype.forEach.call(navS.children,function(b){var on=+b.dataset.s===n;b.classList.toggle('attiva',on);b.setAttribute('aria-selected',on);});
  centraScheda(navS);
  if(n===1){$('sub').textContent=SUB_GLOBO;if(!globo){testoGlobo();globo=Globo($('stageG'));}}
  if(n===2){if(!scena)scena=Scena($('stage'));var id=blocco||(S.b?S.b.id:INIZIALE);if(!S.b||S.b.id!==id)apri(id);else $('sub').textContent=S.b.sub;}
+ if(n===3){if(!vulc)vulc=Vulcano($('stageV'));if(!VS.v)apriV(VULC[0].id);else $('sub').textContent=VS.v.sub;}
  window.scrollTo(0,0);}
 navS.addEventListener('click',function(e){var b=e.target.closest('[data-s]');if(b&&!b.disabled)scheda(+b.dataset.s);});
-precarica(['../immagini/prof_t/prof_t_geologo_lente.webp']);
+precarica(['../immagini/prof_t/prof_t_geologo_lente.webp','../immagini/prof_t/prof_t_geologo_vulcano.webp']);
 scheda(1);
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Pagina in lavorazione. Per ora mostra i margini delle placche con sei esempi veri: dorsale atlantica, Giappone, Ande, Himalaya, California e Hawaii.</p>
-<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Dorsale medio-atlantica, le placche si separano di circa 2,5 cm all'anno (25 km in un milione di anni, quindi 750 km in 30 milioni di anni). In Islanda la dorsale è sulla terraferma. <a href="https://pubs.usgs.gov/gip/dynamic/understanding.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>Láscar, in Cile, il vulcano più attivo delle Ande cilene settentrionali, a 23,37° S e 67,73° O. <a href="https://volcano.si.edu/volcano.cfm?vn=355100" target="_blank" rel="noopener">Global Volcanism Program, Smithsonian Institution</a></li><li>Bandai, sull'isola di Honshu, a 37,60° N e 140,07° E, ultima eruzione nel 1888. <a href="https://volcano.si.edu/volcano.cfm?vn=283160" target="_blank" rel="noopener">Global Volcanism Program, Smithsonian Institution</a></li><li>India e Asia si sono scontrate tra 40 e 50 milioni di anni fa, dopo la chiusura dell'oceano Tetide. L'Himalaya si solleva più di 1 cm all'anno. <a href="https://pubs.usgs.gov/gip/dynamic/himalaya.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>Sotto l'Himalaya e il Tibet la crosta è spessa circa 75 km, il doppio della media, e l'ispessimento ha fermato i vulcani. L'erosione abbassa la catena quasi alla stessa velocità con cui cresce. <a href="https://www.geolsoc.org.uk/Plate-Tectonics/Chap3-Plate-Margins/Convergent/Continental-Collision" target="_blank" rel="noopener">The Geological Society</a></li><li>Le rocce di Pinnacles e di Neenach vengono dallo stesso vulcano, nato circa 23 milioni di anni fa, e oggi distano 314 km (195 miglia) lungo la faglia di San Andreas. <a href="https://www.nps.gov/pinn/learn/nature/faults.htm" target="_blank" rel="noopener">National Park Service, Pinnacles</a></li><li>Hawaii, le rocce più antiche di Kauai hanno circa 5,5 milioni di anni. Il vulcano sottomarino a sud-est dell'isola di Hawaii potrebbe diventare la prossima isola. <a href="https://pubs.usgs.gov/gip/dynamic/hotspots.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>La placca del Pacifico si muove sopra il punto caldo delle Hawaii di circa 8 cm all'anno (49 miglia in un milione di anni). <a href="https://www.usgs.gov/news/volcano-watch-hotspots" target="_blank" rel="noopener">USGS, Volcano Watch</a></li><li>A sud delle Azzorre la dorsale medio-atlantica separa la placca nordamericana da quella africana. <a href="https://en.wikipedia.org/wiki/Mid-Atlantic_Ridge" target="_blank" rel="noopener">Wikipedia, Mid-Atlantic Ridge</a></li><li>In Africa orientale, lungo la Rift Valley, potrebbe nascere un nuovo centro di espansione. <a href="https://pubs.usgs.gov/gip/dynamic/understanding.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>Lungo le dorsali e i margini trascorrenti i terremoti sono poco profondi, di solito a meno di 30 km. <a href="https://opentextbc.ca/physicalgeologyh5p/chapter/earthquakes-and-plate-tectonics/" target="_blank" rel="noopener">Panchuk, Physical Geology, BCcampus</a></li><li>Lungo la faglia di San Andreas le faglie sono attive solo nella crosta più superficiale, fino a circa 20 km. <a href="https://www.usgs.gov/faqs/what-depth-do-earthquakes-occur-what-significance-depth" target="_blank" rel="noopener">USGS, At what depth do earthquakes occur</a></li><li>La placca del Pacifico è la più veloce, in alcune zone supera i 10 cm all'anno. <a href="https://opentextbc.ca/geology/chapter/10-4-plates-plate-motions-and-plate-boundary-processes/" target="_blank" rel="noopener">Earle, Physical Geology, BCcampus</a></li><li>La placca di Nazca si muove verso est di circa 7 cm all'anno rispetto al Sud America (da 65 mm all'anno a nord a 80 a sud). <a href="https://www.usgs.gov/publications/seismicity-earth-1900-2013-seismotectonics-south-america-nazca-plate-region" target="_blank" rel="noopener">USGS, Seismotectonics of South America</a></li><li>Fossa del Perù-Cile, profondità massima 8065 m. <a href="https://www.britannica.com/place/Peru-Chile-Trench" target="_blank" rel="noopener">Encyclopaedia Britannica, Peru-Chile Trench</a></li><li>Nelle zone di subduzione l'acqua esce dalla placca intorno ai 100 km di profondità e fa fondere in parte il mantello che sta sopra (tra 60 e 170 km secondo le zone). <a href="https://www.columbia.edu/~vjd1/subd_zone_basic.htm" target="_blank" rel="noopener">Columbia University, Subduction Zones</a>, <a href="https://news.mit.edu/2009/volcanoes-0605" target="_blank" rel="noopener">MIT News</a></li><li>Le isole Eolie sono legate alla subduzione della placca ionica, che scende sotto la Calabria. <a href="https://www.ingv.it/newsletter-ingv-special-number-esplorare-le-isole-eolie-laboratorio-ingv-di-vulcani/stromboli-il-fascino-dell-isola-dal-vulcano-sempre-attivo" target="_blank" rel="noopener">INGV, Stromboli</a></li><li>Le Alpi sono nate dalla convergenza e poi dalla collisione tra la placca africana (o la microplacca Adria) e quella europea. <a href="https://development.isprambiente.gov.it/files/notizie-ispra/notizia-2014/giro-italia/alpi.pdf" target="_blank" rel="noopener">ISPRA, Le Alpi</a></li><li>India ed Eurasia convergono di 40-50 mm all'anno e lungo il margine sono avvenuti terremoti grandi e devastanti. <a href="https://www.usgs.gov/publications/seismicity-earth-1900-2010-himalaya-and-vicinity" target="_blank" rel="noopener">USGS, Seismicity of the Earth, Himalaya and vicinity</a></li><li>Kilauea, sull'isola di Hawaii, tra i vulcani più attivi del mondo, a 19,421° N e 155,287° O. <a href="https://www.usgs.gov/volcanoes/kilauea" target="_blank" rel="noopener">USGS, Kīlauea</a></li><li>Globo, 3730 terremoti di magnitudo 6 o più avvenuti dal 2000 al 2024. <a href="https://earthquake.usgs.gov/earthquakes/search/" target="_blank" rel="noopener">USGS, Earthquake Catalog</a></li><li>Terremoti poco profondi fino a 70 km, intermedi tra 70 e 300 km, profondi oltre 300 km. Quelli profondi avvengono solo nelle zone di subduzione. <a href="https://en.wikipedia.org/wiki/Depth_of_focus_(tectonics)" target="_blank" rel="noopener">Wikipedia, Depth of focus</a></li><li>Globo, più di 1200 vulcani che hanno eruttato negli ultimi 12 000 anni (1214 nell'elenco usato). <a href="https://volcano.si.edu/" target="_blank" rel="noopener">Global Volcanism Program, Smithsonian Institution</a></li><li>Confini delle placche secondo il modello PB2002, che conta 52 placche. <a href="https://peterbird.name/publications/2003_PB2002/2003_PB2002.htm" target="_blank" rel="noopener">Bird, 2003</a>, dati preparati da <a href="https://github.com/fraxen/tectonicplates" target="_blank" rel="noopener">Hugo Ahlenius</a>, licenza ODC-By.</li><li>Le placche si muovono da meno di 1 a più di 10 cm all'anno. <a href="https://opentextbc.ca/geology/chapter/10-4-plates-plate-motions-and-plate-boundary-processes/" target="_blank" rel="noopener">Earle, Physical Geology, BCcampus</a></li><li>Il Mediterraneo e le Alpi stanno nella fascia di confine tra la placca africana e quella euroasiatica. <a href="https://pubs.usgs.gov/gip/dynamic/understanding.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>Età dei fondali oceanici, quasi tutto il fondale (il 99,5 % dei punti della griglia) ha meno di 180 milioni di anni. <a href="https://www.earthbyte.org/webdav/ftp/earthbyte/agegrid/2020/" target="_blank" rel="noopener">Seton e altri, 2020, EarthByte</a>, licenza Creative Commons Attribuzione</li><li>La crosta oceanica viene distrutta nelle fosse più o meno alla stessa velocità con cui nasce nelle dorsali. <a href="https://pubs.usgs.gov/gip/dynamic/understanding.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1. Superficie della Terra, <a href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/" target="_blank" rel="noopener">NASA Earth Observatory, Blue Marble Next Generation</a>. Rilievo e fondali, <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener">NOAA NCEI, ETOPO1</a>.</li></ul></details></div></div>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Dorsale medio-atlantica, le placche si separano di circa 2,5 cm all'anno (25 km in un milione di anni, quindi 750 km in 30 milioni di anni). In Islanda la dorsale è sulla terraferma. <a href="https://pubs.usgs.gov/gip/dynamic/understanding.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>Láscar, in Cile, il vulcano più attivo delle Ande cilene settentrionali, a 23,37° S e 67,73° O. <a href="https://volcano.si.edu/volcano.cfm?vn=355100" target="_blank" rel="noopener">Global Volcanism Program, Smithsonian Institution</a></li><li>Bandai, sull'isola di Honshu, a 37,60° N e 140,07° E, ultima eruzione nel 1888. <a href="https://volcano.si.edu/volcano.cfm?vn=283160" target="_blank" rel="noopener">Global Volcanism Program, Smithsonian Institution</a></li><li>India e Asia si sono scontrate tra 40 e 50 milioni di anni fa, dopo la chiusura dell'oceano Tetide. L'Himalaya si solleva più di 1 cm all'anno. <a href="https://pubs.usgs.gov/gip/dynamic/himalaya.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>Sotto l'Himalaya e il Tibet la crosta è spessa circa 75 km, il doppio della media, e l'ispessimento ha fermato i vulcani. L'erosione abbassa la catena quasi alla stessa velocità con cui cresce. <a href="https://www.geolsoc.org.uk/Plate-Tectonics/Chap3-Plate-Margins/Convergent/Continental-Collision" target="_blank" rel="noopener">The Geological Society</a></li><li>Le rocce di Pinnacles e di Neenach vengono dallo stesso vulcano, nato circa 23 milioni di anni fa, e oggi distano 314 km (195 miglia) lungo la faglia di San Andreas. <a href="https://www.nps.gov/pinn/learn/nature/faults.htm" target="_blank" rel="noopener">National Park Service, Pinnacles</a></li><li>Hawaii, le rocce più antiche di Kauai hanno circa 5,5 milioni di anni. Il vulcano sottomarino a sud-est dell'isola di Hawaii potrebbe diventare la prossima isola. <a href="https://pubs.usgs.gov/gip/dynamic/hotspots.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>La placca del Pacifico si muove sopra il punto caldo delle Hawaii di circa 8 cm all'anno (49 miglia in un milione di anni). <a href="https://www.usgs.gov/news/volcano-watch-hotspots" target="_blank" rel="noopener">USGS, Volcano Watch</a></li><li>A sud delle Azzorre la dorsale medio-atlantica separa la placca nordamericana da quella africana. <a href="https://en.wikipedia.org/wiki/Mid-Atlantic_Ridge" target="_blank" rel="noopener">Wikipedia, Mid-Atlantic Ridge</a></li><li>In Africa orientale, lungo la Rift Valley, potrebbe nascere un nuovo centro di espansione. <a href="https://pubs.usgs.gov/gip/dynamic/understanding.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>Lungo le dorsali e i margini trascorrenti i terremoti sono poco profondi, di solito a meno di 30 km. <a href="https://opentextbc.ca/physicalgeologyh5p/chapter/earthquakes-and-plate-tectonics/" target="_blank" rel="noopener">Panchuk, Physical Geology, BCcampus</a></li><li>Lungo la faglia di San Andreas le faglie sono attive solo nella crosta più superficiale, fino a circa 20 km. <a href="https://www.usgs.gov/faqs/what-depth-do-earthquakes-occur-what-significance-depth" target="_blank" rel="noopener">USGS, At what depth do earthquakes occur</a></li><li>La placca del Pacifico è la più veloce, in alcune zone supera i 10 cm all'anno. <a href="https://opentextbc.ca/geology/chapter/10-4-plates-plate-motions-and-plate-boundary-processes/" target="_blank" rel="noopener">Earle, Physical Geology, BCcampus</a></li><li>La placca di Nazca si muove verso est di circa 7 cm all'anno rispetto al Sud America (da 65 mm all'anno a nord a 80 a sud). <a href="https://www.usgs.gov/publications/seismicity-earth-1900-2013-seismotectonics-south-america-nazca-plate-region" target="_blank" rel="noopener">USGS, Seismotectonics of South America</a></li><li>Fossa del Perù-Cile, profondità massima 8065 m. <a href="https://www.britannica.com/place/Peru-Chile-Trench" target="_blank" rel="noopener">Encyclopaedia Britannica, Peru-Chile Trench</a></li><li>Nelle zone di subduzione l'acqua esce dalla placca intorno ai 100 km di profondità e fa fondere in parte il mantello che sta sopra (tra 60 e 170 km secondo le zone). <a href="https://www.columbia.edu/~vjd1/subd_zone_basic.htm" target="_blank" rel="noopener">Columbia University, Subduction Zones</a>, <a href="https://news.mit.edu/2009/volcanoes-0605" target="_blank" rel="noopener">MIT News</a></li><li>Le isole Eolie sono legate alla subduzione della placca ionica, che scende sotto la Calabria. <a href="https://www.ingv.it/newsletter-ingv-special-number-esplorare-le-isole-eolie-laboratorio-ingv-di-vulcani/stromboli-il-fascino-dell-isola-dal-vulcano-sempre-attivo" target="_blank" rel="noopener">INGV, Stromboli</a></li><li>Le Alpi sono nate dalla convergenza e poi dalla collisione tra la placca africana (o la microplacca Adria) e quella europea. <a href="https://development.isprambiente.gov.it/files/notizie-ispra/notizia-2014/giro-italia/alpi.pdf" target="_blank" rel="noopener">ISPRA, Le Alpi</a></li><li>India ed Eurasia convergono di 40-50 mm all'anno e lungo il margine sono avvenuti terremoti grandi e devastanti. <a href="https://www.usgs.gov/publications/seismicity-earth-1900-2010-himalaya-and-vicinity" target="_blank" rel="noopener">USGS, Seismicity of the Earth, Himalaya and vicinity</a></li><li>Kilauea, sull'isola di Hawaii, tra i vulcani più attivi del mondo, a 19,421° N e 155,287° O. <a href="https://www.usgs.gov/volcanoes/kilauea" target="_blank" rel="noopener">USGS, Kīlauea</a></li><li>Globo, 3730 terremoti di magnitudo 6 o più avvenuti dal 2000 al 2024. <a href="https://earthquake.usgs.gov/earthquakes/search/" target="_blank" rel="noopener">USGS, Earthquake Catalog</a></li><li>Terremoti poco profondi fino a 70 km, intermedi tra 70 e 300 km, profondi oltre 300 km. Quelli profondi avvengono solo nelle zone di subduzione. <a href="https://en.wikipedia.org/wiki/Depth_of_focus_(tectonics)" target="_blank" rel="noopener">Wikipedia, Depth of focus</a></li><li>Globo, più di 1200 vulcani che hanno eruttato negli ultimi 12 000 anni (1214 nell'elenco usato). <a href="https://volcano.si.edu/" target="_blank" rel="noopener">Global Volcanism Program, Smithsonian Institution</a></li><li>Confini delle placche secondo il modello PB2002, che conta 52 placche. <a href="https://peterbird.name/publications/2003_PB2002/2003_PB2002.htm" target="_blank" rel="noopener">Bird, 2003</a>, dati preparati da <a href="https://github.com/fraxen/tectonicplates" target="_blank" rel="noopener">Hugo Ahlenius</a>, licenza ODC-By.</li><li>Le placche si muovono da meno di 1 a più di 10 cm all'anno. <a href="https://opentextbc.ca/geology/chapter/10-4-plates-plate-motions-and-plate-boundary-processes/" target="_blank" rel="noopener">Earle, Physical Geology, BCcampus</a></li><li>Il Mediterraneo e le Alpi stanno nella fascia di confine tra la placca africana e quella euroasiatica. <a href="https://pubs.usgs.gov/gip/dynamic/understanding.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>Età dei fondali oceanici, quasi tutto il fondale (il 99,5 % dei punti della griglia) ha meno di 180 milioni di anni. <a href="https://www.earthbyte.org/webdav/ftp/earthbyte/agegrid/2020/" target="_blank" rel="noopener">Seton e altri, 2020, EarthByte</a>, licenza Creative Commons Attribuzione</li><li>La crosta oceanica viene distrutta nelle fosse più o meno alla stessa velocità con cui nasce nelle dorsali. <a href="https://pubs.usgs.gov/gip/dynamic/understanding.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>Il Mauna Loa è il più grande vulcano attivo della Terra. <a href="https://www.usgs.gov/volcanoes/mauna-loa/science/science-topics/2022-eruption" target="_blank" rel="noopener">USGS, Mauna Loa</a></li><li>Vesuvio, eruzione pliniana del 79 d.C. e ultima eruzione nel marzo 1944. <a href="https://www.ingv.it/en/Vesuvius-sum" target="_blank" rel="noopener">INGV, Somma-Vesuvio</a></li><li>Le eruzioni pliniane prendono il nome da Plinio il Giovane, che descrisse quella del 79 d.C. <a href="https://www.focus.it/cultura/storia/in-quanto-tempo-e-stata-distrutta-pompei" target="_blank" rel="noopener">Focus</a></li><li>Eruzioni stromboliane e vulcaniane, dai nomi di Stromboli e Vulcano. <a href="https://en.wikipedia.org/wiki/Types_of_volcanic_eruptions" target="_blank" rel="noopener">Wikipedia, Types of volcanic eruptions</a></li><li>Vesuvio, Etna, Stromboli, Vulcano e Fuji sono classificati come stratovulcani. <a href="https://volcano.si.edu/" target="_blank" rel="noopener">Global Volcanism Program, Smithsonian Institution</a></li><li>Campi Flegrei, caldera nata con l'eruzione dell'Ignimbrite Campana di 40 000 anni fa, ultima eruzione nel 1538 con la nascita del Monte Nuovo, bradisismo. <a href="https://www.ingv.it/en/campi-flegrei" target="_blank" rel="noopener">INGV, Campi Flegrei</a>, <a href="https://www.ov.ingv.it/index.php/monitoraggio-sismico-e-vulcanico/campi-flegrei" target="_blank" rel="noopener">Osservatorio Vesuviano</a></li><li>Laki, Islanda, frattura lunga 27 km, eruzione dall'8 giugno 1783 al 7 febbraio 1784, circa 15 km³ di lava. <a href="https://timarit.is/page/7009556" target="_blank" rel="noopener">Thordarson e altri, 2003, Jökull</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1. Superficie della Terra, <a href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/" target="_blank" rel="noopener">NASA Earth Observatory, Blue Marble Next Generation</a>. Rilievo e fondali, <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener">NOAA NCEI, ETOPO1</a>.</li></ul></details></div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#b38cff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(179,140,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Scienze della Terra</a>
 <script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
