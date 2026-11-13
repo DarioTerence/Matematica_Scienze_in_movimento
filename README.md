@@ -15,9 +15,9 @@ Sito: https://scienzainmovimento.it/
 - `apple-touch-icon.png`: icona 180x180 px per la schermata Home di iPhone e iPad, indicata da `<link rel="apple-touch-icon">` in tutte le pagine; sorgente in `immagini/apple_touch_icon/`
 - `firma.svg`: firma "Prof. T"
 - `prof_t.webp`, `prof_t_occhiolino.webp`, `bagliore.svg`: caricatura di Prof. T nella home (occhi aperti, occhiolino, bagliore sulla lente), animata solo con CSS
-- `aritmetica/`, `geometria/`, `fisica/`, `biologia/`, `scienze_della_terra/`, `astronomia/`: una cartella per disciplina, con `index.html` (elenco) e un file HTML per ogni animazione (con `animazioni.css` e `animazioni.js` dalla radice)
+- `aritmetica/`, `geometria/`, `fisica/`, `biologia/`, `scienze_della_terra/`, `astronomia/`: una cartella per disciplina, con `index.html` (elenco) e un file HTML per ogni animazione (con `animazioni.css` e `animazioni.js` dalla radice). Eccezioni: `biologia/organuli_3d.js` (forme 3D condivise da due animazioni) e, per La Terra in movimento, i due file di dati `scienze_della_terra/terra_in_movimento_dati.js` (confini delle placche, terremoti, vulcani) e `scienze_della_terra/terra_in_movimento_pangea.js` (posizione dei continenti negli ultimi 250 milioni di anni), troppo grandi per stare nella pagina
 - `CNAME`: dominio personalizzato del sito (non rimuovere)
-- `immagini/prof_t/`: pose di Prof. T usate nelle animazioni (WebP trasparenti, per esempio `prof_t_maglietta_verde_saluto.webp`); `immagini/terra/`: superficie e rilievo della Terra (NASA Visible Earth) per La struttura interna della Terra. Le animazioni le richiamano con un percorso (`../immagini/prof_t/…`), non incorporate in base64; `precarica()` di `animazioni.js` le scarica in anticipo
+- `immagini/prof_t/`: pose di Prof. T usate nelle animazioni (WebP trasparenti, per esempio `prof_t_maglietta_verde_saluto.webp`); `immagini/terra/`: superficie e rilievo della Terra (NASA Visible Earth) per La struttura interna della Terra; per La Terra in movimento la Terra con i fondali (`terra_fondali_nasa.jpg`), l'età dei fondali (`terra_eta_fondali_earthbyte.png`), la carta dell'Italia (`italia_superficie_nasa.jpg`) e, per ognuno dei sei blocchi dei margini, superficie NASA e rilievo NOAA (`<blocco>_superficie_nasa.jpg`, `<blocco>_rilievo_noaa.png`, quota in metri = rosso·256 + verde − 10000). Le animazioni le richiamano con un percorso (`../immagini/prof_t/…`), non incorporate in base64; `precarica()` di `animazioni.js` le scarica in anticipo
 - `og_image.jpg`: immagine 1200x630 px per l'anteprima dei link condivisi (WhatsApp, chat, social), indicata da `og:image` in tutte le pagine; sorgente in `immagini/og_image/`
 - `sitemap.xml`, `robots.txt`: elenco delle pagine per i motori di ricerca
 - `LICENSE`: licenza (tutti i diritti riservati)
@@ -143,5 +143,7 @@ La firma "Prof. T" (`firma.svg`) è ricavata dal font Nothing You Could Do di Ki
 
 Le animazioni 3D usano Three.js (licenza MIT).
 
+La Terra in movimento usa dati di terzi: immagini NASA Blue Marble Next Generation (credito NASA Earth Observatory); rilievo NOAA ETOPO1; confini delle placche dal modello PB2002 di Bird (2003), nella versione di Hugo Ahlenius (licenza ODC-By); terremoti dal catalogo USGS; vulcani dal Global Volcanism Program della Smithsonian Institution (uso educativo non commerciale con citazione, un uso commerciale richiede il permesso); età dei fondali di Seton e altri (2020), EarthByte (Creative Commons Attribuzione); ricostruzione dei continenti dal modello di Müller e altri (2019), EarthByte (Creative Commons Attribuzione - Condividi allo stesso modo 4.0). Il file `scienze_della_terra/terra_in_movimento_pangea.js`, ricavato da quest'ultimo modello, è distribuito con la stessa licenza CC BY-SA 4.0, indicata in testa al file.
+
 ## Licenza
-© 2026 Prof. T. Tutti i diritti riservati (vedi `LICENSE`). Le librerie e i font di terzi restano soggetti alle rispettive licenze.
+© 2026 Prof. T. Tutti i diritti riservati (vedi `LICENSE`). Le librerie, i font e i dati di terzi restano soggetti alle rispettive licenze (vedi Crediti).
