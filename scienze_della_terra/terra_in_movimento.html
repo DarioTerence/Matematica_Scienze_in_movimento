@@ -1092,10 +1092,14 @@ function Globo(el){
  if(!R||!D){$('attesaG').classList.add('hide');el.insertAdjacentHTML('beforeend','<div class="fail">Su questo dispositivo non riesco a mostrare il globo in 3D.</div>');return null;}
  R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));el.insertBefore(R.domElement,el.firstChild);
  var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(40,1,.05,80),TAN20=Math.tan(20*RAD);
- var UG={uK:{value:1},uPx:{value:1},uW:{value:.01},uDim:{value:1}};
+ var UG={uK:{value:1},uPx:{value:1},uW:{value:.01},uDim:{value:1},uSole:{value:new THREE.Vector3(0,0,1)}};
  /* uK è la curvatura: 1 globo, 0 carta piana. La sfera di raggio 1/uK resta appoggiata al punto davanti, così srotolandosi diventa un piano */
  var PROJ='uniform float uK;\nvec3 nrm(vec2 ll){float k=max(uK,.001);float a=ll.x*k;float b=ll.y*k;return vec3(cos(b)*sin(a),sin(b),cos(b)*cos(a));}\nvec3 pos(vec2 ll,float h){float k=max(uK,.001);return nrm(ll)*(1./k+h)-vec3(0.,0.,1./k-1.);}\n';
  var FINE='gl_Position=projectionMatrix*viewMatrix*vec4(p,1.);}';
+ /* il mare del passato: blu profondo, un poco più chiaro verso l'equatore, con larghe chiazze appena visibili. g è la direzione del punto sulla Terra */
+ var MARE='vec3 mare(vec3 g){float a=sin(g.x*4.3+sin(g.y*5.1)*1.7)*sin(g.z*3.7+sin(g.x*4.9)*1.3);float b=sin(g.y*9.+g.x*6.)*sin(g.z*8.-g.y*5.);return mix(vec3(.018,.085,.21),vec3(.035,.15,.32),sqrt(max(1.-g.y*g.y,0.)))*(1.+.11*a+.05*b);}\n';
+ /* il riflesso del Sole sull'acqua, solo sul globo */
+ var LUCE='uniform vec3 uSole;\nfloat riflesso(vec3 n,vec3 v){float s=max(dot(n,normalize(v+uSole)),0.);return pow(s,40.)*.07+pow(s,260.)*.16;}\n';
  function geo(attr,indici){var g=new THREE.BufferGeometry(),n=attr.ll.length/2;g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(n*3),3));
   Object.keys(attr).forEach(function(k){g.setAttribute(k,new THREE.BufferAttribute(new Float32Array(attr[k]),attr[k].passo||(k==='col'?3:k==='ll'||k==='off'?2:1)));});
   if(indici)g.setIndex(indici);return g;}
@@ -1109,8 +1113,8 @@ function Globo(el){
  for(j=0;j<=NV;j++)for(i=0;i<=NU;i++)ll.push((i/NU*2-1)*Math.PI,(j/NV-.5)*Math.PI);
  for(j=0;j<NV;j++)for(i=0;i<NU;i++){var a=j*(NU+1)+i,b=a+1,c=a+NU+1,d=c+1;ix.push(a,b,c,b,d,c);}
  var mTerra=mat('attribute vec2 ll;varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){vUv=vec2(ll.x/6.2831853+.5,ll.y/3.1415927+.5);vec3 p=pos(ll,0.);vN=nrm(ll);vV=cameraPosition-p;'+FINE,
-  'uniform sampler2D uMap;uniform sampler2D uEta;uniform float uEtaOp;uniform float uPast;uniform float uK;uniform float uDim;varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){vec3 c=texture2D(uMap,vUv).rgb;vec4 e=texture2D(uEta,vUv);float lum=clamp(.72+dot(c,vec3(.3,.5,.2))*1.3,.72,1.2);c=mix(c,e.rgb*lum,e.a*uEtaOp*.88);c=mix(c,mix(vec3(.02,.09,.22),vec3(.04,.16,.33),sin(vUv.y*3.1416)),uPast);float f=max(dot(normalize(vN),normalize(vV)),0.);float sh=mix(1.,.38+.62*pow(f,.55),uK);gl_FragColor=vec4(c*1.25*sh*uDim,1.);}',
-  {uMap:{value:null},uEta:{value:vuota},uEtaOp:{value:0},uPast:{value:0},uDim:UG.uDim});
+  MARE+LUCE+'uniform sampler2D uMap;uniform sampler2D uEta;uniform float uEtaOp;uniform float uPast;uniform float uPastT;uniform float uK;uniform float uDim;varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){vec3 c=texture2D(uMap,vUv).rgb;float terra=1.-smoothstep(.015,.05,c.b-max(c.r,c.g));vec4 e=texture2D(uEta,vUv);float lum=clamp(.72+dot(c,vec3(.3,.5,.2))*1.3,.72,1.2);c=mix(c,e.rgb*lum,e.a*uEtaOp*.88);float lo=(vUv.x-.5)*6.2831853;float la=(vUv.y-.5)*3.1415927;c=mix(c,mare(vec3(cos(la)*sin(lo),sin(la),cos(la)*cos(lo))),mix(uPast,uPastT,terra));vec3 n=normalize(vN);vec3 v=normalize(vV);float f=max(dot(n,v),0.);float sh=mix(1.,.38+.62*pow(f,.55),uK);gl_FragColor=vec4(c*1.25*sh*uDim+vec3(riflesso(n,v)*uK*uPast),1.);}',
+  {uMap:{value:null},uEta:{value:vuota},uEtaOp:{value:0},uPast:{value:0},uPastT:{value:0},uDim:UG.uDim,uSole:UG.uSole});
  ogg(THREE.Mesh,geo({ll:ll},ix),mTerra,0);
 
  /* i confini delle placche: nastri larghi sempre circa tre pixel */
@@ -1172,32 +1176,102 @@ function Globo(el){
  resize();C.d=dGlobo();
 
  /* ---- indietro nel tempo: ogni pezzo di crosta continentale torna dov'era, con sopra l'immagine di oggi ---- */
- var PGD=window.TERRA_PANGEA||[],oPg=null,gPg=null,llPg=null,tUlt=-1,etaPronta=false,PI=Math.PI;
- (function(){var nq=0;PGD.forEach(function(p){for(var j=0;j<p.r.length;j+=3)nq+=p.r[j+2];});if(!nq)return;
-  llPg=new Float32Array(nq*8);var uv=new Float32Array(nq*8),ix=new Uint32Array(nq*6),q=0;
-  PGD.forEach(function(p){var mappa={},base=[],cor=[],j,c,k;p.da=q;
-   for(j=0;j<p.r.length;j+=3)for(c=p.r[j+1];c<p.r[j+1]+p.r[j+2];c++){var r=p.r[j],ang=[[c,r],[c+1,r],[c+1,r+1],[c,r+1]];
+ /* Due strati sulla stessa rete. Sotto, il mare basso: sfuma fino a sparire verso il bordo delle terre e verso il fondale oceanico, così il bordo a quadretti della rete non si vede.
+    Sopra, le terre emerse, riconosciute dal colore dell'immagine e tagliate con una linea morbida dove la crosta continentale finisce.
+    Tra due pezzi vicini il taglio c'è solo se si sono spostati l'uno rispetto all'altro, e cresce con lo spostamento */
+ var PGD=window.TERRA_PANGEA||[],oPg=null,oPgM=null,gPg=null,llPg=null,apPg=null,tUlt=-1,etaPronta=false,PI=Math.PI;
+ var PG_BORDO=5,PG_TAGLIO=1.7;   /* celle: fin dove si misura la distanza da un bordo, e dove si tagliano le terre verso il bordo esterno */
+ function rete(){if(gPg||!PGD.length)return;
+  /* di chi è ogni cella di un grado (-1 di nessuno) e quali vertici stanno sul bordo esterno delle terre */
+  var di=new Int16Array(180*360),celle=new Uint8Array(180*360),fuori=new Uint8Array(181*360),orlo=new Uint8Array(181*360),vicino=new Int16Array(181*360),W=PG_BORDO,r0,c0,nq=0,q=0;
+  for(r0=0;r0<di.length;r0++)di[r0]=-1;
+  /* i pezzi che si muovono sempre insieme (stesse rotazioni) formano un gruppo: tra loro non c'è un confine da trattare */
+  var gruppi={},gr=[],INTORNO=[[-1,-1],[-1,0],[0,-1],[0,0]],CROCE=[[1,0],[-1,0],[0,1],[0,-1]];
+  PGD.forEach(function(p,np){for(var j=0;j<p.r.length;j+=3)for(var c=p.r[j+1];c<p.r[j+1]+p.r[j+2];c++)di[p.r[j]*360+c%360]=np;
+   var ch=p.b+'|'+p.q.join(',');if(gruppi[ch]===undefined)gruppi[ch]=np;gr.push(gruppi[ch]);});
+  var cella=function(r,c){return r<0||r>179?-2:di[r*360+(c+360)%360];};   /* oltre i poli -2: lì non c'è un bordo */
+  for(r0=0;r0<=180;r0++)for(c0=0;c0<360;c0++)if(cella(r0-1,c0-1)===-1||cella(r0-1,c0)===-1||cella(r0,c0-1)===-1||cella(r0,c0)===-1)fuori[r0*360+c0]=1;
+  /* le celle di ogni pezzo, più un giro di celle prese ai pezzi vicini: così, finché due pezzi si spostano poco, tra loro non si apre una crepa */
+  PGD.forEach(function(p,np){var L=[],j,c,d;
+   for(j=0;j<p.r.length;j+=3)for(c=p.r[j+1];c<p.r[j+1]+p.r[j+2];c++){L.push(p.r[j],c%360);celle[p.r[j]*360+c%360]=1;}
+   var n0=L.length;
+   for(j=0;j<n0;j+=2)for(d=0;d<4;d++){var rr=L[j]+CROCE[d][1],cc=(L[j+1]+CROCE[d][0]+360)%360;if(rr<0||rr>179)continue;var k=rr*360+cc;if(!celle[k]&&di[k]>=0&&gr[di[k]]!==gr[np]){celle[k]=2;L.push(rr,cc);}}
+   for(j=0;j<L.length;j+=2)celle[L[j]*360+L[j+1]]=0;
+   p.celle=L;p.n0=n0;nq+=L.length/2;});
+  llPg=new Float32Array(nq*8);apPg=new Float32Array(nq*4);var uv=new Float32Array(nq*8),ex=new Float32Array(nq*8),ix=new Uint32Array(nq*6);
+  /* distanza in celle dal vertice segnato più vicino (al massimo W) */
+  var lontano=function(g,r,c){var m=W,dr,dc,rr,h;for(dr=-W;dr<=W;dr++){rr=r+dr;if(rr<0||rr>180)continue;for(dc=-W;dc<=W;dc++)if(g[rr*360+(c+dc+360)%360]){h=Math.hypot(dr,dc);if(h<m)m=h;}}return m;};
+  PGD.forEach(function(p,np){var mappa={},base=[],cor=[],vc=[],vr=[],L=p.celle,j,c,k,i;p.da=q;
+   for(j=0;j<L.length;j+=2){var r=L[j];c=L[j+1];celle[r*360+c]=j<p.n0?1:2;var ang=[[c,r],[c+1,r],[c+1,r+1],[c,r+1]];
     for(k=0;k<4;k++){var key=ang[k][1]*361+ang[k][0],id=mappa[key];
-     if(id===undefined){id=mappa[key]=base.length/3;var lo=(ang[k][0]-180)*RAD,la=(ang[k][1]-90)*RAD;base.push(Math.cos(la)*Math.cos(lo),Math.cos(la)*Math.sin(lo),Math.sin(la));}
+     if(id===undefined){id=mappa[key]=base.length/3;vc.push(ang[k][0]);vr.push(ang[k][1]);var lo=(ang[k][0]-180)*RAD,la=(ang[k][1]-90)*RAD;base.push(Math.cos(la)*Math.cos(lo),Math.cos(la)*Math.sin(lo),Math.sin(la));}
      cor.push(id);uv[q*8+k*2]=ang[k][0]/360;uv[q*8+k*2+1]=ang[k][1]/180;}
     ix.set([q*4,q*4+1,q*4+2,q*4,q*4+2,q*4+3],q*6);q++;}
-   p.base=new Float32Array(base);p.cor=new Uint32Array(cor);p.lon=new Float32Array(base.length/3);p.lat=new Float32Array(base.length/3);p.qc=[0,0,0,1];});
-  gPg=new THREE.BufferGeometry();gPg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(nq*12),3));gPg.setAttribute('ll',new THREE.BufferAttribute(llPg,2));gPg.setAttribute('uv0',new THREE.BufferAttribute(uv,2));gPg.setIndex(new THREE.BufferAttribute(ix,1));
-  var m=mat('attribute vec2 ll;attribute vec2 uv0;varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){vUv=uv0;vec3 p=pos(ll,.0016);vN=nrm(ll);vV=cameraPosition-p;'+FINE,
-   'uniform sampler2D uMap;uniform sampler2D uEta;uniform float uK;varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){if(texture2D(uEta,vUv).a>.5)discard;vec3 c=texture2D(uMap,vUv).rgb;float f=max(dot(normalize(vN),normalize(vV)),0.);float sh=mix(1.,.38+.62*pow(f,.55),uK);gl_FragColor=vec4(c*1.25*sh,1.);}',
-   {uMap:mTerra.uniforms.uMap,uEta:mTerra.uniforms.uEta},{side:THREE.DoubleSide});
-  oPg=ogg(THREE.Mesh,gPg,m,0);oPg.visible=false;})();
+   var nv=vc.length,dF=new Float32Array(nv),vic=[],posto={},rp=[],sulBordo=[],en=new Uint32Array(nv+1),es=[],ed=[],dr,dc;
+   /* i vertici sul confine con un altro pezzo, e quale pezzo */
+   for(i=0;i<nv;i++){var o=-1,giro=-1;for(k=0;k<4;k++){var rr=vr[i]+INTORNO[k][0],cc=(vc[i]+INTORNO[k][1]+360)%360,x=cella(rr,cc);if(x<0||gr[x]===gr[np])continue;var mia=celle[rr*360+cc];if(mia===2)giro=x;else if(!mia&&o<0)o=x;}
+    if(o>=0){k=vr[i]*360+vc[i]%360;orlo[k]=1;vicino[k]=giro>=0?giro:o;}}
+   /* per ogni vertice: la distanza dal bordo esterno e, per ogni vicino entro W celle, la distanza dal confine con lui */
+   for(i=0;i<nv;i++){dF[i]=lontano(fuori,vr[i],vc[i]);var da=es.length;
+    for(dr=-W;dr<=W;dr++){rr=vr[i]+dr;if(rr<0||rr>180)continue;for(dc=-W;dc<=W;dc++){k=rr*360+(vc[i]+dc+360)%360;if(!orlo[k])continue;var h=Math.hypot(dr,dc);if(h>=W)continue;
+      var o2=vicino[k],sl=posto[o2];if(sl===undefined){sl=posto[o2]=vic.length;vic.push(PGD[o2]);rp.push(0,0,0,0,0,0,0,0,0);sulBordo.push([]);}
+      for(j=da;j<es.length&&es[j]!==sl;j++);
+      if(j===es.length){es.push(sl);ed.push(h);}else if(h<ed[j])ed[j]=h;
+      if(h===0){j=sl*9;rp[j]+=base[i*3];rp[j+1]+=base[i*3+1];rp[j+2]+=base[i*3+2];sulBordo[sl].push(i);}}}
+    en[i+1]=es.length;}
+   for(i=0;i<nv;i++)orlo[vr[i]*360+vc[i]%360]=0;
+   for(j=0;j<L.length;j+=2)celle[L[j]*360+L[j+1]]=0;
+   /* tre punti di ogni confine dove misurare lo spostamento rispetto al vicino: il centro e i due capi */
+   sulBordo.forEach(function(B,s){if(!B.length)return;k=s*9;var n=Math.hypot(rp[k],rp[k+1],rp[k+2])||1,a=B[0]*3,b=a,m=2;rp[k]/=n;rp[k+1]/=n;rp[k+2]/=n;
+    B.forEach(function(v){var d=base[a]*base[v*3]+base[a+1]*base[v*3+1]+base[a+2]*base[v*3+2];if(d<m){m=d;b=v*3;}});
+    rp[k+3]=base[a];rp[k+4]=base[a+1];rp[k+5]=base[a+2];rp[k+6]=base[b];rp[k+7]=base[b+1];rp[k+8]=base[b+2];});
+   /* la distanza dal bordo esterno si ammorbidisce, così il taglio è una linea morbida e non una scaletta; sul bordo resta zero */
+   var liscia=function(d){var u=new Float32Array(nv);for(var i=0;i<nv;i++){if(d[i]===0)continue;var s=d[i]*2,n=2;for(var k=0;k<4;k++){var v=mappa[(vr[i]+CROCE[k][1])*361+vc[i]+CROCE[k][0]];if(v!==undefined){s+=d[v];n++;}}u[i]=s/n;}return u;};
+   for(i=0;i<3;i++)dF=liscia(dF);
+   /* ogni pezzo sta a una quota appena diversa, così dove due pezzi si sovrappongono si vede sempre lo stesso */
+   for(i=0;i<cor.length;i++){k=(p.da*4+i)*2;ex[k]=dF[cor[i]];ex[k+1]=np*.000003;}
+   p.base=new Float32Array(base);p.cor=new Uint32Array(cor);p.lon=new Float32Array(base.length/3);p.lat=new Float32Array(base.length/3);p.qc=[0,0,0,1];
+   p.en=en;p.es=new Uint16Array(es);p.ed=new Float32Array(ed);p.vic=vic;p.rp=rp;p.ap=new Float32Array(vic.length);p.eff=new Float32Array(nv);p.ok=false;p.nuovo=true;p.celle=null;});
+  gPg=new THREE.BufferGeometry();gPg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(nq*12),3));gPg.setAttribute('ll',new THREE.BufferAttribute(llPg,2));gPg.setAttribute('uv0',new THREE.BufferAttribute(uv,2));gPg.setAttribute('ex',new THREE.BufferAttribute(ex,2));gPg.setAttribute('ap',new THREE.BufferAttribute(apPg,1));gPg.setIndex(new THREE.BufferAttribute(ix,1));
+  var VS='attribute vec2 ll;attribute vec2 uv0;attribute vec2 ex;attribute float ap;uniform float uH;varying vec2 vUv;varying vec2 vLL;varying float vB;varying float vD;varying vec3 vN;varying vec3 vV;void main(){vUv=uv0;vLL=ll;vB=ex.x;vD=ap;vec3 p=pos(ll,uH+ex.y);vN=nrm(ll);vV=cameraPosition-p;'+FINE;
+  /* costa(): quanto fondale oceanico c'è intorno al punto (0 continente, 1 oceano), letto in cinque punti per avere un bordo morbido.
+     acqua(): quanto il colore dell'immagine è mare (0 terra, 1 mare). vB è la distanza in celle dal bordo esterno delle terre, vD quella dal confine più vicino con un pezzo che si è staccato */
+  var FS=MARE+'uniform sampler2D uMap;uniform sampler2D uEta;uniform float uK;uniform float uPast;uniform float uDim;varying vec2 vUv;varying vec2 vLL;varying float vB;varying float vD;varying vec3 vN;varying vec3 vV;\n'+
+   'float costa(vec2 u){vec2 d=vec2(.0015,.003);return (texture2D(uEta,u).a*2.+texture2D(uEta,u+d).a+texture2D(uEta,u-d).a+texture2D(uEta,u+vec2(d.x,-d.y)).a+texture2D(uEta,u-vec2(d.x,-d.y)).a)/6.;}\n'+
+   'float acqua(vec3 c){return smoothstep(.015,.05,c.b-max(c.r,c.g));}\n'+
+   'float ombra(){float f=max(dot(normalize(vN),normalize(vV)),0.);return mix(1.,.38+.62*pow(f,.55),uK);}\n';
+  var un=function(h){return {uMap:mTerra.uniforms.uMap,uEta:mTerra.uniforms.uEta,uPast:mTerra.uniforms.uPast,uDim:UG.uDim,uH:{value:h}};};
+  /* il mare basso si unisce al mare sotto tenendo, punto per punto, il colore più chiaro: così dove due pezzi si sovrappongono non si vede il doppio strato */
+  var conMax=R.capabilities.isWebGL2||!!R.extensions.get('EXT_blend_minmax');
+  var mM=mat(VS,FS+'void main(){vec3 c=texture2D(uMap,vUv).rgb;float w=acqua(c);float basso=mix(1.,smoothstep(.05,.24,dot(c,vec3(.3,.5,.2))),w);'+
+   'float k=basso*smoothstep(0.,2.6,vB)*smoothstep(.3,2.4,vD)*(1.-smoothstep(.06,.5,costa(vUv)))*.9*uPast;float sh=1.25*ombra()*uDim;vec3 col=mix(vec3(.085,.33,.52),c,w*.7)*sh;'+
+   (conMax?'vec3 fondo=mix(c,mare(vec3(cos(vLL.y)*sin(vLL.x),sin(vLL.y),cos(vLL.y)*cos(vLL.x))),uPast)*sh;gl_FragColor=vec4(mix(fondo,col,k),1.);}':'gl_FragColor=vec4(col,k);}'),
+   un(.0008),conMax?{transparent:true,depthWrite:false,side:THREE.DoubleSide,blending:THREE.CustomBlending,blendEquation:THREE.MaxEquation,blendSrc:THREE.OneFactor,blendDst:THREE.OneFactor}:{transparent:true,depthWrite:false,side:THREE.DoubleSide});
+  var m=mat(VS,FS+'void main(){vec3 c=texture2D(uMap,vUv).rgb;float a=(1.-acqua(c))*smoothstep('+(PG_TAGLIO-.13).toFixed(2)+','+(PG_TAGLIO+.13).toFixed(2)+',vB)*smoothstep(1.47,1.73,vD)*(1.-smoothstep(.36,.6,costa(vUv)));if(a<.02)discard;gl_FragColor=vec4(c*1.25*ombra()*uDim,a);}',
+   un(.0018),{transparent:true,side:THREE.DoubleSide});
+  oPgM=ogg(THREE.Mesh,gPg,mM,.1);oPgM.visible=false;
+  oPg=ogg(THREE.Mesh,gPg,m,.2);oPg.visible=false;}
  /* la rotazione di un pezzo t milioni di anni fa, tra un valore e il successivo della tabella */
  function quat(p,t){var k=clamp(t/10,0,25),i=Math.min(24,Math.floor(k)),f=k-i,a=i*4,b=a+4,Q=p.q,s=Q[a]*Q[b]+Q[a+1]*Q[b+1]+Q[a+2]*Q[b+2]+Q[a+3]*Q[b+3]<0?-1:1;
   var x=Q[a]+(s*Q[b]-Q[a])*f,y=Q[a+1]+(s*Q[b+1]-Q[a+1])*f,z=Q[a+2]+(s*Q[b+2]-Q[a+2])*f,w=Q[a+3]+(s*Q[b+3]-Q[a+3])*f,n=Math.hypot(x,y,z,w)||1;p.qc[0]=x/n;p.qc[1]=y/n;p.qc[2]=z/n;p.qc[3]=w/n;return p.qc;}
  function gira(q,x,y,z,o){var cx=q[1]*z-q[2]*y+q[3]*x,cy=q[2]*x-q[0]*z+q[3]*y,cz=q[0]*y-q[1]*x+q[3]*z;o[0]=x+2*(q[1]*cz-q[2]*cy);o[1]=y+2*(q[2]*cx-q[0]*cz);o[2]=z+2*(q[0]*cy-q[1]*cx);return o;}
- var tmp=[0,0,0];
- function pangea(t){PGD.forEach(function(p){var n=p.cor.length,o=p.da*8,i,k;
-   if(t>p.b){llPg.fill(0,o,o+n*2);return;}
-   var q=quat(p,t),B=p.base;for(i=0;i<p.lon.length;i++){gira(q,B[i*3],B[i*3+1],B[i*3+2],tmp);p.lon[i]=Math.atan2(tmp[1],tmp[0]);p.lat[i]=Math.asin(clamp(tmp[2],-1,1));}
+ var tmp=[0,0,0],tmp2=[0,0,0],apCambia=false;
+ function pangea(t){PGD.forEach(function(p){p.ok=t<=p.b;if(p.ok)quat(p,t);});
+  PGD.forEach(function(p){var n=p.cor.length,o=p.da*8,i,k;
+   if(!p.ok){llPg.fill(0,o,o+n*2);return;}
+   var q=p.qc,B=p.base;
+   /* quanto il pezzo si è staccato da ogni vicino (0 uniti, 1 staccati): lo spostamento in gradi, misurato in tre punti del confine */
+   var R=p.rp,W=PG_BORDO,m,e,a,cambia=p.nuovo;p.nuovo=false;
+   for(i=0;i<p.vic.length;i++){var v=p.vic[i];m=1;a=1;
+    if(v.ok){for(k=i*9;k<i*9+9;k+=3){gira(q,R[k],R[k+1],R[k+2],tmp);gira(v.qc,R[k],R[k+1],R[k+2],tmp2);m=Math.min(m,tmp[0]*tmp2[0]+tmp[1]*tmp2[1]+tmp[2]*tmp2[2]);}
+     a=sstep(.6,2,Math.acos(clamp(m,-1,1))*180/PI);}
+    if(a!==p.ap[i]){p.ap[i]=a;cambia=true;}}
+   /* distanza di ogni vertice dal confine staccato più vicino: un confine ancora unito non conta. Si ricalcola solo quando un confine si apre o si chiude */
+   if(cambia){apCambia=true;for(i=0;i<p.eff.length;i++){m=W;for(e=p.en[i];e<p.en[i+1];e++){var x=p.ed[e]+W*(1-p.ap[p.es[e]]);if(x<m)m=x;}p.eff[i]=m;}
+    for(i=0;i<n;i++)apPg[p.da*4+i]=p.eff[p.cor[i]];}for(i=0;i<p.lon.length;i++){gira(q,B[i*3],B[i*3+1],B[i*3+2],tmp);p.lon[i]=Math.atan2(tmp[1],tmp[0]);p.lat[i]=Math.asin(clamp(tmp[2],-1,1));}
    /* i quattro angoli di una cella restano dalla stessa parte della linea del cambio di data */
    for(i=0;i<n;i+=4){var l0=p.lon[p.cor[i]];for(k=0;k<4;k++){var id=p.cor[i+k],lo=p.lon[id];if(lo-l0>PI)lo-=2*PI;else if(l0-lo>PI)lo+=2*PI;llPg[o+(i+k)*2]=lo;llPg[o+(i+k)*2+1]=p.lat[id];}}});
-  gPg.attributes.ll.needsUpdate=true;}
+  gPg.attributes.ll.needsUpdate=true;if(apCambia){gPg.attributes.ap.needsUpdate=true;apCambia=false;}}
  /* nomi che viaggiano con i continenti e nomi di terre e mari scomparsi */
  var CONT=[['Nord America',101,-100,45],['Sud America',201,-58,-12],['Africa',701,22,2],['Europa',301,25,52,1],['Asia',401,100,62,1],['India',501,78,21],['Australia',801,134,-25],['Antartide',802,70,-80,1]].map(function(c){
    var p=null;PGD.forEach(function(x){if(x.id===c[1]&&(!p||x.r.length>p.r.length))p=x;});var d=document.createElement('div');d.className='etich placca';d.textContent=c[0];d.style.opacity=0;el.appendChild(d);
@@ -1212,13 +1286,13 @@ function Globo(el){
   e01=clamp(e01+(GS.carta?1:-1)*(reduce?1:dt/T_MOVE),0,1);var E=sstep(0,1,e01);UG.uK.value=1-E;
   if(auto&&!reduce&&!ptr.size&&!GS.carta&&!CT)C.th+=dt*.1;
   if(CT){var f=1-Math.exp(-dt/.4),fine=true;['th','ph','d','px','py'].forEach(function(k){C[k]+=(CT[k]-C[k])*f;if(Math.abs(CT[k]-C[k])>.004)fine=false;});if(fine&&(e01===0||e01===1))CT=null;}
-  var cp=Math.cos(C.ph);cam.position.set(C.d*cp*Math.sin(C.th)+E*C.px,C.d*Math.sin(C.ph)+E*C.py,C.d*cp*Math.cos(C.th)+E);cam.lookAt(E*C.px,E*C.py,E);
+  var cp=Math.cos(C.ph);cam.position.set(C.d*cp*Math.sin(C.th)+E*C.px,C.d*Math.sin(C.ph)+E*C.py,C.d*cp*Math.cos(C.th)+E);cam.lookAt(E*C.px,E*C.py,E);cam.updateMatrixWorld();UG.uSole.value.set(-.5,.55,.67).normalize().transformDirection(cam.matrixWorld);
   /* i segni restano della stessa grandezza sullo schermo, un poco più grandi da vicino */
   var d0=GS.carta?dCarta():dGlobo(),lontano=C.d-1+E;
   UG.uPx.value=R.getPixelRatio()*Math.max(.75,h/520)*clamp(Math.pow(d0/C.d,.55),.8,2.4);UG.uW.value=(w<520?1.25:1.7)*2*lontano*TAN20/h;
   if(GS.play){GS.t=Math.max(0,GS.t-dt*250/T_PANGEA);if(GS.t<=0)GS.play=false;tempoG();}
-  var ora=GS.t===0||!etaPronta;mTerra.uniforms.uPast.value=ora?0:sstep(0,6,GS.t);
-  if(oPg){oPg.visible=!ora;if(!ora&&GS.t!==tUlt){pangea(GS.t);tUlt=GS.t;}}
+  var ora=GS.t===0||!etaPronta;mTerra.uniforms.uPast.value=ora?0:sstep(0,6,GS.t);mTerra.uniforms.uPastT.value=ora?0:sstep(0,1.5,GS.t);
+  if(oPg){oPg.visible=oPgM.visible=!ora;if(!ora&&GS.t!==tUlt){pangea(GS.t);tUlt=GS.t;}}
   var fo=1-Math.exp(-dt/.18);['ter','vul','pla','eta'].forEach(function(k){op[k]+=((GS[k]&&ora?1:0)-op[k])*fo;});mTerra.uniforms.uEtaOp.value=op.eta;
   mTer.uniforms.uOp.value=op.ter;mVul.uniforms.uOp.value=op.vul;mPla.uniforms.uOp.value=op.pla;oTer.visible=op.ter>.01;oVul.visible=op.vul>.01;oPla.visible=op.pla>.01;
   UG.uDim.value=1-.24*Math.max(op.ter,op.vul,op.pla);
@@ -1234,7 +1308,7 @@ function Globo(el){
   function(){$('attesaG').classList.add('hide');el.insertAdjacentHTML('beforeend','<div class="fail">Non riesco a caricare l\'immagine della Terra. Controlla la connessione e ricarica la pagina.</div>');});
  /* l'età dei fondali si carica solo la prima volta che serve */
  var etaChiesta=false;
- function eta(){if(etaChiesta)return;etaChiesta=true;immagine(IMG+'terra_eta_fondali_earthbyte.png',function(im){var t=new THREE.Texture(im);t.needsUpdate=true;mTerra.uniforms.uEta.value=t;etaPronta=true;},function(){etaChiesta=false;});}
+ function eta(){if(etaChiesta)return;etaChiesta=true;rete();immagine(IMG+'terra_eta_fondali_earthbyte.png',function(im){var t=new THREE.Texture(im);t.needsUpdate=true;mTerra.uniforms.uEta.value=t;etaPronta=true;},function(){etaChiesta=false;});}
 
  return {
   luogo:function(l){segno.textContent=l?l.n:'';if(!l){vai(casa());return;}
