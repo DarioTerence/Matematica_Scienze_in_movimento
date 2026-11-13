@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="author" content="Prof. T">
 <!-- © 2026 Prof. T. Tutti i diritti riservati. -->
-<!-- PAGINA in lavorazione: per ora contiene due blocchi della scheda 02 (Ande e Giappone).
+<!-- PAGINA in lavorazione: per ora contiene la scheda 02 (i sei blocchi dei margini).
      Finché c'è la riga robots qui sotto la pagina non va collegata né messa nella sitemap. -->
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -32,7 +32,7 @@ body{background:radial-gradient(ellipse at 50% -10%,rgba(106,165,255,.14),transp
 .wrap{max-width:1100px;margin:0 auto;padding:18px 16px 8px}
 .eyebrow{color:var(--disciplina);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
 h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px;color:#fff}
-.sub{color:var(--mut);margin:0 0 4px}
+.sub{color:var(--mut);margin:0 0 4px;min-height:2.6em}
 button{font-family:inherit}
 .hide{display:none!important}
 .layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:start}
@@ -54,9 +54,9 @@ button{font-family:inherit}
 .margini::-webkit-scrollbar{display:none}
 .margini .chip{flex:none;white-space:nowrap}
 .margini .chip small{color:var(--mut);font-size:12px;margin-left:2px}
-.margini .chip:disabled{opacity:.38;cursor:default}
 .etich{position:absolute;left:0;top:0;pointer-events:none;font:700 12px/1 Calibri,Carlito,"Segoe UI",sans-serif;color:#fff;background:rgba(8,12,22,.62);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:4px 8px;white-space:nowrap;transform:translate(-50%,-50%);will-change:transform;transition:opacity .25s}
 .etich.sez{background:rgba(8,12,22,.45);border-color:transparent;font-weight:400;font-style:italic}
+.etich.segno{border-color:#ffb454;color:#ffd9a0}
 .attesa{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:14px;pointer-events:none}
 /* barra del tempo: un pulsante rotondo e il cursore, come in un video */
 .tempo{display:flex;align-items:center;gap:12px;margin:10px 0 0}
@@ -71,7 +71,7 @@ button{font-family:inherit}
 .proft{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:end;margin-bottom:12px}
 .proft img{width:84px;height:auto}
 .fumetto{background:var(--panel);border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:9px 12px;line-height:1.4;font-size:15px}
-@media(max-width:760px){.stage{height:clamp(260px,40vh,380px)}}
+@media(max-width:760px){.stage{height:clamp(260px,40vh,380px)}.sub{min-height:0}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
@@ -104,7 +104,7 @@ button{font-family:inherit}
     <button class="play" id="bPlay" aria-label="Rivedi dall'inizio" title="Rivedi dall'inizio"></button>
     <div class="barra">
      <input type="range" id="rTempo" min="0" max="1000" value="1000" aria-label="Scorri nel tempo">
-     <div class="estremi"><span>inizio</span><span>oggi</span></div>
+     <div class="estremi"><span id="tIni">inizio</span><span id="tFin">oggi</span></div>
     </div>
    </div>
    <p class="fase" id="fase" aria-live="polite"></p>
@@ -135,28 +135,81 @@ var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').mat
 var clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
 var sstep=function(a,b,x){var t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
 
-/* ---- costanti del modello. Le lunghezze sono in km, come le coordinate della scena ---- */
-var FONDO=-380;            /* base dei blocchi */
+/* ---- costanti comuni. Le lunghezze sono in km, come le coordinate della scena ---- */
+var FONDO=-380;            /* base dei blocchi, se il blocco non ne indica una sua */
 var EX=6;                  /* esagerazione dei rilievi */
-var NX=301,NZ=181;         /* punti della superficie */
-var S_TIP0=40,S_CORSA=830; /* lunghezza della placca scesa all'inizio e strada fatta fino a oggi */
+var NX=301,NZ=181;         /* punti della superficie per un blocco largo quanto i suoi dati */
+var S_TIP0=40;             /* subduzione: lunghezza della placca già scesa all'inizio */
 var T_TOTALE=24;           /* secondi per andare dall'inizio a oggi */
 var V_MAGMA=.07,V_FLUIDI=.22,V_FUMO=.11;   /* velocità delle cose che si muovono sempre */
-var TAN=.5774,LC=150,TH=85;                /* pendenza finale (30°), lunghezza della curva e spessore della placca */
+var TAN=.5774,LC=150,TH=85;                /* subduzione: pendenza finale (30°), lunghezza della curva e spessore della placca */
+var IMG='../immagini/terra/';
 
-/* ---- testi comuni ai blocchi di subduzione ---- */
+/* ---- testi comuni ---- */
 var T_MAGMA='Scendendo, la placca oceanica porta con sé acqua. Intorno ai 100 km di profondità l\'acqua esce e fa fondere in parte le rocce del mantello che stanno sopra. Il magma, più leggero, risale.';
 var T_ASTEN='È la parte del mantello che sta sotto le placche. È solida ma plastica, e su di lei la litosfera può scorrere.';
+var P_ASTEN={id:7,n:'Astenosfera',c:'#c4582a',t:'Astenosfera',d:T_ASTEN,v:[-4,-250,1,0,1.5,1300]};
+
+/* ---- etichette dei due blocchi di subduzione (g = misure del blocco appena costruito) ---- */
+function etSub(g,N){
+ var L=[
+  {lg:1,t:N.oceano,p:[g.X(-300),6,-g.LZ*.24]},
+  {t:N.placca,p:[g.X(-230),6,g.LZ*.18]},
+  {t:N.sopra,p:[g.X(N.sopraXr),26,-g.LZ*.26]},
+  {t:'fossa',p:[g.xT,16,g.zf]},
+  {lg:1,t:'crosta oceanica',p:[g.X(-330),g.quotaS(-330)-5,g.zf],c:'sez'},
+  {t:'litosfera',p:[g.X(-330),g.quotaS(-330)-50,g.zf],c:'sez'},
+  {t:'astenosfera',p:[g.X(-240),-270,g.zf],c:'sez'},
+  {lg:1,t:N.crosta,p:[g.X(g.xArc+290),-14,g.zf],c:'sez'},
+  {t:'litosfera',p:[g.X(g.xArc+290),-72,g.zf],c:'sez'},
+  {t:'magma',p:[g.X(g.xArc-78),-88,g.zf],c:'sez',mg:1},
+  {lg:1,t:'placca che scende',p:[g.X(560),-318,g.zf],c:'sez',tip:680}];
+ if(N.catena)L.push({lg:1,t:N.catena,p:[g.X(g.xArc+60),g.arcTop+26,g.LZ*.33],gr:.55});
+ if(N.mare)L.push({lg:1,t:N.mare,p:[g.X(700),6,-g.LZ*.12]});
+ g.veri.forEach(function(v){L.push({lg:1,t:v.n,p:[v.x,v.y+38,v.z],mg:1});});
+ return L;}
+/* etichetta su un luogo vero, da longitudine e latitudine */
+function luogo(g,t,lon,lat,su,altro){var p=g.pos(lon,lat),e={t:t,p:[p.x,g.alt(p.x,p.z)+(su||30),p.z]};for(var k in altro||{})e[k]=altro[k];return e;}
 
 /* ---- i blocchi. Ogni blocco ha la sua regione vera, le sue immagini e i suoi testi.
-   verso = 1 se la placca che scende arriva da ovest, −1 se arriva da est.
-   Nelle parti, v è l'inquadratura: distanza dalla fossa (km, positiva verso la placca che resta sopra),
-   quota (km), posizione nord-sud (da −1 a 1), due angoli e distanza della camera. ---- */
+   tipo: sub (subduzione), coll (due continenti), dors (dorsale), tras (trascorrente), caldo (punto caldo).
+   verso = 1 se la placca che si muove arriva da sinistra, −1 se arriva da destra.
+   fronte: come si trova la linea del margine nel rilievo (fossa = il punto più profondo, soglia = dove comincia la montagna,
+           linea = punti dati a mano, retta = una retta che passa per i luoghi indicati).
+   corsa: km percorsi dalla placca tra l'inizio e oggi.
+   Nelle parti, v è l'inquadratura: distanza dal margine (km), quota (km), posizione davanti-dietro (da −1 a 1), due angoli e distanza della camera. ---- */
 var BLOCCHI=[
- {id:'dorsale',nome:'Dorsale',luogo:'Atlantico'},
- {id:'giappone',nome:'Oceano e oceano',luogo:'Giappone',
-  sup:'../immagini/terra/giappone_superficie_nasa.jpg',ril:'../immagini/terra/giappone_rilievo_noaa.png',
-  lon:[134,148],lat:[36.5,43.5],LX:1194,LZ:777,verso:-1,fossa:[.5,1],cr0:30,lum:1.3,
+ {id:'atlantico',nome:'Dorsale',luogo:'Atlantico',tipo:'dors',
+  centro:[-44.8,26.2,105],LX:1200,LZ:760,verso:1,cr0:7,lum:2.1,corsa:375,tempo:['30 milioni di anni fa','oggi'],
+  fronte:{modo:'linea',punti:[[0,66],[.043,69],[.087,53],[.13,40],[.174,33],[.217,27],[.261,22],[.304,18],[.348,14],[.391,8],[.435,7],[.478,4],[.522,-7],[.565,-17],[.609,-30],[.652,-34],[.696,-37],[.739,-66],[.783,-82],[.826,-88],[.878,-86],[.883,66],[.926,60],[.97,69],[1,81]]},
+  sub:'Dove due placche si allontanano risale il magma e nasce nuovo fondale. Guarda che cosa succede in mezzo all\'Atlantico.',
+  cap:'Dorsale medio-atlantica. Rilievi esagerati 6 volte',
+  info0:{t:'Un oceano che si allarga',d:'Al centro dell\'Atlantico due placche si allontanano. Nella spaccatura risale il magma, che si raffredda e diventa nuovo fondale. Tocca un elemento per saperne di più.'},
+  ancora:'<b>Margine divergente (costruttivo)</b><br>Le placche si allontanano e tra loro si forma nuova crosta oceanica. In Islanda la dorsale esce dal mare e si può vedere camminando.',
+  fasi:['Il magma risale nella spaccatura al centro della dorsale.','Il magma si raffredda e diventa nuova crosta. Le due strisce gialle sono nate insieme.','Arriva altro magma e spinge di lato la crosta più vecchia.','Le due strisce nate insieme si allontanano, una per parte.','Oggi. In 30 milioni di anni le due strisce si sono allontanate di 750 km.'],
+  parti:[
+   {id:1,n:'Placca nordamericana',c:'#5f7fb0',t:'Placca nordamericana',d:'Si allontana verso ovest. Più ci si allontana dalla dorsale, più il fondale è vecchio, freddo e profondo.',v:[-330,-60,.5,-.5,1.1,1500]},
+   {id:2,n:'Placca africana',c:'#7fa0c8',t:'Placca africana',d:'Si allontana verso est. Le due placche si separano di circa 2,5 cm all\'anno.',v:[330,-60,.5,.5,1.1,1500]},
+   {id:3,n:'Dorsale',c:'#3fa0d8',t:'Dorsale medio-atlantica',d:'È una catena di montagne sottomarine che attraversa tutto l\'oceano, da nord a sud. Al centro ha una spaccatura, la valle di rift, dove le due placche si separano.',v:[0,-20,.6,-.25,1.05,1000]},
+   {id:4,n:'Terremoti',c:'#fff3a8',t:'Terremoti',d:'Nascono lungo la spaccatura, dove la crosta si rompe per fare posto al magma. Sono poco profondi.',v:[0,-40,1,0,1.45,620]},
+   {id:5,n:'Magma',c:'#ff9a3c',t:'Magma',d:'Sotto la dorsale il mantello risale e, salendo, in parte fonde. Il magma si raccoglie sotto la spaccatura ed esce sul fondo del mare.',v:[0,-55,1,.04,1.46,560]},
+   {id:6,n:'Nuova crosta',c:'#ffcf5a',t:'Nuova crosta oceanica',d:'La lava si raffredda nell\'acqua e diventa roccia scura, il basalto. Ogni striscia di fondale ha una gemella dall\'altra parte, nata nello stesso momento.',v:[0,-30,.8,-.3,.95,1250]},
+   P_ASTEN],
+  etichette:function(g){return [
+   {t:'&larr; placca nordamericana',p:[g.X(-330),6,-g.LZ*.1]},
+   {t:'placca africana &rarr;',p:[g.X(330),6,g.LZ*.12]},
+   {t:'dorsale',p:[g.xT,16,g.zf]},
+   {lg:1,t:'Oceano Atlantico',p:[g.X(-420),6,-g.LZ*.36]},
+   {lg:1,t:'crosta oceanica',p:[g.X(-430),g.quotaS(-430)-4,g.zf],c:'sez'},
+   {t:'litosfera',p:[g.X(-430),g.quotaS(-430)-45,g.zf],c:'sez'},
+   {t:'astenosfera',p:[g.X(-300),-250,g.zf],c:'sez'},
+   {t:'magma',p:[g.X(48),-62,g.zf],c:'sez'},
+   {lg:1,t:'mantello che risale',p:[g.X(0),-190,g.zf],c:'sez'},
+   {lg:1,t:'nate insieme',p:[g.X(-375),g.quotaS(-375)+22,g.zf],c:'segno',u0:.985},
+   {lg:1,t:'nate insieme',p:[g.X(375),g.quotaS(375)+22,g.zf],c:'segno',u0:.985}];}},
+ {id:'giappone',nome:'Arco di isole',luogo:'Giappone',tipo:'sub',
+  lon:[134,148],lat:[36.5,43.5],LX:1194,LZ:777,verso:-1,cr0:30,lum:1.3,corsa:830,tempo:['inizio','oggi'],
+  fronte:{modo:'fossa',da:.5,a:1},
   sub:'Quando si scontrano due placche, una scende sotto l\'altra. Guarda che cosa succede sotto il Giappone.',
   cap:'Giappone del nord. Rilievi esagerati 6 volte',
   info0:{t:'Oceano contro un arco di isole',d:'La placca del Pacifico scivola sotto il Giappone. Così nascono la fossa, i terremoti, il magma e i vulcani dell\'arco. Tocca un elemento per saperne di più.'},
@@ -169,12 +222,12 @@ var BLOCCHI=[
    {id:4,n:'Terremoti',c:'#fff3a8',t:'Terremoti',d:'Le due placche si incastrano, accumulano energia e poi scattano. I terremoti nascono lungo la placca che scende, superficiali vicino alla fossa e sempre più profondi sotto il Mar del Giappone.',v:[286,-150,1,0,1.47,1120]},
    {id:5,n:'Magma',c:'#ff9a3c',t:'Magma',d:T_MAGMA,v:[330,-75,1,.04,1.44,760]},
    {id:6,n:'Vulcani del Giappone',c:'#ff6a4a',t:'Vulcani del Giappone',d:'Il magma alimenta una catena di vulcani che attraversa le isole, parallela alla fossa. Il Bandai, sull\'isola di Honshu, ha eruttato l\'ultima volta nel 1888.',v:[350,25,.6,-.2,1.1,820]},
-   {id:7,n:'Astenosfera',c:'#c4582a',t:'Astenosfera',d:T_ASTEN,v:[-4,-250,1,0,1.5,1300]}],
+   P_ASTEN],
   vulcani:[{n:'Bandai',lon:140.072,lat:37.601,fumo:false}],
-  nomi:{oceano:'Oceano Pacifico',placca:'&larr; placca del Pacifico',sopra:'Giappone',sopraXr:330,catena:'',mare:'Mar del Giappone',crosta:'crosta dell\'arco'}},
- {id:'ande',nome:'Oceano e continente',luogo:'Ande',
-  sup:'../immagini/terra/ande_superficie_nasa.jpg',ril:'../immagini/terra/ande_rilievo_noaa.png',
-  lon:[-77,-62],lat:[-27,-18],LX:1540,LZ:1000,verso:1,fossa:[0,.62],cr0:36,lum:1,
+  etichette:function(g){return etSub(g,{oceano:'Oceano Pacifico',placca:'&larr; placca del Pacifico',sopra:'Giappone',sopraXr:330,catena:'',mare:'Mar del Giappone',crosta:'crosta dell\'arco'});}},
+ {id:'ande',nome:'Oceano e continente',luogo:'Ande',tipo:'sub',
+  lon:[-77,-62],lat:[-27,-18],LX:1540,LZ:1000,verso:1,cr0:36,lum:1,corsa:830,tempo:['inizio','oggi'],
+  fronte:{modo:'fossa',da:0,a:.62},
   sub:'Quando si scontrano due placche, una scende sotto l\'altra. Guarda che cosa succede sotto le Ande.',
   cap:'Ande centrali. Rilievi esagerati 6 volte',
   info0:{t:'Oceano contro continente',d:'La placca di Nazca, oceanica, scivola sotto il Sud America. Così nascono la fossa, i terremoti, il magma e i vulcani delle Ande. Tocca un elemento per saperne di più.'},
@@ -187,12 +240,94 @@ var BLOCCHI=[
    {id:4,n:'Terremoti',c:'#fff3a8',t:'Terremoti',d:'Le due placche si incastrano, accumulano energia e poi scattano. I terremoti nascono lungo la placca che scende, superficiali vicino alla fossa e sempre più profondi sotto il continente.',v:[286,-150,1,0,1.47,1120]},
    {id:5,n:'Magma',c:'#ff9a3c',t:'Magma',d:T_MAGMA,v:[336,-75,1,.04,1.44,760]},
    {id:6,n:'Vulcani delle Ande',c:'#ff6a4a',t:'Vulcani delle Ande',d:'Il magma si raccoglie sotto i vulcani e ogni tanto esce in superficie. I vulcani si allineano in una catena parallela alla fossa. Il Láscar, in Cile, è il più attivo di questa zona.',v:[376,25,.66,-.2,1.1,820]},
-   {id:7,n:'Astenosfera',c:'#c4582a',t:'Astenosfera',d:T_ASTEN,v:[-4,-250,1,0,1.5,1300]}],
+   P_ASTEN],
   vulcani:[{n:'Láscar',lon:-67.73,lat:-23.37,fumo:true}],
-  nomi:{oceano:'Oceano Pacifico',placca:'placca di Nazca &rarr;',sopra:'placca sudamericana',sopraXr:690,catena:'Ande',mare:'',crosta:'crosta continentale'}},
- {id:'continenti',nome:'Due continenti',luogo:'Himalaya'},
- {id:'trascorrente',nome:'Trascorrente',luogo:'California'},
- {id:'punto_caldo',nome:'Punto caldo',luogo:'Hawaii'}];
+  etichette:function(g){return etSub(g,{oceano:'Oceano Pacifico',placca:'placca di Nazca &rarr;',sopra:'placca sudamericana',sopraXr:690,catena:'Ande',mare:'',crosta:'crosta continentale'});}},
+ {id:'himalaya',nome:'Due continenti',luogo:'Himalaya',tipo:'coll',
+  centro:[84.0,29.0,0],LX:1500,LZ:900,verso:1,cr0:42,lum:1,corsa:600,tempo:['inizio dello scontro','oggi'],
+  fronte:{modo:'soglia',da:.2,a:.75,soglia:1.5},
+  sub:'Quando si scontrano due continenti nessuno dei due scende nel mantello. Guarda che cosa succede sotto l\'Himalaya.',
+  cap:'Himalaya e Tibet, da sud a nord. Rilievi esagerati 6 volte',
+  info0:{t:'Continente contro continente',d:'L\'India spinge contro l\'Asia. Le rocce dei continenti sono troppo leggere per sprofondare, così la crosta si piega, si spezza e si accavalla. Nasce la catena più alta della Terra. Tocca un elemento per saperne di più.'},
+  ancora:'<b>Margine convergente (distruttivo)</b><br>Due continenti si scontrano. La crosta si accorcia e diventa più spessa, nascono le grandi catene di montagne. Anche le Alpi sono nate così, dallo scontro tra Africa ed Europa.',
+  fasi:['L\'oceano tra i due continenti si è chiuso. Il vecchio fondale sprofonda nel mantello.','L\'India continua a spingere. La crosta si piega e si spezza.','La crosta si accavalla e diventa spessa il doppio.','Crescono l\'Himalaya e l\'altopiano del Tibet.','Oggi. L\'India spinge ancora e l\'Himalaya continua a sollevarsi.'],
+  parti:[
+   {id:1,n:'Placca indiana',c:'#8fb0d8',t:'Placca indiana',d:'Tra 40 e 50 milioni di anni fa l\'India, spinta verso nord, ha urtato l\'Asia. Da allora continua a spingere e si infila sotto il bordo dell\'altra placca, senza scendere in profondità.',v:[-260,-60,.6,-.6,1.1,1500]},
+   {id:2,n:'Placca euroasiatica',c:'#c2a57c',t:'Placca euroasiatica',d:'Il suo bordo viene schiacciato e sollevato. Così sono nati l\'Himalaya e, dietro, l\'altopiano del Tibet.',v:[520,-20,.5,.35,1.02,1550]},
+   {id:4,n:'Terremoti',c:'#fff3a8',t:'Terremoti',d:'L\'India spinge ancora. La roccia accumula energia e ogni tanto scatta. I terremoti sono poco profondi e possono essere molto forti.',v:[150,-40,1,0,1.45,900]},
+   {id:5,n:'Crosta doppia',c:'#e0c090',t:'Crosta doppia',d:'Sotto l\'Himalaya e il Tibet la crosta è spessa circa 75 km, il doppio del normale. Qui non ci sono vulcani, perché il magma si ferma prima di arrivare in superficie.',v:[230,-45,1,.03,1.47,820]},
+   {id:6,n:'Himalaya',c:'#ffffff',t:'Himalaya',d:'È la catena più alta della Terra e cresce ancora, più di 1 cm all\'anno. Pioggia, ghiaccio e frane la consumano quasi alla stessa velocità.',v:[110,40,.55,-.25,1.12,900]},
+   {id:8,n:'Vecchio fondale',c:'#5f7fb0',t:'Il fondale di un oceano scomparso',d:'Tra l\'India e l\'Asia c\'era un oceano, la Tetide. Il suo fondale è sceso tutto nel mantello, come oggi succede sotto le Ande. Poi i due continenti si sono toccati.',v:[190,-230,1,0,1.5,1100]},
+   {id:7,n:'Astenosfera',c:'#c4582a',t:'Astenosfera',d:T_ASTEN,v:[-250,-290,1,0,1.5,1300]}],
+  etichette:function(g){return [
+   {t:'placca indiana &rarr;',p:[g.X(-330),10,-g.LZ*.05]},
+   {t:'placca euroasiatica',p:[g.X(640),40,-g.LZ*.2]},
+   {lg:1,t:'pianura del Gange',p:[g.X(-150),10,g.LZ*.2]},
+   {t:'Himalaya',p:[g.X(95),62,-g.LZ*.12],gr:.55},
+   {lg:1,t:'Tibet',p:[g.X(430),50,g.LZ*.15],gr:.55},
+   luogo(g,'Everest',86.925,27.988,22,{lg:1,gr:.8}),
+   {lg:1,t:'crosta indiana',p:[g.X(-380),-20,g.zf],c:'sez'},
+   {t:'litosfera',p:[g.X(-380),-85,g.zf],c:'sez'},
+   {t:'astenosfera',p:[g.X(-300),-270,g.zf],c:'sez'},
+   {lg:1,t:'crosta asiatica',p:[g.X(700),-22,g.zf],c:'sez'},
+   {t:'litosfera',p:[g.X(700),-105,g.zf],c:'sez'},
+   {t:'crosta doppia',p:[g.X(230),-52,g.zf],c:'sez',tip:300},
+   {lg:1,t:'vecchio fondale',p:[g.X(215),-250,g.zf],c:'sez',u0:.12,u1:.5}];}},
+ {id:'california',nome:'Trascorrente',luogo:'California',tipo:'tras',
+  centro:[-119.714,36.686,48],LX:760,LZ:525,fondo:-170,verso:1,cr0:26,lum:1,corsa:314,tempo:['23 milioni di anni fa','oggi'],
+  fronte:{modo:'retta',punti:[[-122.50,37.70],[-121.53,36.85],[-120.43,35.90]]},
+  sub:'Qui le placche non si scontrano e non si allontanano, scorrono una accanto all\'altra. Guarda la California.',
+  cap:'California, vista da sud-est. Rilievi esagerati 6 volte',
+  info0:{t:'Due placche che si sfiorano',d:'Lungo la faglia di San Andreas la placca del Pacifico scorre verso nord-ovest accanto a quella nordamericana. Non nasce nuova crosta e non se ne distrugge. Tocca un elemento per saperne di più.'},
+  ancora:'<b>Margine trascorrente</b><br>Le due placche scorrono in orizzontale, in versi opposti. Niente vulcani, ma molti terremoti. In Italia non c\'è un margine così.',
+  fasi:['23 milioni di anni fa. Le rocce di Pinnacles e di Neenach sono un unico vulcano.','La faglia taglia in due il vulcano. Le due metà cominciano ad allontanarsi.','La placca del Pacifico scorre verso nord-ovest e porta con sé Pinnacles.','Lungo la faglia le rocce si incastrano e poi scattano, un terremoto dopo l\'altro.','Oggi. Pinnacles è 314 km più a nord-ovest di Neenach.'],
+  parti:[
+   {id:1,n:'Placca del Pacifico',c:'#5f7fb0',t:'Placca del Pacifico',d:'Scorre verso nord-ovest rispetto all\'altra placca e porta con sé un pezzo della costa della California.',v:[-170,-30,.3,-.55,1.05,1100]},
+   {id:2,n:'Placca nordamericana',c:'#c2a57c',t:'Placca nordamericana',d:'Su questa placca stanno la grande valle della California e la Sierra Nevada.',v:[230,-20,.3,.4,1.02,1150]},
+   {id:3,n:'Faglia di San Andreas',c:'#ff8a80',t:'Faglia di San Andreas',d:'È una spaccatura quasi verticale che attraversa tutta la crosta. Le rocce ai due lati scorrono in orizzontale, in versi opposti.',v:[0,-20,.8,-.12,1.15,700]},
+   {id:4,n:'Terremoti',c:'#fff3a8',t:'Terremoti',d:'Le due placche non scorrono lisce. Si incastrano, accumulano energia e poi scattano di colpo. I terremoti sono poco profondi.',v:[0,0,.2,-.1,.85,900]},
+   {id:5,n:'Pinnacles e Neenach',c:'#ffb454',t:'Un vulcano tagliato in due',d:'Le rocce di Pinnacles e quelle di Neenach sono le due metà dello stesso vulcano, nato 23 milioni di anni fa. La faglia lo ha tagliato e oggi le due metà distano 314 km. È la prova che le placche si sono mosse.',v:[0,0,.35,-.15,.75,1050]},
+   {id:7,n:'Astenosfera',c:'#c4582a',t:'Astenosfera',d:T_ASTEN,v:[60,-125,1,0,1.5,800]}],
+  segni:[[-121.18,36.49],[-118.60,34.75]],
+  etichette:function(g){return [
+   {lg:1,t:'Oceano Pacifico',p:[g.X(-220),6,-g.LZ*.1],fz:1},
+   {t:'&uarr; placca del Pacifico',p:[g.X(-150),10,g.LZ*.28],fz:1},
+   {t:'placca nordamericana',p:[g.X(440),30,-g.LZ*.3]},
+   {t:'faglia di San Andreas',p:[g.X(22),24,g.LZ*.16]},
+   luogo(g,'San Francisco',-122.42,37.77,16,{lg:1}),
+   luogo(g,'Sierra Nevada',-118.6,37.0,26,{lg:1}),
+   luogo(g,'Pinnacles',-121.18,36.49,22,{fz:1,c:'segno'}),
+   luogo(g,'Neenach',-118.60,34.75,22,{c:'segno'}),
+   {lg:1,t:'crosta',p:[g.X(330),-12,g.zf],c:'sez'},
+   {t:'litosfera',p:[g.X(330),-58,g.zf],c:'sez'},
+   {t:'astenosfera',p:[g.X(250),-130,g.zf],c:'sez'}];}},
+ {id:'hawaii',nome:'Punto caldo',luogo:'Hawaii',tipo:'caldo',
+  centro:[-156.168,22.247,123.7],LX:800,LZ:420,xa:-920,verso:1,cr0:7,lum:1.5,corsa:520,base:-4.75,tempo:['oltre 5 milioni di anni fa','oggi'],
+  fronte:{modo:'retta',punti:[[-155.287,19.421]]},
+  sub:'Non tutti i vulcani stanno sui margini. Alle Hawaii il magma arriva da un punto caldo, lontano da ogni margine.',
+  cap:'Isole Hawaii, tagliate lungo la catena. Rilievi esagerati 6 volte',
+  info0:{t:'Un punto caldo in mezzo alla placca',d:'Sotto le Hawaii una colonna di roccia calda risale dal mantello e resta ferma. La placca del Pacifico le scorre sopra e il magma la buca, costruendo un vulcano dopo l\'altro. Tocca un elemento per saperne di più.'},
+  ancora:'<b>Lontano dai margini</b><br>Il punto caldo resta fermo, la placca si muove. Per questo i vulcani formano una fila, dal più vecchio al più giovane.',
+  fasi:['Oltre 5 milioni di anni fa. Sopra il punto caldo c\'è Kauai.','La placca si sposta verso nord-ovest. Kauai si allontana e il suo vulcano si spegne.','Sopra il punto caldo nascono, una dopo l\'altra, Oahu e Maui.','Tocca all\'isola di Hawaii, la più giovane.','Oggi. Sopra il punto caldo ci sono i vulcani attivi dell\'isola di Hawaii.'],
+  parti:[
+   {id:1,n:'Placca del Pacifico',c:'#5f7fb0',t:'Placca del Pacifico',d:'Si muove verso nord-ovest di circa 8 cm all\'anno, sopra il punto caldo. Porta via i vulcani come un nastro trasportatore.',v:[-250,-60,.4,-.5,1.1,1200]},
+   {id:3,n:'Punto caldo',c:'#ffb454',t:'Punto caldo',d:'È una colonna di roccia molto calda che risale dal mantello profondo. Resta quasi ferma mentre la placca le passa sopra.',v:[-20,-210,1,0,1.5,900]},
+   {id:5,n:'Magma',c:'#ff9a3c',t:'Magma',d:'In cima alla colonna la roccia in parte fonde. Il magma attraversa la placca e alimenta il vulcano che in quel momento sta sopra.',v:[0,-60,1,.04,1.46,560]},
+   {id:6,n:'Vulcani attivi',c:'#ff6a4a',t:'Vulcani attivi',d:'L\'isola di Hawaii è la più giovane e ha vulcani attivi come il Kilauea. A sud-est, sotto il mare, sta crescendo un nuovo vulcano che un giorno potrebbe diventare un\'isola.',v:[-10,20,.7,-.2,1.1,620]},
+   {id:2,n:'Vulcani spenti',c:'#9aa3ad',t:'Vulcani spenti',d:'Quando un vulcano si allontana dal punto caldo non riceve più magma e si spegne. Le rocce più antiche di Kauai hanno circa 5,5 milioni di anni.',v:[-430,0,.6,-.3,1.1,820]},
+   {id:7,n:'Astenosfera',c:'#c4582a',t:'Astenosfera',d:T_ASTEN,v:[-380,-280,1,0,1.5,1000]}],
+  etichette:function(g){return [
+   {t:'&larr; placca del Pacifico',p:[g.X(-330),6,-g.LZ*.2]},
+   {lg:1,t:'Oceano Pacifico',p:[g.X(40),6,-g.LZ*.38]},
+   luogo(g,'Kauai',-159.5,22.05,24,{pl:1}),
+   luogo(g,'Oahu',-157.98,21.47,22,{pl:1,lg:1}),
+   luogo(g,'Maui',-156.33,20.8,26,{pl:1,lg:1}),
+   luogo(g,'Hawaii',-155.5,19.75,36,{pl:1}),
+   {lg:1,t:'crosta oceanica',p:[g.X(-560),-36,g.zf],c:'sez'},
+   {t:'litosfera',p:[g.X(-560),-80,g.zf],c:'sez'},
+   {t:'astenosfera',p:[g.X(-480),-280,g.zf],c:'sez'},
+   {t:'punto caldo',p:[g.X(0),-300,g.zf],c:'sez'},
+   {lg:1,t:'magma',p:[g.X(52),-70,g.zf],c:'sez'}];}}];
 var INIZIALE='ande';
 var SOGLIE=[.08,.40,.56,.999,2];     /* momenti in cui cambia la frase sotto la barra del tempo */
 var S={u:1,play:false,sel:0,et:true,ter:true,b:null};
@@ -203,13 +338,13 @@ var ICONE={vai:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-
  rifai:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>'};
 
 /* ---- striscia dei margini ---- */
-$('margini').innerHTML=BLOCCHI.map(function(b){return '<button class="chip" data-b="'+b.id+'" style="--chip:#9a6fe8"'+(b.sup?'':' disabled')+'>'+b.nome+' <small>'+b.luogo+'</small></button>';}).join('');
-$('margini').addEventListener('click',function(e){var k=e.target.closest('[data-b]');if(k&&!k.disabled&&(!S.b||S.b.id!==k.dataset.b))apri(k.dataset.b);});
+$('margini').innerHTML=BLOCCHI.map(function(b){return '<button class="chip" data-b="'+b.id+'" style="--chip:#9a6fe8">'+b.nome+' <small>'+b.luogo+'</small></button>';}).join('');
+$('margini').addEventListener('click',function(e){var k=e.target.closest('[data-b]');if(k&&(!S.b||S.b.id!==k.dataset.b))apri(k.dataset.b);});
 function apri(id){
  var b=BLOCCHI.filter(function(x){return x.id===id;})[0];S.b=b;S.u=1;S.play=false;S.sel=0;
- Array.prototype.forEach.call($('margini').children,function(k){k.classList.toggle('attivo',k.dataset.b===id);});
- var at=$('margini').querySelector('.attivo');if(at&&at.scrollIntoView&&$('margini').scrollWidth>$('margini').clientWidth)$('margini').scrollLeft=at.offsetLeft-$('margini').clientWidth/2+at.offsetWidth/2;
- $('sub').textContent=b.sub;$('cap').textContent=b.cap;$('ancora').innerHTML=b.ancora;
+ var st=$('margini');Array.prototype.forEach.call(st.children,function(k){k.classList.toggle('attivo',k.dataset.b===id);});
+ var at=st.querySelector('.attivo');if(at&&st.scrollWidth>st.clientWidth)st.scrollLeft=at.offsetLeft-st.clientWidth/2+at.offsetWidth/2;
+ $('sub').textContent=b.sub;$('cap').textContent=b.cap;$('ancora').innerHTML=b.ancora;$('tIni').textContent=b.tempo[0];$('tFin').textContent=b.tempo[1];
  $('parti').innerHTML=b.parti.map(function(p){return '<button class="chip" data-k="'+p.id+'" style="--chip:'+p.c+'">'+p.n+'</button>';}).join('');
  scegli(0);mostraTempo();if(scena)scena.carica(b);}
 
@@ -233,241 +368,434 @@ $('bPlay').addEventListener('click',function(){
  if(S.play)S.play=false;else{if(S.u>=1)S.u=0;S.play=true;}
  mostraTempo();});
 
+/* ================= SHADER ================= */
+var RUMORE=`
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*noise(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return s/.9375;}
+float lin(float d,float w){return 1.-smoothstep(0.,w,abs(d));}
+/* frecce a punta che indicano il movimento di una placca */
+float frecce(vec2 p,vec2 d,float off){if(dot(d,d)<.5)return 0.;float al=dot(p,d)-off,tr=dot(p,vec2(-d.y,d.x));float fx=fract(al/150.),fz=abs(fract(tr/170.)-.5)*2.;return smoothstep(.07,0.,abs(fx-.5+fz*.22-.11))*step(fz,.62);}
+`;
+/* quota di un punto in un certo momento: le montagne crescono, le isole del punto caldo nascono una dopo l'altra */
+var QUOTA=`
+uniform float uGrow,uEx,uU,uNasc,uHot,uD,uBase,uShiftZ,uShiftX;
+float nascita(float xp){float ub=1.-(uHot-xp)/uD;return smoothstep(ub-.22,ub-.02,uU);}
+float quota(float h,float xp,out float gf){
+ if(uNasc>.5){float g=nascita(xp);gf=g;return h>uBase?uBase+(h-uBase)*g:h;}
+ gf=h>0.?uGrow:1.;return h*gf;}
+`;
+/* ---------- superficie ---------- */
+var supVS=`attribute float aH,aXr;attribute vec2 aSl;`+QUOTA+`
+varying vec2 vUv,vP;varying float vH,vHe,vXr,vWX,vWZ;varying vec3 vN;
+void main(){float gf;float he=quota(aH,position.x,gf);vec3 p=position;p.y=he*uEx;if(aXr<0.)p.z+=uShiftZ;p.x+=uShiftX;
+ vUv=uv;vP=position.xz;vH=aH;vHe=he;vXr=aXr;vWX=p.x;vWZ=p.z;vN=normalize(vec3(-aSl.x*uEx*gf,1.,-aSl.y*uEx*gf));gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`;
+var supFS=`precision highp float;uniform sampler2D uMap;
+uniform float uGrowN,uSel,uLum,uClip,uOff,uStri,uLati,uQkS,uQk,uTime,uMoto,uCresce,uLZ,uSegni;uniform vec2 uFa,uFb,uSg[2];
+varying vec2 vUv,vP;varying float vH,vHe,vXr,vWX,vWZ;varying vec3 vN;`+RUMORE+`
+void main(){if(abs(vWX)>uClip)discard;
+ vec3 c=texture2D(uMap,vUv).rgb;float lam=max(dot(normalize(vN),normalize(vec3(-.55,.75,-.35))),0.);
+ if(vHe>0.){c*=(.70+.46*lam)*uLum;
+  if(uCresce>.5){vec3 pian=mix(vec3(.30,.37,.20),vec3(.50,.46,.31),fbm(vUv*vec2(60.,40.)));c=mix(c,pian*(.8+.3*lam),(1.-uGrowN)*smoothstep(.3,2.4,vH));}
+  float ch=frecce(vP,uFa,uOff)*smoothstep(-25.,-70.,vXr)+frecce(vP,uFb,uOff)*smoothstep(25.,70.,vXr);c=mix(c,vec3(1.),ch*(.14+.34*uMoto));}
+ else{if(vH>0.)c=vec3(.07,.17,.30);
+  c=mix(vec3(dot(c,vec3(.3,.5,.2))),c,.55)*(1.15+.9*lam)*uLum;
+  if(uStri>.5){float ax=abs(vXr),a=ax-uOff;c*=.74+.5*step(.5,fract(a/45.));c=mix(c,vec3(1.,.74,.22)*(.7+.5*lam),smoothstep(25.,17.,abs(ax-uOff))*.85);c=mix(c,vec3(1.,.50,.14),lin(vXr,4.)*(.75+.2*sin(uTime*2.5+vP.y*.05)));}}
+ if(uSegni>.5){for(int i=0;i<2;i++){float dd=length(vP-uSg[i]);c=mix(c,vec3(1.,.70,.25),max(smoothstep(7.,5.,dd),lin(dd-(13.+2.*sin(uTime*3.)),1.6))*.95);}}
+ if(uQkS>.5){float qa=0.;for(int i=0;i<4;i++){float per=2.6+float(i)*.47,ph=uTime/per+float(i)*.37;float cy=floor(ph),t=fract(ph);
+   float zq=(hash(vec2(cy,float(i)*5.1))-.5)*uLZ*.86;float dd=length(vec2(vXr,vWZ-zq));
+   qa=max(qa,max(lin(dd-(3.+46.*t),2.+3.*t)*(1.-t)*(1.-t)*.9,smoothstep(6.,0.,dd)*(1.-smoothstep(0.,.5,t))));}c=mix(c,vec3(1.,.97,.7),qa*uQk);}
+ float att=1.;if(uLati>.5){if(uSel>.5&&uSel<1.5)att=vXr<0.?1.:.45;else if(uSel>1.5&&uSel<2.5)att=vXr>0.?1.:.4;}if(uSel>6.5&&uSel<7.5)att=.5;
+ gl_FragColor=vec4(c*att,1.);}`;
+/* ---------- mare: velo trasparente, con le frecce del movimento ---------- */
+var mareVS=`uniform float uXf,uVerso,uShiftZ,uShiftX,uXa,uXb;varying vec2 vUv,vP;varying float vXp;
+void main(){vec3 p=position;if(uVerso*(p.x-uXf)<0.)p.z+=uShiftZ;vXp=position.x-uShiftX;vUv=vec2((vXp-uXa)/(uXb-uXa),uv.y);vP=position.xz;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`;
+var mareFS=`precision highp float;uniform sampler2D uMask;uniform float uOff,uSel,uMoto,uAlfa,uNasc,uHot,uD,uBase,uU,uLati;uniform vec2 uFa,uFb;
+varying vec2 vUv,vP;varying float vXp;`+RUMORE+`
+void main(){if(vUv.x<0.||vUv.x>1.)discard;vec4 m=texture2D(uMask,vUv);float terra=smoothstep(.35,.65,m.g),dep=m.r;
+ if(uNasc>.5&&m.g>.02){float ub=1.-(uHot-vXp)/uD;float g=smoothstep(ub-.22,ub-.02,uU);float he=uBase+(m.a*5.-uBase)*g;float t2=terra*smoothstep(-.25,.1,he);dep=mix(clamp(-he/8.,0.,1.),dep,t2);terra=t2;}
+ if(terra>.98)discard;
+ vec3 c=mix(vec3(.20,.52,.72),vec3(.03,.13,.30),smoothstep(0.,.75,dep));float a=mix(.34,.60,smoothstep(0.,.6,dep))*uAlfa;
+ float xr=m.b*1600.-800.;float ch=frecce(vP,uFa,uOff)*smoothstep(-25.,-70.,xr)+frecce(vP,uFb,uOff)*smoothstep(25.,70.,xr);
+ c=mix(c,vec3(.85,.95,1.),ch*(.22+.4*uMoto));a=max(a,ch*(.3+.4*uMoto));
+ float att=1.;if(uLati>.5&&uSel>.5&&uSel<2.5)att=(uSel<1.5)==(xr<0.)?1.:.5;if(uSel>6.5&&uSel<7.5)att=.5;
+ gl_FragColor=vec4(c*att,a*(1.-terra));}`;
+/* ---------- facce del blocco: parte comune ---------- */
+var facVS=`attribute float aTop,aH,aXr,aES,aC;uniform float uMob,uFondo;`+QUOTA+`
+varying float vY,vS,vXr,vES,vC,vWX,vXp;
+void main(){float gf;float s=quota(aH,position.x,gf)*uEx;vec3 p=position;p.y=aTop>.5?max(s,0.):uFondo;if(aXr<0.)p.z+=uShiftZ;p.x+=uShiftX*uMob;
+ vY=p.y;vS=s;vXr=aXr+uShiftX*uMob;vES=aES;vC=aC;vWX=p.x;vXp=position.x;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`;
+var FAC=`precision highp float;varying float vY,vS,vXr,vES,vC,vWX,vXp;
+uniform float uTime,uU,uTip,uOff,uMg,uGrowN,uSel,uQk,uArc,uST,uArcES,uAtt,uCr0,uClip,uBaseY,uMuro,uPenn;uniform vec2 uSx[5];uniform float uOld[4],uFondo;`+RUMORE+`
+#define FONDO uFondo
+/* acqua sopra il fondale: se il punto è acqua lo colora e risponde vero */
+bool acqua(float y,float s){if(y>s+.01){if(s>=0.)discard;float t=clamp(y/min(s,-1.),0.,1.);vec3 w=mix(vec3(.17,.47,.68),vec3(.03,.12,.28),t);gl_FragColor=vec4(w*((uSel>1.5&&uSel<2.5)||uSel>3.5?.5:1.),1.);return true;}return false;}
+/* colori delle rocce */
+vec3 cOcr(float a,float n){return mix(vec3(.15,.17,.22),vec3(.27,.30,.36),fbm(vec2(a*.05,n*.5)))*(.86+.22*step(.5,fract(a/70.)));}
+vec3 cOlm(float a,float n){return mix(vec3(.27,.31,.36),vec3(.40,.44,.47),fbm(vec2(a*.022,n*.06)))*(.93+.09*step(.5,fract(a/140.)));}
+vec3 cCon(float c,float y,float t){vec3 k=mix(vec3(.72,.61,.46),vec3(.52,.42,.32),t)*(.84+.30*fbm(vec2(c*.016,y*.11)));return k*(.95+.07*sin(y*.55+fbm(vec2(c*.01,3.))*9.));}
+vec3 cLit(float c,float y){return mix(vec3(.38,.33,.28),vec3(.50,.44,.36),fbm(vec2(c*.02,y*.06)));}
+vec3 cAst(float c,float y){float t=smoothstep(-40.,FONDO,y);return mix(vec3(.50,.17,.08),vec3(.74,.30,.10),t)*(.84+.30*fbm(vec2(c*.011,y*.013)));}
+vec3 cMag(float x,float y){vec2 q=vec2(x*.10,y*.22);return mix(vec3(.93,.30,.05),vec3(1.,.84,.30),fbm(q+vec2(uTime*.25,fbm(q*1.7-uTime*.2)*2.)));}
+float trat(float c,float y){return step(.5,fract((c+y)*.035));}
+/* lampo di un terremoto: un cerchio che si allarga e un punto che si spegne */
+float lampo(vec2 d,float t,float r){float dd=length(d);return max(lin(dd-(4.+r*t),1.6+2.*t)*(1.-t)*(1.-t)*.9,smoothstep(5.,0.,dd)*(1.-smoothstep(0.,.5,t)));}
+/* goccia di magma che sale da p0 a p1 */
+float goccia(vec2 p,vec2 p0,vec2 p1,float t,float k){vec2 pp=mix(p0,p1,t);pp.x+=sin(t*9.+k*2.)*7.*(1.-t);float r=mix(4.,7.5,t);vec2 dv=p-pp;dv.y*=dv.y<0.?.55:1.;return smoothstep(r,r*.25,length(dv))*smoothstep(0.,.08,t)*smoothstep(1.,.9,t);}
+`;
+var FS={};
+/* ---------- subduzione ---------- */
+FS.sub=FAC+`
+const float TAN=`+TAN+`,LC=`+LC.toFixed(1)+`,TH=`+TH.toFixed(1)+`,CR=9.;
+float dipf(float x){return TAN*(x-LC*(1.-exp(-x/LC)));}
+void main(){
+ float x=vXr,y=vY;if(acqua(y,vS))return;
+ /* placca oceanica che scende: curva del suo lato superiore oltre la fossa */
+ float xs=max(x,0.),d=dipf(xs),yT=uST-d;
+ float sl=TAN*(1.-exp(-xs/LC)),cs=1./sqrt(1.+sl*sl);
+ float n=x>0.?(yT-y)*cs:(vS-y);      /* profondità dentro la placca, perpendicolare */
+ float s=x>0.?xs+.268*d:x;           /* strada percorsa lungo la placca dalla fossa */
+ float q=2.*clamp(n/TH,0.,1.)-1.;float tipL=uTip-TH*.5*(1.-sqrt(max(0.,1.-q*q)));
+ bool oce=n>=0.&&n<TH&&(x<=0.||s<tipL);
+ bool sotto=x>0.&&n>=TH&&s<uTip;
+ float cb=-(uCr0+(vES>0.?7.*vES*uGrowN:3.5*vES));   /* base della crosta della placca che resta sopra, con la radice sotto le montagne */
+ float yL=-(105.-42.*exp(-pow((x-uArc)/140.,2.))*uMg);   /* base della sua litosfera */
+ float id;vec3 col;float a=s-uOff;
+ if(oce){id=1.;col=n<CR?cOcr(a,n):cOlm(a,n);col*=1.-.5*lin(n-CR,1.1);}
+ else if(sotto||x<=0.){id=7.;}
+ else if(y>cb){id=2.;col=cCon(vC,y,clamp((vS-y)/max(vS-cb,1.),0.,1.));}
+ else if(y>yL){id=2.;col=cLit(vC,y);col*=1.-.5*lin(y-cb,1.1);}
+ else{id=7.;}
+ if(id>6.5){col=cAst(vC,y);float bl=x<=0.?lin(n-TH,1.6):(sotto?lin(n-TH,1.6):lin(y-yL,1.6));col=mix(col,vec3(.95,.9,.8),bl*trat(vC,y)*.55);}
+ if(x>0.&&!oce)col*=1.-.55*lin(n,1.3)*step(s,uTip);     /* contatto tra le due placche */
+ float att=1.;
+ if(uSel>.5){if(uSel<2.5)att=abs(id-uSel)<.5?1.:.3;else if(uSel<3.5)att=.75;else if(uSel<4.5)att=.42;else if(uSel<5.5)att=.42;else if(uSel<6.5)att=(id>1.5&&id<2.5)?.9:.4;else att=id>6.5?1.:.3;}
+ col*=att*uAtt;
+ if(uSel>2.5&&uSel<3.5){float dd=length(vec2(x,y-uST));col+=vec3(.3,.75,1.)*lin(dd-(26.+5.*sin(uTime*3.)),2.2)*uAtt;}
+ /* ---- acqua che esce dalla placca e magma che risale ---- */
+ if(uMg>.01&&x>0.){
+  float dp=-yT;float h=y-yT;
+  if(!oce&&h>0.&&h<20.&&dp>84.&&dp<138.&&s<uTip){float ix=floor(x/11.),fx=(fract(x/11.)-.5)*11.;float hh=fract(uTime*`+V_FLUIDI.toFixed(2)+`+hash(vec2(ix,3.)))*18.;
+   float g=smoothstep(2.2,.5,length(vec2(fx+sin(h*.3+ix)*1.2,h-hh)));col=mix(col,vec3(.62,.86,1.),g*(1.-hh/18.)*.95*uMg);}
+  float cbA=-(uCr0+7.*max(uArcES,0.)*uGrowN);
+  if(!oce&&y<cb+3.){float gl=0.;
+   for(int k=0;k<5;k++){vec2 p0=uSx[k]+vec2(0.,9.),p1=vec2(uArc+(float(k)-2.)*13.,cbA-3.);
+    for(int j=0;j<3;j++)gl=max(gl,goccia(vec2(x,y),p0,p1,fract(uTime*`+V_MAGMA.toFixed(2)+`+float(k)*.37+float(j)/3.),float(k)));}
+   col=mix(col,mix(vec3(1.,.42,.08),vec3(1.,.86,.35),gl),gl*uMg);
+   float pz=length(vec2((x-uArc)/48.,(y-cbA+2.)/7.));col=mix(col,mix(vec3(.95,.38,.07),vec3(1.,.72,.22),fbm(vec2(x*.09-uTime*.3,y*.2))),smoothstep(1.,.75,pz)*uMg);}
+  if(y>cbA-2.){
+   float camY=min(-14.,cbA*.42);float pc=length(vec2((x-uArc)/25.,(y-camY)/8.5));
+   float dk=y<camY?max(lin(x-uArc-9.-sin(y*.21)*3.,1.5),lin(x-uArc+10.-sin(y*.17+2.)*3.5,1.5)):lin(x-uArc-sin(y*.14)*1.6,1.7);
+   col=mix(col,vec3(1.,.55,.12)*(.72+.28*sin(y*.55-uTime*4.))+vec3(.0,.18,.05),dk*uMg);
+   col=mix(col,cMag(x,y),smoothstep(1.,.8,pc)*uMg);
+   col=mix(col,vec3(.25,.08,.03),lin(pc-1.,.09)*.6*uMg);}}
+ /* ---- terremoti: lampi lungo la placca che scende ---- */
+ if(uQk>.01&&x>-30.){
+  float smax=min(uTip,720.);float qa=0.;
+  for(int i=0;i<6;i++){float per=2.3+float(i)*.41;float ph=uTime/per+float(i)*.31;float cy=floor(ph),t=fract(ph);
+   float r1=hash(vec2(cy,float(i)*7.3));float sq=12.+(smax-12.)*r1*r1;float xq=sq/1.12;xq=sq-.268*dipf(xq);xq=sq-.268*dipf(xq);
+   qa=max(qa,lampo(vec2(x,y)-vec2(xq,uST-dipf(xq)-4.),t,52.));}
+  if(uSel>3.5&&uSel<4.5&&x>0.&&n>-3.&&n<16.&&s<smax){vec2 g=vec2(s,n)/7.;vec2 gi=floor(g);float thr=.38+.5*smoothstep(0.,720.,s);
+   if(hash(gi)>thr){vec2 c=gi+.5+.5*(vec2(hash(gi+3.1),hash(gi+7.7))-.5);qa=max(qa,smoothstep(.2,.08,length(g-c))*.85);}}
+  col=mix(col,vec3(1.,.97,.70),qa*uQk*uAtt);}
+ gl_FragColor=vec4(col,1.);}`;
+/* ---------- due continenti ---------- */
+FS.coll=FAC+`
+float rampa(float x){return -(3.+44.*(1.-exp(-max(x,0.)/120.)));}
+void main(){
+ float x=vXr,y=vY;if(acqua(y,vS))return;
+ float E=uTip;                         /* quanto l'India è entrata sotto l'Asia */
+ float yR=rampa(x);                    /* superficie inclinata su cui scivola l'India */
+ float n=(x>0.?yR:vS)-y;               /* profondità dentro la placca indiana */
+ float q=2.*clamp(n/125.,0.,1.)-1.;float tipL=E-40.*(1.-sqrt(max(0.,1.-q*q)));
+ bool ind=n>=0.&&n<125.&&(x<=0.||x<tipL);
+ float cbA=-(uCr0+5.5*max(vES,0.)*uGrowN);   /* base della crosta asiatica, dove l'India non è arrivata */
+ float a=x-uOff;float id;vec3 col;
+ if(ind){id=1.;col=n<36.?cCon(a,y,n/36.)*vec3(1.04,.90,.70):cLit(a,y);col*=1.-.5*lin(n-36.,1.1);}
+ else if(x>0.&&((x<E&&y>yR)||(x>=E&&y>cbA))){id=2.;
+  col=cCon(vC,y,clamp((vS-y)/max(vS-(x<E?yR:cbA),1.),0.,1.));
+  col*=.93+.10*sin(y*.42+uGrowN*5.5*sin(x*.035)*exp(-x/420.));       /* strati piegati */
+  for(int k=0;k<3;k++){float fk=15.+float(k)*52.;if(x>fk)col*=1.-.6*lin(y+(x-fk)*.5774,1.3)*uGrowN;}}   /* faglie */
+ else if(x>0.&&y>-150.&&(x>=E||(n>=0.&&n<125.))){id=2.;col=cLit(vC,y);col*=1.-.5*lin(y-cbA,1.1);}
+ else{id=7.;}
+ if(id>6.5){col=cAst(vC,y);float bl=x<E?lin(n-125.,1.6):lin(y+150.,1.6);col=mix(col,vec3(.95,.9,.8),bl*trat(vC,y)*.55);
+  /* il vecchio fondale oceanico che sprofonda */
+  float us=smoothstep(0.,.62,uU);vec2 dv=vec2(x,y)-vec2(150.+30.*us,-150.-420.*us);float al=dot(dv,vec2(.5,-.866)),ac=dot(dv,vec2(.866,.5));
+  float sd=length(max(abs(vec2(al,ac))-vec2(78.,15.),0.))-17.;
+  if(sd<0.){id=8.;col=ac>20.?cOcr(al,ac):cOlm(al,ac);col*=1.-.4*lin(sd,1.5);}}
+ if(x>0.&&x<E&&!ind)col*=1.-.6*lin(n,1.4);      /* contatto tra le due placche */
+ float att=1.;
+ if(uSel>.5){if(uSel<2.5)att=abs(id-uSel)<.5?1.:.3;else if(uSel<4.5)att=.42;else if(uSel<5.5)att=(x>0.&&x<E&&id<2.5&&(id>1.5||n<36.))?1.:.35;else if(uSel<6.5)att=(id>1.5&&id<2.5)?.9:.4;else if(uSel<7.5)att=id>6.5&&id<7.5?1.:.3;else att=id>7.5?1.:.35;}
+ col*=att*uAtt;
+ if(uQk>.01&&x>-20.){float qa=0.;float xm=min(E,380.);
+  for(int i=0;i<6;i++){float per=2.3+float(i)*.41;float ph=uTime/per+float(i)*.31;float cy=floor(ph),t=fract(ph);
+   float xq=6.+(xm-6.)*hash(vec2(cy,float(i)*7.3));qa=max(qa,lampo(vec2(x,y)-vec2(xq,rampa(xq)-2.),t,40.));}
+  if(uSel>3.5&&uSel<4.5&&x>0.&&x<xm&&n>-16.&&n<5.){vec2 g=vec2(x,n)/7.;vec2 gi=floor(g);
+   if(hash(gi)>.5){vec2 c=gi+.5+.5*(vec2(hash(gi+3.1),hash(gi+7.7))-.5);qa=max(qa,smoothstep(.2,.08,length(g-c))*.85);}}
+  col=mix(col,vec3(1.,.97,.70),qa*uQk*uAtt);}
+ gl_FragColor=vec4(col,1.);}`;
+/* ---------- dorsale ---------- */
+FS.dors=FAC+`
+void main(){
+ float x=vXr,y=vY;if(acqua(y,vS))return;
+ float ax=abs(x),n=vS-y;
+ float thL=7.+84.*sqrt(clamp(ax/620.,0.,1.));    /* la litosfera diventa più spessa lontano dalla dorsale */
+ float a=ax-uOff;float id=x<0.?1.:2.;vec3 col;bool crosta=n<7.;
+ if(crosta){col=cOcr(a,n)*(.74+.5*step(.5,fract(a/45.)));col=mix(col,vec3(1.,.74,.22),smoothstep(25.,17.,abs(ax-uOff))*.85);}
+ else if(n<thL){col=cOlm(a,n);col*=1.-.5*lin(n-7.,1.);}
+ else{id=7.;col=cAst(vC,y);
+  float w=exp(-pow(x/(70.+(-y)*.34),2.));col=mix(col,mix(vec3(.92,.44,.10),vec3(1.,.72,.26),fbm(vec2(x*.03,y*.03-uTime*.22))),w*.8*smoothstep(FONDO,-30.,y));   /* mantello caldo che risale */
+  col=mix(col,vec3(.95,.9,.8),lin(n-thL,1.6)*trat(vC,y)*.55);}
+ float att=1.;
+ if(uSel>.5){if(uSel<2.5)att=abs(id-uSel)<.5?1.:.3;else if(uSel<3.5)att=.75;else if(uSel<5.5)att=.42;else if(uSel<6.5)att=crosta?1.:.32;else att=id>6.5?1.:.3;}
+ col*=att*uAtt;
+ if(uSel>2.5&&uSel<3.5){float dd=length(vec2(x,y-uST));col+=vec3(.3,.75,1.)*lin(dd-(24.+4.*sin(uTime*3.)),2.)*uAtt;}
+ /* magma: gocce che salgono verso la spaccatura, piccola camera, lava sul fondo */
+ float cy0=uST-7.5;
+ if(n>7.&&y<cy0&&y>-95.){float gl=0.;
+  for(int k=0;k<5;k++){vec2 p0=vec2((float(k)-2.)*17.,-78.),p1=vec2((float(k)-2.)*2.5,cy0-2.);
+   for(int j=0;j<3;j++)gl=max(gl,goccia(vec2(x,y),p0,p1,fract(uTime*`+V_MAGMA.toFixed(2)+`+float(k)*.37+float(j)/3.),float(k)));}
+  col=mix(col,mix(vec3(1.,.42,.08),vec3(1.,.86,.35),gl),gl);}
+ float pc=length(vec2(x/15.,(y-cy0)/3.6));col=mix(col,cMag(x,y),smoothstep(1.,.75,pc));
+ if(y>cy0)col=mix(col,vec3(1.,.58,.14)*(.75+.25*sin(y*1.2-uTime*4.)),lin(x-sin(y*.6)*.5,1.2));
+ if(uQk>.01){float qa=0.;
+  for(int i=0;i<5;i++){float per=2.1+float(i)*.47;float ph=uTime/per+float(i)*.31;float cy=floor(ph),t=fract(ph);
+   vec2 pq=vec2((hash(vec2(cy,float(i)*7.3))-.5)*26.,uST-2.-9.*hash(vec2(cy,float(i)*3.1)));qa=max(qa,lampo(vec2(x,y)-pq,t,26.));}
+  col=mix(col,vec3(1.,.97,.70),qa*uQk*uAtt);}
+ gl_FragColor=vec4(col,1.);}`;
+/* ---------- trascorrente ---------- */
+FS.tras=FAC+`
+void main(){
+ float x=vXr,y=vY;if(acqua(y,vS))return;
+ float cb=-(uCr0+6.*max(vES,0.)+4.5*min(vES,0.)),yL=-88.;
+ float id=x<0.?1.:2.;vec3 col;vec3 tinta=x<0.?vec3(.84,.93,1.06):vec3(1.);
+ if(y>cb)col=cCon(vC,y,clamp((vS-y)/max(vS-cb,1.),0.,1.))*tinta;
+ else if(y>yL){col=cLit(vC,y)*tinta;col*=1.-.5*lin(y-cb,1.1);}
+ else{id=7.;col=cAst(vC,y);col=mix(col,vec3(.95,.9,.8),lin(y-yL,1.6)*trat(vC,y)*.55);}
+ float prof=smoothstep(-120.,-88.,y);
+ if(uMuro>.5){   /* la superficie della faglia, con le strie lasciate dallo scorrimento */
+  col=col*.82+.10*vec3(fbm(vec2(vC*.012,y*1.6)))*prof;}
+ else{col*=1.-.72*lin(x,1.5)*prof;col=mix(col,col*1.3,lin(x,6.)*(1.-lin(x,1.5))*step(cb,y)*.5);}
+ float att=1.;
+ if(uSel>.5){if(uSel<2.5)att=abs(id-uSel)<.5?1.:.3;else if(uSel<3.5)att=.6;else if(uSel<5.5)att=.45;else att=id>6.5?1.:.3;}
+ col*=att*uAtt;
+ if(uSel>2.5&&uSel<3.5)col+=vec3(1.,.45,.4)*(uMuro>.5?.16:lin(x,3.)*.8)*prof*(.8+.2*sin(uTime*3.));
+ if(uQk>.01){float qa=0.;
+  for(int i=0;i<5;i++){float per=2.2+float(i)*.45;float ph=uTime/per+float(i)*.31;float cy=floor(ph),t=fract(ph);
+   float yq=-(2.+14.*hash(vec2(cy,float(i)*3.1)));
+   vec2 d=uMuro>.5?vec2(vC-(hash(vec2(cy,float(i)*7.3))-.5)*440.,y-yq):vec2(x,y-yq);
+   qa=max(qa,lampo(d,t,uMuro>.5?34.:22.));}
+  col=mix(col,vec3(1.,.97,.70),qa*uQk*uAtt);}
+ gl_FragColor=vec4(col,1.);}`;
+/* ---------- punto caldo ---------- */
+FS.caldo=FAC+`
+void main(){
+ if(abs(vWX)>uClip)discard;
+ float xw=vXr,xp=vXp,y=vY;if(acqua(y,vS))return;    /* xw: distanza dal punto caldo, che sta fermo. xp: posizione sulla placca, che si muove */
+ float yM=uBaseY-uCr0-.2*max(vES*`+EX.toFixed(1)+`-uBaseY,0.);        /* base della crosta, più profonda sotto il peso dei vulcani */
+ float yL=yM-82.+24.*exp(-pow(xw/140.,2.))*uPenn;
+ float id;vec3 col;bool edif=false;
+ if(y>yM){id=1.;edif=y>uBaseY+1.;
+  col=edif?mix(vec3(.20,.18,.19),vec3(.36,.31,.29),fbm(vec2(xp*.06,y*.3)))*(.84+.24*step(.5,fract((vS-y)/3.2))):cOcr(xp,uBaseY-y);
+  if(edif)id=6.;}
+ else if(y>yL){id=1.;col=cOlm(xp,yM-y);col*=1.-.5*lin(y-yM,1.);}
+ else{id=7.;col=cAst(vC,y);col=mix(col,vec3(.95,.9,.8),lin(y-yL,1.6)*trat(vC,y)*.55);
+  /* la colonna calda: sale dritta e in cima si allarga sotto la placca, trascinata dal suo movimento */
+  float sp=smoothstep(yL-95.,yL-4.,y);float cx=-85.*sp*sp,hw=46.+170.*sp*sp;float pl=exp(-pow((xw-cx)/hw,2.)*1.6)*uPenn;
+  col=mix(col,mix(vec3(.95,.45,.10),vec3(1.,.80,.30),fbm(vec2(xw*.035,y*.03-uTime*.30))),pl*.88);if(pl>.4)id=3.;}
+ /* camini dei vulcani ormai spenti: restano nella placca e viaggiano con lei */
+ float sp2=0.;if(y>uBaseY-6.)for(int i=0;i<4;i++){float xo=uOld[i];if(xo>-9000.)sp2=max(sp2,max(lin(xp-xo-sin(y*.15)*1.4,1.3),smoothstep(1.,.8,length(vec2((xp-xo)/15.,(y+17.)/5.5)))));}
+ if(sp2>0.&&abs(xw)>45.&&edif)col=mix(col,vec3(.10,.10,.11),sp2*.85);else sp2=0.;
+ float att=1.;
+ if(uSel>.5){if(uSel<1.5)att=(id<1.5||(id>5.5&&id<6.5))?1.:.3;else if(uSel<2.5)att=.42+.58*sp2;else if(uSel<3.5)att=(id>2.5&&id<3.5)?1.:.35;else if(uSel<5.5)att=.42;else if(uSel<6.5)att=(id>5.5&&id<6.5)?1.:.4;else att=id>6.5?1.:(id>2.5&&id<3.5?.6:.3);}
+ col*=att*uAtt;
+ if(uSel>1.5&&uSel<2.5)col+=vec3(.42,.46,.5)*sp2*.35;
+ if(uPenn>.5){
+  /* magma: gocce attraverso la placca, camera dentro il vulcano, camino fino in cima */
+  float chY=-16.;
+  if(y<chY&&y>yL-10.){float gl=0.;
+   for(int k=0;k<5;k++){vec2 p0=vec2((float(k)-2.)*16.-10.,yL-6.),p1=vec2((float(k)-2.)*3.,chY-4.);
+    for(int j=0;j<3;j++)gl=max(gl,goccia(vec2(xw,y),p0,p1,fract(uTime*`+V_MAGMA.toFixed(2)+`+float(k)*.37+float(j)/3.),float(k)));}
+   col=mix(col,mix(vec3(1.,.42,.08),vec3(1.,.86,.35),gl),gl);}
+  float pc=length(vec2(xw/17.,(y-chY)/6.5));col=mix(col,cMag(xw,y),smoothstep(1.,.8,pc));
+  if(y>chY)col=mix(col,vec3(1.,.55,.12)*(.72+.28*sin(y*.55-uTime*4.))+vec3(.0,.18,.05),lin(xw-sin(y*.14)*1.6,1.7));
+  if(uQk>.01){float qa=0.;
+   for(int i=0;i<4;i++){float per=2.6+float(i)*.53;float ph=uTime/per+float(i)*.31;float cy=floor(ph),t=fract(ph);
+    vec2 pq=vec2((hash(vec2(cy,float(i)*7.3))-.5)*46.,chY-4.-30.*hash(vec2(cy,float(i)*3.1)));qa=max(qa,lampo(vec2(xw,y)-pq,t,24.));}
+   col=mix(col,vec3(1.,.97,.70),qa*uQk*uAtt);}}
+ gl_FragColor=vec4(col,1.);}`;
+/* ---------- fumo dei vulcani ---------- */
+var fumoVS=`attribute float aSeed;uniform float uTime,uMg,uPx,uGrow,uVerso;varying float vA;
+void main(){float t=fract(uTime*`+V_FUMO.toFixed(2)+`+aSeed);vec3 p=position;p.y=p.y*uGrow+t*85.;p.x+=sin(aSeed*43.+t*4.)*t*10.+uVerso*t*t*46.;p.z+=cos(aSeed*27.+t*3.)*t*9.;
+ vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;gl_PointSize=uPx*(9.+50.*t)*(1000./-mv.z);vA=smoothstep(0.,.08,t)*(1.-t)*.42*uMg;}`;
+var fumoFS='precision mediump float;varying float vA;void main(){float d=length(gl_PointCoord-.5);float a=smoothstep(.5,.12,d)*vA;if(a<.01)discard;gl_FragColor=vec4(vec3(.86,.85,.83),a);}';
+
+/* ---- che cosa cambia nel tempo, tipo per tipo (u va da 0, l'inizio, a 1, oggi) ---- */
+var TIPI={
+ sub:{cresce:1,lati:1,fa:function(v){return [v,0];},fb:[0,0],offSup:1,
+  passo:function(u,U,c){U.uTip.value=S_TIP0+c.corsa*u;U.uGrowN.value=sstep(.12,1,u);U.uGrow.value=.12+.88*U.uGrowN.value;U.uMg.value=sstep(.40,.55,u);}},
+ coll:{cresce:1,lati:1,fa:function(v){return [v,0];},fb:[0,0],offSup:1,
+  passo:function(u,U,c){U.uTip.value=50+400*sstep(.05,.9,u);U.uGrowN.value=sstep(.05,1,u);U.uGrow.value=.1+.9*U.uGrowN.value;U.uMg.value=0;}},
+ dors:{lati:1,stri:1,alfa:.5,fa:function(){return [-1,0];},fb:[1,0],offSup:1,
+  passo:function(u,U,c){U.uGrowN.value=1;U.uGrow.value=1;U.uMg.value=1;}},
+ tras:{lati:1,qkS:1,fa:function(){return [0,-1];},fb:[0,0],offSup:0,offMare:0,
+  passo:function(u,U,c){U.uShiftZ.value=(1-u)*c.corsa;U.uGrowN.value=1;U.uGrow.value=1;U.uMg.value=0;}},
+ caldo:{nasc:1,fa:function(){return [-1,0];},fb:[-1,0],offSup:0,
+  passo:function(u,U,c){U.uShiftX.value=(1-u)*c.corsa;U.uGrowN.value=1;U.uGrow.value=1;U.uMg.value=1;}}};
+
 /* ================= SCENA 3D ================= */
 function Scena(el){
  if(typeof THREE==='undefined'){el.insertAdjacentHTML('beforeend','<div class="fail">Il modello 3D richiede la connessione a internet. Riprova più tardi.</div>');return null;}
  var R;try{R=new THREE.WebGLRenderer({antialias:true,alpha:true});}catch(e){el.insertAdjacentHTML('beforeend','<div class="fail">Questo browser non supporta il 3D (WebGL).</div>');return null;}
  R.setPixelRatio(Math.min(devicePixelRatio||1,2));el.insertBefore(R.domElement,el.firstChild);
  var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(34,1,20,14000);
- var C={tx:0,ty:-140,tz:230,th:-.36,ph:1.24,d:2330},CT=null,V0=null,fit=1,auto=false,pronta=false,cfg=null,turno=0;
+ var C={tx:0,ty:-140,tz:230,th:-.36,ph:1.24,d:2330},CT=null,V0=null,fit=1,auto=false,pronta=false,cfg=null,tipo=null,turno=0;
  var DMIN=520,DMAX=3800;
  /* valori condivisi da tutti i materiali */
- var U={uTime:{value:0},uTip:{value:S_TIP0+S_CORSA},uOff:{value:S_CORSA},uMg:{value:1},uGrow:{value:1},uGrowN:{value:1},uSel:{value:0},uQk:{value:1},uEx:{value:EX}};
-
- var RUMORE='float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\n'
-  +'float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}\n'
-  +'float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*noise(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return s/.9375;}\n';
-
- /* ---------- superficie: rilievo vero, con le montagne che crescono nel tempo ---------- */
- var supVS='attribute float aH;attribute vec2 aSl;attribute float aXr;uniform float uGrow,uEx;varying vec2 vUv;varying float vH,vXr;varying vec3 vN;\n'
-  +'void main(){float g=aH>0.?uGrow:1.;vec3 p=position;p.y=aH*uEx*g;vUv=uv;vH=aH;vXr=aXr;vN=normalize(vec3(-aSl.x*uEx*g,1.,-aSl.y*uEx*g));gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}';
- var supFS='precision highp float;uniform sampler2D uMap;uniform float uGrowN,uSel,uLum;varying vec2 vUv;varying float vH,vXr;varying vec3 vN;\n'+RUMORE
-  +'void main(){vec3 c=texture2D(uMap,vUv).rgb;\n'
-  +' float lam=max(dot(normalize(vN),normalize(vec3(-.55,.75,-.35))),0.);\n'
-  +' if(vH>0.){c*=(.70+.46*lam)*uLum;\n'
-  +'  /* prima che le montagne crescano: una pianura */\n'
-  +'  vec3 pian=mix(vec3(.30,.37,.20),vec3(.50,.46,.31),fbm(vUv*vec2(60.,40.)));c=mix(c,pian*(.8+.3*lam),(1.-uGrowN)*smoothstep(.3,2.4,vH));}\n'
-  +' else{c=mix(vec3(dot(c,vec3(.3,.5,.2))),c,.55)*(1.15+.9*lam)*uLum;}\n'
-  +' float att=1.;if(uSel>.5&&uSel<1.5)att=vXr<0.?1.:.45;else if(uSel>1.5&&uSel<2.5)att=vXr>0.?1.:.4;else if(uSel>6.5)att=.5;\n'
-  +' gl_FragColor=vec4(c*att,1.);}';
-
- /* ---------- mare: velo trasparente, con le frecce del movimento della placca oceanica ---------- */
- var mareVS='varying vec2 vUv;varying vec3 vP;void main(){vUv=uv;vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}';
- var mareFS='precision highp float;uniform sampler2D uMask;uniform float uOff,uSel,uMoto,uVerso;varying vec2 vUv;varying vec3 vP;\n'
-  +'void main(){vec4 m=texture2D(uMask,vUv);float terra=smoothstep(.35,.65,m.g);if(terra>.98)discard;\n'
-  +' float dep=m.r;vec3 c=mix(vec3(.20,.52,.72),vec3(.03,.13,.30),smoothstep(0.,.75,dep));float a=mix(.34,.60,smoothstep(0.,.6,dep));\n'
-  +' /* frecce: solo sulla placca che scende, si spostano insieme a lei */\n'
-  +' float xr=m.b*1600.-800.;float fx=fract((uVerso*vP.x-uOff)/150.);float fz=abs(fract(vP.z/170.)-.5)*2.;\n'
-  +' float ch=smoothstep(.07,.0,abs(fx-.5+fz*.22-.11))*step(fz,.62)*smoothstep(-25.,-70.,xr);\n'
-  +' c=mix(c,vec3(.85,.95,1.),ch*(.22+.4*uMoto));a=max(a,ch*(.3+.4*uMoto));\n'
-  +' float att=(uSel>1.5&&uSel<2.5)||uSel>6.5?.5:1.;\n'
-  +' gl_FragColor=vec4(c*att,a*(1.-terra));}';
-
- /* ---------- facce del blocco: gli strati disegnati da uno shader ---------- */
- var facVS='attribute float aTop,aH,aXr,aES,aC;uniform float uGrow,uEx;varying float vY,vS,vXr,vES,vC;\n'
-  +'void main(){float s=aH*uEx*(aH>0.?uGrow:1.);vec3 p=position;p.y=aTop>.5?max(s,0.):'+FONDO.toFixed(1)+';vY=p.y;vS=s;vXr=aXr;vES=aES;vC=aC;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}';
- var facFS='precision highp float;varying float vY,vS,vXr,vES,vC;\n'
-  +'uniform float uTime,uTip,uOff,uMg,uGrowN,uSel,uQk,uArc,uST,uArcES,uAtt,uCr0;uniform vec2 uSx[5];\n'+RUMORE
-  +'const float TAN='+TAN+',LC='+LC.toFixed(1)+',TH='+TH.toFixed(1)+',CR=9.;\n'
-  +'float dipf(float x){return TAN*(x-LC*(1.-exp(-x/LC)));}\n'
-  +'float lin(float d,float w){return 1.-smoothstep(0.,w,abs(d));}\n'
-  +'void main(){\n'
-  +' float x=vXr,y=vY;\n'
-  +' if(y>vS+.01){ /* sopra il fondale: acqua */\n'
-  +'  if(vS>=0.)discard;float t=clamp(y/min(vS,-1.),0.,1.);vec3 w=mix(vec3(.17,.47,.68),vec3(.03,.12,.28),t);\n'
-  +'  gl_FragColor=vec4(w*((uSel>1.5&&uSel<2.5)||uSel>3.5?.5:1.),1.);return;}\n'
-  +' /* placca oceanica che scende: curva del suo lato superiore oltre la fossa */\n'
-  +' float xs=max(x,0.),d=dipf(xs),yT=uST-d;\n'
-  +' float sl=TAN*(1.-exp(-xs/LC)),cs=1./sqrt(1.+sl*sl);\n'
-  +' float n=x>0.?(yT-y)*cs:(vS-y);      /* profondità dentro la placca, perpendicolare */\n'
-  +' float s=x>0.?xs+.268*d:x;           /* strada percorsa lungo la placca dalla fossa */\n'
-  +' float q=2.*clamp(n/TH,0.,1.)-1.;float tipL=uTip-TH*.5*(1.-sqrt(max(0.,1.-q*q)));\n'
-  +' bool oce=n>=0.&&n<TH&&(x<=0.||s<tipL);\n'
-  +' bool sotto=x>0.&&n>=TH&&s<uTip;\n'
-  +' float cb=-(uCr0+(vES>0.?7.*vES*uGrowN:3.5*vES));   /* base della crosta della placca che resta sopra, con la radice sotto le montagne */\n'
-  +' float yL=-(105.-42.*exp(-pow((x-uArc)/140.,2.))*uMg);   /* base della sua litosfera */\n'
-  +' float id;vec3 col;float a=s-uOff;\n'
-  +' if(oce){id=1.;\n'
-  +'  if(n<CR){col=mix(vec3(.15,.17,.22),vec3(.27,.30,.36),fbm(vec2(a*.05,n*.5)));col*=.86+.22*step(.5,fract(a/70.));}\n'
-  +'  else{col=mix(vec3(.27,.31,.36),vec3(.40,.44,.47),fbm(vec2(a*.022,n*.06)));col*=.93+.09*step(.5,fract(a/140.));}\n'
-  +'  col*=1.-.5*lin(n-CR,1.1);}\n'
-  +' else if(sotto||x<=0.){id=7.;}\n'
-  +' else if(y>cb){id=2.;float t=clamp((vS-y)/max(vS-cb,1.),0.,1.);col=mix(vec3(.72,.61,.46),vec3(.52,.42,.32),t);col*=.84+.30*fbm(vec2(vC*.016,y*.11));col*=.95+.07*sin(y*.55+fbm(vec2(vC*.01,3.))*9.);}\n'
-  +' else if(y>yL){id=2.;col=mix(vec3(.38,.33,.28),vec3(.50,.44,.36),fbm(vec2(vC*.02,y*.06)));col*=1.-.5*lin(y-cb,1.1);}\n'
-  +' else{id=7.;}\n'
-  +' if(id>6.5){float t=smoothstep(-40.,'+FONDO.toFixed(1)+',y);col=mix(vec3(.50,.17,.08),vec3(.74,.30,.10),t);col*=.84+.30*fbm(vec2(vC*.011,y*.013));\n'
-  +'  float bl=x<=0.?lin(n-TH,1.6):(sotto?lin(n-TH,1.6):lin(y-yL,1.6));col=mix(col,vec3(.95,.9,.8),bl*step(.5,fract((vC+y)*.035))*.55);}\n'
-  +' if(x>0.&&!oce)col*=1.-.55*lin(n,1.3)*step(s,uTip);     /* contatto tra le due placche */\n'
-  +' float att=1.;\n'
-  +' if(uSel>.5){if(uSel<2.5)att=abs(id-uSel)<.5?1.:.3;else if(uSel<3.5)att=.75;else if(uSel<4.5)att=.42;else if(uSel<5.5)att=.42;else if(uSel<6.5)att=(id>1.5&&id<2.5)?.9:.4;else att=id>6.5?1.:.3;}\n'
-  +' col*=att*uAtt;\n'
-  +' /* fossa scelta: un anello sul punto dove la placca comincia a scendere */\n'
-  +' if(uSel>2.5&&uSel<3.5){float dd=length(vec2(x,y-uST));col+=vec3(.3,.75,1.)*lin(dd-(26.+5.*sin(uTime*3.)),2.2)*uAtt;}\n'
-  +' /* ---- acqua che esce dalla placca e magma che risale ---- */\n'
-  +' if(uMg>.01&&x>0.){\n'
-  +'  float dp=-yT;float h=y-yT;\n'
-  +'  if(!oce&&h>0.&&h<20.&&dp>84.&&dp<138.&&s<uTip){float ix=floor(x/11.),fx=(fract(x/11.)-.5)*11.;float hh=fract(uTime*'+V_FLUIDI.toFixed(2)+'+hash(vec2(ix,3.)))*18.;\n'
-  +'   float g=smoothstep(2.2,.5,length(vec2(fx+sin(h*.3+ix)*1.2,h-hh)));col=mix(col,vec3(.62,.86,1.),g*(1.-hh/18.)*.95*uMg);}\n'
-  +'  float cbA=-(uCr0+7.*max(uArcES,0.)*uGrowN);\n'
-  +'  if(!oce&&y<cb+3.){float gl=0.;\n'
-  +'   for(int k=0;k<5;k++){vec2 p0=uSx[k]+vec2(0.,9.),p1=vec2(uArc+(float(k)-2.)*13.,cbA-3.);\n'
-  +'    for(int j=0;j<3;j++){float t=fract(uTime*'+V_MAGMA.toFixed(2)+'+float(k)*.37+float(j)/3.);vec2 pp=mix(p0,p1,t);pp.x+=sin(t*9.+float(k)*2.)*7.*(1.-t);\n'
-  +'     float r=mix(4.,7.5,t);vec2 dv=vec2(x,y)-pp;dv.y*=dv.y<0.?.55:1.;gl=max(gl,smoothstep(r,r*.25,length(dv))*smoothstep(0.,.08,t)*smoothstep(1.,.9,t));}}\n'
-  +'   col=mix(col,mix(vec3(1.,.42,.08),vec3(1.,.86,.35),gl),gl*uMg);\n'
-  +'   float pz=length(vec2((x-uArc)/48.,(y-cbA+2.)/7.));col=mix(col,mix(vec3(.95,.38,.07),vec3(1.,.72,.22),fbm(vec2(x*.09-uTime*.3,y*.2))),smoothstep(1.,.75,pz)*uMg);}\n'
-  +'  if(y>cbA-2.){\n'
-  +'   float camY=min(-14.,cbA*.42);float pc=length(vec2((x-uArc)/25.,(y-camY)/8.5));\n'
-  +'   float dk=0.;if(y<camY){dk=max(lin(x-uArc-9.-sin(y*.21)*3.,1.5),lin(x-uArc+10.-sin(y*.17+2.)*3.5,1.5));}\n'
-  +'   else{dk=lin(x-uArc-sin(y*.14)*1.6,1.7);}\n'
-  +'   float fl=.72+.28*sin(y*.55-uTime*4.);\n'
-  +'   col=mix(col,vec3(1.,.55,.12)*fl+vec3(.0,.18,.05),dk*uMg);\n'
-  +'   vec2 qv=vec2(x*.10,y*.22);float sw=fbm(qv+vec2(uTime*.25,fbm(qv*1.7-uTime*.2)*2.));\n'
-  +'   col=mix(col,mix(vec3(.93,.30,.05),vec3(1.,.84,.30),sw),smoothstep(1.,.8,pc)*uMg);\n'
-  +'   col=mix(col,vec3(.25,.08,.03),lin(pc-1.,.09)*.6*uMg);}}\n'
-  +' /* ---- terremoti: lampi lungo la placca che scende ---- */\n'
-  +' if(uQk>.01&&x>-30.){\n'
-  +'  float smax=min(uTip,720.);float qa=0.;\n'
-  +'  for(int i=0;i<6;i++){float per=2.3+float(i)*.41;float ph=uTime/per+float(i)*.31;float cy=floor(ph),t=fract(ph);\n'
-  +'   float r1=hash(vec2(cy,float(i)*7.3));float sq=12.+(smax-12.)*r1*r1;float xq=sq/1.12;xq=sq-.268*dipf(xq);xq=sq-.268*dipf(xq);\n'
-  +'   vec2 pq=vec2(xq,uST-dipf(xq)-4.);float dd=length(vec2(x,y)-pq);\n'
-  +'   float ring=lin(dd-(4.+52.*t),1.6+2.*t)*(1.-t)*(1.-t);float core=smoothstep(5.,0.,dd)*(1.-smoothstep(0.,.5,t));qa=max(qa,max(ring*.9,core));}\n'
-  +'  if(uSel>3.5&&uSel<4.5&&x>0.&&n>-3.&&n<16.&&s<smax){vec2 g=vec2(s,n)/7.;vec2 gi=floor(g);float hsh=hash(gi);float thr=.38+.5*smoothstep(0.,720.,s);\n'
-  +'   if(hsh>thr){vec2 c=gi+.5+.5*(vec2(hash(gi+3.1),hash(gi+7.7))-.5);qa=max(qa,smoothstep(.2,.08,length(g-c))*.85);}}\n'
-  +'  col=mix(col,vec3(1.,.97,.70),qa*uQk*uAtt);}\n'
-  +' gl_FragColor=vec4(col,1.);}';
-
- /* ---------- fumo dei vulcani ---------- */
- var fumoVS='attribute float aSeed;uniform float uTime,uMg,uPx,uGrow,uVerso;varying float vA;\n'
-  +'void main(){float t=fract(uTime*'+V_FUMO.toFixed(2)+'+aSeed);vec3 p=position;p.y=p.y*uGrow+t*85.;p.x+=sin(aSeed*43.+t*4.)*t*10.+uVerso*t*t*46.;p.z+=cos(aSeed*27.+t*3.)*t*9.;\n'
-  +' vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;gl_PointSize=uPx*(9.+50.*t)*(1000./-mv.z);vA=smoothstep(0.,.08,t)*(1.-t)*.42*uMg;}';
- var fumoFS='precision mediump float;varying float vA;void main(){float d=length(gl_PointCoord-.5);float a=smoothstep(.5,.12,d)*vA;if(a<.01)discard;gl_FragColor=vec4(vec3(.86,.85,.83),a);}';
-
+ var U={uTime:{value:0},uU:{value:1},uTip:{value:870},uOff:{value:0},uMg:{value:1},uGrow:{value:1},uGrowN:{value:1},uSel:{value:0},uQk:{value:1},uEx:{value:EX},
+  uShiftZ:{value:0},uShiftX:{value:0},uZero:{value:0}};
  var gruppo=new THREE.Group();scene.add(gruppo);
- var matMare=null,matFumo=null,xTf=0,ET=[],v3=new THREE.Vector3();
+ var matMare=null,matSup=null,fumo=null,ET=[],v3=new THREE.Vector3(),G=null;
 
  function svuota(){
   while(gruppo.children.length){var o=gruppo.children[0];gruppo.remove(o);if(o.geometry)o.geometry.dispose();
    if(o.material){var un=o.material.uniforms||{};['uMap','uMask'].forEach(function(k){if(un[k]&&un[k].value)un[k].value.dispose();});o.material.dispose();}}
-  ET.forEach(function(e){e.el.remove();});ET=[];matMare=matFumo=null;}
+  ET.forEach(function(e){e.el.remove();});ET=[];matMare=matSup=fumo=null;G=null;}
 
  function costruisci(sup,ril){
-  var LX=cfg.LX,LZ=cfg.LZ,VS=cfg.verso;
+  var LX=cfg.LX,LZ=cfg.LZ,VS=cfg.verso,T=tipo,xa=cfg.xa!==undefined?cfg.xa:-LX/2,xb=LX/2,LD=xb-xa,zf=LZ/2;
+  var base=cfg.base!==undefined?cfg.base:0,fondo=cfg.fondo||FONDO;
+  /* da longitudine e latitudine alla posizione nel blocco */
+  var pos=cfg.centro?function(lon,lat){var e=(lon-cfg.centro[0])*111.32*Math.cos(lat*Math.PI/180),n=(lat-cfg.centro[1])*110.95,a=cfg.centro[2]*Math.PI/180;return {x:e*Math.sin(a)+n*Math.cos(a),z:e*Math.cos(a)-n*Math.sin(a)};}
+   :function(lon,lat){return {x:(lon-cfg.lon[0])/(cfg.lon[1]-cfg.lon[0])*LX-LX/2,z:(cfg.lat[1]-lat)/(cfg.lat[1]-cfg.lat[0])*LZ-LZ/2};};
   /* 1. il rilievo: dall'immagine alle quote in km */
   var W=ril.width,H=ril.height,cv=document.createElement('canvas');cv.width=W;cv.height=H;var cx=cv.getContext('2d');cx.drawImage(ril,0,0);
   var px=cx.getImageData(0,0,W,H).data,hg=new Float32Array(W*H);
   for(var i=0;i<W*H;i++)hg[i]=((px[i*4]*256+px[i*4+1])-10000)/1000;
   function hAt(fx,fz){var x=clamp(fx,0,1)*(W-1),z=clamp(fz,0,1)*(H-1),x0=Math.floor(x),z0=Math.floor(z),x1=Math.min(W-1,x0+1),z1=Math.min(H-1,z0+1),a=x-x0,b=z-z0;
    return (hg[z0*W+x0]*(1-a)+hg[z0*W+x1]*a)*(1-b)+(hg[z1*W+x0]*(1-a)+hg[z1*W+x1]*a)*b;}
-  /* 2. la fossa: per ogni riga il punto più profondo dalla parte dell'oceano, poi una linea lisciata */
-  var fos=new Float32Array(H),tmp=new Float32Array(H),c0=Math.round(cfg.fossa[0]*(W-1)),c1=Math.round(cfg.fossa[1]*(W-1));
-  for(var r=0;r<H;r++){var m=1e9,im=0;for(var c=c0;c<=c1;c++){var v=hg[r*W+c];if(v<m){m=v;im=c;}}tmp[r]=im/(W-1)*LX-LX/2;}
-  for(r=0;r<H;r++){var s=0,k=0;for(var j=-9;j<=9;j++){var rr=r+j;if(rr>=0&&rr<H){s+=tmp[rr];k++;}}fos[r]=s/k;}
+  var hXZ=function(x,z){return hAt((x-xa)/LD,(z+zf)/LZ);};
+  /* 2. la linea del margine, riga per riga */
+  var F=cfg.fronte,fos=new Float32Array(H),r,c;
+  if(F.modo==='retta'){var sx0=0;F.punti.forEach(function(p){sx0+=pos(p[0],p[1]).x;});for(r=0;r<H;r++)fos[r]=sx0/F.punti.length;}
+  else if(F.modo==='linea'){for(r=0;r<H;r++){var f=r/(H-1),k=1;while(k<F.punti.length-1&&F.punti[k][0]<f)k++;var p0=F.punti[k-1],p1=F.punti[k];fos[r]=p0[1]+(p1[1]-p0[1])*clamp((f-p0[0])/(p1[0]-p0[0]),0,1);}}
+  else{var tmp=new Float32Array(H),c0=Math.round(F.da*(W-1)),c1=Math.round(F.a*(W-1));
+   for(r=0;r<H;r++){var im=c1;
+    if(F.modo==='fossa'){var m=1e9;for(c=c0;c<=c1;c++){var v=hg[r*W+c];if(v<m){m=v;im=c;}}}
+    else{for(c=c0;c<=c1;c++)if(hg[r*W+c]>F.soglia){im=c;break;}}
+    tmp[r]=xa+im/(W-1)*LD;}
+   for(r=0;r<H;r++){var s=0,kk=0;for(var j=-9;j<=9;j++){var rr=r+j;if(rr>=0&&rr<H){s+=tmp[rr];kk++;}}fos[r]=s/kk;}}
   function fossaAt(fz){var z=clamp(fz,0,1)*(H-1),z0=Math.floor(z),z1=Math.min(H-1,z0+1);return fos[z0]*(1-(z-z0))+fos[z1]*(z-z0);}
+  var xHot=T.nasc?fos[0]:0;
+  /* valori che non cambiano nel tempo, uguali per tutti i materiali del blocco */
+  var K={uNasc:{value:T.nasc?1:0},uHot:{value:xHot},uD:{value:cfg.corsa},uBase:{value:base},uClip:{value:T.nasc?LX/2+.5:1e6},uBaseY:{value:base*EX},uCr0:{value:cfg.cr0},uFondo:{value:fondo}};
+  function uni(o){['uTime','uU','uTip','uOff','uGrow','uGrowN','uSel','uEx','uShiftZ','uShiftX'].forEach(function(k){o[k]=U[k];});for(var k in K)o[k]=K[k];return o;}
 
   /* 3. superficie */
-  var g=new THREE.BufferGeometry(),P=new Float32Array(NX*NZ*3),UV=new Float32Array(NX*NZ*2),AH=new Float32Array(NX*NZ),SL=new Float32Array(NX*NZ*2),XR=new Float32Array(NX*NZ),I=[];
-  var ex=1/(NX-1),ez=1/(NZ-1);
-  for(var iz=0;iz<NZ;iz++)for(var ix=0;ix<NX;ix++){var n=iz*NX+ix,fx=ix*ex,fz=iz*ez,x=fx*LX-LX/2,z=fz*LZ-LZ/2;
+  var NXd=Math.round(NX*LD/LX),g=new THREE.BufferGeometry(),P=new Float32Array(NXd*NZ*3),UV=new Float32Array(NXd*NZ*2),AH=new Float32Array(NXd*NZ),SL=new Float32Array(NXd*NZ*2),XR=new Float32Array(NXd*NZ),I=[];
+  var ex=1/(NXd-1),ez=1/(NZ-1);
+  for(var iz=0;iz<NZ;iz++)for(var ix=0;ix<NXd;ix++){var n=iz*NXd+ix,fx=ix*ex,fz=iz*ez,x=xa+fx*LD,z=fz*LZ-zf;
    P[n*3]=x;P[n*3+1]=0;P[n*3+2]=z;UV[n*2]=fx;UV[n*2+1]=1-fz;AH[n]=hAt(fx,fz);
-   SL[n*2]=(hAt(fx+ex,fz)-hAt(fx-ex,fz))/(2*ex*LX);SL[n*2+1]=(hAt(fx,fz+ez)-hAt(fx,fz-ez))/(2*ez*LZ);XR[n]=VS*(x-fossaAt(fz));}
-  for(iz=0;iz<NZ-1;iz++)for(ix=0;ix<NX-1;ix++){var a=iz*NX+ix,b=a+1,c2=a+NX,d=c2+1;I.push(a,c2,b,b,c2,d);}
+   SL[n*2]=(hAt(fx+ex,fz)-hAt(fx-ex,fz))/(2*ex*LD);SL[n*2+1]=(hAt(fx,fz+ez)-hAt(fx,fz-ez))/(2*ez*LZ);XR[n]=VS*(x-fossaAt(fz));}
+  for(iz=0;iz<NZ-1;iz++)for(ix=0;ix<NXd-1;ix++){var a=iz*NXd+ix,b=a+1,c2=a+NXd,d=c2+1;
+   if(tipo===TIPI.tras&&(XR[a]<0)!==(XR[b]<0))continue;      /* lungo la faglia le due metà restano staccate */
+   I.push(a,c2,b,b,c2,d);}
   g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('uv',new THREE.BufferAttribute(UV,2));g.setAttribute('aH',new THREE.BufferAttribute(AH,1));
   g.setAttribute('aSl',new THREE.BufferAttribute(SL,2));g.setAttribute('aXr',new THREE.BufferAttribute(XR,1));g.setIndex(I);
   var tex=new THREE.Texture(sup);tex.needsUpdate=true;tex.anisotropy=Math.min(8,R.capabilities.getMaxAnisotropy());
-  var ms=new THREE.Mesh(g,new THREE.ShaderMaterial({uniforms:{uMap:{value:tex},uGrow:U.uGrow,uGrowN:U.uGrowN,uEx:U.uEx,uSel:U.uSel,uLum:{value:cfg.lum}},vertexShader:supVS,fragmentShader:supFS}));
-  ms.frustumCulled=false;gruppo.add(ms);
+  var fa=T.fa(VS),sg=(cfg.segni||[[0,0],[0,0]]).map(function(q){var p=pos(q[0],q[1]);return new THREE.Vector2(p.x,p.z);});
+  matSup=new THREE.ShaderMaterial({uniforms:uni({uMap:{value:tex},uLum:{value:cfg.lum},uStri:{value:T.stri?1:0},uLati:{value:T.lati?1:0},uQkS:{value:T.qkS?1:0},uQk:U.uQk,uMoto:{value:0},
+    uCresce:{value:T.cresce?1:0},uLZ:{value:LZ},uSegni:{value:cfg.segni?1:0},uSg:{value:sg},uFa:{value:new THREE.Vector2(fa[0],fa[1])},uFb:{value:new THREE.Vector2(T.fb[0],T.fb[1])}}),vertexShader:supVS,fragmentShader:supFS});
+  if(!T.offSup)matSup.uniforms.uOff=U.uZero;
+  var ms=new THREE.Mesh(g,matSup);ms.frustumCulled=false;gruppo.add(ms);
 
-  /* 4. mare: maschera con profondità (rosso), terra (verde) e distanza dalla fossa (blu) */
+  /* 4. mare: maschera con profondità (rosso), terra (verde), distanza dal margine (blu) e quota della terra (alfa) */
   var md=new Uint8Array(W*H*4);
-  for(r=0;r<H;r++)for(c=0;c<W;c++){var o=((H-1-r)*W+c)*4,hh=hg[r*W+c];md[o]=clamp(-hh/8,0,1)*255;md[o+1]=hh>0?255:0;md[o+2]=clamp((VS*(c/(W-1)*LX-LX/2-fos[r])+800)/1600,0,1)*255;md[o+3]=255;}
+  for(r=0;r<H;r++)for(c=0;c<W;c++){var o=((H-1-r)*W+c)*4,hh=hg[r*W+c];md[o]=clamp(-hh/8,0,1)*255;md[o+1]=hh>0?255:0;md[o+2]=clamp((VS*(xa+c/(W-1)*LD-fos[r])+800)/1600,0,1)*255;md[o+3]=clamp(hh/5,0,1)*255;}
   var mt=new THREE.DataTexture(md,W,H,THREE.RGBAFormat);mt.magFilter=mt.minFilter=THREE.LinearFilter;mt.needsUpdate=true;
-  var gm=new THREE.PlaneGeometry(LX,LZ);gm.rotateX(-Math.PI/2);
-  matMare=new THREE.ShaderMaterial({uniforms:{uMask:{value:mt},uOff:U.uOff,uSel:U.uSel,uMoto:{value:0},uVerso:{value:VS}},vertexShader:mareVS,fragmentShader:mareFS,transparent:true,depthWrite:false});
-  var mm=new THREE.Mesh(gm,matMare);mm.position.y=-.4;mm.renderOrder=2;gruppo.add(mm);
+  var gm=new THREE.PlaneGeometry(LX,LZ,300,1);gm.rotateX(-Math.PI/2);
+  matMare=new THREE.ShaderMaterial({uniforms:uni({uMask:{value:mt},uMoto:{value:0},uVerso:{value:VS},uXf:{value:fos[0]},uXa:{value:xa},uXb:{value:xb},uAlfa:{value:T.alfa||1},uLati:{value:T.lati?1:0},
+    uFa:{value:new THREE.Vector2(fa[0],fa[1])},uFb:{value:new THREE.Vector2(T.fb[0],T.fb[1])}}),vertexShader:mareVS,fragmentShader:mareFS,transparent:true,depthWrite:false});
+  if(T.offMare===0)matMare.uniforms.uOff=U.uZero;
+  if(tipo!==TIPI.tras)matMare.uniforms.uShiftZ=U.uZero;
+  var mm=new THREE.Mesh(gm,matMare);mm.position.y=-.4;mm.renderOrder=2;mm.frustumCulled=false;gruppo.add(mm);
 
-  /* 5. facce: per ogni lato il profilo del rilievo e le grandezze che servono allo shader */
+  /* 5. facce: per ogni lato il profilo del rilievo e le grandezze che servono allo shader.
+     S davanti, N dietro, O ed E ai lati, F− e F+ le due pareti della faglia (solo nel blocco trascorrente) */
+  var fsh=tipo===TIPI.sub?FS.sub:tipo===TIPI.coll?FS.coll:tipo===TIPI.dors?FS.dors:tipo===TIPI.tras?FS.tras:FS.caldo;
   function faccia(lato){
-   var lungo=lato==='S'||lato==='N',N=lungo?NX:NZ,prof=[];
-   for(var i=0;i<N;i++){var f=i/(N-1),fx=lungo?f:(lato==='O'?0:1),fz=lungo?(lato==='S'?1:0):f;
-    prof.push({f:f,x:fx*LX-LX/2,z:fz*LZ-LZ/2,h:hAt(fx,fz),xr:VS*(fx*LX-LX/2-fossaAt(fz))});}
+   var lungo=lato==='S'||lato==='N',muro=lato.charAt(0)==='F',N=lungo?NXd:NZ,prof=[],i,j;
+   var xLato=lato==='O'?-LX/2:lato==='E'?LX/2:0;
+   for(i=0;i<N;i++){var f=i/(N-1),x=lungo?xa+f*LD:(muro?fos[0]:xLato),z=lungo?(lato==='S'?zf:-zf):f*LZ-zf,fz=(z+zf)/LZ;
+    prof.push({x:x,z:z,h:(T.nasc&&!lungo)?base:hXZ(x,z),xr:VS*(x-fossaAt(fz))});}
+   if(muro)prof.forEach(function(p){p.xr=lato==='F-'?-1:1;p.x+=p.xr*1.3;});
    var xT=0,sT=0,xArc=-9999,es=[];
-   if(lungo){var mn=1e9,ia=0;prof.forEach(function(p,i){if(p.f>=cfg.fossa[0]&&p.f<=cfg.fossa[1]&&p.h<mn){mn=p.h;ia=i;}});xT=prof[ia].x;sT=mn*EX;
-    prof.forEach(function(p){p.xr=VS*(p.x-xT);});
+   if(lungo){
+    if(F.modo==='fossa'){var mn=1e9;prof.forEach(function(p){var f=(p.x-xa)/LD;if(f>=F.da&&f<=F.a&&p.h<mn){mn=p.h;xT=p.x;}});}
+    else if(F.modo==='soglia'){xT=prof[prof.length-1].x;for(i=0;i<N;i++){var ff=(prof[i].x-xa)/LD;if(ff>=F.da&&prof[i].h>F.soglia){xT=prof[i].x;break;}}}
+    else xT=fossaAt(lato==='S'?1:0);
+    var bd=1e9;prof.forEach(function(p){p.xr=VS*(p.x-xT);if(Math.abs(p.xr)<bd){bd=Math.abs(p.xr);sT=p.h*EX;}});
     var mx=-1e9;prof.forEach(function(p){if(p.xr>230&&p.xr<420&&p.h>mx){mx=p.h;xArc=p.xr;}});}
    /* quota lisciata (per la radice delle montagne) */
-   var passo=(lungo?LX:LZ)/(N-1),sig=70/passo,w=Math.ceil(sig*2.5);
-   for(i=0;i<N;i++){var sm=0,sk=0;for(var j=-w;j<=w;j++){var q=clamp(i+j,0,N-1),ww=Math.exp(-j*j/(2*sig*sig));sm+=prof[q].h*ww;sk+=ww;}es.push(sm/sk);}
+   var passo=(lungo?LD:LZ)/(N-1),sig=70/passo,w=Math.ceil(sig*2.5);
+   for(i=0;i<N;i++){var sm=0,sk=0;for(j=-w;j<=w;j++){var q=clamp(i+j,0,N-1),ww=Math.exp(-j*j/(2*sig*sig));sm+=prof[q].h*ww;sk+=ww;}es.push(sm/sk);}
    var esArc=0,hArc=0;if(lungo){var best=1e9;prof.forEach(function(p,i){var dd=Math.abs(p.xr-xArc);if(dd<best){best=dd;esArc=es[i];hArc=p.h;}});}
-   var g=new THREE.BufferGeometry(),P=new Float32Array(N*2*3),T=new Float32Array(N*2),Hh=new Float32Array(N*2),Xr=new Float32Array(N*2),Es=new Float32Array(N*2),Cc=new Float32Array(N*2),I=[];
-   for(i=0;i<N;i++)for(var t=0;t<2;t++){var n=i*2+t,p=prof[i];P[n*3]=p.x;P[n*3+1]=0;P[n*3+2]=p.z;T[n]=t;Hh[n]=p.h;Xr[n]=p.xr;Es[n]=es[i];Cc[n]=lungo?p.x:p.z;}
-   for(i=0;i<N-1;i++){var a=i*2,b=a+1,c=a+2,d=a+3;I.push(a,c,b,b,c,d);}
-   g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('aTop',new THREE.BufferAttribute(T,1));g.setAttribute('aH',new THREE.BufferAttribute(Hh,1));
+   /* punto caldo: i vulcani ormai spenti, cioè le cime del profilo lontane dal punto caldo */
+   var old=[-99999,-99999,-99999,-99999];
+   if(T.nasc&&lungo){var cime=[];for(i=3;i<N-3;i++){var p=prof[i];if(es[i]>-3.3&&es[i]>=es[i-3]&&es[i]>=es[i+3]&&Math.abs(p.x-xHot)>80&&(!cime.length||p.x-cime[cime.length-1]>90))cime.push(p.x);}
+    cime.slice(-4).forEach(function(v,i){old[i]=v;});}
+   var g=new THREE.BufferGeometry(),P=new Float32Array(N*2*3),Tt=new Float32Array(N*2),Hh=new Float32Array(N*2),Xr=new Float32Array(N*2),Es=new Float32Array(N*2),Cc=new Float32Array(N*2),I=[];
+   for(i=0;i<N;i++)for(var t=0;t<2;t++){var n=i*2+t,p=prof[i];P[n*3]=p.x;P[n*3+1]=0;P[n*3+2]=p.z;Tt[n]=t;Hh[n]=p.h;Xr[n]=p.xr;Es[n]=es[i];Cc[n]=lungo?p.x:p.z;}
+   for(i=0;i<N-1;i++){if(tipo===TIPI.tras&&lungo&&(prof[i].xr<0)!==(prof[i+1].xr<0))continue;var a=i*2,b=a+1,c=a+2,d=a+3;I.push(a,c,b,b,c,d);}
+   g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('aTop',new THREE.BufferAttribute(Tt,1));g.setAttribute('aH',new THREE.BufferAttribute(Hh,1));
    g.setAttribute('aXr',new THREE.BufferAttribute(Xr,1));g.setAttribute('aES',new THREE.BufferAttribute(Es,1));g.setAttribute('aC',new THREE.BufferAttribute(Cc,1));g.setIndex(I);
-   /* punti di partenza del magma: dove la placca è a 90, 100, 110, 120 e 130 km sotto il livello del mare */
+   /* subduzione: punti di partenza del magma, dove la placca è a 90, 100, 110, 120 e 130 km sotto il livello del mare */
    var sx=[];for(var k=0;k<5;k++){var dep=90+k*10,lo=0,hi=900;for(j=0;j<30;j++){var mid=(lo+hi)/2;if(-(sT-TAN*(mid-LC*(1-Math.exp(-mid/LC))))<dep)lo=mid;else hi=mid;}sx.push(new THREE.Vector2(lo,-dep));}
-   var m=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uTip:U.uTip,uOff:U.uOff,uMg:lungo?U.uMg:{value:0},uGrow:U.uGrow,uGrowN:U.uGrowN,uEx:U.uEx,uSel:U.uSel,uQk:lungo?U.uQk:{value:0},
-     uArc:{value:xArc},uST:{value:lungo?sT:-40},uArcES:{value:esArc},uAtt:{value:lungo?1:.82},uCr0:{value:cfg.cr0},uSx:{value:sx}},vertexShader:facVS,fragmentShader:facFS,side:THREE.DoubleSide});
+   var m=new THREE.ShaderMaterial({uniforms:uni({uMg:lungo?U.uMg:{value:0},uQk:(lungo||muro)?U.uQk:{value:0},uArc:{value:xArc},uST:{value:lungo?sT:-40},uArcES:{value:esArc},uAtt:{value:lungo?1:(muro?.92:.82)},
+     uSx:{value:sx},uOld:{value:old},uMob:{value:T.nasc&&lungo?1:0},uMuro:{value:muro?1:0},uPenn:{value:lato==='S'?1:0}}),vertexShader:facVS,fragmentShader:fsh,side:THREE.DoubleSide});
    var me=new THREE.Mesh(g,m);me.frustumCulled=false;gruppo.add(me);
    return {xT:xT,sT:sT,xArc:xArc,hArc:hArc,prof:prof};}
-  var fs=faccia('S');faccia('N');faccia('O');faccia('E');
-  xTf=fs.xT;var X=function(xr){return xTf+VS*xr;},arcTop=fs.hArc*EX,zf=LZ/2;
+  var fs=faccia('S');faccia('N');faccia('O');faccia('E');if(tipo===TIPI.tras){faccia('F-');faccia('F+');}
+  var xTf=fs.xT,X=function(xr){return xTf+VS*xr;},arcTop=fs.hArc*EX;
   var quotaS=function(xr){var b=1e9,h=0;fs.prof.forEach(function(p){var dd=Math.abs(p.xr-xr);if(dd<b){b=dd;h=p.h;}});return h*EX;};
   /* fondo del blocco */
-  var gf=new THREE.PlaneGeometry(LX,LZ);gf.rotateX(Math.PI/2);var mf=new THREE.Mesh(gf,new THREE.MeshBasicMaterial({color:0x5a1f0c}));mf.position.y=FONDO;gruppo.add(mf);
+  var gf=new THREE.PlaneGeometry(LX,LZ);gf.rotateX(Math.PI/2);var mf=new THREE.Mesh(gf,new THREE.MeshBasicMaterial({color:0x5a1f0c}));mf.position.y=fondo;gruppo.add(mf);
 
-  /* 6. vulcani: quello della faccia davanti, alimentato dal magma, e quelli veri con il loro nome */
-  var veri=cfg.vulcani.map(function(v){var fx=(v.lon-cfg.lon[0])/(cfg.lon[1]-cfg.lon[0]),fz=(cfg.lat[1]-v.lat)/(cfg.lat[1]-cfg.lat[0]),h=0;
-   for(var dz=-3;dz<=3;dz++)for(var dx=-3;dx<=3;dx++)h=Math.max(h,hAt(fx+dx/(W-1),fz+dz/(H-1)));
-   return {n:v.n,fumo:v.fumo,x:fx*LX-LX/2,y:h*EX,z:fz*LZ-LZ/2};});
-  var fumi=[[X(fs.xArc),arcTop,zf-6]].concat(veri.filter(function(v){return v.fumo;}).map(function(v){return [v.x,v.y,v.z];}));
-  var NP=46,FP=new Float32Array(fumi.length*NP*3),FS=new Float32Array(fumi.length*NP);
-  fumi.forEach(function(v,k){for(var i=0;i<NP;i++){var n=k*NP+i;FP[n*3]=v[0];FP[n*3+1]=v[1];FP[n*3+2]=v[2];FS[n]=Math.random();}});
-  var gp=new THREE.BufferGeometry();gp.setAttribute('position',new THREE.BufferAttribute(FP,3));gp.setAttribute('aSeed',new THREE.BufferAttribute(FS,1));
-  matFumo=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uMg:U.uMg,uGrow:U.uGrow,uVerso:{value:VS},uPx:{value:1}},vertexShader:fumoVS,fragmentShader:fumoFS,transparent:true,depthWrite:false});
-  var pf=new THREE.Points(gp,matFumo);pf.frustumCulled=false;pf.renderOrder=3;gruppo.add(pf);
+  /* 6. vulcani: quelli veri con il loro nome e, dove serve, il fumo */
+  var veri=(cfg.vulcani||[]).map(function(v){var p=pos(v.lon,v.lat),h=0;
+   for(var dz=-3;dz<=3;dz++)for(var dx=-3;dx<=3;dx++)h=Math.max(h,hXZ(p.x+dx*LD/(W-1),p.z+dz*LZ/(H-1)));
+   return {n:v.n,fumo:v.fumo,x:p.x,y:h*EX,z:p.z};});
+  var fumi=[];
+  if(tipo===TIPI.sub)fumi=[[X(fs.xArc),arcTop,zf-6]].concat(veri.filter(function(v){return v.fumo;}).map(function(v){return [v.x,v.y,v.z];}));
+  if(T.nasc)fumi=[[xHot,0,zf-6]];
+  if(fumi.length){
+   var NP=46,FP=new Float32Array(fumi.length*NP*3),FSd=new Float32Array(fumi.length*NP);
+   fumi.forEach(function(v,k){for(var i=0;i<NP;i++){var n=k*NP+i;FP[n*3]=v[0];FP[n*3+1]=v[1];FP[n*3+2]=v[2];FSd[n]=Math.random();}});
+   var gp=new THREE.BufferGeometry();gp.setAttribute('position',new THREE.BufferAttribute(FP,3));gp.setAttribute('aSeed',new THREE.BufferAttribute(FSd,1));
+   var mfu=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uMg:T.nasc?{value:1}:U.uMg,uGrow:T.nasc?{value:1}:U.uGrow,uVerso:{value:VS},uPx:{value:1}},vertexShader:fumoVS,fragmentShader:fumoFS,transparent:true,depthWrite:false});
+   fumo=new THREE.Points(gp,mfu);fumo.frustumCulled=false;fumo.renderOrder=3;gruppo.add(fumo);}
 
-  /* 7. etichette: punto della scena (km) a cui restano agganciate. lg = da nascondere sugli schermi stretti */
-  var N_=cfg.nomi,L=[
-   {lg:1,t:N_.oceano,p:[X(-300),6,-LZ*.24]},
-   {t:N_.placca,p:[X(-230),6,LZ*.18]},
-   {t:N_.sopra,p:[X(N_.sopraXr),26,-LZ*.26]},
-   {t:'fossa',p:[xTf,16,zf]},
-   {lg:1,t:'crosta oceanica',p:[X(-330),quotaS(-330)-5,zf],c:'sez'},
-   {t:'litosfera',p:[X(-330),quotaS(-330)-50,zf],c:'sez'},
-   {t:'astenosfera',p:[X(-240),-270,zf],c:'sez'},
-   {lg:1,t:N_.crosta,p:[X(fs.xArc+290),-14,zf],c:'sez'},
-   {t:'litosfera',p:[X(fs.xArc+290),-72,zf],c:'sez'},
-   {t:'magma',p:[X(fs.xArc-78),-88,zf],c:'sez',mg:1},
-   {lg:1,t:'placca che scende',p:[X(560),-318,zf],c:'sez',tip:680}];
-  if(N_.catena)L.push({lg:1,t:N_.catena,p:[X(fs.xArc+60),arcTop+26,LZ*.33],gr:.55});
-  if(N_.mare)L.push({lg:1,t:N_.mare,p:[X(700),6,-LZ*.12]});
-  veri.forEach(function(v){L.push({lg:1,t:v.n,p:[v.x,v.y+38,v.z],mg:1});});
-  L.forEach(function(e){var d=document.createElement('div');d.className='etich '+(e.c||'');d.innerHTML=e.t;d.style.opacity=0;el.appendChild(d);e.el=d;ET.push(e);});
+  /* 7. etichette: punto della scena (km) a cui restano agganciate */
+  G={LX:LX,LZ:LZ,zf:zf,xT:xTf,X:X,xArc:fs.xArc,arcTop:arcTop,quotaS:quotaS,veri:veri,pos:pos,alt:function(x,z){return Math.max(0,hXZ(x,z))*EX;},xHot:xHot,prof:fs.prof,base:base,nasc:!!T.nasc};
+  cfg.etichette(G).forEach(function(e){var d=document.createElement('div');d.className='etich '+(e.c||'');d.innerHTML=e.t;d.style.opacity=0;el.appendChild(d);e.el=d;ET.push(e);});
 
   /* 8. inquadratura di partenza, in proporzione alla larghezza del blocco */
-  var kd=LX/1540;DMIN=520*kd;DMAX=3800*kd;
-  V0={tx:20*VS,ty:-140,tz:LZ*.23,th:-.36*VS,ph:1.24,d:2330*kd};
+  var kd=Math.max(LX,LZ*1.5,-fondo*2.6)/1540;DMIN=520*kd;DMAX=4600*kd;
+  V0={tx:20*VS,ty:fondo*.37,tz:LZ*.23,th:-.36*VS,ph:1.24,d:2330*kd};
   C.tx=V0.tx;C.ty=V0.ty;C.tz=V0.tz;C.th=V0.th;C.ph=V0.ph;C.d=V0.d;CT=null;
   cfg._vista=function(v){return {tx:X(v[0]),ty:v[1],tz:v[2]*zf,th:v[3]*VS,ph:v[4],d:v[5]*kd};};
   pronta=true;$('attesa').classList.add('hide');resize();}
 
  function aggiornaEtichette(w,h){
-  var stretto=w<520;
+  var stretto=w<520,u=S.u,sx=U.uShiftX.value,sz=U.uShiftZ.value;
   ET.forEach(function(e){
-   v3.set(e.p[0],e.p[1],e.p[2]);
-   if(e.p[1]>0&&e.c!=='sez')v3.y=Math.max(6,e.p[1]*(.25+.75*U.uGrowN.value));
+   var x0=e.p[0]+(e.pl?sx:0),ok=true;
+   if(e.pl){var ub=1-(G.xHot-e.p[0])/cfg.corsa;ok=Math.abs(x0)<G.LX/2-20&&u>ub-.06;}
+   v3.set(x0,e.p[1],e.p[2]+(e.fz?sz:0));
+   if(e.p[1]>0&&e.c!=='sez'&&!G.nasc)v3.y=Math.max(6,e.p[1]*(.25+.75*U.uGrowN.value));
    v3.project(cam);var x=(v3.x*.5+.5)*w,y=(-v3.y*.5+.5)*h;
-   var vis=S.et&&v3.z<1&&x>30&&x<w-30&&y>14&&y<h-22&&(!e.mg||U.uMg.value>.6)&&(!e.tip||U.uTip.value>e.tip)&&(!e.gr||U.uGrowN.value>e.gr)&&!(stretto&&e.lg);
+   var vis=ok&&S.et&&v3.z<1&&x>30&&x<w-30&&y>14&&y<h-22&&(!e.mg||U.uMg.value>.6)&&(!e.tip||U.uTip.value>e.tip)&&(!e.gr||U.uGrowN.value>e.gr)
+    &&(e.u0===undefined||u>=e.u0)&&(e.u1===undefined||u<=e.u1)&&!(stretto&&e.lg);
    e.el.style.opacity=vis?1:0;e.el.style.transform='translate(-50%,-50%) translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)';});}
 
  /* ---- puntatore: un dito ruota, due dita fanno lo zoom ---- */
@@ -482,7 +810,7 @@ function Scena(el){
  cv.addEventListener('pointerup',su);cv.addEventListener('pointercancel',su);
  cv.addEventListener('wheel',function(e){e.preventDefault();CT=null;C.d=clamp(C.d*Math.exp(e.deltaY*.0011),DMIN,DMAX);},{passive:false});
  function resize(){var w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();fit=Math.max(1,1.3/cam.aspect);
-  if(matFumo)matFumo.uniforms.uPx.value=h/520*R.getPixelRatio();}
+  if(fumo)fumo.material.uniforms.uPx.value=h/520*R.getPixelRatio();}
  if(window.ResizeObserver)new ResizeObserver(resize).observe(el);else window.addEventListener('resize',resize);
 
  /* ---- ciclo ---- */
@@ -493,22 +821,26 @@ function Scena(el){
   /* il tempo avanza solo in avanti e si ferma solo quando è davvero arrivato a oggi */
   if(S.play){S.u=clamp(S.u+dt/T_TOTALE,0,1);if(S.u>=1)S.play=false;mostraTempo();}
   if(!reduce)tempo+=dt;
-  var u=S.u;U.uTime.value=tempo;U.uTip.value=S_TIP0+S_CORSA*u;U.uOff.value=S_CORSA*u;
-  U.uGrowN.value=sstep(.12,1,u);U.uGrow.value=.12+.88*U.uGrowN.value;U.uMg.value=sstep(.40,.55,u);
+  var u=S.u;U.uTime.value=tempo;U.uU.value=u;U.uOff.value=cfg.corsa*u;U.uShiftZ.value=0;U.uShiftX.value=0;tipo.passo(u,U,cfg);
   U.uQk.value=S.ter?1:0;
-  var inMoto=Math.abs(u-uPrec)>1e-6?1:0;uPrec=u;motoV+=(inMoto-motoV)*(1-Math.exp(-dt/.25));if(matMare)matMare.uniforms.uMoto.value=motoV;
+  var inMoto=Math.abs(u-uPrec)>1e-6?1:0;uPrec=u;motoV+=(inMoto-motoV)*(1-Math.exp(-dt/.25));matMare.uniforms.uMoto.value=motoV;matSup.uniforms.uMoto.value=motoV;
+  if(fumo&&G.nasc){   /* punto caldo: il fumo esce dal vulcano che in quel momento sta sopra, se è fuori dall'acqua */
+   var xp=G.xHot-U.uShiftX.value,b=1e9,hh=0;G.prof.forEach(function(p){var dd=Math.abs(p.x-xp);if(dd<b){b=dd;hh=p.h;}});
+   fumo.position.y=hh*EX;fumo.material.uniforms.uMg.value=hh>.15?1:0;}
   if(auto&&!reduce&&!ptr.size)C.th+=dt*.12;
   if(CT){var f=1-Math.exp(-dt/.45),fine=true;['tx','ty','tz','th','ph','d'].forEach(function(k){C[k]+=(CT[k]-C[k])*f;if(Math.abs(CT[k]-C[k])>(k==='th'||k==='ph'?.002:1.5))fine=false;});if(fine)CT=null;}
-  var d=C.d*fit;cam.position.set(C.tx+d*Math.sin(C.ph)*Math.sin(C.th),C.ty+d*Math.cos(C.ph),C.tz+d*Math.sin(C.ph)*Math.cos(C.th));cam.lookAt(C.tx,C.ty,C.tz);
+  /* nel blocco trascorrente la metà che si è spostata sporge in avanti: la camera la segue */
+  var dz=U.uShiftZ.value*.42,d=(C.d+U.uShiftZ.value*.9)*fit;
+  cam.position.set(C.tx+d*Math.sin(C.ph)*Math.sin(C.th),C.ty+d*Math.cos(C.ph),C.tz+dz+d*Math.sin(C.ph)*Math.cos(C.th));cam.lookAt(C.tx,C.ty,C.tz+dz);
   R.render(scene,cam);aggiornaEtichette(el.clientWidth,el.clientHeight);})(last);
 
  /* ---- caricamento di un blocco: le due immagini, poi la costruzione ---- */
  var cache={};
  function immagine(src){return cache[src]||(cache[src]=new Promise(function(ok,ko){var i=new Image();i.onload=function(){ok(i);};i.onerror=ko;i.src=src;}));}
  function carica(c){
-  var io=++turno;pronta=false;cfg=c;svuota();R.clear();U.uSel.value=0;$('attesa').classList.remove('hide');
+  var io=++turno;pronta=false;cfg=c;tipo=TIPI[c.tipo];svuota();R.clear();U.uSel.value=0;$('attesa').classList.remove('hide');
   var vecchio=el.querySelector('.fail');if(vecchio)vecchio.remove();
-  Promise.all([immagine(c.sup),immagine(c.ril)]).then(function(im){
+  Promise.all([immagine(IMG+c.id+'_superficie_nasa.jpg'),immagine(IMG+c.id+'_rilievo_noaa.png')]).then(function(im){
    if(io!==turno)return;
    try{costruisci(im[0],im[1]);}catch(e){console.error(e);$('attesa').classList.add('hide');el.insertAdjacentHTML('beforeend','<div class="fail">Non riesco a costruire il modello su questo dispositivo.</div>');}
   },function(){if(io!==turno)return;cache={};$('attesa').classList.add('hide');el.insertAdjacentHTML('beforeend','<div class="fail">Non riesco a caricare le immagini del modello. Controlla la connessione e ricarica la pagina.</div>');});}
@@ -533,8 +865,8 @@ precarica(['../immagini/prof_t/prof_t_geologo_placche.webp']);
 apri(INIZIALE);
 })();
 </script>
-<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Pagina in lavorazione. Per ora mostra due margini convergenti, sotto le Ande e sotto il Giappone: fossa, subduzione, terremoti, magma e vulcani.</p>
-<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Láscar, in Cile, il vulcano più attivo delle Ande cilene settentrionali, a 23,37° S e 67,73° O. <a href="https://volcano.si.edu/volcano.cfm?vn=355100" target="_blank" rel="noopener">Global Volcanism Program, Smithsonian Institution</a></li><li>Bandai, sull'isola di Honshu, a 37,60° N e 140,07° E, ultima eruzione nel 1888. <a href="https://volcano.si.edu/volcano.cfm?vn=283160" target="_blank" rel="noopener">Global Volcanism Program, Smithsonian Institution</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1. Superficie della Terra, <a href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/" target="_blank" rel="noopener">NASA Earth Observatory, Blue Marble Next Generation</a>. Rilievo e fondali, <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener">NOAA NCEI, ETOPO1</a>.</li></ul></details></div></div>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Pagina in lavorazione. Per ora mostra i margini delle placche con sei esempi veri: dorsale atlantica, Giappone, Ande, Himalaya, California e Hawaii.</p>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Dorsale medio-atlantica, le placche si separano di circa 2,5 cm all'anno (25 km in un milione di anni, quindi 750 km in 30 milioni di anni). In Islanda la dorsale è sulla terraferma. <a href="https://pubs.usgs.gov/gip/dynamic/understanding.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>Láscar, in Cile, il vulcano più attivo delle Ande cilene settentrionali, a 23,37° S e 67,73° O. <a href="https://volcano.si.edu/volcano.cfm?vn=355100" target="_blank" rel="noopener">Global Volcanism Program, Smithsonian Institution</a></li><li>Bandai, sull'isola di Honshu, a 37,60° N e 140,07° E, ultima eruzione nel 1888. <a href="https://volcano.si.edu/volcano.cfm?vn=283160" target="_blank" rel="noopener">Global Volcanism Program, Smithsonian Institution</a></li><li>India e Asia si sono scontrate tra 40 e 50 milioni di anni fa, dopo la chiusura dell'oceano Tetide. L'Himalaya si solleva più di 1 cm all'anno. <a href="https://pubs.usgs.gov/gip/dynamic/himalaya.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>Sotto l'Himalaya e il Tibet la crosta è spessa circa 75 km, il doppio della media, e l'ispessimento ha fermato i vulcani. L'erosione abbassa la catena quasi alla stessa velocità con cui cresce. <a href="https://www.geolsoc.org.uk/Plate-Tectonics/Chap3-Plate-Margins/Convergent/Continental-Collision" target="_blank" rel="noopener">The Geological Society</a></li><li>Le rocce di Pinnacles e di Neenach vengono dallo stesso vulcano, nato circa 23 milioni di anni fa, e oggi distano 314 km (195 miglia) lungo la faglia di San Andreas. <a href="https://www.nps.gov/pinn/learn/nature/faults.htm" target="_blank" rel="noopener">National Park Service, Pinnacles</a></li><li>Hawaii, le rocce più antiche di Kauai hanno circa 5,5 milioni di anni. Il vulcano sottomarino a sud-est dell'isola di Hawaii potrebbe diventare la prossima isola. <a href="https://pubs.usgs.gov/gip/dynamic/hotspots.html" target="_blank" rel="noopener">USGS, This Dynamic Earth</a></li><li>La placca del Pacifico si muove sopra il punto caldo delle Hawaii di circa 8 cm all'anno (49 miglia in un milione di anni). <a href="https://www.usgs.gov/news/volcano-watch-hotspots" target="_blank" rel="noopener">USGS, Volcano Watch</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1. Superficie della Terra, <a href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/" target="_blank" rel="noopener">NASA Earth Observatory, Blue Marble Next Generation</a>. Rilievo e fondali, <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener">NOAA NCEI, ETOPO1</a>.</li></ul></details></div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#b38cff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(179,140,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Scienze della Terra</a>
 <script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
