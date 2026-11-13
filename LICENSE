@@ -8,6 +8,15 @@ Le librerie e i font di terzi inclusi o richiamati dal sito restano soggetti all
 rispettive licenze: Three.js (licenza MIT) e il font Nothing You Could Do di
 Kimberly Geswein, da cui è ricavata la firma (SIL Open Font License 1.1).
 
+Eccezione: il file scienze_della_terra/terra_in_movimento_pangea.js, ricavato dal
+modello di ricostruzione delle placche di Müller e altri (2019), EarthByte, è
+distribuito con la licenza Creative Commons Attribuzione - Condividi allo stesso
+modo 4.0 (CC BY-SA 4.0), https://creativecommons.org/licenses/by-sa/4.0/. Gli altri
+dati di terzi usati dalla pagina La Terra in movimento restano soggetti alle
+rispettive licenze, elencate nel README (Crediti).
+
 All rights reserved. Original content and code in this repository may not be
 copied, modified, redistributed or used commercially without the author's
 written permission. Third-party libraries and fonts remain under their own licenses.
+Exception: scienze_della_terra/terra_in_movimento_pangea.js, derived from the plate
+model of Müller et al. (2019), EarthByte, is released under CC BY-SA 4.0.
