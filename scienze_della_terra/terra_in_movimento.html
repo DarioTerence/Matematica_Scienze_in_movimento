@@ -382,7 +382,7 @@ var QUOTA=`
 uniform float uGrow,uEx,uU,uNasc,uHot,uD,uBase,uShiftZ,uShiftX;
 float nascita(float xp){float ub=1.-(uHot-xp)/uD;return smoothstep(ub-.22,ub-.02,uU);}
 float quota(float h,float xp,out float gf){
- if(uNasc>.5){float g=nascita(xp);gf=g;return h>uBase?uBase+(h-uBase)*g:h;}
+ gf=1.;if(uNasc>.5){float g=nascita(xp);gf=g;return h>uBase?uBase+(h-uBase)*g:h;}
  gf=h>0.?uGrow:1.;return h*gf;}
 `;
 /* ---------- superficie ---------- */
@@ -428,8 +428,9 @@ void main(){float gf;float s=quota(aH,position.x,gf)*uEx;vec3 p=position;p.y=aTo
 var FAC=`precision highp float;varying float vY,vS,vXr,vES,vC,vWX,vXp;
 uniform float uTime,uU,uTip,uOff,uMg,uGrowN,uSel,uQk,uArc,uST,uArcES,uAtt,uCr0,uClip,uBaseY,uMuro,uPenn;uniform vec2 uSx[5];uniform float uOld[4],uFondo;`+RUMORE+`
 #define FONDO uFondo
-/* acqua sopra il fondale: se il punto è acqua lo colora e risponde vero */
-bool acqua(float y,float s){if(y>s+.01){if(s>=0.)discard;float t=clamp(y/min(s,-1.),0.,1.);vec3 w=mix(vec3(.17,.47,.68),vec3(.03,.12,.28),t);gl_FragColor=vec4(w*((uSel>1.5&&uSel<2.5)||uSel>3.5?.5:1.),1.);return true;}return false;}
+/* colore dell'acqua sopra il fondale */
+vec3 cAcqua(float y,float s){float t=clamp(y/min(s,-1.),0.,1.);float k=((uSel>1.5&&uSel<2.5)||uSel>3.5)?.5:1.;return mix(vec3(.17,.47,.68),vec3(.03,.12,.28),t)*k;}
+#define ACQUA(y,s) if(y>s+.01){if(s>=0.)discard;gl_FragColor=vec4(cAcqua(y,s),1.);return;}
 /* colori delle rocce */
 vec3 cOcr(float a,float n){return mix(vec3(.15,.17,.22),vec3(.27,.30,.36),fbm(vec2(a*.05,n*.5)))*(.86+.22*step(.5,fract(a/70.)));}
 vec3 cOlm(float a,float n){return mix(vec3(.27,.31,.36),vec3(.40,.44,.47),fbm(vec2(a*.022,n*.06)))*(.93+.09*step(.5,fract(a/140.)));}
@@ -449,7 +450,7 @@ FS.sub=FAC+`
 const float TAN=`+TAN+`,LC=`+LC.toFixed(1)+`,TH=`+TH.toFixed(1)+`,CR=9.;
 float dipf(float x){return TAN*(x-LC*(1.-exp(-x/LC)));}
 void main(){
- float x=vXr,y=vY;if(acqua(y,vS))return;
+ float x=vXr,y=vY;ACQUA(y,vS)
  /* placca oceanica che scende: curva del suo lato superiore oltre la fossa */
  float xs=max(x,0.),d=dipf(xs),yT=uST-d;
  float sl=TAN*(1.-exp(-xs/LC)),cs=1./sqrt(1.+sl*sl);
@@ -460,7 +461,7 @@ void main(){
  bool sotto=x>0.&&n>=TH&&s<uTip;
  float cb=-(uCr0+(vES>0.?7.*vES*uGrowN:3.5*vES));   /* base della crosta della placca che resta sopra, con la radice sotto le montagne */
  float yL=-(105.-42.*exp(-pow((x-uArc)/140.,2.))*uMg);   /* base della sua litosfera */
- float id;vec3 col;float a=s-uOff;
+ float id=7.;vec3 col=vec3(0.);float a=s-uOff;
  if(oce){id=1.;col=n<CR?cOcr(a,n):cOlm(a,n);col*=1.-.5*lin(n-CR,1.1);}
  else if(sotto||x<=0.){id=7.;}
  else if(y>cb){id=2.;col=cCon(vC,y,clamp((vS-y)/max(vS-cb,1.),0.,1.));}
@@ -503,14 +504,14 @@ void main(){
 FS.coll=FAC+`
 float rampa(float x){return -(3.+44.*(1.-exp(-max(x,0.)/120.)));}
 void main(){
- float x=vXr,y=vY;if(acqua(y,vS))return;
+ float x=vXr,y=vY;ACQUA(y,vS)
  float E=uTip;                         /* quanto l'India è entrata sotto l'Asia */
  float yR=rampa(x);                    /* superficie inclinata su cui scivola l'India */
  float n=(x>0.?yR:vS)-y;               /* profondità dentro la placca indiana */
  float q=2.*clamp(n/125.,0.,1.)-1.;float tipL=E-40.*(1.-sqrt(max(0.,1.-q*q)));
  bool ind=n>=0.&&n<125.&&(x<=0.||x<tipL);
  float cbA=-(uCr0+5.5*max(vES,0.)*uGrowN);   /* base della crosta asiatica, dove l'India non è arrivata */
- float a=x-uOff;float id;vec3 col;
+ float a=x-uOff;float id=7.;vec3 col=vec3(0.);
  if(ind){id=1.;col=n<36.?cCon(a,y,n/36.)*vec3(1.04,.90,.70):cLit(a,y);col*=1.-.5*lin(n-36.,1.1);}
  else if(x>0.&&((x<E&&y>yR)||(x>=E&&y>cbA))){id=2.;
   col=cCon(vC,y,clamp((vS-y)/max(vS-(x<E?yR:cbA),1.),0.,1.));
@@ -537,10 +538,10 @@ void main(){
 /* ---------- dorsale ---------- */
 FS.dors=FAC+`
 void main(){
- float x=vXr,y=vY;if(acqua(y,vS))return;
+ float x=vXr,y=vY;ACQUA(y,vS)
  float ax=abs(x),n=vS-y;
  float thL=7.+84.*sqrt(clamp(ax/620.,0.,1.));    /* la litosfera diventa più spessa lontano dalla dorsale */
- float a=ax-uOff;float id=x<0.?1.:2.;vec3 col;bool crosta=n<7.;
+ float a=ax-uOff;float id=x<0.?1.:2.;vec3 col=vec3(0.);bool crosta=n<7.;
  if(crosta){col=cOcr(a,n)*(.74+.5*step(.5,fract(a/45.)));col=mix(col,vec3(1.,.74,.22),smoothstep(25.,17.,abs(ax-uOff))*.85);}
  else if(n<thL){col=cOlm(a,n);col*=1.-.5*lin(n-7.,1.);}
  else{id=7.;col=cAst(vC,y);
@@ -566,9 +567,9 @@ void main(){
 /* ---------- trascorrente ---------- */
 FS.tras=FAC+`
 void main(){
- float x=vXr,y=vY;if(acqua(y,vS))return;
+ float x=vXr,y=vY;ACQUA(y,vS)
  float cb=-(uCr0+6.*max(vES,0.)+4.5*min(vES,0.)),yL=-88.;
- float id=x<0.?1.:2.;vec3 col;vec3 tinta=x<0.?vec3(.84,.93,1.06):vec3(1.);
+ float id=x<0.?1.:2.;vec3 col=vec3(0.);vec3 tinta=x<0.?vec3(.84,.93,1.06):vec3(1.);
  if(y>cb)col=cCon(vC,y,clamp((vS-y)/max(vS-cb,1.),0.,1.))*tinta;
  else if(y>yL){col=cLit(vC,y)*tinta;col*=1.-.5*lin(y-cb,1.1);}
  else{id=7.;col=cAst(vC,y);col=mix(col,vec3(.95,.9,.8),lin(y-yL,1.6)*trat(vC,y)*.55);}
@@ -591,10 +592,10 @@ void main(){
 FS.caldo=FAC+`
 void main(){
  if(abs(vWX)>uClip)discard;
- float xw=vXr,xp=vXp,y=vY;if(acqua(y,vS))return;    /* xw: distanza dal punto caldo, che sta fermo. xp: posizione sulla placca, che si muove */
+ float xw=vXr,xp=vXp,y=vY;ACQUA(y,vS)    /* xw: distanza dal punto caldo, che sta fermo. xp: posizione sulla placca, che si muove */
  float yM=uBaseY-uCr0-.2*max(vES*`+EX.toFixed(1)+`-uBaseY,0.);        /* base della crosta, più profonda sotto il peso dei vulcani */
  float yL=yM-82.+24.*exp(-pow(xw/140.,2.))*uPenn;
- float id;vec3 col;bool edif=false;
+ float id=7.;vec3 col=vec3(0.);bool edif=false;
  if(y>yM){id=1.;edif=y>uBaseY+1.;
   col=edif?mix(vec3(.20,.18,.19),vec3(.36,.31,.29),fbm(vec2(xp*.06,y*.3)))*(.84+.24*step(.5,fract((vS-y)/3.2))):cOcr(xp,uBaseY-y);
   if(edif)id=6.;}
