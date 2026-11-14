@@ -115,6 +115,7 @@ button{font-family:inherit}
 .orologio b{display:block;font:700 19px/1 Cambria,Georgia,serif;color:#d2bcff;font-variant-numeric:tabular-nums}
 .orologio small{display:block;font-size:11px;color:var(--mut);margin-top:2px}
 .orologio.oggi{padding-top:0;display:flex;align-items:center}
+.orologio.oggi b{font:400 15px/1 Calibri,Carlito,"Segoe UI",sans-serif;color:var(--mut)}
 .etich.placca{background:rgba(8,12,22,.5);border-color:rgba(255,255,255,.35);font-weight:400;letter-spacing:.03em}
 @media(max-width:760px){.stage{height:clamp(260px,40vh,380px)}.sub{min-height:0}}
 </style>
@@ -1341,7 +1342,7 @@ levetta('gRot',function(on){if(globo)globo.ruota(on);});
 var statoG='',passatoG=null;
 function tempoG(){var t=GS.t,m=Math.round(t);$('gTempo').value=250-m;
  $('oraG').classList.toggle('oggi',t<=0);$('oraN').textContent=t<=0?'oggi':Math.max(1,m);$('oraU').textContent=t<=0?'':m<=1?'milione di anni fa':'milioni di anni fa';
- $('faseG').textContent=t<=0?'Oggi. Premi il pulsante rotondo per tornare alla Pangea e vedere i continenti mettersi in viaggio.':(t>225?'Tutte le terre sono unite nella Pangea, circondata da un solo oceano, la Panthalassa.':t>200?'La Pangea comincia a spaccarsi.':t>150?'La Pangea si divide in due, a nord la Laurasia e a sud il Gondwana. In mezzo si apre l\'Atlantico centrale.':t>100?'Anche il Gondwana si rompe. Sud America e Africa si allontanano e nasce l\'Atlantico meridionale. L\'India parte verso nord.':t>50?'L\'India attraversa l\'oceano verso l\'Asia. L\'Australia si stacca dall\'Antartide.':t>10?'L\'India si scontra con l\'Asia e nasce l\'Himalaya. L\'Atlantico continua ad allargarsi.':'I continenti arrivano dove sono oggi. E continuano a muoversi.');
+ $('faseG').textContent=t<=0?'Premi il pulsante rotondo per tornare alla Pangea e vedere i continenti mettersi in viaggio.':(t>225?'Tutte le terre sono unite nella Pangea, circondata da un solo oceano, la Panthalassa.':t>200?'La Pangea comincia a spaccarsi.':t>150?'La Pangea si divide in due, a nord la Laurasia e a sud il Gondwana. In mezzo si apre l\'Atlantico centrale.':t>100?'Anche il Gondwana si rompe. Sud America e Africa si allontanano e nasce l\'Atlantico meridionale. L\'India parte verso nord.':t>50?'L\'India attraversa l\'oceano verso l\'Asia. L\'Australia si stacca dall\'Antartide.':t>10?'L\'India si scontra con l\'Asia e nasce l\'Himalaya. L\'Atlantico continua ad allargarsi.':'I continenti arrivano dove sono oggi. E continuano a muoversi.');
  var st=GS.play?'ferma':t<=0?'rifai':'vai';if(st!==statoG){statoG=st;var b=$('gPlay'),x=st==='ferma'?'Ferma':st==='rifai'?'Rivedi da Pangea':'Avanti nel tempo';b.innerHTML=ICONE[st];b.title=x;b.setAttribute('aria-label',x);}
  var pas=t>0;if(pas!==passatoG){passatoG=pas;['gTer','gVul','gPla','gEta'].forEach(function(k){$(k).disabled=pas;});Array.prototype.forEach.call($('luoghi').children,function(c){c.disabled=pas;c.classList.toggle('attivo',!pas&&!!GS.luogo&&c.dataset.l===GS.luogo.id);});
   if(pas&&GS.luogo){GS.luogo=null;if(globo)globo.luogo(null);}testoGlobo();}}
