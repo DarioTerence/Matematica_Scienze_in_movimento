@@ -204,6 +204,9 @@ Mol.prototype.catena=function(n,p0,dir,nor,parte,doppi,piega){
   idx.push(this.atomo('C',p,parte));
   if(i>0)this.lega(idx[i-1],idx[i],doppi&&doppi[i]?2:1);}
  return idx;};
+Mol.prototype.orizzontale=function(){var q=new THREE.Quaternion().setFromAxisAngle(V(1,0,0),-Math.PI/2*.8);
+ this.at.forEach(function(a){a.p.applyQuaternion(q);});this.acqua.forEach(function(w){w.p.applyQuaternion(q);w.d.applyQuaternion(q);});
+ if(this.parti)this.parti.forEach(function(v){v.applyQuaternion(q);});return this;};
 Mol.prototype.centra=function(){var c=V(0,0,0),n=0;this.at.forEach(function(a){c.add(a.p);n++;});this.extra.forEach(function(e){c.add(e.p);n++;});
  if(n)c.multiplyScalar(1/n);this.at.forEach(function(a){a.p.sub(c);});this.extra.forEach(function(e){e.p.sub(c);});this.acqua.forEach(function(w){w.p.sub(c);});
  this.etich.forEach(function(e){e.p.sub(c);});this.aloni.forEach(function(e){e.p.sub(c);});return this;};
@@ -231,10 +234,10 @@ function anello(m,n,R,c0,el,sost,parte){
  return idx;}
 /* alfa-glucosio: anello O, C1..C5 */
 var SOST_GLU=[null,{giu:'OH'},{giu:'OH'},{su:'OH'},{giu:'OH'},{su:'CH2OH'}];
-function glucosio(){var m=new Mol();anello(m,6,1,V(0,0,0),['O','C','C','C','C','C'],SOST_GLU);return m.idrogeni();}
+function glucosio(){var m=new Mol();anello(m,6,1,V(0,0,0),['O','C','C','C','C','C'],SOST_GLU);return m.idrogeni().orizzontale();}
 /* beta-fruttosio: anello O, C2, C3, C4, C5 */
 var SOST_FRU=[null,{su:'OH',giu:'CH2OH'},{su:'OH'},{giu:'OH'},{su:'CH2OH'}];
-function fruttosio(){var m=new Mol();anello(m,5,.85,V(0,0,0),['O','C','C','C','C'],SOST_FRU);return m.idrogeni();}
+function fruttosio(){var m=new Mol();anello(m,5,.85,V(0,0,0),['O','C','C','C','C'],SOST_FRU);return m.idrogeni().orizzontale();}
 /* saccarosio: glucosio (C1, sotto) e fruttosio (C2) uniti da un ossigeno; esce una molecola d'acqua */
 function saccarosio(){
  var g=new Mol();var sg=SOST_GLU.slice();sg[1]={giu:'LINK'};anello(g,6,1,V(0,0,0),['O','C','C','C','C','C'],sg,0);
@@ -250,18 +253,18 @@ function saccarosio(){
  f.bo.forEach(function(b){g.lega(b.a+base,b.b+base,b.o);});
  g.lega(Ob,Lf.a+base);g.idrogeni();
  g.acqua.push({p:g.at[Ob].p.clone(),d:g.at[Ob].p.clone().normalize().add(V(0,-.6,.6)).normalize()});
- g.parti=[V(-2.2,1.2,0),V(2.2,-1.2,0)];return g.centra();}
+ g.parti=[V(-2.2,1.2,0),V(2.2,-1.2,0)];return g.orizzontale().centra();}
 /* polisaccaridi: catene di mattoncini (ogni esagono è un glucosio) */
 function mattoncini(tipo){
  var m=new Mol(),pos=[];
- if(tipo==='amido'){for(var i=0;i<16;i++){var f=i*Math.PI/3.2;pos.push({p:V(Math.cos(f)*1.05,i*.34-2.6,Math.sin(f)*1.05),r:f});}
-  for(i=0;i<6;i++){var f2=i*Math.PI/3.2;pos.push({p:V(2.6+Math.cos(f2)*.9,i*.34-.4,Math.sin(f2)*.9),r:f2,da:i?null:7});}}
- else if(tipo==='glicogeno'){/* albero molto ramificato: rami corti che partono da altri rami */
-  var rami=[[V(0,0,0),V(1,0,0),7,null]],k=0;
-  while(rami.length&&pos.length<40){var R=rami.shift();var p=R[0].clone(),d=R[1].clone().normalize(),prec=R[3];
-   for(var j=0;j<R[2]&&pos.length<40;j++){p=p.clone().add(d.clone().multiplyScalar(.78));pos.push({p:p.clone(),r:j*.7+k,da:j?pos.length-1:prec});
-    if(j===2||j===5){var n=perp(d).applyAxisAngle(d,k*1.7);rami.push([p.clone(),d.clone().add(n.multiplyScalar(1.25)),4,pos.length-1]);k++;}}}
-  var c=V(0,0,0);pos.forEach(function(q){c.add(q.p);});c.multiplyScalar(1/pos.length);pos.forEach(function(q){q.p.sub(c);});}
+ if(tipo==='amido'){for(var i=0;i<16;i++){var f=i*Math.PI/3;pos.push({p:V(Math.cos(f)*1.3,i*.42-3.2,Math.sin(f)*1.3),r:f});}
+  var p8=pos[8].p,out=V(p8.x,0,p8.z).normalize(),lat=V(0,1,0);
+  for(i=0;i<6;i++){pos.push({p:p8.clone().add(out.clone().multiplyScalar(.85*(i+1))).add(lat.clone().multiplyScalar((i%2)*.35+.2)),r:i,da:i?null:8});}}
+ else if(tipo==='glicogeno'){/* albero molto ramificato: da ogni ramo ne partono due */
+  var ramo=function(p,d,liv,prec){for(var j=0;j<2;j++){p=p.clone().add(d.clone().multiplyScalar(.8));pos.push({p:p.clone(),r:j*.9+liv,da:prec});prec=pos.length-1;}
+   if(liv<2){var n=perp(d).applyAxisAngle(d,liv*1.3+pos.length*.4);[1,-1].forEach(function(sg){ramo(p,d.clone().applyAxisAngle(n,sg*.75),liv+1,prec);});}};
+  pos.push({p:V(0,0,0),r:0,da:null});
+  [V(1,.2,0),V(-.6,.2,.9),V(-.5,-.3,-.9)].forEach(function(d){ramo(V(0,0,0),d.normalize(),0,0);});}
  else{/* cellulosa: tre catene diritte e parallele, mattoncini capovolti uno sì e uno no */
   for(var r=0;r<3;r++)for(i=0;i<9;i++)pos.push({p:V(i*.78-3.1,r*.9-.9,0),r:i%2?Math.PI:0,cap:i%2,da:i?pos.length-1:null,fila:r});}
  pos.forEach(function(q,i){m.extra.push({tipo:'mattone',p:q.p,r:q.r,cap:q.cap});
@@ -281,12 +284,12 @@ function amminoacido(m,p0,R,parte,senzaOH,senzaH){
  if(!senzaH){m.attacca(N,'H',V(-.5,-.75,.4));m.attacca(N,'H',V(-.5,.3,-.8));}else m.attacca(N,'H',V(-.3,-.95,0));
  return {N:N,Ca:Ca,C:C,O2:O2,R:Rr};}
 function alanina(){var m=new Mol();var a=amminoacido(m,V(-.8,0,0),'CH3');m.idrogeni();m.centra();
- m.aloni.push({p:m.at[a.N].p.clone().add(V(-.2,-.1,0)),r:.75,c:'#3b6fe0'});
- m.aloni.push({p:m.at[a.C].p.clone().add(V(.35,-.1,0)),r:.95,c:'#e0393e'});
- m.aloni.push({p:m.at[a.R].p.clone(),r:.7,c:'#8ee0a6'});
- m.etich.push({t:'gruppo amminico',p:m.at[a.N].p.clone().add(V(-.6,.95,0)),c:'#9cc0ff'});
- m.etich.push({t:'gruppo carbossilico',p:m.at[a.C].p.clone().add(V(.6,1.25,0)),c:'#ff9a9a'});
- m.etich.push({t:'gruppo R',p:m.at[a.R].p.clone().add(V(0,0,.95)),c:'#8ee0a6'});
+ m.aloni.push({p:m.at[a.N].p.clone().add(V(-.2,-.1,0)),r:.62,c:'#3b6fe0'});
+ m.aloni.push({p:m.at[a.C].p.clone().add(V(.35,-.1,0)),r:.8,c:'#e0393e'});
+ m.aloni.push({p:m.at[a.R].p.clone(),r:.6,c:'#8ee0a6'});
+ m.etich.push({t:'gruppo amminico',p:m.at[a.N].p.clone().add(V(-1.0,-1.1,0)),c:'#9cc0ff'});
+ m.etich.push({t:'gruppo carbossilico',p:m.at[a.C].p.clone().add(V(.9,1.2,0)),c:'#ff9a9a'});
+ m.etich.push({t:'gruppo R',p:m.at[a.R].p.clone().add(V(-.3,1.0,.3)),c:'#8ee0a6'});
  return m;}
 function dipeptide(){var m=new Mol();var a=amminoacido(m,V(-1.7,0,0),'H',0,true);
  var b=amminoacido(m,V(0,-.55,0),'CH3',1,false,true);m.lega(a.C,b.N);m.idrogeni();
@@ -302,22 +305,23 @@ function perline(){var m=new Mol(),n=16;m.perline=[];
  return m;}
 
 /* --- lipidi --- */
-function acidoGrasso(m,pO,parte,insaturo,lato){/* da un ossigeno estere: carbonio con doppio O, poi catena */
- var C1=m.atomo('C',pO.clone().add(V(.82,.4*lato,0)),parte);
+function acidoGrasso(m,pO,parte,insaturo,lato,fan){/* da un ossigeno estere: carbonio con doppio O, poi catena; fan apre le code a ventaglio */
+ fan=fan||0;var dirC=V(1,0,fan).normalize(),norC=V(-fan,0,1).normalize();
+ var C1=m.atomo('C',pO.clone().add(dirC.clone().multiplyScalar(.82)).add(V(0,.4*lato,0)),parte);
  var Od=m.attacca(C1,'O',V(0,lato,0));m.bo[m.bo.length-1].o=2;
  var piega=insaturo?{6:-.75}:null,doppi=insaturo?{6:2}:null;
- var ch=m.catena(9,m.at[C1].p.clone().add(V(.82,-.45*lato,0)),V(1,0,0),V(0,0,1),parte,doppi,piega);
+ var ch=m.catena(9,m.at[C1].p.clone().add(dirC.clone().multiplyScalar(.82)).add(V(0,-.45*lato,0)),dirC,norC,parte,doppi,piega);
  m.lega(C1,ch[0]);return C1;}
 function glicerolo(m,parte){var g=[];for(var i=0;i<3;i++)g.push(m.atomo('C',V(i%2?-.55:0,1-i*1.0,0),parte));
  m.lega(g[0],g[1]);m.lega(g[1],g[2]);var o=g.map(function(c){return m.attacca(c,'O',V(1,0,0),parte);});return {c:g,o:o};}
 function soloGlicerolo(){var m=new Mol();glicerolo(m);return m.idrogeni().centra();}
-function soloAcido(insaturo){var m=new Mol();var O=m.atomo('O',V(0,0,0));acidoGrasso(m,m.at[O].p,0,insaturo,1);return m.idrogeni().centra();}
+function soloAcido(insaturo){var m=new Mol();var O=m.atomo('O',V(0,0,0));var C1=acidoGrasso(m,m.at[O].p,0,insaturo,1);m.lega(O,C1);return m.idrogeni().centra();}
 function trigliceride(){var m=new Mol();var g=glicerolo(m,0);
- [1,2,3].forEach(function(k,i){var p=m.at[g.o[i]].p,C1=acidoGrasso(m,p,k,i===1,i===2?-1:1);m.lega(g.o[i],C1);
+ [1,2,3].forEach(function(k,i){var p=m.at[g.o[i]].p,C1=acidoGrasso(m,p,k,i===1,i===2?-1:1,(i-1)*.45);m.lega(g.o[i],C1);
   m.acqua.push({p:p.clone().add(V(.5,.2,0)),d:V(-.3,(1-i)*.5,1).normalize(),rit:i*.15});});
- m.idrogeni();m.parti=[V(0,0,0),V(2.4,1.4,0),V(2.8,0,0),V(2.4,-1.4,0)];return m.centra();}
+ m.idrogeni();m.parti=[V(0,0,0),V(2.4,1.4,-1.2),V(2.8,0,0),V(2.4,-1.4,1.2)];return m.centra();}
 function fosfolipide(){var m=new Mol();var g=glicerolo(m,0);
- [0,1].forEach(function(i){var C1=acidoGrasso(m,m.at[g.o[i]].p,0,i===1,1);m.lega(g.o[i],C1);});
+ [0,1].forEach(function(i){var C1=acidoGrasso(m,m.at[g.o[i]].p,0,i===1,1,i?.4:-.4);m.lega(g.o[i],C1);});
  /* gruppo fosfato sul terzo ossigeno, poi un piccolo gruppo con l'azoto */
  var P=m.attacca(g.o[2],'P',V(-.7,-.7,0));var Od=m.attacca(P,'O',V(0,-.3,1));m.bo[m.bo.length-1].o=2;
  m.attacca(P,'O',V(0,-.3,-1));var O3=m.attacca(P,'O',V(-1,-.3,0));
@@ -327,8 +331,8 @@ function fosfolipide(){var m=new Mol();var g=glicerolo(m,0);
  m.etich.push({t:'testa',p:m.at[P].p.clone().add(V(-1.3,.6,0)),c:'#ffd08a'});
  m.etich.push({t:'code',p:m.at[g.c[0]].p.clone().add(V(4.2,1.4,0)),c:'#c8d3e3'});return m.centra();}
 function membrana(){var m=new Mol();for(var s=0;s<2;s++)for(var i=0;i<7;i++)for(var j=0;j<3;j++){
- var x=i*.8-2.4,z=j*.8-.8,y=s?1.75:-1.75;m.extra.push({tipo:'fosfo',p:V(x+(j%2)*.4,y,z),su:!s});}
- m.etich.push({t:'acqua fuori',p:V(0,2.75,0),c:'#9fd8ff'});m.etich.push({t:'acqua dentro',p:V(0,-2.75,0),c:'#9fd8ff'});return m;}
+ var x=i*.8-2.4,z=j*.8-.8,y=s?1.75:-1.75;m.extra.push({tipo:'fosfo',p:V(x+(j%2)*.4,y,z),su:!!s});}
+ m.etich.push({t:'acqua fuori',p:V(0,3.05,0),c:'#9fd8ff'});m.etich.push({t:'acqua dentro',p:V(0,-3.05,0),c:'#9fd8ff'});return m;}
 
 /* --- acqua, vitamine e sali --- */
 function acqua(){var m=new Mol();var o=m.atomo('O',V(0,0,0));m.attacca(o,'H',V(.79,-.61,0));m.attacca(o,'H',V(-.79,-.61,0));return m.centra();}
@@ -459,9 +463,9 @@ function Scena(el){
     var tt=testo(e.t,'#ffffff',.6);gruppo.add(tt);ogg.push({o:tt,t0:.4,sp:tt.scale.clone(),base:e.p.clone().add(V(0,e.r+.55,0))});
     var al=new THREE.Mesh(GS,new THREE.MeshStandardMaterial({color:0x5bc8f0,transparent:true,opacity:.14,depthWrite:false}));gruppo.add(al);ogg.push({o:al,t0:.2,s:e.r+.55,base:e.p});}
    else if(e.tipo==='carica'){me=testo(e.t,'#9cc0ff',.5);gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,sp:me.scale.clone(),base:e.p});}});
-  m.aloni.forEach(function(a){var me=new THREE.Mesh(GS,new THREE.MeshStandardMaterial({color:a.c,transparent:true,opacity:.2,depthWrite:false}));me.renderOrder=3;gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,s:a.r,base:a.p,alone:true});});
+  m.aloni.forEach(function(a){var me=new THREE.Mesh(GS,new THREE.MeshStandardMaterial({color:a.c,transparent:true,opacity:.16,depthWrite:false}));me.renderOrder=3;gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,s:a.r,base:a.p,alone:true});});
   var tEt=(unione?T_UNIONE:T_COSTRUISCI)+.1;
-  m.etich.forEach(function(a){var sp=testo(a.t,a.c,.42);gruppo.add(sp);ogg.push({o:sp,t0:tEt,sp:sp.scale.clone(),base:a.p});});
+  m.etich.forEach(function(a){var sp=testo(a.t,a.c,.42);gruppo.add(sp);ogg.push({o:sp,t0:tEt,sp:sp.scale.clone(),base:a.p,et:true});});
   m.acqua.forEach(function(w){var g=new THREE.Group(),o=new THREE.Mesh(GS,mat(EL.O.c));o.scale.setScalar(EL.O.r);g.add(o);
    [[.5,-.38],[-.5,-.38]].forEach(function(q){var h=new THREE.Mesh(GS,mat(EL.H.c));h.scale.setScalar(EL.H.r);h.position.set(q[0],q[1],0);g.add(h);
     var c=cil(V(0,0,0),V(q[0],q[1],0),.06);g.add(c);});
@@ -472,10 +476,12 @@ function Scena(el){
   durata=(unione?T_UNIONE+T_ACQUA+.4:T_COSTRUISCI+.5)+(piega?(op.resta?0:T_PIEGA):0)+.6;
   T=reduce||op.subito?durata:0;piega0=op.resta?1:0;
   /* camera: si allontana quanto basta per vedere tutta la molecola */
-  var box=new THREE.Box3(),pp=[];m.at.forEach(function(a){pp.push(a.p);});m.extra.forEach(function(e){if(e.p)pp.push(e.p);if(e.a)pp.push(e.a,e.b);});
+  var box=new THREE.Box3(),pp=[];m.at.forEach(function(a){pp.push(a.p);});m.extra.forEach(function(e){if(e.p)pp.push(e.p);if(e.a)pp.push(e.a,e.b);
+   var rr=e.tipo==='goccia'?1.7:(e.tipo==='ione'?e.r+.6:0);if(rr)pp.push(e.p.clone().addScalar(rr),e.p.clone().addScalar(-rr));});
   m.etich.forEach(function(e){pp.push(e.p);});if(m.perline)m.perline.forEach(function(q){pp.push(q.lin,q.pie);});
   if(unione&&parti)m.at.forEach(function(a){pp.push(a.p.clone().add(parti[a.parte]||V(0,0,0)));});
   pp.forEach(function(p){box.expandByPoint(p);});var sph=box.getBoundingSphere(new THREE.Sphere());
+  var kE=Math.max(1,sph.radius/3.2);ogg.forEach(function(q){if(q.sp&&q.et){q.sp.multiplyScalar(kE);}});
   radDa=rad;radFit=clamp(sph.radius*2.35+1.4,4.5,30);camU=op.subito?1:0;attivo=true;dirty=true;}
  var piega0=0;
  function ease(u){u=clamp(u,0,1);return u*u*(3-2*u);}
