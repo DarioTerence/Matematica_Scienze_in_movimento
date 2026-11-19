@@ -183,7 +183,7 @@ Mol.prototype.libere=function(a,tot,geo,rif){
 /* riempie con idrogeni tutti gli atomi che hanno legami liberi */
 Mol.prototype.idrogeni=function(){
  var VAL={C:4,N:3,O:2},me=this,n=this.at.length;
- for(var i=0;i<n;i++){var A=this.at[i];if(!VAL[A.el])continue;
+ for(var i=0;i<n;i++){var A=this.at[i];if(!VAL[A.el]||A.noH)continue;
   var ord=0;this.bo.forEach(function(b){if(b.a===i||b.b===i)ord+=b.o;});
   var manca=VAL[A.el]-ord;if(manca<=0)continue;
   var doppio=this.bo.some(function(b){return (b.a===i||b.b===i)&&b.o===2;});
@@ -324,10 +324,10 @@ function fosfolipide(){var m=new Mol();var g=glicerolo(m,0);
  [0,1].forEach(function(i){var C1=acidoGrasso(m,m.at[g.o[i]].p,0,i===1,1,i?.4:-.4);m.lega(g.o[i],C1);});
  /* gruppo fosfato sul terzo ossigeno, poi un piccolo gruppo con l'azoto */
  var P=m.attacca(g.o[2],'P',V(-.7,-.7,0));var Od=m.attacca(P,'O',V(0,-.3,1));m.bo[m.bo.length-1].o=2;
- m.attacca(P,'O',V(0,-.3,-1));var O3=m.attacca(P,'O',V(-1,-.3,0));
+ var Om=m.attacca(P,'O',V(0,-.3,-1));m.at[Om].noH=true;var O3=m.attacca(P,'O',V(-1,-.3,0));
  var c1=m.attacca(O3,'C',V(-.6,-.8,0)),c2=m.attacca(c1,'C',V(-.8,-.5,0)),N=m.attacca(c2,'N',V(-.5,-.85,0));
  m.attacca(N,'C',V(-.9,-.2,.4));m.attacca(N,'C',V(.2,-.6,.8));m.attacca(N,'C',V(.1,-.7,-.7));
- m.idrogeni();m.extra.push({tipo:'carica',p:m.at[N].p.clone().add(V(-.1,-.75,0)),t:'+'});
+ m.idrogeni();m.extra.push({tipo:'carica',p:m.at[N].p.clone().add(V(-.1,-.75,0)),t:'+'});m.extra.push({tipo:'carica',p:m.at[Om].p.clone().add(V(0,-.2,-.55)),t:'−'});
  m.etich.push({t:'testa',p:m.at[P].p.clone().add(V(-1.3,.6,0)),c:'#ffd08a'});
  m.etich.push({t:'code',p:m.at[g.c[0]].p.clone().add(V(4.2,1.4,0)),c:'#c8d3e3'});return m.centra();}
 function membrana(){var m=new Mol();for(var s=0;s<2;s++)for(var i=0;i<7;i++)for(var j=0;j<3;j++){
@@ -372,14 +372,14 @@ var SCHEDE=[
    {k:'sac',n:'Saccarosio',col:'#e0d24a',m:saccarosio,unione:true,d:'<p>Glucosio e fruttosio si legano e liberano una molecola d\'<b>acqua</b>. È lo zucchero da tavola.</p>',al:'zucchero da canna o da barbabietola, dolci'}]},
   {n:'Catene di zuccheri (polisaccaridi)',c:[
    {k:'ami',n:'Amido',col:'#c9a86a',m:function(){return mattoncini('amido');},cap:'Ogni esagono è un glucosio',d:'<p>Lunga catena di glucosio avvolta a spirale, con qualche ramo. È la <b>riserva</b> di energia delle piante.</p>',al:'pane, pasta, riso, patate, legumi'},
-   {k:'gli',n:'Glicogeno',col:'#d9a62e',m:function(){return mattoncini('glicogeno');},cap:'Ogni esagono è un glucosio',d:'<p>Catena di glucosio molto ramificata. È la riserva degli animali, nel <b>fegato</b> e nei <b>muscoli</b>.</p>',al:'si forma nel corpo, non serve mangiarlo'},
+   {k:'gli',n:'Glicogeno',col:'#d9a62e',m:function(){return mattoncini('glicogeno');},cap:'Ogni esagono è un glucosio',d:'<p>Catena di glucosio molto ramificata. È la riserva degli animali, nel <b>fegato</b> e nei <b>muscoli</b>.</p>',al:'non si mangia, il corpo lo costruisce con il glucosio'},
    {k:'cel',n:'Cellulosa',col:'#6fd08c',m:function(){return mattoncini('cellulosa');},cap:'Ogni esagono è un glucosio, uno sì e uno no è capovolto. In azzurro i ponti a idrogeno tra le catene',d:'<p>Catene di glucosio diritte e affiancate, legate tra loro. Forma la parete delle cellule vegetali.</p><p>Il nostro corpo non la digerisce, è la <b>fibra</b> degli alimenti.</p>',al:'verdura, frutta, cereali integrali'}]}]},
  {sub:'Catene di amminoacidi',anchor:'Venti amminoacidi diversi, combinati in catene lunghe e ripiegate, formano migliaia di proteine diverse.',
   prof:'Tocca <b>Legame peptidico</b> e guarda due amminoacidi che si uniscono.',posa:'fornello',kcal:4,
   gruppi:[{n:'Dagli amminoacidi alle proteine',c:[
    {k:'aa',n:'Amminoacido',col:'#6aa5ff',m:alanina,d:'<p>Ogni amminoacido ha un <b>gruppo amminico</b> (con l\'azoto), un <b>gruppo carbossilico</b> e un <b>gruppo R</b>, diverso in ognuno. Qui l\'alanina.</p><p>Le proteine sono fatte di <b>20</b> amminoacidi diversi.</p>'},
    {k:'pep',n:'Legame peptidico',col:'#6aa5ff',m:dipeptide,unione:true,d:'<p>Il gruppo carbossilico di un amminoacido si lega al gruppo amminico del successivo e si libera una molecola d\'<b>acqua</b>.</p>'},
-   {k:'cat',n:'Catena e ripiegamento',col:'#6aa5ff',m:perline,piega:true,cap:'Ogni pallina è un amminoacido',d:'<p>Centinaia di amminoacidi in fila formano una catena, che si avvolge e si <b>ripiega</b> in una forma precisa.</p><p>La forma decide il lavoro della proteina.</p>'}]},
+   {k:'cat',n:'Catena e ripiegamento',col:'#6aa5ff',m:perline,piega:true,cap:'Ogni pallina è un amminoacido',d:'<p>Spesso centinaia di amminoacidi in fila formano una catena, che si avvolge e si <b>ripiega</b> in una forma precisa.</p><p>La forma decide il lavoro della proteina.</p>'}]},
   {n:'Che lavoro fanno',c:[
    {k:'s',n:'Struttura',col:'#8ee0a6',m:perline,piega:true,resta:true,cap:'Ogni pallina è un amminoacido',d:'<p>Costruiscono e sostengono il corpo. Cheratina in capelli e unghie, collagene nella pelle e nelle ossa, proteine dei muscoli.</p>'},
    {k:'e',n:'Enzimi',col:'#8ee0a6',m:perline,piega:true,resta:true,cap:'Ogni pallina è un amminoacido',d:'<p>Rendono veloci le reazioni chimiche. Per esempio gli enzimi della digestione spezzano l\'amido e le proteine degli alimenti.</p>'},
@@ -390,11 +390,11 @@ var SCHEDE=[
   prof:'Tocca <b>Trigliceride</b> e guarda il glicerolo che si lega a tre acidi grassi.',posa:'pentolino',kcal:9,
   gruppi:[{n:'I mattoni',c:[
    {k:'gl',n:'Glicerolo',col:'#f2c94c',m:soloGlicerolo,d:'<p>Piccola molecola con tre carboni, ognuno con un gruppo OH. È la base a cui si attaccano gli acidi grassi.</p>'},
-   {k:'sat',n:'Acido grasso saturo',col:'#f2c94c',m:function(){return soloAcido(false);},cap:'Catena accorciata, quelle vere hanno in genere da 12 a 22 carboni',d:'<p>Lunga catena di carboni con <b>soli legami semplici</b>, diritta. Le catene diritte si impacchettano bene, così i grassi saturi sono in genere <b>solidi</b> a temperatura ambiente.</p>',al:'burro, lardo, grassi della carne, formaggi'},
-   {k:'ins',n:'Acido grasso insaturo',col:'#f2c94c',m:function(){return soloAcido(true);},cap:'Catena accorciata, quelle vere hanno in genere da 12 a 22 carboni',d:'<p>Ha almeno un <b>doppio legame</b>, che piega la catena. Le catene piegate stanno meno strette, così i grassi insaturi sono in genere <b>liquidi</b> a temperatura ambiente.</p>',al:'olio d\'oliva, oli di semi, frutta secca, pesce'}]},
+   {k:'sat',n:'Acido grasso saturo',col:'#f2c94c',m:function(){return soloAcido(false);},cap:'Catena accorciata, quelle vere sono più lunghe',d:'<p>Lunga catena di carboni con <b>soli legami semplici</b>, diritta. Le catene diritte si impacchettano bene, così i grassi saturi sono in genere <b>solidi</b> a temperatura ambiente.</p>',al:'burro, lardo, grassi della carne, formaggi'},
+   {k:'ins',n:'Acido grasso insaturo',col:'#f2c94c',m:function(){return soloAcido(true);},cap:'Catena accorciata, quelle vere sono più lunghe',d:'<p>Ha almeno un <b>doppio legame</b>, che piega la catena. Le catene piegate stanno meno strette, così i grassi insaturi sono in genere <b>liquidi</b> a temperatura ambiente.</p>',al:'olio d\'oliva, oli di semi, frutta secca, pesce'}]},
   {n:'Le molecole',c:[
-   {k:'tri',n:'Trigliceride',col:'#f2c94c',m:trigliceride,unione:true,cap:'Catene accorciate',d:'<p>Un glicerolo e tre acidi grassi. Per ogni legame si libera una molecola d\'<b>acqua</b>. È la forma dei grassi di riserva.</p>',al:'olio, burro e quasi tutti i grassi degli alimenti'},
-   {k:'fos',n:'Fosfolipide',col:'#f08a24',m:fosfolipide,cap:'Catene accorciate',d:'<p>Un glicerolo, due acidi grassi e un gruppo con il <b>fosforo</b>. La testa sta volentieri vicino all\'acqua, le due code la evitano.</p>'},
+   {k:'tri',n:'Trigliceride',col:'#f2c94c',m:trigliceride,unione:true,cap:'Catene accorciate, quelle vere sono più lunghe',d:'<p>Un glicerolo e tre acidi grassi. Per ogni legame si libera una molecola d\'<b>acqua</b>. È la forma dei grassi di riserva.</p>',al:'olio, burro e quasi tutti i grassi degli alimenti'},
+   {k:'fos',n:'Fosfolipide',col:'#f08a24',m:fosfolipide,cap:'Catene accorciate, quelle vere sono più lunghe',d:'<p>Un glicerolo, due acidi grassi e un gruppo con il <b>fosforo</b>. La testa sta volentieri vicino all\'acqua, le due code la evitano.</p>'},
    {k:'mem',n:'Membrana',col:'#f08a24',m:membrana,cap:'Schema, ogni figura è un fosfolipide',d:'<p>I fosfolipidi si dispongono su <b>due strati</b>, con le teste verso l\'acqua e le code verso l\'interno. Così è fatta la membrana di ogni cellula.</p>'}]}]},
  {sub:'Non danno energia ma sono indispensabili',anchor:'Vitamine e sali minerali servono in piccole quantità, ma senza di loro il corpo non funziona. Si trovano soprattutto in frutta, verdura e alimenti vari.',
   prof:'Tocca <b>Vitamine idrosolubili</b> e poi <b>Vitamine liposolubili</b>, e confronta.',posa:'fornello',kcal:0,
@@ -405,7 +405,7 @@ var SCHEDE=[
    {k:'lipo',n:'Vitamine liposolubili',col:'#f2c94c',m:function(){return goccia('lipo');},cap:'Schema',d:'<p>Si sciolgono nei <b>grassi</b>, si assorbono con loro e si accumulano nel fegato.</p><ul class="dati"><li><b>A</b>, vista e pelle. Carote, verdure arancioni, latte.</li><li><b>D</b>, ossa, aiuta a usare il calcio. Pesce, uova, la produce anche la pelle al sole.</li><li><b>E</b>, protegge le cellule. Oli vegetali, frutta secca.</li><li><b>K</b>, coagulazione del sangue. Verdure a foglia verde.</li></ul>'}]},
   {n:'Sali minerali',c:[
    {k:'ca',n:'Calcio',col:'#3fa862',m:function(){return ione([{t:'Ca²⁺',c:'#3fa862',r:.8}]);},cap:'Schema, lo ione non è in scala',d:'<p>Forma <b>ossa e denti</b> e serve alla contrazione dei muscoli.</p>',al:'latte, formaggi, yogurt, alcune verdure'},
-   {k:'fe',n:'Ferro',col:'#b0603a',m:function(){return ione([{t:'Fe²⁺',c:'#b0603a',r:.7}]);},cap:'Schema, lo ione non è in scala',d:'<p>Sta al centro dell\'<b>emoglobina</b>, la proteina dei globuli rossi che trasporta l\'ossigeno.</p>',al:'carne, pesce, legumi, verdure a foglia verde'},
+   {k:'fe',n:'Ferro',col:'#b0603a',m:function(){return ione([{t:'Fe²⁺',c:'#b0603a',r:.7}]);},cap:'Schema, lo ione non è in scala',d:'<p>Fa parte dell\'<b>emoglobina</b>, la proteina dei globuli rossi che trasporta l\'ossigeno.</p>',al:'carne, pesce, legumi, verdure a foglia verde'},
    {k:'nak',n:'Sodio e potassio',col:'#9a6fe8',m:function(){return ione([{t:'Na⁺',c:'#ab5cf2',r:.75},{t:'K⁺',c:'#7a3fd0',r:.95}]);},cap:'Schema, gli ioni non sono in scala',d:'<p>Regolano l\'acqua dentro e fuori le cellule e fanno funzionare <b>nervi e muscoli</b>.</p>',al:'sodio nel sale da cucina, potassio in frutta e verdura'}]}]}];
 
 /* ================= scena 3D ================= */
