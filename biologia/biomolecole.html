@@ -6,13 +6,13 @@
 <!-- © 2026 Prof. T. Tutti i diritti riservati. -->
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Le biomolecole - Scienza in Movimento</title>
-<meta name="description" content="Le biomolecole in 3D, a partire dal carbonio e gli idrocarburi, carboidrati, proteine, lipidi, vitamine e sali minerali, con molecole che si costruiscono e si uniscono.">
+<meta name="description" content="Le biomolecole in 3D: il carbonio e gli idrocarburi, carboidrati, proteine, lipidi, vitamine e sali minerali, con molecole che si costruiscono e si uniscono.">
 <link rel="canonical" href="https://scienzainmovimento.it/biologia/biomolecole.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Scienza in Movimento">
 <meta property="og:locale" content="it_IT">
 <meta property="og:title" content="Le biomolecole - Scienza in Movimento">
-<meta property="og:description" content="Le biomolecole in 3D, a partire dal carbonio e gli idrocarburi, carboidrati, proteine, lipidi, vitamine e sali minerali, con molecole che si costruiscono e si uniscono.">
+<meta property="og:description" content="Le biomolecole in 3D: il carbonio e gli idrocarburi, carboidrati, proteine, lipidi, vitamine e sali minerali, con molecole che si costruiscono e si uniscono.">
 <meta property="og:url" content="https://scienzainmovimento.it/biologia/biomolecole.html">
 <meta property="og:image" content="https://scienzainmovimento.it/og_image.jpg">
 <meta property="og:image:width" content="1200">
@@ -204,7 +204,7 @@ Mol.prototype.catena=function(n,p0,dir,nor,parte,doppi,piega){
   idx.push(this.atomo('C',p,parte));
   if(i>0)this.lega(idx[i-1],idx[i],doppi&&doppi[i]?2:1);}
  return idx;};
-Mol.prototype.orizzontale=function(){var q=new THREE.Quaternion().setFromAxisAngle(V(1,0,0),-Math.PI/2*.8);
+Mol.prototype.orizzontale=function(ang){var q=new THREE.Quaternion().setFromAxisAngle(V(1,0,0),ang==null?-Math.PI/2*.8:ang);
  this.at.forEach(function(a){a.p.applyQuaternion(q);});this.acqua.forEach(function(w){w.p.applyQuaternion(q);w.d.applyQuaternion(q);});
  if(this.parti)this.parti.forEach(function(v){v.applyQuaternion(q);});return this;};
 Mol.prototype.centra=function(){var c=V(0,0,0),n=0;this.at.forEach(function(a){c.add(a.p);n++;});this.extra.forEach(function(e){c.add(e.p);n++;});
@@ -243,17 +243,18 @@ function saccarosio(){
  var g=new Mol();var sg=SOST_GLU.slice();sg[1]={giu:'LINK'};anello(g,6,1,V(0,0,0),['O','C','C','C','C','C'],sg,0);
  var Lg=g.link,Ob=g.attacca(Lg.a,'O',Lg.d,0);
  var f=new Mol();var sf=SOST_FRU.slice();sf[1]={giu:'CH2OH',su:'LINK'};anello(f,5,.85,V(0,0,0),['O','C','C','C','C'],sf,1);
- /* ruota il fruttosio perché il suo legame libero punti verso l'ossigeno del ponte */
- var Lf=f.link,q=new THREE.Quaternion().setFromUnitVectors(Lf.d.clone().normalize(),Lg.d.clone().normalize().negate());
- var q2=new THREE.Quaternion().setFromAxisAngle(Lg.d.clone().normalize(),2.2);q.premultiply(q2);
+ /* ruota il fruttosio perché si allontani dal glucosio, con il suo carbonio legato vicino all'ossigeno del ponte */
+ var Lf=f.link,cf=V(0,0,0),cg=V(0,0,0);f.at.forEach(function(a){cf.add(a.p);});cf.multiplyScalar(1/f.at.length);
+ g.at.forEach(function(a){cg.add(a.p);});cg.multiplyScalar(1/g.at.length);
+ var u=g.at[Ob].p.clone().sub(cg).normalize();
+ var q=new THREE.Quaternion().setFromUnitVectors(cf.clone().sub(f.at[Lf.a].p).normalize(),u);
  f.at.forEach(function(a){a.p.applyQuaternion(q);});
- var dOb=g.dirs(Ob)[0].negate(),uu=perp(dOb),dir=dOb.clone().multiplyScalar(-.26).add(uu.multiplyScalar(.97)).normalize();
- var spost=g.at[Ob].p.clone().add(dir.clone().multiplyScalar(lung('O','C'))).sub(f.at[Lf.a].p);
+ var spost=g.at[Ob].p.clone().add(u.clone().multiplyScalar(lung('O','C'))).sub(f.at[Lf.a].p);
  var base=g.at.length;f.at.forEach(function(a){g.atomo(a.el,a.p.clone().add(spost),1);});
  f.bo.forEach(function(b){g.lega(b.a+base,b.b+base,b.o);});
  g.lega(Ob,Lf.a+base);g.idrogeni();
  g.acqua.push({p:g.at[Ob].p.clone(),d:g.at[Ob].p.clone().normalize().add(V(0,-.6,.6)).normalize()});
- g.parti=[V(-2.2,1.2,0),V(2.2,-1.2,0)];return g.orizzontale().centra();}
+ g.parti=[V(-3.2,1.6,0),V(3.2,-1.6,0)];g.orizzontale();g.acqua[0].d=V(0,1,.8).normalize();return g.centra();}
 /* polisaccaridi: catene di mattoncini (ogni esagono è un glucosio) */
 function mattoncini(tipo){
  var m=new Mol(),pos=[];
@@ -295,7 +296,7 @@ function dipeptide(){var m=new Mol();var a=amminoacido(m,V(-1.7,0,0),'H',0,true)
  var b=amminoacido(m,V(0,-.55,0),'CH3',1,false,true);m.lega(a.C,b.N);m.idrogeni();
  m.acqua.push({p:m.at[b.N].p.clone().add(m.at[a.C].p).multiplyScalar(.5).add(V(0,.3,0)),d:V(0,1,.4).normalize()});
  m.etich.push({t:'legame peptidico',p:m.at[b.N].p.clone().add(m.at[a.C].p).multiplyScalar(.5).add(V(0,-1.15,0)),c:'#ffd08a'});
- m.parti=[V(-1.8,0,0),V(1.8,0,0)];return m.centra();}
+ m.parti=[V(-2.4,.4,0),V(2.4,-.4,0)];return m.centra();}
 var COL_AA=['#e8a33d','#6fd08c','#6aa5ff','#d46aa0','#c9aaff','#e0d24a','#4fc3c3','#ff8a5b'];
 function perline(){var m=new Mol(),n=16;m.perline=[];
  for(var i=0;i<n;i++){var lin=V(i*.72-5.4,0,0),pie;
@@ -319,7 +320,7 @@ function soloAcido(insaturo){var m=new Mol();var O=m.atomo('O',V(0,0,0));var C1=
 function trigliceride(){var m=new Mol();var g=glicerolo(m,0);
  [1,2,3].forEach(function(k,i){var p=m.at[g.o[i]].p,C1=acidoGrasso(m,p,k,i===1,i===2?-1:1,(i-1)*.45);m.lega(g.o[i],C1);
   m.acqua.push({p:p.clone().add(V(.5,.2,0)),d:V(-.3,(1-i)*.5,1).normalize(),rit:i*.15});});
- m.idrogeni();m.parti=[V(0,0,0),V(2.4,1.4,-1.2),V(2.8,0,0),V(2.4,-1.4,1.2)];return m.centra();}
+ m.idrogeni();m.parti=[V(0,0,0),V(2.4,1.4,-1.2),V(2.8,0,0),V(2.4,-1.4,1.2)];return m.orizzontale(.75).centra();}
 function fosfolipide(){var m=new Mol();var g=glicerolo(m,0);
  [0,1].forEach(function(i){var C1=acidoGrasso(m,m.at[g.o[i]].p,0,i===1,1,i?.4:-.4);m.lega(g.o[i],C1);});
  /* gruppo fosfato sul terzo ossigeno, poi un piccolo gruppo con l'azoto */
