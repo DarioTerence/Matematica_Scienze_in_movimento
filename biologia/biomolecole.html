@@ -295,7 +295,7 @@ function alanina(){var m=new Mol();var a=amminoacido(m,V(-.8,0,0),'CH3');m.idrog
 function dipeptide(){var m=new Mol();var a=amminoacido(m,V(-1.7,0,0),'H',0,true);
  var b=amminoacido(m,V(0,-.55,0),'CH3',1,false,true);m.lega(a.C,b.N);m.idrogeni();
  m.acqua.push({p:m.at[b.N].p.clone().add(m.at[a.C].p).multiplyScalar(.5).add(V(0,.3,0)),d:V(0,1,.4).normalize()});
- m.etich.push({t:'legame peptidico',p:m.at[b.N].p.clone().add(m.at[a.C].p).multiplyScalar(.5).add(V(0,-1.15,0)),c:'#ffd08a'});
+ m.etich.push({t:'legame peptidico',p:m.at[b.N].p.clone().add(m.at[a.C].p).multiplyScalar(.5).add(V(0,-1.6,.4)),c:'#ffd08a'});
  m.parti=[V(-2.4,.4,0),V(2.4,-.4,0)];return m.centra();}
 var COL_AA=['#e8a33d','#6fd08c','#6aa5ff','#d46aa0','#c9aaff','#e0d24a','#4fc3c3','#ff8a5b'];
 function perline(){var m=new Mol(),n=16;m.perline=[];
@@ -360,9 +360,9 @@ var SCHEDE=[
    {k:'es',n:'Catena',col:'#3d434c',m:esano,d:'<p>Sei carboni in fila (esano). La catena non è diritta ma a zig zag, perché i quattro legami di ogni carbonio sono rivolti in direzioni diverse.</p><p>Nelle biomolecole le catene possono essere molto più lunghe.</p>'},
    {k:'cic',n:'Anello',col:'#3d434c',m:cicloesano,d:'<p>Sei carboni che si chiudono ad anello (cicloesano). Anche gli zuccheri, come il glucosio, hanno un anello.</p>'}]},
   {n:'Le quattro famiglie',c:[
-   {k:'f1',n:'Carboidrati',col:'#e0d24a',m:function(){return glucosio();},d:'<p>Carbonio, idrogeno e ossigeno. Danno energia alle cellule e la mettono da parte.</p><p><button class="vai" data-vai="1">Vai alla scheda dei carboidrati</button></p>'},
-   {k:'f2',n:'Lipidi',col:'#f2c94c',m:function(){return soloAcido(false);},d:'<p>Soprattutto carbonio e idrogeno, con poco ossigeno. Riserva di energia e membrane delle cellule.</p><p><button class="vai" data-vai="3">Vai alla scheda dei lipidi</button></p>'},
-   {k:'f3',n:'Proteine',col:'#6aa5ff',m:alanina,d:'<p>Carbonio, idrogeno, ossigeno e azoto. Lunghe catene di amminoacidi che fanno quasi tutti i lavori della cellula.</p><p><button class="vai" data-vai="2">Vai alla scheda delle proteine</button></p>'},
+   {k:'f1',n:'Carboidrati',col:'#e0d24a',m:function(){return glucosio();},cap:'Esempio, il glucosio',d:'<p>Carbonio, idrogeno e ossigeno. Danno energia alle cellule e la mettono da parte.</p><p><button class="vai" data-vai="1">Vai alla scheda dei carboidrati</button></p>'},
+   {k:'f2',n:'Lipidi',col:'#f2c94c',m:function(){return soloAcido(false);},cap:'Esempio, un acido grasso con la catena accorciata',d:'<p>Soprattutto carbonio e idrogeno, con poco ossigeno. Riserva di energia e membrane delle cellule.</p><p><button class="vai" data-vai="3">Vai alla scheda dei lipidi</button></p>'},
+   {k:'f3',n:'Proteine',col:'#6aa5ff',m:alanina,cap:'Esempio, un amminoacido, il mattone delle proteine',d:'<p>Carbonio, idrogeno, ossigeno e azoto. Lunghe catene di amminoacidi che fanno quasi tutti i lavori della cellula.</p><p><button class="vai" data-vai="2">Vai alla scheda delle proteine</button></p>'},
    {k:'f4',n:'Acidi nucleici',col:'#f08a24',m:acidiNucleici,cap:'Schema della doppia elica, non è un modello atomico',d:'<p><b>DNA</b> e <b>RNA</b>. Lunghe catene di nucleotidi, con carbonio, idrogeno, ossigeno, azoto e fosforo.</p><p>Portano l\'<b>informazione</b> per costruire le proteine e passano da una cellula alle cellule figlie.</p>'}]}]},
  {sub:'Zuccheri semplici e catene di zuccheri',anchor:'I carboidrati sono la fonte di energia più usata dalle cellule. Le catene lunghe sono riserve da smontare quando serve.',
   prof:'Tocca <b>Saccarosio</b> e guarda glucosio e fruttosio che si uniscono.',posa:'pentolino',kcal:4,
@@ -402,7 +402,7 @@ var SCHEDE=[
   gruppi:[{n:'Acqua',c:[
    {k:'acq',n:'Acqua',col:'#5bc8f0',m:acqua,d:'<p>Non dà energia ma è il componente più abbondante del corpo. Scioglie e trasporta le sostanze ed è il luogo delle reazioni chimiche della cellula.</p>',al:'acqua da bere, frutta, verdura, minestre'}]},
   {n:'Vitamine',c:[
-   {k:'idro',n:'Vitamine idrosolubili',col:'#5bc8f0',m:function(){return goccia('idro');},cap:'Schema',d:'<p>Si sciolgono in <b>acqua</b> e il corpo non le accumula, vanno assunte ogni giorno.</p><ul class="dati"><li><b>Vitamine del gruppo B</b>, aiutano a ricavare energia dagli alimenti. Cereali integrali, legumi, carne, uova.</li><li><b>Vitamina C</b>, difese dell\'organismo e formazione del collagene. Agrumi, kiwi, peperoni.</li></ul>'},
+   {k:'idro',n:'Vitamine idrosolubili',col:'#5bc8f0',m:function(){return goccia('idro');},cap:'Schema',d:'<p>Si sciolgono in <b>acqua</b> e in genere il corpo non le accumula, vanno assunte ogni giorno.</p><ul class="dati"><li><b>Vitamine del gruppo B</b>, aiutano a ricavare energia dagli alimenti. Cereali integrali, legumi, carne, uova.</li><li><b>Vitamina C</b>, difese dell\'organismo e formazione del collagene. Agrumi, kiwi, peperoni.</li></ul>'},
    {k:'lipo',n:'Vitamine liposolubili',col:'#f2c94c',m:function(){return goccia('lipo');},cap:'Schema',d:'<p>Si sciolgono nei <b>grassi</b>, si assorbono con loro e si accumulano nel fegato.</p><ul class="dati"><li><b>A</b>, vista e pelle. Carote, verdure arancioni, latte.</li><li><b>D</b>, ossa, aiuta a usare il calcio. Pesce, uova, la produce anche la pelle al sole.</li><li><b>E</b>, protegge le cellule. Oli vegetali, frutta secca.</li><li><b>K</b>, coagulazione del sangue. Verdure a foglia verde.</li></ul>'}]},
   {n:'Sali minerali',c:[
    {k:'ca',n:'Calcio',col:'#3fa862',m:function(){return ione([{t:'Ca²⁺',c:'#3fa862',r:.8}]);},cap:'Schema, lo ione non è in scala',d:'<p>Forma <b>ossa e denti</b> e serve alla contrazione dei muscoli.</p>',al:'latte, formaggi, yogurt, alcune verdure'},
@@ -463,7 +463,7 @@ function Scena(el){
    else if(e.tipo==='ione'){me=new THREE.Mesh(GS,mat(e.c));gruppo.add(me);ogg.push({o:me,t0:0,s:e.r,base:e.p});
     var tt=testo(e.t,'#ffffff',.6);gruppo.add(tt);ogg.push({o:tt,t0:.4,sp:tt.scale.clone(),base:e.p.clone().add(V(0,e.r+.55,0))});
     var al=new THREE.Mesh(GS,new THREE.MeshStandardMaterial({color:0x5bc8f0,transparent:true,opacity:.14,depthWrite:false}));gruppo.add(al);ogg.push({o:al,t0:.2,s:e.r+.55,base:e.p});}
-   else if(e.tipo==='carica'){me=testo(e.t,'#9cc0ff',.5);gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,sp:me.scale.clone(),base:e.p});}});
+   else if(e.tipo==='carica'){me=testo(e.t,'#9cc0ff',.8);gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,sp:me.scale.clone(),base:e.p});}});
   m.aloni.forEach(function(a){var me=new THREE.Mesh(GS,new THREE.MeshStandardMaterial({color:a.c,transparent:true,opacity:.16,depthWrite:false}));me.renderOrder=3;gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,s:a.r,base:a.p,alone:true});});
   var tEt=(unione?T_UNIONE:T_COSTRUISCI)+.1;
   m.etich.forEach(function(a){var sp=testo(a.t,a.c,.42);gruppo.add(sp);ogg.push({o:sp,t0:tEt,sp:sp.scale.clone(),base:a.p,et:true});});
@@ -480,7 +480,7 @@ function Scena(el){
   var box=new THREE.Box3(),pp=[];m.at.forEach(function(a){pp.push(a.p);});m.extra.forEach(function(e){if(e.p)pp.push(e.p);if(e.a)pp.push(e.a,e.b);
    var rr=e.tipo==='goccia'?1.7:(e.tipo==='ione'?e.r+.6:0);if(rr)pp.push(e.p.clone().addScalar(rr),e.p.clone().addScalar(-rr));});
   m.etich.forEach(function(e){pp.push(e.p);});if(m.perline)m.perline.forEach(function(q){pp.push(q.lin,q.pie);});
-  if(unione&&parti)m.at.forEach(function(a){pp.push(a.p.clone().add(parti[a.parte]||V(0,0,0)));});
+  if(unione&&parti)m.at.forEach(function(a){pp.push(a.p.clone().add((parti[a.parte]||V(0,0,0)).clone().multiplyScalar(.4)));});
   pp.forEach(function(p){box.expandByPoint(p);});var sph=box.getBoundingSphere(new THREE.Sphere());
   var kE=Math.max(1,sph.radius/3.2);ogg.forEach(function(q){if(q.sp&&q.et){q.sp.multiplyScalar(kE);}});
   radDa=rad;radFit=clamp(sph.radius*2.6+1.2,4.5,30);camU=op.subito?1:0;attivo=true;dirty=true;}
@@ -570,7 +570,8 @@ function scegli(k,subito){
  var m=c.m();legenda(m);
  if(scena)scena.costruisci(m,{unione:c.unione,piega:c.piega,resta:c.resta&&S.ultimaPiega,subito:subito});
  if(c.piega)S.ultimaPiega=true;
- if(!subito&&S.parlato[S.sch]&&c.unione)say('Guarda bene, quando le molecole si legano esce una molecola d\'<b>acqua</b>.','pentolino');}
+ if(!subito&&S.parlato[S.sch]){if(c.unione)say('Guarda bene, quando le molecole si legano esce una molecola d\'<b>acqua</b>.','pentolino');else if(S.unioneDetta)say(sc.prof,'idle');}
+ S.unioneDetta=!!c.unione;}
 S.parlato={};S.ultimaPiega=false;
 function apriScheda(i){
  document.querySelectorAll('.scheda').forEach(function(x){var on=x.dataset.p===String(i);x.classList.toggle('attiva',on);x.setAttribute('aria-selected',on);});
