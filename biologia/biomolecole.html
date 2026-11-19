@@ -36,7 +36,7 @@ button{font-family:inherit}
 .layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:start;margin-top:6px}
 .layout>*{min-width:0}
 @media(max-width:760px){.layout{display:flex;flex-direction:column;gap:0}.layout>div,.layout>aside{display:contents}
- .stage{order:1}.hint{order:2}#chipCard{order:3;margin-top:10px}#infoCard{order:4}.prof{order:5}.anchor{order:6}.opzioni{order:7}}
+ .stage{order:1}.hint{display:none}#chipCard{order:3;margin-top:10px}#infoCard{order:4}.prof{order:5}.anchor{order:6}.opzioni{order:7}}
 .stage{position:relative;height:clamp(320px,58vh,560px);background:#0b1120;border:1px solid var(--line);border-radius:12px;overflow:hidden;touch-action:none}
 @media(max-width:760px){.stage{height:clamp(230px,36vh,310px)}}
 .stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
@@ -258,9 +258,9 @@ function saccarosio(){
 /* polisaccaridi: catene di mattoncini (ogni esagono è un glucosio) */
 function mattoncini(tipo){
  var m=new Mol(),pos=[];
- if(tipo==='amido'){for(var i=0;i<16;i++){var f=i*Math.PI/3;pos.push({p:V(Math.cos(f)*1.3,i*.42-3.2,Math.sin(f)*1.3),r:f});}
-  var p8=pos[8].p,out=V(p8.x,0,p8.z).normalize(),lat=V(0,1,0);
-  for(i=0;i<6;i++){pos.push({p:p8.clone().add(out.clone().multiplyScalar(.85*(i+1))).add(lat.clone().multiplyScalar((i%2)*.35+.2)),r:i,da:i?null:8});}}
+ if(tipo==='amido'){for(var i=0;i<14;i++){var f=i*Math.PI/3;pos.push({p:V(Math.cos(f)*1.3,i*.5-3.2,Math.sin(f)*1.3),r:f});}
+  var p8=pos[9].p,out=V(-1,0,.15).normalize(),lat=V(0,1,0);
+  for(i=0;i<6;i++){pos.push({p:p8.clone().add(out.clone().multiplyScalar(.85*(i+1))).add(lat.clone().multiplyScalar((i%2)*.35+.2)),r:i,da:i?null:9});}}
  else if(tipo==='glicogeno'){/* albero molto ramificato: da ogni ramo ne partono due */
   var ramo=function(p,d,liv,prec){for(var j=0;j<2;j++){p=p.clone().add(d.clone().multiplyScalar(.8));pos.push({p:p.clone(),r:j*.9+liv,da:prec});prec=pos.length-1;}
    if(liv<2){var n=V(.15*Math.sin(pos.length),.15*Math.cos(pos.length),1).normalize();[1,-1].forEach(function(sg){ramo(p,d.clone().applyAxisAngle(n,sg*.75),liv+1,prec);});}};
@@ -269,7 +269,7 @@ function mattoncini(tipo){
  else{/* cellulosa: tre catene diritte e parallele, mattoncini capovolti uno sì e uno no */
   for(var r=0;r<3;r++)for(i=0;i<9;i++)pos.push({p:V(i*.78-3.1,r*.9-.9,0),r:i%2?Math.PI:0,cap:i%2,da:i?pos.length-1:null,fila:r});}
  pos.forEach(function(q,i){m.extra.push({tipo:'mattone',p:q.p,r:q.r,cap:q.cap});
-  var a=q.da!=null?q.da:(i>0&&tipo==='amido'&&i!==16?i-1:null);if(a!=null&&a>=0)m.extra.push({tipo:'stecca',a:m.extra.filter(function(e){return e.tipo==='mattone';})[a].p,b:q.p});});
+  var a=q.da!=null?q.da:(i>0&&tipo==='amido'&&i!==14?i-1:null);if(a!=null&&a>=0)m.extra.push({tipo:'stecca',a:m.extra.filter(function(e){return e.tipo==='mattone';})[a].p,b:q.p});});
  if(tipo==='cellulosa')for(r=0;r<2;r++)for(i=0;i<9;i+=2)m.extra.push({tipo:'ponte',a:V(i*.78-3.1,r*.9-.9+.2,0),b:V(i*.78-3.1,r*.9+.9-.9-.2,0)});
  return m;}
 
@@ -483,7 +483,7 @@ function Scena(el){
   if(unione&&parti)m.at.forEach(function(a){pp.push(a.p.clone().add(parti[a.parte]||V(0,0,0)));});
   pp.forEach(function(p){box.expandByPoint(p);});var sph=box.getBoundingSphere(new THREE.Sphere());
   var kE=Math.max(1,sph.radius/3.2);ogg.forEach(function(q){if(q.sp&&q.et){q.sp.multiplyScalar(kE);}});
-  radDa=rad;radFit=clamp(sph.radius*2.35+1.4,4.5,30);camU=op.subito?1:0;attivo=true;dirty=true;}
+  radDa=rad;radFit=clamp(sph.radius*2.6+1.2,4.5,30);camU=op.subito?1:0;attivo=true;dirty=true;}
  var piega0=0;
  function ease(u){u=clamp(u,0,1);return u*u*(3-2*u);}
  function aggiorna(){
