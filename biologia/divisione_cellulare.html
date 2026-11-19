@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Prof. T">
+<!-- © 2026 Prof. T. Tutti i diritti riservati. -->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La divisione cellulare - Scienza in Movimento</title>
+<meta name="description" content="Dal DNA ai cromosomi, il ciclo cellulare, la mitosi e la meiosi in 3D, con l'RNA e un allenamento con spiegazioni.">
+<link rel="canonical" href="https://scienzainmovimento.it/biologia/divisione_cellulare.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Scienza in Movimento">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="La divisione cellulare - Scienza in Movimento">
+<meta property="og:description" content="Dal DNA ai cromosomi, il ciclo cellulare, la mitosi e la meiosi in 3D, con l'RNA e un allenamento con spiegazioni.">
+<meta property="og:url" content="https://scienzainmovimento.it/biologia/divisione_cellulare.html">
+<meta property="og:image" content="https://scienzainmovimento.it/og_image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Prof. T - La Matematica e le Scienze in Movimento">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+/* ---- base della pagina (uguale in tutte le animazioni) ---- */
+:root{--bg:#0a0f1a;--panel:#111a2b;--line:#22304a;--txt:#e6ecf5;--mut:#8fa0b8;--warn:#FF8A80}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at 50% -10%,rgba(106,165,255,.14),transparent 60%),linear-gradient(rgba(143,160,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,184,.05) 1px,transparent 1px),#0a0f1a;background-size:auto,36px 36px,36px 36px;color:var(--txt);font-family:Calibri,Carlito,"Segoe UI",system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 8px}
+.eyebrow{color:var(--disciplina);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px;color:#fff}
+.sub{color:var(--mut);margin:0 0 4px}
+button{font-family:inherit}
+.hide{display:none!important}
+.layout{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:start}
+.layout>*{min-width:0}
+@media(max-width:760px){.layout{grid-template-columns:1fr}}
+.stage{position:relative;height:clamp(320px,60vh,560px);background:#FDFCF9;border:1px solid var(--line);border-radius:12px;overflow:hidden;touch-action:none}
+@media(max-width:760px){.stage{height:min(48vh,330px)}}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.cap{position:absolute;left:10px;bottom:8px;font-size:12px;color:#5c6572;pointer-events:none;z-index:2}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.card h2{font:700 20px/1.2 Cambria,Georgia,serif;margin:0 0 6px;color:var(--disciplina)}
+.card p{margin:0 0 8px;line-height:1.45}
+.sect{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:4px 0 6px}
+.hint{color:var(--mut);font-size:14px;margin:8px 2px 0}
+.anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;line-height:1.45}
+.fail{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;color:#26282B;text-align:center}
+/* quiz */
+.quiz{max-width:820px;margin:12px auto 0}
+.qhead{display:flex;justify-content:space-between;align-items:center;color:var(--mut);font-size:14px;margin-bottom:8px}
+.qwrap{display:grid;grid-template-columns:1fr 130px;gap:14px;align-items:end}
+.qwrap img{width:130px;height:auto}
+@media(max-width:560px){.qwrap{grid-template-columns:1fr}.qwrap img{display:none}}
+.qq{font-size:19px;font-weight:700;margin:4px 0 12px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:560px){.opts{grid-template-columns:1fr}}
+.opt{border:1px solid var(--line);background:#0d1626;color:var(--txt);border-radius:12px;padding:10px 12px;font-weight:700;cursor:pointer;text-align:left;font-size:16px}
+.opt.ok{background:rgba(142,224,166,.2);border-color:#8ee0a6}
+.opt.ko{background:rgba(255,138,128,.16);border-color:var(--warn)}
+.opt:disabled{cursor:default}
+.fb{margin-top:12px;line-height:1.45}
+/* ---- stili propri dell'animazione ---- */
+/* barra del tempo: un pulsante rotondo e il cursore, come in un video (da La Terra in movimento) */
+.tempo{display:flex;align-items:center;gap:12px;margin:10px 0 0}
+.play{flex:none;width:48px;height:48px;border-radius:50%;border:0;background:var(--disciplina);color:#0a0f1a;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 0 0 4px rgba(142,224,166,.18);transition:transform .1s,box-shadow .2s}
+.play:hover,.play:focus-visible{box-shadow:0 0 0 6px rgba(142,224,166,.32);outline:none}
+.play:active{transform:scale(.94)}
+.play svg{width:22px;height:22px;fill:currentColor;display:block}
+.barra{flex:1;min-width:0}
+.barra input[type=range]{width:100%;accent-color:var(--disciplina);margin:0;height:28px}
+.barra .estremi{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-top:-2px}
+.fase{min-height:2.9em;margin:8px 2px 0;line-height:1.4}
+.fase b{color:var(--disciplina)}
+.proft{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:end;margin-bottom:12px}
+.proft img{width:84px;height:auto}
+.fumetto{background:var(--panel);border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:9px 12px;line-height:1.4;font-size:15px}
+@media(max-width:760px){.proft{grid-template-columns:64px 1fr}.proft img{width:64px}}
+.basi{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--mut);margin-top:4px}
+.basi i,.leg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;margin:8px 2px 0;color:var(--mut)}
+.fasi{display:flex;flex-wrap:wrap;gap:6px}
+.ciclo svg{display:block;width:100%;max-width:240px;height:auto;margin:0 auto}
+.ciclo .arco{cursor:pointer}
+.ciclo text{font:700 15px Calibri,Carlito,sans-serif;fill:#0a0f1a;pointer-events:none}
+.ciclo text.fuori{fill:#8fa0b8;font-size:12px;font-weight:400;letter-spacing:.06em}
+table.conf{width:100%;border-collapse:collapse;font-size:14px}
+table.conf th,table.conf td{border-top:1px solid var(--line);padding:5px 4px;text-align:left;vertical-align:top}
+table.conf th{color:var(--mut);font-weight:400}
+table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
+</style>
+<link rel="stylesheet" href="../animazioni.css">
+</head>
+<body style="--area:#6fd08c;--disciplina:#8ee0a6">
+<div class="wrap">
+<div class="eyebrow">Biologia</div>
+<h1>La divisione cellulare</h1>
+<p class="sub" id="sub"></p>
+
+<nav class="schede" role="tablist" aria-label="Schede">
+ <button class="scheda attiva" role="tab" aria-selected="true" data-p="dna"><span class="num">01</span>Dal DNA ai cromosomi</button>
+ <button class="scheda" role="tab" aria-selected="false" data-p="ciclo"><span class="num">02</span>Il ciclo cellulare</button>
+ <button class="scheda" role="tab" aria-selected="false" data-p="mitosi"><span class="num">03</span>La mitosi</button>
+ <button class="scheda" role="tab" aria-selected="false" data-p="meiosi"><span class="num">04</span>La meiosi</button>
+ <button class="scheda" role="tab" aria-selected="false" data-p="quiz"><span class="num">05</span>Allenati</button>
+</nav>
+
+<!-- 01 dal DNA ai cromosomi -->
+<section id="p-dna">
+ <div class="layout">
+  <div>
+   <div class="stage" id="st-dna">
+    <div class="cap">Modello stilizzato, non in scala</div>
+    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+    <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
+    <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+   </div>
+   <div class="chips" id="livelli" role="group" aria-label="Livello"></div>
+   <p class="hint">Trascina per ruotare. Tocca un livello per avvicinarti.</p>
+  </div>
+  <aside>
+   <div class="proft"><img id="pf-dna" src="../immagini/prof_t/prof_t_naturalista_saluto.webp" alt="Prof. T naturalista"><div class="fumetto" id="fu-dna">Tocca i livelli uno dopo l'altro, da Cellula fino a RNA, e guarda come ci avviciniamo al DNA.</div></div>
+   <div class="card" aria-live="polite"><h2 id="dnaT"></h2><p id="dnaD" style="margin:0"></p></div>
+   <div class="card"><div class="sect">Le basi</div><div class="basi" id="basi"></div></div>
+   <div class="anchor">Il DNA contiene le istruzioni della cellula. Nella cellula umana è diviso in 46 cromosomi, 23 coppie.</div>
+  </aside>
+ </div>
+</section>
+
+<!-- 02 il ciclo cellulare -->
+<section id="p-ciclo" class="hide">
+ <div class="layout">
+  <div>
+   <div class="stage" id="st-ciclo">
+    <div class="cap">Modello stilizzato con 4 cromosomi</div>
+    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+    <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
+    <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+   </div>
+   <div class="azioni"><button class="azione primaria" id="cAvanti">Fase successiva ›</button><button class="azione link hide" id="cMitosi">Guarda la mitosi ›</button></div>
+  </div>
+  <aside>
+   <div class="proft"><img id="pf-ciclo" src="../immagini/prof_t/prof_t_naturalista_binocolo.webp" alt="Prof. T naturalista"><div class="fumetto">Tocca una fase nel cerchio oppure Fase successiva.</div></div>
+   <div class="card ciclo"><svg id="anello" viewBox="0 0 240 240" role="group" aria-label="Fasi del ciclo cellulare"></svg></div>
+   <div class="card" aria-live="polite"><h2 id="cicT"></h2><p id="cicD" style="margin:0"></p></div>
+   <div class="anchor">L'interfase (G1, S, G2) è la parte più lunga del ciclo. La divisione (fase M) è breve.</div>
+  </aside>
+ </div>
+</section>
+
+<!-- 03 la mitosi -->
+<section id="p-mitosi" class="hide">
+ <div class="layout">
+  <div>
+   <div class="stage" id="st-mitosi">
+    <div class="cap">Modello stilizzato con 4 cromosomi</div>
+    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+    <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
+    <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+   </div>
+   <div class="tempo">
+    <button class="play" id="mPlay"></button>
+    <div class="barra">
+     <input type="range" id="mTempo" min="0" max="1000" value="0" aria-label="Scorri nel tempo">
+     <div class="estremi"><span>interfase</span><span>due cellule</span></div>
+    </div>
+   </div>
+   <p class="fase" id="mFase" aria-live="polite"></p>
+  </div>
+  <aside>
+   <div class="proft"><img id="pf-mitosi" src="../immagini/prof_t/prof_t_naturalista_binocolo.webp" alt="Prof. T naturalista"><div class="fumetto" id="fu-mitosi">Premi il pulsante rotondo e guarda la cellula dividersi. Puoi anche trascinare il cursore.</div></div>
+   <div class="card"><div class="sect">Le fasi</div><div class="fasi chips" id="mFasi" style="margin:0"></div></div>
+   <div class="anchor">Con la mitosi da una cellula nascono due cellule figlie identiche, con lo stesso numero di cromosomi.</div>
+  </aside>
+ </div>
+</section>
+
+<!-- 04 la meiosi -->
+<section id="p-meiosi" class="hide">
+ <div class="layout">
+  <div>
+   <div class="stage" id="st-meiosi">
+    <div class="cap">Modello stilizzato con 2 coppie di cromosomi</div>
+    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+    <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
+    <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+   </div>
+   <div class="tempo">
+    <button class="play" id="sPlay"></button>
+    <div class="barra">
+     <input type="range" id="sTempo" min="0" max="1000" value="0" aria-label="Scorri nel tempo">
+     <div class="estremi"><span>interfase</span><span>quattro cellule</span></div>
+    </div>
+   </div>
+   <p class="fase" id="sFase" aria-live="polite"></p>
+   <div class="leg"><span><i style="background:#D94F6A"></i>dalla madre</span><span><i style="background:#3F7FD9"></i>dal padre</span></div>
+  </div>
+  <aside>
+   <div class="proft"><img id="pf-meiosi" src="../immagini/prof_t/prof_t_naturalista_binocolo.webp" alt="Prof. T naturalista"><div class="fumetto" id="fu-meiosi">Premi il pulsante rotondo e segui i colori, rosso dalla madre e blu dal padre.</div></div>
+   <div class="card"><div class="sect">Mitosi e meiosi a confronto</div>
+    <table class="conf"><thead><tr><th></th><th>Mitosi</th><th>Meiosi</th></tr></thead><tbody>
+     <tr><th>Divisioni</th><td>una</td><td>due</td></tr>
+     <tr><th>Cellule prodotte</th><td>2</td><td>4</td></tr>
+     <tr><th>Cromosomi</th><td>tutti, come la madre</td><td>la metà, uno per coppia</td></tr>
+     <tr><th>Cellule figlie</th><td>identiche</td><td>diverse tra loro</td></tr>
+     <tr><th>Serve a</th><td>crescere e riparare</td><td>formare i gameti</td></tr>
+    </tbody></table></div>
+   <div class="anchor">Con la meiosi una cellula produce quattro gameti con metà dei cromosomi. Nell'uomo 23 invece di 46.</div>
+  </aside>
+ </div>
+</section>
+
+<!-- 05 allenati -->
+<section id="p-quiz" class="hide">
+ <div class="card quiz" id="quiz"></div>
+</section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../animazioni.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---- tempi uniformi: si cambiano solo qui ---- */
+var T_FASE=4;      /* secondi per ogni fase di mitosi e meiosi (anche nel ciclo cellulare) */
+var T_VOLO=2.4;    /* secondi per spostare la vista da un livello all'altro (scheda 01) */
+
+/* ---- colori fissi ---- */
+var COL={mat:'#D94F6A',pat:'#3F7FD9',memb:'#E8935A',nuc:'#9C7CC9',fuso:'#6FA89A',centr:'#D4A62A',
+ A:'#E8574E',T:'#F2C14E',C:'#4F86D9',G:'#4FB35A',U:'#B36AE2',scheletro:'#9AA3AD'};
+var BASI=[['A','adenina'],['T','timina'],['C','citosina'],['G','guanina'],['U','uracile, solo nell\'RNA']];
+$('basi').innerHTML=BASI.map(function(b){return '<span><i style="background:'+COL[b[0]]+'"></i><b style="color:#e6ecf5">'+b[0]+'</b> '+b[1]+'</span>';}).join('');
+
+/* ---- Prof. T ---- */
+var IMG={hi:'../immagini/prof_t/prof_t_naturalista_saluto.webp',spiega:'../immagini/prof_t/prof_t_naturalista_binocolo.webp',
+ ok:'../immagini/prof_t/prof_t_naturalista_occhiolino_indica.webp',ko:'../immagini/prof_t/prof_t_naturalista_fungo.webp',
+ idle:'../immagini/prof_t/prof_t_naturalista_braccia_conserte.webp',fine:'../immagini/prof_t/prof_t_naturalista_piantina.webp'};
+precarica(IMG);
+
+var SUB={dna:'Dalla cellula alla doppia elica del DNA, e l\'RNA che ne copia un tratto.',
+ ciclo:'Le fasi della vita di una cellula, dalla crescita alla divisione.',
+ mitosi:'Una cellula si divide in due cellule figlie identiche.',
+ meiosi:'Due divisioni, quattro cellule con metà dei cromosomi.',
+ quiz:'Otto domande per giro, sempre un po\' più difficili.'};
+
+/* ================= MOTORE 3D: un solo renderer che passa da una scheda all'altra ================= */
+var OK3D=typeof THREE!=='undefined',R=null,cur=null,VISTE={};
+if(OK3D){try{R=new THREE.WebGLRenderer({antialias:true,alpha:true});R.setPixelRatio(Math.min(devicePixelRatio,2));}catch(e){R=null;}}
+function avviso(t){['st-dna','st-ciclo','st-mitosi','st-meiosi'].forEach(function(id){$(id).insertAdjacentHTML('beforeend','<div class="fail">'+t+'</div>');});}
+if(!OK3D)avviso('Il modello 3D richiede la connessione a internet. Riprova più tardi.');
+else if(!R)avviso('Questo browser non supporta il 3D (WebGL).');
+var clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
+var liscio=function(t){t=clamp(t,0,1);return t*t*(3-2*t);};
+function M(c,o){return new THREE.MeshStandardMaterial({color:c,roughness:.55,metalness:0,transparent:true,opacity:o==null?1:o});}
+function Vista(stageId,V0){
+ var v={el:$(stageId),scene:new THREE.Scene(),cam:new THREE.PerspectiveCamera(40,1,.01,200),V0:V0,
+  th:V0.th,ph:V0.ph,rad:V0.rad,rmin:V0.rmin,rmax:V0.rmax,t:new THREE.Vector3(0,0,0),dirty:true,tick:null,fit:1};
+ v.scene.add(new THREE.AmbientLight(0xffffff,.72));
+ var l1=new THREE.DirectionalLight(0xffffff,.6);l1.position.set(4,6,7);v.scene.add(l1);
+ var l2=new THREE.DirectionalLight(0xffffff,.25);l2.position.set(-5,-3,-4);v.scene.add(l2);
+ v.el.querySelectorAll('[data-v]').forEach(function(b){b.onclick=function(){var k=b.dataset.v;
+  if(k==='reset'){if(v.reset)v.reset();else{v.th=V0.th;v.ph=V0.ph;v.rad=V0.rad;}}
+  else v.rad=clamp(v.rad*(k==='piu'?.8:1.25),v.rmin,v.rmax);v.dirty=true;};});
+ VISTE[stageId]=v;return v;}
+function attiva(v){
+ if(!R||!v)return;cur=v;v.el.insertBefore(R.domElement,v.el.firstChild);ridimensiona();v.dirty=true;}
+function ridimensiona(){if(!cur)return;var w=cur.el.clientWidth,h=cur.el.clientHeight;if(!w||!h)return;
+ R.setSize(w,h,false);cur.cam.aspect=w/h;cur.cam.updateProjectionMatrix();cur.fit=Math.max(1,1.3/cur.cam.aspect);cur.dirty=true;}
+if(R){
+ if(window.ResizeObserver)new ResizeObserver(ridimensiona).observe(document.querySelector('.wrap'));
+ window.addEventListener('resize',ridimensiona);
+ /* puntatore: un dito ruota, due dita fanno lo zoom */
+ var cv=R.domElement,ptr=new Map(),pd=0;
+ var dist=function(){var a=Array.from(ptr.values());return Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);};
+ cv.addEventListener('pointerdown',function(e){cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);});
+ cv.addEventListener('pointermove',function(e){if(!ptr.has(e.pointerId)||!cur)return;var o=ptr.get(e.pointerId),n=[e.clientX,e.clientY];
+  if(ptr.size===1){cur.th-=(n[0]-o[0])*.008;cur.ph=clamp(cur.ph-(n[1]-o[1])*.008,.15,Math.PI-.15);}
+  ptr.set(e.pointerId,n);
+  if(ptr.size===2){var d=dist();if(pd)cur.rad=clamp(cur.rad*pd/d,cur.rmin,cur.rmax);pd=d;}
+  cur.dirty=true;});
+ var su=function(e){ptr.delete(e.pointerId);pd=0;};
+ cv.addEventListener('pointerup',su);cv.addEventListener('pointercancel',su);
+ cv.addEventListener('wheel',function(e){if(!cur)return;e.preventDefault();cur.rad=clamp(cur.rad*(1+e.deltaY*.001),cur.rmin,cur.rmax);cur.dirty=true;},{passive:false});
+ var last=performance.now();
+ (function loop(now){requestAnimationFrame(loop);
+  var dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;      /* intervallo mai negativo */
+  if(!cur||cur.el.offsetParent===null)return;
+  if(cur.tick&&cur.tick(dt))cur.dirty=true;
+  if(!cur.dirty)return;cur.dirty=false;
+  var d=cur.rad*cur.fit,c=cur.cam;
+  c.near=Math.max(.0004,d*.02);c.far=d*40+20;c.updateProjectionMatrix();
+  c.position.set(cur.t.x+d*Math.sin(cur.ph)*Math.sin(cur.th),cur.t.y+d*Math.cos(cur.ph),cur.t.z+d*Math.sin(cur.ph)*Math.cos(cur.th));
+  c.lookAt(cur.t);if(cur.prima)cur.prima();R.render(cur.scene,c);})(last);
+}
+
+/* ---- cromatidio: due bracci uniti nel centromero; il braccio superiore ha la punta separata (crossing-over) ---- */
+var R_BR=.075;
+function Cromatidio(L,col,flip){
+ var out=new THREE.Group(),inn=new THREE.Group();out.add(inn);inn.rotation.y=flip?Math.PI:0;
+ var mB=M(col),mX=M(col),bracci=[];
+ for(var k=0;k<2;k++){
+  var arm=new THREE.Group(),mt=k===0?mX:mB;
+  var b=new THREE.Mesh(new THREE.CylinderGeometry(R_BR,R_BR,.55*L,14),mB);b.position.y=.275*L;
+  var t=new THREE.Mesh(new THREE.CylinderGeometry(R_BR,R_BR,.45*L,14),mt);t.position.y=.775*L;
+  var cp=new THREE.Mesh(new THREE.SphereGeometry(R_BR,14,10),mt);cp.position.y=L;
+  arm.add(b,t,cp);inn.add(arm);bracci.push(arm);}
+ inn.add(new THREE.Mesh(new THREE.SphereGeometry(R_BR*1.12,14,10),mB));
+ return {g:out,inn:inn,bracci:bracci,mB:mB,mX:mX,
+  set:function(s,op){
+   out.position.set(s.p[0],s.p[1],s.p[2]);out.rotation.z=s.rz;
+   var th=.4+.6*s.c,ln=1.3-.3*s.c;inn.scale.set(th,ln,th);
+   bracci[0].rotation.z=-s.lean;bracci[1].rotation.z=Math.PI+s.lean;
+   var g=clamp(s.g,0,1);out.scale.setScalar(Math.max(.001,g));out.visible=g>.02;
+   var o=(op==null?1:op)*(.55+.45*s.c);mB.opacity=mX.opacity=o;mB.depthWrite=mX.depthWrite=o>.6;}};}
+
+/* stato di un cromosoma a X (due cromatidi): P posizione, rz rotazione, c condensazione, w distanza dei fratelli, dup duplicazione */
+function X(P,rz,c,lean,w,dup,q0,q1){
+ var dx=Math.cos(rz)*w*dup,dy=Math.sin(rz)*w*dup;
+ return [{p:[P[0]+dx,P[1]+dy,P[2]],rz:rz,c:c,lean:lean,g:1,q:q0||P.slice()},
+         {p:[P[0]-dx,P[1]-dy,P[2]],rz:rz,c:c,lean:lean,g:dup,q:q1||q0||P.slice()}];}
+function interp(a,b,t){
+ if(typeof a==='number')return a+(b-a)*t;
+ if(Array.isArray(a))return a.map(function(x,i){return interp(x,b[i],t);});
+ var o={};for(var k in a)o[k]=interp(a[k],b[k],t);return o;}
+
+/* ---- modello di cellula che si divide: chiavi (stati) e fasi tra una chiave e la successiva ---- */
+function Divisione(v,K,colori,cellePadre,nNuclei){
+ var root=new THREE.Group();v.scene.add(root);
+ var cr=[],L=[.48,.3];
+ for(var j=0;j<4;j++)for(var s=0;s<2;s++){var c=Cromatidio(L[j>>1],colori[j],s===1);root.add(c.g);cr.push(c);}
+ var gm=new THREE.SphereGeometry(1,40,28),cel=[];
+ for(var i=0;i<cellePadre.length;i++){var m=new THREE.Mesh(gm,new THREE.MeshStandardMaterial({color:COL.memb,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide,roughness:.8}));m.renderOrder=3;root.add(m);cel.push(m);}
+ var nuc=[];
+ for(i=0;i<nNuclei;i++){var n=new THREE.Mesh(gm,new THREE.MeshStandardMaterial({color:COL.nuc,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide,roughness:.8}));n.renderOrder=2;root.add(n);nuc.push(n);}
+ /* centrioli ai poli */
+ var poli=[];
+ for(i=0;i<4;i++){var pg=new THREE.Group(),mc=M(COL.centr);
+  var c1=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.16,10),mc),c2=c1.clone();c2.rotation.x=Math.PI/2;c2.position.x=.07;
+  pg.add(c1,c2);root.add(pg);poli.push(pg);}
+ /* fibre del fuso */
+ var fp=new Float32Array(16*6),fg=new THREE.BufferGeometry();fg.setAttribute('position',new THREE.BufferAttribute(fp,3));
+ var fm=new THREE.LineBasicMaterial({color:COL.fuso,transparent:true,opacity:0}),fl=new THREE.LineSegments(fg,fm);root.add(fl);
+ var n=K.length-1;
+ function stato(u){u=clamp(u,0,1);var f=Math.min(n-1,Math.floor(u*n)),t=liscio(u*n-f);return {f:f,t:t,s:interp(K[f],K[f+1],t)};}
+ function mostra(u){
+  var st=stato(u),S=st.s,k=0;
+  S.cr.forEach(function(x,i){cr[i].set(x);});
+  /* membrane: una cellula figlia si nasconde finché coincide con la madre */
+  S.cel.forEach(function(c,i){var m=cel[i];m.position.set(c.p[0],c.p[1],c.p[2]);m.scale.setScalar(c.r);
+   var p=cellePadre[i];m.visible=p<0||Math.hypot(c.p[0]-S.cel[p].p[0],c.p[1]-S.cel[p].p[1])>.02;});
+  S.nuc.forEach(function(c,i){var m=nuc[i];m.position.set(c.p[0],c.p[1],c.p[2]);m.scale.setScalar(c.r);m.material.opacity=.22*c.o;m.visible=c.o>.02;});
+  poli.forEach(function(g,i){var p=S.poli[i];g.visible=!!p;if(p)g.position.set(p[0],p[1],p[2]);});
+  /* fibre dal polo al centromero di ogni cromatidio */
+  S.cr.forEach(function(x,i){fp.set(x.q,i*6);fp.set(x.p,i*6+3);k++;});
+  fg.attributes.position.needsUpdate=true;fg.setDrawRange(0,k*2);fm.opacity=.85*S.fib;fl.visible=S.fib>.02;
+  return st;}
+ return {mostra:mostra,cr:cr,n:n};}
+
+/* ================= 01 DAL DNA AI CROMOSOMI ================= */
+var LIV=[
+ {id:'cell',n:'Cellula',t:'La cellula',d:'Nel nucleo di ogni cellula c\'è il DNA, che contiene le istruzioni per costruire e far funzionare l\'organismo.'},
+ {id:'nuc',n:'Nucleo',t:'Il nucleo e i cromosomi',d:'Nel nucleo il DNA è diviso in cromosomi. La cellula umana ne ha 46, in 23 coppie. I due cromosomi di una coppia si chiamano omologhi, uno viene dalla madre e uno dal padre. Qui sono disegnati condensati, come quando la cellula si divide.'},
+ {id:'cro',n:'Cromosoma',t:'Il cromosoma',d:'Un cromosoma è un lunghissimo filamento di DNA avvolto e ripiegato. Prima della divisione è duplicato e ha la forma a X, due cromatidi fratelli identici uniti nel centromero.'},
+ {id:'dna',n:'DNA',t:'La doppia elica',d:'Il DNA è una doppia elica. Due filamenti di zucchero e fosfato sono uniti dalle basi appaiate, A con T e C con G, tenute insieme da ponti a idrogeno.'},
+ {id:'rna',n:'RNA',t:'L\'RNA',d:'L\'RNA è una copia di un tratto di DNA. Ha un filamento solo e al posto della T ha la U (uracile). Esce dal nucleo e porta le istruzioni ai ribosomi, che costruiscono le proteine.'}];
+var D={liv:0,primo:true};
+$('livelli').innerHTML=LIV.map(function(l,i){return '<button class="chip'+(i?'':' attivo')+'" data-l="'+i+'" style="--chip:#8ee0a6">'+l.n+'</button>';}).join('');
+$('livelli').addEventListener('click',function(e){var b=e.target.closest('[data-l]');if(b)livello(+b.dataset.l);});
+var vDNA=null;
+if(R)(function(){
+ var v=Vista('st-dna',{th:-.35,ph:1.3,rad:6.5,rmin:.03,rmax:12});vDNA=v;
+ var sc=v.scene;
+ var memb=new THREE.Mesh(new THREE.SphereGeometry(1.6,48,32),new THREE.MeshStandardMaterial({color:COL.memb,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide,roughness:.8}));memb.renderOrder=3;sc.add(memb);
+ var nucl=new THREE.Mesh(new THREE.SphereGeometry(.62,40,28),new THREE.MeshStandardMaterial({color:COL.nuc,transparent:true,opacity:.25,depthWrite:false,side:THREE.DoubleSide,roughness:.8}));nucl.renderOrder=2;sc.add(nucl);
+ /* cromosomi nel nucleo (solo alcuni): coppie di omologhi con lo stesso colore chiaro e scuro */
+ var crom=[],PAL=['#D94F6A','#3F7FD9','#E39A3B','#4FB35A','#9C6AD9','#2BA8A8'];
+ var POS=[[.12,.05,.26],[-.25,.2,.1],[.3,-.2,-.05],[-.1,-.28,.2],[-.3,-.05,-.22],[.05,.3,-.2],[.25,.22,.12],[-.05,-.1,-.32],[.32,-.02,-.25],[-.22,-.3,-.05]];
+ POS.forEach(function(p,i){
+  var g=new THREE.Group(),L=i<2?.48:.24+.04*(i%4),col=PAL[(i>>1)%PAL.length];
+  var a=Cromatidio(L,col,false),b=Cromatidio(L,col,true);
+  var st=X([0,0,0],0,1,.22,R_BR,1);a.set(st[0]);b.set(st[1]);g.add(a.g,b.g);
+  g.position.set(p[0],p[1],p[2]);g.scale.setScalar(.16);g.rotation.set(i*1.3,i*.7,i*2.1);
+  if(i===0)g.rotation.set(0,0,.2);
+  sc.add(g);crom.push(a,b);});
+ /* doppia elica nel braccio superiore del primo cromosoma */
+ sc.updateMatrixWorld(true);
+ var arm=crom[0].bracci[0],P0=arm.localToWorld(new THREE.Vector3(0,.12,0)),P1=arm.localToWorld(new THREE.Vector3(0,.4,0));
+ var dir=P1.clone().sub(P0).normalize();
+ var N=14,SEQ='ATGCCGTAAGCTTA',COMP={A:'T',T:'A',C:'G',G:'C'},RNAC={A:'U',T:'A',C:'G',G:'C'};
+ var el=new THREE.Group(),sd=.0105;
+ var p1=[],p2=[],mS=M(COL.scheletro),mPonte=M('#ffffff');
+ var cil=function(a,b,r,m){var d=b.clone().sub(a),me=new THREE.Mesh(new THREE.CylinderGeometry(r,r,d.length(),10),m);
+  me.position.copy(a).add(b).multiplyScalar(.5);me.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());return me;};
+ for(var i=0;i<N;i++){var an=i*.6,y=(i-(N-1)/2)*.34*1.6;
+  var a=new THREE.Vector3(Math.cos(an),y,Math.sin(an)),b=new THREE.Vector3(Math.cos(an+2.4),y,Math.sin(an+2.4));
+  p1.push(a);p2.push(b);
+  var mid=a.clone().add(b).multiplyScalar(.5),gap=b.clone().sub(a).normalize().multiplyScalar(.09);
+  var b1=SEQ[i],b2=COMP[b1];
+  el.add(cil(a,mid.clone().sub(gap),.13,M(COL[b1])),cil(mid.clone().add(gap),b,.13,M(COL[b2])),cil(mid.clone().sub(gap),mid.clone().add(gap),.035,mPonte));
+  var s1=new THREE.Mesh(new THREE.SphereGeometry(.2,12,8),mS);s1.position.copy(a);var s2=s1.clone();s2.position.copy(b);el.add(s1,s2);}
+ [p1,p2].forEach(function(pp){el.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pp),N*6,.09,8,false),mS));});
+ /* RNA: un filamento solo, copia del primo filamento con U al posto di T */
+ var rna=new THREE.Group(),pr=[],mR=M('#C8B48A');
+ for(i=0;i<10;i++){var yy=(i-4.5)*.34*1.6,pt=new THREE.Vector3(3.3,yy,.35*Math.sin(i*.8));pr.push(pt);
+  var base=RNAC[SEQ[i]];rna.add(cil(pt,pt.clone().add(new THREE.Vector3(-.95,0,0)),.13,M(COL[base])));
+  var ss=new THREE.Mesh(new THREE.SphereGeometry(.2,12,8),mR);ss.position.copy(pt);rna.add(ss);}
+ rna.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pr),60,.09,8,false),mR));
+ el.add(rna);
+ var mats=[];el.traverse(function(o){if(o.material&&mats.indexOf(o.material)<0)mats.push(o.material);});
+ var matsR=[];rna.traverse(function(o){if(o.material&&matsR.indexOf(o.material)<0)matsR.push(o.material);});
+ el.scale.setScalar(sd);el.position.copy(P0.clone().add(P1).multiplyScalar(.5));el.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir);
+ sc.add(el);sc.updateMatrixWorld(true);
+ var Pdna=el.position.clone(),Prna=el.localToWorld(new THREE.Vector3(1.8,0,0));
+ var Pcro=new THREE.Vector3(POS[0][0],POS[0][1],POS[0][2]);
+ var MIRA=[{t:new THREE.Vector3(),r:6.5},{t:new THREE.Vector3(),r:2.2},{t:Pcro,r:.55},{t:Pdna,r:.11},{t:Prna,r:.13}];
+ var volo=null,rnaO=0;
+ v.vai=function(i){var m=MIRA[i];volo={a:v.t.clone(),b:m.t.clone(),ra:v.rad,rb:m.r,k:0};v.rmin=m.r*.45;v.rmax=m.r*2.2;};
+ v.reset=function(){v.th=v.V0.th;v.ph=v.V0.ph;v.vai(D.liv);};
+ v.tick=function(dt){var att=false;
+  if(volo){volo.k=Math.min(1,volo.k+(reduce?1:dt/T_VOLO));var e=liscio(volo.k);
+   v.t.lerpVectors(volo.a,volo.b,e);v.rad=Math.exp(Math.log(volo.ra)+(Math.log(volo.rb)-Math.log(volo.ra))*e);if(volo.k>=1)volo=null;att=true;}
+  var bersaglio=D.liv===4?1:0;if(Math.abs(rnaO-bersaglio)>.001){rnaO+=clamp(bersaglio-rnaO,-dt*1.5,dt*1.5);att=true;}
+  return att;};
+ /* trasparenze in base alla distanza della vista: ciò che sta davanti svanisce */
+ var sf=function(r,a,b){return liscio((Math.log(r)-Math.log(b))/(Math.log(a)-Math.log(b)));};
+ v.prima=function(){var r=v.rad;
+  memb.material.opacity=.2*sf(r,4,2.4);memb.visible=memb.material.opacity>.005;
+  nucl.material.opacity=.25*sf(r,1.3,.7);nucl.visible=nucl.material.opacity>.005;
+  var oc=.12+.88*sf(r,.3,.13);crom.forEach(function(c){c.mB.opacity=c.mX.opacity=oc;c.mB.depthWrite=c.mX.depthWrite=oc>.9;});
+  el.visible=r<.4;
+  mats.forEach(function(m){if(matsR.indexOf(m)<0){m.opacity=1;}});
+  matsR.forEach(function(m){m.opacity=rnaO;m.depthWrite=rnaO>.9;});rna.visible=rnaO>.01;};
+})();
+function livello(i,auto){
+ D.liv=i;Array.prototype.forEach.call($('livelli').children,function(b){b.classList.toggle('attivo',+b.dataset.l===i);});
+ $('dnaT').textContent=LIV[i].t;$('dnaD').textContent=LIV[i].d;
+ if(!auto){$('pf-dna').src=IMG.spiega;$('fu-dna').textContent=i<4?'Tocca il livello successivo per avvicinarti ancora.':'Il DNA resta nel nucleo, l\'RNA porta fuori le istruzioni.';}
+ if(vDNA){vDNA.vai(i);vDNA.dirty=true;}}
+
+/* ================= CHIAVI DELLA MITOSI ================= */
+/* cromosomi j 0..3, coppia j>>1; ogni chiave elenca 8 cromatidi */
+var PN=[[-.22,.16,.08],[.2,-.18,-.08],[.06,.28,-.12],[-.1,-.26,.16]],RZ=[.6,-.4,1.2,-1],YM=[.78,.22,-.28,-.72];
+var POLO=[1.45,0,0];
+function chiaviMitosi(){
+ var K=[],cell=function(k,r){return [{p:[0,0,0],r:r||1.6},{p:[1.25*k,0,0],r:1.6+(1.15-1.6)*k}];};
+ var cel2=function(k){return [{p:[-1.25*k,0,0],r:1.6+(1.15-1.6)*k},{p:[1.25*k,0,0],r:1.6+(1.15-1.6)*k}];};
+ var nuc=function(o,od){return [{p:[0,0,0],r:.72,o:o},{p:[-1.25,0,0],r:.55,o:od},{p:[1.25,0,0],r:.55,o:od}];};
+ var qp=[POLO[0],0,0],qm=[-POLO[0],0,0];
+ function crs(f){var a=[];for(var j=0;j<4;j++)a=a.concat(f(j));return a;}
+ var cen=[[0,1,0],[0,1,0]];
+ K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.05,.045,0,PN[j],PN[j]);}),cel:cel2(0).map(function(c){c.r=1.45;return c;}),nuc:nuc(1,0),poli:[[0,.95,0],[0,.95,0]],fib:0});
+ K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.08,.045,1,PN[j],PN[j]);}),cel:cel2(0),nuc:nuc(1,0),poli:[[-.12,.95,0],[.12,.95,0]],fib:0});
+ K.push({cr:crs(function(j){var P=PN[j].map(function(x){return x*1.7;});return X(P,RZ[j]*.5,1,.22,R_BR,1,qp,qm);}),cel:cel2(0),nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:.5});
+ K.push({cr:crs(function(j){var P=[0,YM[j],(j%2?.1:-.1)];return X(P,0,1,.22,R_BR,1,qp,qm);}),cel:cel2(0),nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:1});
+ K.push({cr:crs(function(j){var y=YM[j]*.55,z=(j%2?.05:-.05);return [{p:[1.1,y,z],rz:0,c:1,lean:-.9,g:1,q:qp},{p:[-1.1,y,z],rz:0,c:1,lean:-.9,g:1,q:qm}];}),cel:cel2(.12),nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:1});
+ K.push({cr:crs(function(j){var y=YM[j]*.42,z=(j%2?.05:-.05);return [{p:[1.25,y,z],rz:0,c:.3,lean:.05,g:1,q:qp},{p:[-1.25,y,z],rz:0,c:.3,lean:.05,g:1,q:qm}];}),cel:cel2(.5),nuc:nuc(0,1),poli:[[-1.25,.85,0],[1.25,.85,0]],fib:0});
+ var u=JSON.parse(JSON.stringify(K[5]));u.cel=cel2(1);K.push(u);
+ /* poli: la chiave ne ha 2 */
+ return K;}
+var FASI_M=[
+ {n:'Interfase',d:'La cellula cresce e duplica il DNA. Ogni cromosoma diventa due cromatidi fratelli uniti nel centromero.'},
+ {n:'Profase',d:'I cromosomi si condensano e diventano visibili. La membrana del nucleo scompare, i centrioli vanno ai poli e si forma il fuso.'},
+ {n:'Metafase',d:'I cromosomi si allineano al centro della cellula, agganciati alle fibre del fuso.'},
+ {n:'Anafase',d:'I cromatidi fratelli si separano e sono tirati verso i poli opposti.'},
+ {n:'Telofase',d:'Ai due poli si formano due nuovi nuclei e i cromosomi tornano a distendersi.'},
+ {n:'Citodieresi',d:'Il citoplasma si divide in due.'}];
+var FINE_M='<b>Fine.</b> Due cellule figlie identiche, ciascuna con 4 cromosomi come la cellula madre. Nell\'uomo sono 46.';
+
+/* ================= CHIAVI DELLA MEIOSI ================= */
+/* j 0 e 1 coppia lunga (madre, padre), j 2 e 3 coppia corta; lato del materno nella tetrade, coppia 0 a sinistra, coppia 1 a destra */
+var LATO=[-1,1,1,-1],YT=[.48,.48,-.5,-.5];
+function chiaviMeiosi(){
+ var K=[],d=.17;
+ function crs(f){var a=[];for(var j=0;j<4;j++)a=a.concat(f(j));return a;}
+ var C1=function(){return [{p:[0,0,0],r:1.6},{p:[0,0,0],r:1.6},{p:[0,0,0],r:1.6},{p:[0,0,0],r:1.6}];};
+ var C2=function(k){var r=1.6+(1.15-1.6)*k;return [{p:[1.3*k,0,0],r:r},{p:[-1.3*k,0,0],r:r},{p:[1.3*k,0,0],r:r},{p:[-1.3*k,0,0],r:r}];};
+ var C4=function(k){var r=1.15+(.75-1.15)*k;return [{p:[1.3,.8*k,0],r:r},{p:[-1.3,.8*k,0],r:r},{p:[1.3,-.8*k,0],r:r},{p:[-1.3,-.8*k,0],r:r}];};
+ var NU=function(o,od){return [{p:[0,0,0],r:.72,o:o},{p:[1.3,.8,0],r:.45,o:od},{p:[-1.3,.8,0],r:.45,o:od},{p:[1.3,-.8,0],r:.45,o:od},{p:[-1.3,-.8,0],r:.45,o:od}];};
+ var PI1=[[1.45,0,0],[-1.45,0,0],[1.45,0,0],[-1.45,0,0]];
+ var PI2=[[1.3,.95,0],[-1.3,.95,0],[1.3,-.95,0],[-1.3,-.95,0]];
+ var PI2a=[[1.3,.95,0],[-1.3,.95,0],[1.3,.95,0],[-1.3,.95,0]];
+ var cx=function(j){return LATO[j]*1.3;};
+ var dxII=function(j){return j<2?-.42:.48;};
+ K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.05,.045,0);}),cel:C1().map(function(c){c.r=1.45;return c;}),nuc:NU(1,0),poli:[[-.1,.95,0],[.1,.95,0],[-.1,.95,0],[.1,.95,0]],fib:0});
+ K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.08,.045,1);}),cel:C1(),nuc:NU(1,0),poli:[[-.1,.95,0],[.1,.95,0],[-.1,.95,0],[.1,.95,0]],fib:0});
+ var tetr=function(j,lean,lin,yy,xx){var P=[xx+LATO[j]*d,yy,0],q=[LATO[j]*1.45,0,0];var a=X(P,0,1,lean,R_BR,1,q,q);
+  /* il cromatidio interno della tetrade si piega verso l'omologo */
+  var interno=LATO[j]<0?0:1;a[interno].lean=lin;return a;};
+ K.push({cr:crs(function(j){return tetr(j,.22,.22,YT[j]*.9,j<2?-.3:.35);}),cel:C1(),nuc:NU(0,0),poli:PI1,fib:0});
+ K.push({cr:crs(function(j){return tetr(j,.22,.4,YT[j]*.9,j<2?-.3:.35);}),cel:C1(),nuc:NU(0,0),poli:PI1,fib:.3});
+ K.push({cr:crs(function(j){return tetr(j,.22,.22,YT[j],0);}),cel:C1(),nuc:NU(0,0),poli:PI1,fib:1});
+ K.push({cr:crs(function(j){var q=[LATO[j]*1.45,0,0];return X([LATO[j]*1.15,YT[j]*.75,0],0,1,.22,R_BR,1,q,q);}),cel:C2(.1),nuc:NU(0,0),poli:PI1,fib:1});
+ K.push({cr:crs(function(j){return X([cx(j),YT[j]*.6,0],0,.8,.22,R_BR,1);}),cel:C2(1),nuc:NU(0,0),poli:PI2a,fib:0});
+ K.push({cr:crs(function(j){var P=[cx(j)+dxII(j),0,0];return X(P,Math.PI/2,1,.22,R_BR,1,[cx(j),.95,0],[cx(j),-.95,0]);}),cel:C2(1),nuc:NU(0,0),poli:PI2,fib:1});
+ K.push({cr:crs(function(j){var x=cx(j)+dxII(j)*.8;return [{p:[x,.68,0],rz:Math.PI/2,c:1,lean:-.9,g:1,q:[cx(j),.95,0]},{p:[x,-.68,0],rz:Math.PI/2,c:1,lean:-.9,g:1,q:[cx(j),-.95,0]}];}),cel:C4(.12),nuc:NU(0,0),poli:PI2,fib:1});
+ K.push({cr:crs(function(j){var x=cx(j),o=j<2?.13:-.13;return [{p:[x,.8+o,0],rz:Math.PI/2,c:.4,lean:.05,g:1,q:[x,.95,0]},{p:[x,-.8+o,0],rz:Math.PI/2,c:.4,lean:.05,g:1,q:[x,-.95,0]}];}),cel:C4(1),nuc:NU(0,1),poli:[[1.3,1.35,0],[-1.3,1.35,0],[1.3,-1.35,0],[-1.3,-1.35,0]],fib:0});
+ return K;}
+var FASI_S=[
+ {n:'Interfase',d:'Il DNA si duplica. Ogni cromosoma ora ha due cromatidi fratelli.'},
+ {n:'Profase I',d:'I cromosomi omologhi, uno dalla madre e uno dal padre, si avvicinano e si appaiano.'},
+ {n:'Crossing-over',d:'Gli omologhi appaiati si scambiano tratti di DNA. Compaiono cromatidi in parte rossi e in parte blu.'},
+ {n:'Metafase I',d:'Le coppie di omologhi si allineano al centro della cellula.'},
+ {n:'Anafase I',d:'Gli omologhi si separano e vanno ai poli opposti. I cromatidi fratelli restano uniti.'},
+ {n:'Telofase I',d:'La cellula si divide in due. Ogni cellula ha un solo cromosoma per coppia.'},
+ {n:'Metafase II',d:'Senza duplicare il DNA, in ciascuna cellula i cromosomi si allineano al centro.'},
+ {n:'Anafase II',d:'I cromatidi fratelli si separano e vanno ai poli.'},
+ {n:'Telofase II',d:'Si formano quattro nuclei e le due cellule si dividono ancora.'}];
+var FINE_S='<b>Fine.</b> Quattro cellule, ciascuna con metà dei cromosomi, 2 invece di 4. Sono tutte diverse tra loro.';
+
+/* ---- barra del tempo condivisa da mitosi e meiosi ---- */
+var ICONE={vai:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',
+ ferma:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>',
+ rifai:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>'};
+function Film(o){
+ var F={u:0,play:false,stato:'',visto:false},n=o.fasi.length;
+ if(o.chips)$(o.chips).innerHTML=o.fasi.map(function(f,i){return '<button class="chip" data-f="'+i+'" style="--chip:#8ee0a6">'+f.n+'</button>';}).join('');
+ if(o.chips)$(o.chips).addEventListener('click',function(e){var b=e.target.closest('[data-f]');if(!b)return;F.play=false;F.u=(+b.dataset.f+.999)/n;F.visto=true;agg();});
+ function agg(){
+  var st=o.mod?o.mod.mostra(F.u):null;
+  if(o.dopo)o.dopo(F.u);
+  $(o.range).value=Math.round(F.u*1000);
+  var f=Math.min(n-1,Math.floor(F.u*n)),fine=F.u>=1,h=fine?o.fine:'<b>'+o.fasi[f].n+'.</b> '+o.fasi[f].d;
+  if($(o.fase).innerHTML!==h)$(o.fase).innerHTML=h;
+  if(o.chips)Array.prototype.forEach.call($(o.chips).children,function(b){b.classList.toggle('attivo',+b.dataset.f===f&&F.u>0);});
+  if(fine&&F.visto){$(o.img).src=IMG.fine;$(o.fum).textContent=o.fumFine;}
+  var s=F.play?'ferma':(F.u>=1?'rifai':'vai');
+  if(s!==F.stato){F.stato=s;var b=$(o.play),t={ferma:'Ferma',rifai:'Rivedi dall\'inizio',vai:'Avvia'}[s];b.innerHTML=ICONE[s];b.title=t;b.setAttribute('aria-label',t);}
+  if(o.vista)o.vista.dirty=true;}
+ $(o.range).addEventListener('input',function(){F.play=false;F.u=this.value/1000;F.visto=true;agg();});
+ $(o.play).addEventListener('click',function(){if(F.play)F.play=false;else{if(F.u>=1)F.u=0;F.play=true;F.visto=true;}
+  $(o.img).src=IMG.spiega;agg();});
+ if(o.vista)o.vista.tick=function(dt){if(!F.play)return false;F.u=Math.min(1,F.u+(reduce?dt*3:dt)/(T_FASE*n));if(F.u>=1)F.play=false;agg();return true;};
+ F.agg=agg;return F;}
+
+/* ---- 03 mitosi ---- */
+var vM=R?Vista('st-mitosi',{th:-.25,ph:1.35,rad:7.4,rmin:3,rmax:14}):null;
+var modM=vM?Divisione(vM,chiaviMitosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1,0],3):null;
+var filmM=Film({fasi:FASI_M,fine:FINE_M,mod:modM,vista:vM,range:'mTempo',play:'mPlay',fase:'mFase',chips:'mFasi',img:'pf-mitosi',fum:'fu-mitosi',
+ fumFine:'Due cellule identiche alla madre. Così crescono i tessuti e si sostituiscono le cellule vecchie.'});
+filmM.agg();
+
+/* ---- 04 meiosi ---- */
+var vS=R?Vista('st-meiosi',{th:-.2,ph:1.4,rad:8.4,rmin:3,rmax:15}):null;
+var modS=vS?Divisione(vS,chiaviMeiosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1,0,0,1],5):null;
+/* crossing-over: le punte dei cromatidi interni delle tetradi si scambiano il colore a metà della fase 2 */
+var INTERNI=[[0,0,COL.pat],[1,1,COL.mat],[2,1,COL.pat],[3,0,COL.mat]],U_CROSS=2.5/9;
+var filmS=Film({fasi:FASI_S,fine:FINE_S,mod:modS,vista:vS,range:'sTempo',play:'sPlay',fase:'sFase',chips:null,img:'pf-meiosi',fum:'fu-meiosi',
+ fumFine:'Quattro cellule diverse con metà dei cromosomi. Sono i gameti, che si uniscono nella fecondazione.',
+ dopo:function(u){if(!modS)return;INTERNI.forEach(function(x){var c=modS.cr[x[0]*2+x[1]],orig=x[0]%2?COL.pat:COL.mat;c.mX.color.set(u>=U_CROSS?x[2]:orig);});}});
+
+/* ================= 02 CICLO CELLULARE ================= */
+var vC=R?Vista('st-ciclo',{th:-.25,ph:1.35,rad:6.6,rmin:3,rmax:14}):null;
+var modC=vC?Divisione(vC,chiaviMitosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1,0],3):null;
+var CIC=[
+ {id:'G1',f:.4,c:'#8ee0a6',u:.03,t:'Fase G1',d:'La cellula cresce e lavora. Ogni cromosoma è un solo filamento di DNA, disteso nel nucleo.'},
+ {id:'S',f:.3,c:'#5cc47f',u:.82/6,t:'Fase S',d:'Il DNA si duplica. Ogni cromosoma diventa due cromatidi fratelli identici, uniti nel centromero.'},
+ {id:'G2',f:.18,c:'#3fa862',u:1/6,t:'Fase G2',d:'La cellula continua a crescere e si prepara a dividersi. Anche i centrioli si sono duplicati.'},
+ {id:'M',f:.12,c:'#F2C14E',u:3/6,t:'Fase M',d:'Mitosi e citodieresi. Il nucleo e poi il citoplasma si dividono, e nascono due cellule figlie.'}];
+var CS={i:0,u:CIC[0].u};
+/* nella fase di interfase la duplicazione avviene tra il 30% e l'80% (fase S) */
+function uCiclo(u){if(u>=1/6)return u;var t=u*6;return clamp((t-.3)/.5,0,1)/6;}
+(function(){
+ var cx=120,cy=120,r=78,a0=-Math.PI/2,h='',acc=0;
+ var pt=function(a,rr){return (cx+rr*Math.cos(a)).toFixed(1)+' '+(cy+rr*Math.sin(a)).toFixed(1);};
+ CIC.forEach(function(f,i){var a1=a0+acc*2*Math.PI+.03,a2=a0+(acc+f.f)*2*Math.PI-.03,am=(a1+a2)/2,big=(a2-a1)>Math.PI?1:0;
+  h+='<g class="arco" data-i="'+i+'" role="button" tabindex="0" aria-label="'+f.t+'"><path d="M'+pt(a1,r)+' A'+r+' '+r+' 0 '+big+' 1 '+pt(a2,r)+'" fill="none" stroke="'+f.c+'" stroke-width="34"/>'
+   +'<path class="bordo" d="M'+pt(a1,r+19)+' A'+(r+19)+' '+(r+19)+' 0 '+big+' 1 '+pt(a2,r+19)+'" fill="none" stroke="#fff" stroke-width="3" opacity="0"/></g>'
+   +'<text x="'+(cx+r*Math.cos(am))+'" y="'+(cy+r*Math.sin(am)+5)+'" text-anchor="middle">'+f.id+'</text>';
+  acc+=f.f;});
+ h+='<text class="fuori" x="'+cx+'" y="'+(cy-4)+'" text-anchor="middle">INTERFASE</text><text class="fuori" x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle">G1 · S · G2</text>';
+ $('anello').innerHTML=h;
+ $('anello').addEventListener('click',function(e){var g=e.target.closest('.arco');if(g)fase(+g.dataset.i);});
+ $('anello').addEventListener('keydown',function(e){var g=e.target.closest('.arco');if(g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();fase(+g.dataset.i);}});})();
+function fase(i){CS.i=i;
+ if(CIC[i].u<CS.u-.001)CS.u=i===0?0:CIC[i].u;     /* all'indietro si salta, in avanti si anima */
+ $('cicT').textContent=CIC[i].t;$('cicD').textContent=CIC[i].d;
+ Array.prototype.forEach.call(document.querySelectorAll('#anello .arco'),function(g){g.querySelector('.bordo').setAttribute('opacity',+g.dataset.i===i?1:0);});
+ $('cMitosi').classList.toggle('hide',i!==3);
+ if(vC)vC.dirty=true;mostraCiclo();}
+function mostraCiclo(){if(modC)modC.mostra(uCiclo(CS.u));}
+if(vC)vC.tick=function(dt){var b=CIC[CS.i].u;if(CS.u>=b)return false;CS.u=Math.min(b,CS.u+(reduce?1:dt/(T_FASE*6)));mostraCiclo();return true;};
+$('cAvanti').onclick=function(){fase((CS.i+1)%4);};
+$('cMitosi').onclick=function(){vaiScheda('mitosi');};
+fase(0);
+
+/* ================= SCHEDE ================= */
+var nav=document.querySelector('.schede');
+function vaiScheda(p){
+ document.querySelectorAll('.scheda').forEach(function(x){var on=x.dataset.p===p;x.setAttribute('aria-selected',on);x.classList.toggle('attiva',on);
+  var pan=$('p-'+x.dataset.p);if(pan)pan.classList.toggle('hide',!on);});
+ centraScheda(nav);$('sub').textContent=SUB[p];
+ var v={dna:vDNA,ciclo:vC,mitosi:vM,meiosi:vS}[p];if(v)attiva(v);
+ if(p==='meiosi')filmS.agg();if(p==='mitosi')filmM.agg();
+ if(p==='quiz'&&!Q.round)avviaQuiz();}
+document.querySelectorAll('.scheda').forEach(function(t){t.addEventListener('click',function(){vaiScheda(t.dataset.p);});});
+
+/* ================= 05 ALLENATI ================= */
+/* l = livello 1, 2, 3; q domanda; o risposte, la prima è giusta; d spiegazione per ogni risposta sbagliata */
+var DOMANDE=[
+ {l:1,q:'Dove si trova quasi tutto il DNA di una cellula animale?',o:['Nel nucleo','Nella membrana','Nei ribosomi','Nel vacuolo'],d:['','La membrana è il confine della cellula, il DNA sta nel nucleo.','I ribosomi costruiscono le proteine seguendo le istruzioni del DNA, ma il DNA sta nel nucleo.','Il DNA è racchiuso nel nucleo.']},
+ {l:1,q:'Quanti cromosomi ha una cellula del corpo umano?',o:['46','23','92','12'],d:['','23 sono le coppie. I cromosomi sono 46, cioè 23 coppie.','Sono 46, in 23 coppie.','Sono 46, in 23 coppie.']},
+ {l:1,q:'Nel DNA l\'adenina (A) si appaia con',o:['la timina (T)','la citosina (C)','la guanina (G)','l\'uracile (U)'],d:['','La citosina si appaia con la guanina. A va con T.','La guanina si appaia con la citosina. A va con T.','L\'uracile c\'è solo nell\'RNA. Nel DNA A va con T.']},
+ {l:1,q:'Quante cellule figlie nascono da una mitosi?',o:['2','4','1','8'],d:['','Quattro cellule nascono dalla meiosi. La mitosi ne dà 2.','La cellula si divide, quindi le figlie sono 2.','Le figlie sono 2, identiche alla madre.']},
+ {l:1,q:'Quante cellule si formano alla fine della meiosi?',o:['4','2','1','46'],d:['','Due cellule si formano dalla mitosi. La meiosi ha due divisioni e dà 4 cellule.','La meiosi ha due divisioni e dà 4 cellule.','46 è il numero dei cromosomi umani. Le cellule sono 4.']},
+ {l:1,q:'Che forma ha la molecola di DNA?',o:['Una doppia elica','Un filamento singolo','Un anello','Una sfera'],d:['','Il filamento singolo è tipico dell\'RNA. Il DNA ha due filamenti avvolti a elica.','Il DNA del nucleo è una doppia elica, due filamenti avvolti uno sull\'altro.','Il DNA è una doppia elica, lunga e sottile.']},
+ {l:1,q:'Nell\'RNA, al posto della timina (T) c\'è',o:['l\'uracile (U)','l\'adenina (A)','la guanina (G)','la citosina (C)'],d:['','L\'adenina c\'è sia nel DNA sia nell\'RNA. Al posto della T c\'è la U.','La guanina c\'è sia nel DNA sia nell\'RNA. Al posto della T c\'è la U.','La citosina c\'è sia nel DNA sia nell\'RNA. Al posto della T c\'è la U.']},
+ {l:2,q:'In quale fase del ciclo cellulare si duplica il DNA?',o:['Nella fase S','Nella fase G1','Nella fase G2','Nella fase M'],d:['','In G1 la cellula cresce. Il DNA si duplica nella fase S.','In G2 il DNA è già duplicato e la cellula si prepara a dividersi.','Nella fase M la cellula si divide. Il DNA si è duplicato prima, nella fase S.']},
+ {l:2,q:'In quale fase della mitosi i cromosomi si allineano al centro della cellula?',o:['Metafase','Profase','Anafase','Telofase'],d:['','In profase i cromosomi si condensano e il nucleo scompare.','In anafase i cromatidi si separano e vanno ai poli.','In telofase si formano i due nuovi nuclei.']},
+ {l:2,q:'Che cosa succede nell\'anafase della mitosi?',o:['I cromatidi fratelli si separano e vanno ai poli opposti','I cromosomi si condensano','Si formano i due nuovi nuclei','Il citoplasma si divide'],d:['','I cromosomi si condensano in profase.','I nuovi nuclei si formano in telofase.','Il citoplasma si divide nella citodieresi, alla fine.']},
+ {l:2,q:'Che cosa sono due cromosomi omologhi?',o:['I due cromosomi di una coppia, uno dalla madre e uno dal padre','I due cromatidi di un cromosoma a X','Due cromosomi qualsiasi della cellula','Il DNA e l\'RNA'],d:['','I due cromatidi uniti nel centromero sono copie identiche, i cromatidi fratelli.','Gli omologhi sono proprio i due della stessa coppia, simili per forma e geni.','DNA e RNA sono acidi nucleici, non cromosomi.']},
+ {l:2,q:'Che cosa tiene unite le due basi di una coppia nel DNA?',o:['I ponti a idrogeno','Lo scheletro di zucchero e fosfato','L\'uracile','Il centromero'],d:['','Zucchero e fosfato formano i due filamenti esterni. Le basi sono unite da ponti a idrogeno.','L\'uracile c\'è solo nell\'RNA.','Il centromero unisce i due cromatidi fratelli, non le basi.']},
+ {l:2,q:'A che cosa serve la mitosi in un organismo?',o:['A crescere e a sostituire le cellule vecchie o danneggiate','A formare i gameti','A dimezzare il numero dei cromosomi','A scambiare tratti di DNA tra omologhi'],d:['','I gameti si formano con la meiosi.','La mitosi conserva il numero dei cromosomi. Li dimezza la meiosi.','Lo scambio tra omologhi è il crossing-over della meiosi.']},
+ {l:2,q:'Come si chiama la divisione del citoplasma alla fine della mitosi?',o:['Citodieresi','Telofase','Interfase','Crossing-over'],d:['','La telofase forma i due nuclei. Poi il citoplasma si divide con la citodieresi.','L\'interfase è il periodo tra una divisione e l\'altra.','Il crossing-over è lo scambio di DNA tra omologhi nella meiosi.']},
+ {l:2,q:'Quanti cromosomi ha un gamete umano?',o:['23','46','92','2'],d:['','46 sono quelli delle altre cellule del corpo. Il gamete ne ha la metà.','Il gamete ne ha la metà di 46, cioè 23.','Il gamete ne ha 23, uno per ogni coppia.']},
+ {l:3,q:'Che cosa avviene nel crossing-over?',o:['Due cromosomi omologhi si scambiano tratti di DNA','I cromatidi fratelli si separano','Il DNA si duplica','La cellula si divide in due'],d:['','I cromatidi fratelli si separano in anafase II o nell\'anafase della mitosi.','Il DNA si duplica nella fase S dell\'interfase.','La divisione della cellula è la citodieresi.']},
+ {l:3,q:'Una cellula con 4 cromosomi fa la meiosi. Quanti cromosomi ha ogni cellula prodotta?',o:['2','4','8','1'],d:['','4 sarebbero con la mitosi. La meiosi dimezza i cromosomi.','La meiosi dimezza i cromosomi, non li raddoppia.','Ogni cellula riceve un cromosoma per coppia. Le coppie sono 2.']},
+ {l:3,q:'Una cellula con 4 cromosomi fa la mitosi. Quanti cromosomi ha ogni cellula figlia?',o:['4','2','8','1'],d:['','2 sarebbero con la meiosi. La mitosi conserva il numero dei cromosomi.','Il DNA si duplica prima, ma poi si divide in due. Ogni figlia ne ha 4.','Le figlie sono identiche alla madre, con 4 cromosomi.']},
+ {l:3,q:'In quale fase si separano i cromosomi omologhi?',o:['Nell\'anafase I della meiosi','Nell\'anafase II della meiosi','Nell\'anafase della mitosi','Nella profase I della meiosi'],d:['','Nell\'anafase II si separano i cromatidi fratelli.','Nella mitosi si separano i cromatidi fratelli.','Nella profase I gli omologhi si appaiano, non si separano.']},
+ {l:3,q:'Perché le quattro cellule prodotte dalla meiosi sono diverse tra loro?',o:['Per il crossing-over e per come si distribuiscono gli omologhi','Perché il DNA non si duplica','Perché perdono il nucleo','Perché hanno numeri diversi di cromosomi'],d:['','Il DNA si duplica una volta, prima della meiosi I.','Alla fine ogni cellula ha il suo nucleo.','Hanno tutte lo stesso numero di cromosomi, la metà della cellula madre.']},
+ {l:3,q:'Un filamento di DNA ha le basi A C G T. Quali basi ha il filamento appaiato?',o:['T G C A','A C G T','U G C A','G T A C'],d:['','Il filamento appaiato non è uguale. Ogni base ha la sua compagna, A con T e C con G.','La U c\'è solo nell\'RNA. Nel DNA A va con T.','A va con T e C con G, quindi T G C A.']},
+ {l:3,q:'Si copia in RNA il tratto di DNA con le basi A C G T. Quali basi ha l\'RNA?',o:['U G C A','T G C A','A C G U','G U A C'],d:['','Nell\'RNA non c\'è la T. Al suo posto c\'è la U.','L\'RNA non copia uguale, appaia le basi. A va con U, C con G.','Ogni base si appaia con la sua compagna. A va con U, C con G, G con C, T con A.']}];
+var PER_GIRO=8,Q={round:null,i:0,punti:0,giro:0,liv:0};
+var MIX=[[4,3,1],[2,4,2],[1,3,4]];     /* domande facili, medie e difficili per giro; si sale se il giro va bene */
+function mescola(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function avviaQuiz(){var m=MIX[Q.liv],r=[];
+ [1,2,3].forEach(function(l,k){r=r.concat(mescola(DOMANDE.filter(function(d){return d.l===l;})).slice(0,m[k]));});
+ Q.round=r;Q.i=0;Q.punti=0;Q.giro++;domanda(true);}
+function domanda(prima){
+ var D=Q.round[Q.i],ord=mescola(D.o.map(function(t,k){return k;}));
+ $('quiz').innerHTML='<div class="qhead"><span>Giro '+Q.giro+' · domanda '+(Q.i+1)+' di '+Q.round.length+'</span><span>Punti '+Q.punti+'</span></div>'
+  +'<div class="qwrap"><div><p class="qq">'+D.q+'</p><div class="opts">'
+  +ord.map(function(k){return '<button class="opt" data-k="'+k+'">'+D.o[k]+'</button>';}).join('')
+  +'</div><div class="fb" id="qfb" aria-live="polite">'+(prima&&Q.giro===1?'<span class="hint">Tocca la risposta giusta.</span>':'')+'</div><div class="azioni" id="qaz"></div></div><img id="qimg" src="'+(prima&&Q.giro===1?IMG.hi:IMG.idle)+'" alt="Prof. T"></div>';
+ $('quiz').querySelector('.opts').onclick=function(e){
+  var b=e.target.closest('.opt');if(!b)return;var k=+b.dataset.k,giusta=k===0;
+  this.querySelectorAll('.opt').forEach(function(x){x.disabled=true;if(+x.dataset.k===0)x.classList.add('ok');});
+  if(giusta){Q.punti++;$('qfb').innerHTML='<b>Esatto.</b>';$('qimg').src=IMG.ok;}
+  else{b.classList.add('ko');$('qfb').innerHTML='<b>Non proprio.</b> '+D.d[k];$('qimg').src=IMG.ko;}
+  var ultima=Q.i+1>=Q.round.length;
+  $('qaz').innerHTML='<button class="azione primaria" id="qNext" style="flex:none;padding:10px 30px">'+(ultima?'Vedi il risultato':'Avanti ›')+'</button>';
+  $('qNext').onclick=function(){if(ultima)fine();else{Q.i++;domanda();}};};}
+function fine(){
+ var su=Q.punti>=6&&Q.liv<MIX.length-1;if(su)Q.liv++;
+ var msg=Q.punti>=6?(su?'Bene. Il prossimo giro avrà domande più difficili.':'Ottimo, sei al livello più alto.'):'Riguarda le schede e riprova.';
+ $('quiz').innerHTML='<div class="qwrap"><div><p class="qq">Hai fatto '+Q.punti+' su '+Q.round.length+'.</p><p>'+msg+'</p>'
+  +'<div class="azioni"><button class="azione primaria" id="qAgain" style="flex:none;padding:10px 30px">↻ Nuovo giro</button></div></div><img src="'+IMG.fine+'" alt="Prof. T"></div>';
+ $('qAgain').onclick=avviaQuiz;}
+
+/* avvio */
+livello(0,true);filmS.agg();vaiScheda('dna');
+})();
+</script>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Dal DNA ai cromosomi, con le basi appaiate della doppia elica e l'RNA, il ciclo cellulare con le fasi G1, S, G2 e M, la mitosi e la meiosi in tre dimensioni, con l'appaiamento degli omologhi e il crossing-over.</p>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Cellula umana con 46 cromosomi in 23 coppie, gameti con un solo cromosoma per coppia. <a href="https://www.genome.gov/about-genomics/fact-sheets/Chromosomes-Fact-Sheet" target="_blank" rel="noopener">NHGRI, Chromosomes Fact Sheet</a></li><li>Doppia elica, scheletro di zucchero e fosfato, basi A, T, C, G appaiate A con T e C con G da ponti a idrogeno. <a href="https://www.genome.gov/genetics-glossary/Base-Pair" target="_blank" rel="noopener">NHGRI, Base Pair</a></li><li>Nell'RNA l'uracile (U) al posto della timina. <a href="https://www.genome.gov/genetics-glossary/Uracil" target="_blank" rel="noopener">NHGRI, Uracil</a></li><li>L'RNA messaggero porta le istruzioni dal DNA ai ribosomi, che costruiscono le proteine. <a href="https://www.genome.gov/genetics-glossary/messenger-RNA" target="_blank" rel="noopener">NHGRI, Messenger RNA</a></li><li>Ciclo cellulare con le fasi G1, S, G2 e M, duplicazione del DNA nella fase S. <a href="https://www.genome.gov/genetics-glossary/Cell-Cycle" target="_blank" rel="noopener">NHGRI, Cell Cycle</a></li><li>Mitosi, due nuclei identici e poi divisione del citoplasma in due cellule figlie. <a href="https://www.genome.gov/genetics-glossary/Mitosis" target="_blank" rel="noopener">NHGRI, Mitosis</a></li><li>Meiosi, due divisioni e quattro cellule con metà dei cromosomi, i gameti. <a href="https://www.genome.gov/genetics-glossary/Meiosis" target="_blank" rel="noopener">NHGRI, Meiosis</a></li><li>Crossing-over, scambio di DNA tra cromosomi omologhi durante la meiosi. <a href="https://www.genome.gov/genetics-glossary/Crossing-Over" target="_blank" rel="noopener">NHGRI, Crossing Over</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
+<style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6fd08c!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(111,208,140,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
+<a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Biologia</a>
+<script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
