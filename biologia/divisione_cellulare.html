@@ -110,7 +110,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
  <div class="layout">
   <div>
    <div class="stage" id="st-dna">
-    <div class="cap">Modello stilizzato, non in scala</div>
+    <div class="cap">Modello stilizzato, non in scala, con pochi cromosomi</div>
     <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
     <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
     <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
@@ -143,7 +143,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
    <div class="proft"><img id="pf-ciclo" src="../immagini/prof_t/prof_t_naturalista_binocolo.webp" alt="Prof. T naturalista"><div class="fumetto">Tocca una fase nel cerchio oppure Fase successiva.</div></div>
    <div class="card ciclo"><svg id="anello" viewBox="0 0 240 240" role="group" aria-label="Fasi del ciclo cellulare"></svg></div>
    <div class="card" aria-live="polite"><h2 id="cicT"></h2><p id="cicD" style="margin:0"></p></div>
-   <div class="anchor">L'interfase (G1, S, G2) è la parte più lunga del ciclo. La divisione (fase M) è breve.</div>
+   <div class="anchor">L'interfase (G1, S, G2) è la parte più lunga del ciclo. La divisione (fase M) è breve. Proporzioni del cerchio indicative.</div>
   </aside>
  </div>
 </section>
@@ -202,7 +202,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
      <tr><th>Divisioni</th><td>una</td><td>due</td></tr>
      <tr><th>Cellule prodotte</th><td>2</td><td>4</td></tr>
      <tr><th>Cromosomi</th><td>tutti, come la madre</td><td>la metà, uno per coppia</td></tr>
-     <tr><th>Cellule figlie</th><td>identiche</td><td>diverse tra loro</td></tr>
+     <tr><th>Cellule figlie</th><td>identiche</td><td>in genere diverse</td></tr>
      <tr><th>Serve a</th><td>crescere e riparare</td><td>formare i gameti</td></tr>
     </tbody></table></div>
    <div class="anchor">Con la meiosi una cellula produce quattro cellule con metà dei cromosomi, da cui si formano i gameti. Nell'uomo 23 invece di 46.</div>
@@ -361,11 +361,11 @@ function Divisione(v,K,colori,cellePadre,nNuclei){
 
 /* ================= 01 DAL DNA AI CROMOSOMI ================= */
 var LIV=[
- {id:'cell',n:'Cellula',t:'La cellula',d:'Nel nucleo di ogni cellula c\'è il DNA, che contiene le istruzioni per costruire e far funzionare l\'organismo.'},
+ {id:'cell',n:'Cellula',t:'La cellula',d:'Nel nucleo delle cellule animali e vegetali c\'è quasi tutto il DNA, che contiene le istruzioni per costruire e far funzionare l\'organismo.'},
  {id:'nuc',n:'Nucleo',t:'Il nucleo e i cromosomi',d:'Nel nucleo il DNA è diviso in cromosomi. La cellula umana ne ha 46, in 23 coppie. I due cromosomi di una coppia si chiamano omologhi, uno viene dalla madre e uno dal padre. Qui sono disegnati condensati, come quando la cellula si divide.'},
  {id:'cro',n:'Cromosoma',t:'Il cromosoma',d:'Un cromosoma è un lunghissimo filamento di DNA avvolto e ripiegato. Prima della divisione è duplicato e ha la forma a X, due cromatidi fratelli identici uniti nel centromero.'},
  {id:'dna',n:'DNA',t:'La doppia elica',d:'Il DNA è una doppia elica. Due filamenti di zucchero e fosfato sono uniti dalle basi appaiate, A con T e C con G, tenute insieme da ponti a idrogeno.'},
- {id:'rna',n:'RNA',t:'L\'RNA',d:'L\'RNA è una copia di un tratto di DNA. Ha un filamento solo e al posto della T ha la U (uracile). Esce dal nucleo e porta le istruzioni ai ribosomi, che costruiscono le proteine.'}];
+ {id:'rna',n:'RNA',t:'L\'RNA',d:'L\'RNA messaggero copia un tratto di DNA appaiando le basi, con la U (uracile) al posto della T. Ha un filamento solo. Esce dal nucleo e porta le istruzioni ai ribosomi, che costruiscono le proteine.'}];
 var D={liv:0,primo:true};
 $('livelli').innerHTML=LIV.map(function(l,i){return '<button class="chip'+(i?'':' attivo')+'" data-l="'+i+'" style="--chip:#8ee0a6">'+l.n+'</button>';}).join('');
 $('livelli').addEventListener('click',function(e){var b=e.target.closest('[data-l]');if(b)livello(+b.dataset.l);});
@@ -402,7 +402,7 @@ if(R)(function(){
   el.add(cil(a,mid.clone().sub(gap),.13,M(COL[b1])),cil(mid.clone().add(gap),b,.13,M(COL[b2])),cil(mid.clone().sub(gap),mid.clone().add(gap),.035,mPonte));
   var s1=new THREE.Mesh(new THREE.SphereGeometry(.2,12,8),mS);s1.position.copy(a);var s2=s1.clone();s2.position.copy(b);el.add(s1,s2);}
  [p1,p2].forEach(function(pp){el.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pp),N*6,.09,8,false),mS));});
- /* RNA: un filamento solo, copia del primo filamento con U al posto di T */
+ /* RNA: un filamento solo, appaiato al primo filamento, con U al posto di T */
  var rna=new THREE.Group(),pr=[],mR=M('#C8B48A');
  for(i=0;i<10;i++){var yy=(i-4.5)*.34*1.6,pt=new THREE.Vector3(3.3,yy,.35*Math.sin(i*.8));pr.push(pt);
   var base=RNAC[SEQ[i]];rna.add(cil(pt,pt.clone().add(new THREE.Vector3(-.95,0,0)),.13,M(COL[base])));
@@ -437,7 +437,7 @@ if(R)(function(){
 function livello(i,auto){
  D.liv=i;Array.prototype.forEach.call($('livelli').children,function(b){b.classList.toggle('attivo',+b.dataset.l===i);});
  $('dnaT').textContent=LIV[i].t;$('dnaD').textContent=LIV[i].d;
- if(!auto){$('pf-dna').src=IMG.spiega;$('fu-dna').textContent=i<4?'Tocca il livello successivo per avvicinarti ancora.':'Il DNA resta nel nucleo, l\'RNA porta fuori le istruzioni.';}
+ if(!auto){$('pf-dna').src=IMG.spiega;$('fu-dna').textContent=i<4?'Tocca il livello successivo per avvicinarti ancora.':'Il DNA resta nel nucleo, l\'RNA messaggero porta fuori le istruzioni.';}
  if(vDNA){vDNA.vai(i);vDNA.dirty=true;}}
 
 /* ================= CHIAVI DELLA MITOSI ================= */
@@ -462,7 +462,7 @@ function chiaviMitosi(){
  return K;}
 var FASI_M=[
  {n:'Interfase',d:'La cellula cresce e duplica il DNA. Ogni cromosoma diventa due cromatidi fratelli uniti nel centromero.'},
- {n:'Profase',d:'I cromosomi si condensano e diventano visibili. La membrana del nucleo scompare, i centrioli vanno ai poli e si forma il fuso.'},
+ {n:'Profase',d:'I cromosomi si condensano e diventano visibili. La membrana del nucleo scompare e si forma il fuso. Nelle cellule animali i centrioli vanno ai poli.'},
  {n:'Metafase',d:'I cromosomi si allineano al centro della cellula, agganciati alle fibre del fuso.'},
  {n:'Anafase',d:'I cromatidi fratelli si separano e sono tirati verso i poli opposti.'},
  {n:'Telofase',d:'Ai due poli si formano due nuovi nuclei e i cromosomi tornano a distendersi.'},
@@ -501,14 +501,14 @@ function chiaviMeiosi(){
 var FASI_S=[
  {n:'Interfase',d:'Il DNA si duplica. Ogni cromosoma ora ha due cromatidi fratelli.'},
  {n:'Profase I',d:'I cromosomi omologhi, uno dalla madre e uno dal padre, si avvicinano e si appaiano.'},
- {n:'Crossing-over',d:'Gli omologhi appaiati si scambiano tratti di DNA. Compaiono cromatidi in parte rossi e in parte blu.'},
+ {n:'Profase I, crossing-over',d:'Ancora nella profase I gli omologhi appaiati si scambiano tratti di DNA. Compaiono cromatidi in parte rossi e in parte blu.'},
  {n:'Metafase I',d:'Le coppie di omologhi si allineano al centro della cellula.'},
  {n:'Anafase I',d:'Gli omologhi si separano e vanno ai poli opposti. I cromatidi fratelli restano uniti.'},
  {n:'Telofase I',d:'La cellula si divide in due. Ogni cellula ha un solo cromosoma per coppia.'},
  {n:'Metafase II',d:'Senza duplicare il DNA, in ciascuna cellula i cromosomi si allineano al centro.'},
  {n:'Anafase II',d:'I cromatidi fratelli si separano e vanno ai poli.'},
  {n:'Telofase II',d:'Si formano quattro nuclei e le due cellule si dividono ancora.'}];
-var FINE_S='<b>Fine.</b> Quattro cellule, ciascuna con metà dei cromosomi, 2 invece di 4. Sono tutte diverse tra loro.';
+var FINE_S='<b>Fine.</b> Quattro cellule, ciascuna con metà dei cromosomi, 2 invece di 4. In genere sono diverse tra loro.';
 
 /* ---- barra del tempo condivisa da mitosi e meiosi ---- */
 var ICONE={vai:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',
@@ -558,7 +558,7 @@ var CIC=[
  {id:'G1',f:.4,c:'#8ee0a6',u:.03,t:'Fase G1',d:'La cellula cresce e lavora. Ogni cromosoma è un solo filamento di DNA, disteso nel nucleo.'},
  {id:'S',f:.3,c:'#5cc47f',u:.82/6,t:'Fase S',d:'Il DNA si duplica. Ogni cromosoma diventa due cromatidi fratelli identici, uniti nel centromero.'},
  {id:'G2',f:.18,c:'#3fa862',u:1/6,t:'Fase G2',d:'La cellula continua a crescere e si prepara a dividersi. Anche i centrioli si sono duplicati.'},
- {id:'M',f:.12,c:'#F2C14E',u:3/6,t:'Fase M',d:'Mitosi e citodieresi. Il nucleo e poi il citoplasma si dividono, e nascono due cellule figlie.'}];
+ {id:'M',f:.12,c:'#F2C14E',u:3/6,t:'Fase M',d:'Mitosi e citodieresi. Il nucleo e poi il citoplasma si dividono, e nascono due cellule figlie. Qui la mitosi comincia, guardala tutta nella scheda 03.'}];
 var CS={i:0,u:CIC[0].u};
 /* nella fase di interfase la duplicazione avviene tra il 30% e l'80% (fase S) */
 function uCiclo(u){if(u>=1/6)return u;var t=u*6;return clamp((t-.3)/.5,0,1)/6;}
@@ -601,11 +601,11 @@ document.querySelectorAll('.scheda').forEach(function(t){t.addEventListener('cli
 /* l = livello 1, 2, 3; q domanda; o risposte, la prima è giusta; d spiegazione per ogni risposta sbagliata */
 var DOMANDE=[
  {l:1,q:'Dove si trova quasi tutto il DNA di una cellula animale?',o:['Nel nucleo','Nella membrana','Nei ribosomi','Nel vacuolo'],d:['','La membrana è il confine della cellula, il DNA sta nel nucleo.','I ribosomi costruiscono le proteine seguendo le istruzioni del DNA, ma il DNA sta nel nucleo.','Il DNA è racchiuso nel nucleo.']},
- {l:1,q:'Quanti cromosomi ha una cellula del corpo umano?',o:['46','23','92','12'],d:['','23 sono le coppie. I cromosomi sono 46, cioè 23 coppie.','Sono 46, in 23 coppie.','Sono 46, in 23 coppie.']},
+ {l:1,q:'Quanti cromosomi ha una normale cellula del corpo umano, non un gamete?',o:['46','23','92','12'],d:['','23 sono le coppie. I cromosomi sono 46, cioè 23 coppie.','Sono 46, in 23 coppie.','Sono 46, in 23 coppie.']},
  {l:1,q:'Nel DNA l\'adenina (A) si appaia con',o:['la timina (T)','la citosina (C)','la guanina (G)','l\'uracile (U)'],d:['','La citosina si appaia con la guanina. A va con T.','La guanina si appaia con la citosina. A va con T.','L\'uracile c\'è solo nell\'RNA. Nel DNA A va con T.']},
  {l:1,q:'Quante cellule figlie nascono da una mitosi?',o:['2','4','1','8'],d:['','Quattro cellule nascono dalla meiosi. La mitosi ne dà 2.','La cellula si divide, quindi le figlie sono 2.','Le figlie sono 2, identiche alla madre.']},
  {l:1,q:'Quante cellule si formano alla fine della meiosi?',o:['4','2','1','46'],d:['','Due cellule si formano dalla mitosi. La meiosi ha due divisioni e dà 4 cellule.','La meiosi ha due divisioni e dà 4 cellule.','46 è il numero dei cromosomi umani. Le cellule sono 4.']},
- {l:1,q:'Che forma ha la molecola di DNA?',o:['Una doppia elica','Un filamento singolo','Un anello','Una sfera'],d:['','Il filamento singolo è tipico dell\'RNA. Il DNA ha due filamenti avvolti a elica.','Il DNA del nucleo è una doppia elica, due filamenti avvolti uno sull\'altro.','Il DNA è una doppia elica, lunga e sottile.']},
+ {l:1,q:'Che forma ha il DNA nel nucleo di una cellula umana?',o:['Una doppia elica','Un filamento singolo','Una sfera','Una piramide'],d:['','Il filamento singolo è tipico dell\'RNA. Il DNA del nucleo ha due filamenti avvolti a elica.','Il DNA del nucleo è una doppia elica, lunga e sottile.','Il DNA del nucleo è una doppia elica, due filamenti avvolti uno sull\'altro.']},
  {l:1,q:'Nell\'RNA, al posto della timina (T) c\'è',o:['l\'uracile (U)','l\'adenina (A)','la guanina (G)','la citosina (C)'],d:['','L\'adenina c\'è sia nel DNA sia nell\'RNA. Al posto della T c\'è la U.','La guanina c\'è sia nel DNA sia nell\'RNA. Al posto della T c\'è la U.','La citosina c\'è sia nel DNA sia nell\'RNA. Al posto della T c\'è la U.']},
  {l:2,q:'In quale fase del ciclo cellulare si duplica il DNA?',o:['Nella fase S','Nella fase G1','Nella fase G2','Nella fase M'],d:['','In G1 la cellula cresce. Il DNA si duplica nella fase S.','In G2 il DNA è già duplicato e la cellula si prepara a dividersi.','Nella fase M la cellula si divide. Il DNA si è duplicato prima, nella fase S.']},
  {l:2,q:'In quale fase della mitosi i cromosomi si allineano al centro della cellula?',o:['Metafase','Profase','Anafase','Telofase'],d:['','In profase i cromosomi si condensano e il nucleo scompare.','In anafase i cromatidi si separano e vanno ai poli.','In telofase si formano i due nuovi nuclei.']},
@@ -619,9 +619,9 @@ var DOMANDE=[
  {l:3,q:'Una cellula con 4 cromosomi fa la meiosi. Quanti cromosomi ha ogni cellula prodotta?',o:['2','4','8','1'],d:['','4 sarebbero con la mitosi. La meiosi dimezza i cromosomi.','La meiosi dimezza i cromosomi, non li raddoppia.','Ogni cellula riceve un cromosoma per coppia. Le coppie sono 2.']},
  {l:3,q:'Una cellula con 4 cromosomi fa la mitosi. Quanti cromosomi ha ogni cellula figlia?',o:['4','2','8','1'],d:['','2 sarebbero con la meiosi. La mitosi conserva il numero dei cromosomi.','Il DNA si duplica prima, ma poi si divide in due. Ogni figlia ne ha 4.','Le figlie sono identiche alla madre, con 4 cromosomi.']},
  {l:3,q:'In quale fase si separano i cromosomi omologhi?',o:['Nell\'anafase I della meiosi','Nell\'anafase II della meiosi','Nell\'anafase della mitosi','Nella profase I della meiosi'],d:['','Nell\'anafase II si separano i cromatidi fratelli.','Nella mitosi si separano i cromatidi fratelli.','Nella profase I gli omologhi si appaiano, non si separano.']},
- {l:3,q:'Perché le quattro cellule prodotte dalla meiosi sono diverse tra loro?',o:['Per il crossing-over e per come si distribuiscono gli omologhi','Perché il DNA non si duplica','Perché perdono il nucleo','Perché hanno numeri diversi di cromosomi'],d:['','Il DNA si duplica una volta, prima della meiosi I.','Alla fine ogni cellula ha il suo nucleo.','Hanno tutte lo stesso numero di cromosomi, la metà della cellula madre.']},
+ {l:3,q:'Perché le cellule prodotte dalla meiosi sono in genere diverse tra loro?',o:['Per il crossing-over e per come si distribuiscono gli omologhi','Perché il DNA non si duplica','Perché perdono il nucleo','Perché hanno numeri diversi di cromosomi'],d:['','Il DNA si duplica una volta, prima della meiosi I.','Alla fine ogni cellula ha il suo nucleo.','Hanno tutte lo stesso numero di cromosomi, la metà della cellula madre.']},
  {l:3,q:'Un filamento di DNA ha le basi A C G T. Quali basi ha il filamento appaiato?',o:['T G C A','A C G T','U G C A','G T A C'],d:['','Il filamento appaiato non è uguale. Ogni base ha la sua compagna, A con T e C con G.','La U c\'è solo nell\'RNA. Nel DNA A va con T.','A va con T e C con G, quindi T G C A.']},
- {l:3,q:'Si copia in RNA il tratto di DNA con le basi A C G T. Quali basi ha l\'RNA?',o:['U G C A','T G C A','A C G U','G U A C'],d:['','Nell\'RNA non c\'è la T. Al suo posto c\'è la U.','L\'RNA non copia uguale, appaia le basi. A va con U, C con G.','Ogni base si appaia con la sua compagna. A va con U, C con G, G con C, T con A.']}];
+ {l:3,q:'Si copia in RNA messaggero il tratto di DNA con le basi A C G T. Quali basi ha l\'RNA?',o:['U G C A','T G C A','A C G U','G U A C'],d:['','Nell\'RNA non c\'è la T. Al suo posto c\'è la U.','L\'RNA non copia uguale, appaia le basi. A va con U, C con G.','Ogni base si appaia con la sua compagna. A va con U, C con G, G con C, T con A.']}];
 var PER_GIRO=8,Q={round:null,i:0,punti:0,giro:0,liv:0};
 var MIX=[[4,3,1],[2,4,2],[1,3,4]];     /* domande facili, medie e difficili per giro; si sale se il giro va bene */
 function mescola(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
@@ -654,7 +654,7 @@ livello(0,true);filmS.agg();vaiScheda('dna');
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Dal DNA ai cromosomi, con le basi appaiate della doppia elica e l'RNA, il ciclo cellulare con le fasi G1, S, G2 e M, la mitosi e la meiosi in tre dimensioni, con l'appaiamento degli omologhi e il crossing-over.</p>
-<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Cellula umana con 46 cromosomi in 23 coppie, gameti con un solo cromosoma per coppia. <a href="https://www.genome.gov/about-genomics/fact-sheets/Chromosomes-Fact-Sheet" target="_blank" rel="noopener">NHGRI, Chromosomes Fact Sheet</a></li><li>Doppia elica, scheletro di zucchero e fosfato, basi A, T, C, G appaiate A con T e C con G da ponti a idrogeno. <a href="https://www.genome.gov/genetics-glossary/Base-Pair" target="_blank" rel="noopener">NHGRI, Base Pair</a></li><li>Nell'RNA l'uracile (U) al posto della timina. <a href="https://www.genome.gov/genetics-glossary/Uracil" target="_blank" rel="noopener">NHGRI, Uracil</a></li><li>L'RNA messaggero porta le istruzioni dal DNA ai ribosomi, che costruiscono le proteine. <a href="https://www.genome.gov/genetics-glossary/messenger-RNA" target="_blank" rel="noopener">NHGRI, Messenger RNA</a></li><li>Ciclo cellulare con le fasi G1, S, G2 e M, duplicazione del DNA nella fase S. <a href="https://www.genome.gov/genetics-glossary/Cell-Cycle" target="_blank" rel="noopener">NHGRI, Cell Cycle</a></li><li>Mitosi, due nuclei identici e poi divisione del citoplasma in due cellule figlie. <a href="https://www.genome.gov/genetics-glossary/Mitosis" target="_blank" rel="noopener">NHGRI, Mitosis</a></li><li>Meiosi, due divisioni e quattro cellule con metà dei cromosomi, i gameti. <a href="https://www.genome.gov/genetics-glossary/Meiosis" target="_blank" rel="noopener">NHGRI, Meiosis</a></li><li>Crossing-over, scambio di DNA tra cromosomi omologhi durante la meiosi. <a href="https://www.genome.gov/genetics-glossary/Crossing-Over" target="_blank" rel="noopener">NHGRI, Crossing Over</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Cellula umana con 46 cromosomi in 23 coppie, gameti con un solo cromosoma per coppia. <a href="https://www.genome.gov/about-genomics/fact-sheets/Chromosomes-Fact-Sheet" target="_blank" rel="noopener">NHGRI, Chromosomes Fact Sheet</a></li><li>Doppia elica, scheletro di zucchero e fosfato, basi A, T, C, G appaiate A con T e C con G da ponti a idrogeno. <a href="https://www.genome.gov/genetics-glossary/Base-Pair" target="_blank" rel="noopener">NHGRI, Base Pair</a></li><li>Nell'RNA l'uracile (U) al posto della timina. <a href="https://www.genome.gov/genetics-glossary/Uracil" target="_blank" rel="noopener">NHGRI, Uracil</a></li><li>L'RNA messaggero porta le istruzioni dal DNA ai ribosomi, che costruiscono le proteine. <a href="https://www.genome.gov/genetics-glossary/messenger-RNA" target="_blank" rel="noopener">NHGRI, Messenger RNA</a></li><li>Ciclo cellulare con le fasi G1, S, G2 e M, duplicazione del DNA nella fase S. <a href="https://www.genome.gov/genetics-glossary/Cell-Cycle" target="_blank" rel="noopener">NHGRI, Cell Cycle</a></li><li>Mitosi, due nuclei identici e poi divisione del citoplasma in due cellule figlie. <a href="https://www.genome.gov/genetics-glossary/Mitosis" target="_blank" rel="noopener">NHGRI, Mitosis</a></li><li>Centrioli nelle cellule animali, vicino al nucleo, organizzano i microtubuli. <a href="https://www.genome.gov/genetics-glossary/Centriole" target="_blank" rel="noopener">NHGRI, Centriole</a></li><li>Meiosi, due divisioni e quattro cellule con metà dei cromosomi, i gameti. <a href="https://www.genome.gov/genetics-glossary/Meiosis" target="_blank" rel="noopener">NHGRI, Meiosis</a></li><li>Crossing-over, scambio di DNA tra cromosomi omologhi durante la meiosi. <a href="https://www.genome.gov/genetics-glossary/Crossing-Over" target="_blank" rel="noopener">NHGRI, Crossing Over</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6fd08c!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(111,208,140,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Biologia</a>
 <script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
