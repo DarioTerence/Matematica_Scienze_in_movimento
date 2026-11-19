@@ -263,9 +263,9 @@ function mattoncini(tipo){
   for(i=0;i<6;i++){pos.push({p:p8.clone().add(out.clone().multiplyScalar(.85*(i+1))).add(lat.clone().multiplyScalar((i%2)*.35+.2)),r:i,da:i?null:8});}}
  else if(tipo==='glicogeno'){/* albero molto ramificato: da ogni ramo ne partono due */
   var ramo=function(p,d,liv,prec){for(var j=0;j<2;j++){p=p.clone().add(d.clone().multiplyScalar(.8));pos.push({p:p.clone(),r:j*.9+liv,da:prec});prec=pos.length-1;}
-   if(liv<2){var n=perp(d).applyAxisAngle(d,liv*1.3+pos.length*.4);[1,-1].forEach(function(sg){ramo(p,d.clone().applyAxisAngle(n,sg*.75),liv+1,prec);});}};
+   if(liv<2){var n=V(.15*Math.sin(pos.length),.15*Math.cos(pos.length),1).normalize();[1,-1].forEach(function(sg){ramo(p,d.clone().applyAxisAngle(n,sg*.75),liv+1,prec);});}};
   pos.push({p:V(0,0,0),r:0,da:null});
-  [V(1,.2,0),V(-.6,.2,.9),V(-.5,-.3,-.9)].forEach(function(d){ramo(V(0,0,0),d.normalize(),0,0);});}
+  [V(1,0,.15),V(-.5,.87,-.15),V(-.5,-.87,.1)].forEach(function(d){ramo(V(0,0,0),d.normalize(),0,0);});}
  else{/* cellulosa: tre catene diritte e parallele, mattoncini capovolti uno sì e uno no */
   for(var r=0;r<3;r++)for(i=0;i<9;i++)pos.push({p:V(i*.78-3.1,r*.9-.9,0),r:i%2?Math.PI:0,cap:i%2,da:i?pos.length-1:null,fila:r});}
  pos.forEach(function(q,i){m.extra.push({tipo:'mattone',p:q.p,r:q.r,cap:q.cap});
@@ -373,7 +373,7 @@ var SCHEDE=[
    {k:'sac',n:'Saccarosio',col:'#e0d24a',m:saccarosio,unione:true,d:'<p>Glucosio e fruttosio si legano e liberano una molecola d\'<b>acqua</b>. È lo zucchero da tavola.</p>',al:'zucchero da canna o da barbabietola, dolci'}]},
   {n:'Catene di zuccheri (polisaccaridi)',c:[
    {k:'ami',n:'Amido',col:'#c9a86a',m:function(){return mattoncini('amido');},cap:'Ogni esagono è un glucosio',d:'<p>Lunga catena di glucosio avvolta a spirale, con qualche ramo. È la <b>riserva</b> di energia delle piante.</p>',al:'pane, pasta, riso, patate, legumi'},
-   {k:'gli',n:'Glicogeno',col:'#d9a62e',m:function(){return mattoncini('glicogeno');},cap:'Ogni esagono è un glucosio',d:'<p>Catena di glucosio molto ramificata. È la riserva degli animali, nel <b>fegato</b> e nei <b>muscoli</b>.</p>',al:'non si mangia, il corpo lo costruisce con il glucosio'},
+   {k:'gli',n:'Glicogeno',col:'#d9a62e',m:function(){return mattoncini('glicogeno');},cap:'Ogni esagono è un glucosio',d:'<p>Catena di glucosio molto ramificata. È la riserva degli animali, nel <b>fegato</b> e nei <b>muscoli</b>.</p><p>Il corpo lo costruisce con il glucosio e lo smonta quando serve energia.</p>'},
    {k:'cel',n:'Cellulosa',col:'#6fd08c',m:function(){return mattoncini('cellulosa');},cap:'Ogni esagono è un glucosio, uno sì e uno no è capovolto. In azzurro i ponti a idrogeno tra le catene',d:'<p>Catene di glucosio diritte e affiancate, legate tra loro. Forma la parete delle cellule vegetali.</p><p>Il nostro corpo non la digerisce, è la <b>fibra</b> degli alimenti.</p>',al:'verdura, frutta, cereali integrali'}]}]},
  {sub:'Catene di amminoacidi',anchor:'Venti amminoacidi diversi, combinati in catene lunghe e ripiegate, formano migliaia di proteine diverse.',
   prof:'Tocca <b>Legame peptidico</b> e guarda due amminoacidi che si uniscono.',posa:'fornello',kcal:4,
@@ -452,7 +452,7 @@ function Scena(el){
   m.extra.forEach(function(e){var me;
    if(e.tipo==='braccio'){me=cil(V(0,0,0),e.p,.09,mat('#a9b2bd'));gruppo.add(me);ogg.push({o:me,t0:T_ATOMO,braccio:e});
     var pu=new THREE.Mesh(GS,mat('#8ee0a6','{"transparent":true,"opacity":0.55}'));pu.position.copy(e.p.clone().multiplyScalar(1.12));pu.scale.setScalar(.12);gruppo.add(pu);ogg.push({o:pu,t0:T_ATOMO+.4,s:.13,base:e.p.clone().multiplyScalar(1.12)});}
-   else if(e.tipo==='mattone'){me=new THREE.Mesh(GM,mat(e.cap?'#e8cf7a':'#e0c25a'));me.rotation.set(Math.PI/2,0,e.r||0);gruppo.add(me);var t0=(k++)*passo;ogg.push({o:me,t0:t0,s:1,base:e.p});mattoni.push({p:e.p,t0:t0});}
+   else if(e.tipo==='mattone'){me=new THREE.Mesh(GM,mat(e.cap?'#e8cf7a':'#e0c25a'));me.rotation.set(Math.PI/2,e.r||0,0);gruppo.add(me);var t0=(k++)*passo;ogg.push({o:me,t0:t0,s:1,base:e.p});mattoni.push({p:e.p,t0:t0});}
    else if(e.tipo==='stecca'||e.tipo==='ponte'){me=cil(e.a,e.b,e.tipo==='ponte'?.05:.07,e.tipo==='ponte'?mat(e.c||'#9fd8ff'):MB);gruppo.add(me);ogg.push({o:me,t0:0,steccaDi:e,sc:me.scale.clone()});}
    else if(e.tipo==='base'){me=new THREE.Mesh(GS,mat(e.c));gruppo.add(me);ogg.push({o:me,t0:(k++)*passo,s:.2,base:e.p});}
    else if(e.tipo==='fosfo'){var g=new THREE.Group(),hd=new THREE.Mesh(GS,mat('#f08a24'));hd.scale.setScalar(.3);g.add(hd);
