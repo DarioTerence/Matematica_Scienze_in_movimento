@@ -205,7 +205,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
      <tr><th>Cellule figlie</th><td>identiche</td><td>diverse tra loro</td></tr>
      <tr><th>Serve a</th><td>crescere e riparare</td><td>formare i gameti</td></tr>
     </tbody></table></div>
-   <div class="anchor">Con la meiosi una cellula produce quattro gameti con metà dei cromosomi. Nell'uomo 23 invece di 46.</div>
+   <div class="anchor">Con la meiosi una cellula produce quattro cellule con metà dei cromosomi, da cui si formano i gameti. Nell'uomo 23 invece di 46.</div>
   </aside>
  </div>
 </section>
@@ -329,7 +329,7 @@ function interp(a,b,t){
 /* ---- modello di cellula che si divide: chiavi (stati) e fasi tra una chiave e la successiva ---- */
 function Divisione(v,K,colori,cellePadre,nNuclei){
  var root=new THREE.Group();v.scene.add(root);
- var cr=[],L=[.48,.3];
+ var cr=[],L=[.36,.22];
  for(var j=0;j<4;j++)for(var s=0;s<2;s++){var c=Cromatidio(L[j>>1],colori[j],s===1);root.add(c.g);cr.push(c);}
  var gm=new THREE.SphereGeometry(1,40,28),cel=[];
  for(var i=0;i<cellePadre.length;i++){var m=new THREE.Mesh(gm,new THREE.MeshStandardMaterial({color:COL.memb,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide,roughness:.8}));m.renderOrder=3;root.add(m);cel.push(m);}
@@ -442,7 +442,7 @@ function livello(i,auto){
 
 /* ================= CHIAVI DELLA MITOSI ================= */
 /* cromosomi j 0..3, coppia j>>1; ogni chiave elenca 8 cromatidi */
-var PN=[[-.22,.16,.08],[.2,-.18,-.08],[.06,.28,-.12],[-.1,-.26,.16]],RZ=[.6,-.4,1.2,-1],YM=[.78,.22,-.28,-.72];
+var PN=[[-.22,.16,.08],[.2,-.18,-.08],[.06,.28,-.12],[-.1,-.26,.16]],RZ=[.6,-.4,1.2,-1],YM=[.9,.05,-.6,-1.1],TD=[[-.14,.22],[.12,-.08],[-.04,-.22],[.16,.1]];
 var POLO=[1.45,0,0];
 function chiaviMitosi(){
  var K=[],cell=function(k,r){return [{p:[0,0,0],r:r||1.6},{p:[1.25*k,0,0],r:1.6+(1.15-1.6)*k}];};
@@ -455,8 +455,8 @@ function chiaviMitosi(){
  K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.08,.045,1,PN[j],PN[j]);}),cel:cel2(0),nuc:nuc(1,0),poli:[[-.12,.95,0],[.12,.95,0]],fib:0});
  K.push({cr:crs(function(j){var P=PN[j].map(function(x){return x*1.7;});return X(P,RZ[j]*.5,1,.22,R_BR,1,qp,qm);}),cel:cel2(0),nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:.5});
  K.push({cr:crs(function(j){var P=[0,YM[j],(j%2?.1:-.1)];return X(P,0,1,.22,R_BR,1,qp,qm);}),cel:cel2(0),nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:1});
- K.push({cr:crs(function(j){var y=YM[j]*.55,z=(j%2?.05:-.05);return [{p:[1.1,y,z],rz:0,c:1,lean:-.9,g:1,q:qp},{p:[-1.1,y,z],rz:0,c:1,lean:-.9,g:1,q:qm}];}),cel:cel2(.12),nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:1});
- K.push({cr:crs(function(j){var y=YM[j]*.42,z=(j%2?.05:-.05);return [{p:[1.25,y,z],rz:0,c:.3,lean:.05,g:1,q:qp},{p:[-1.25,y,z],rz:0,c:.3,lean:.05,g:1,q:qm}];}),cel:cel2(.5),nuc:nuc(0,1),poli:[[-1.25,.85,0],[1.25,.85,0]],fib:0});
+ K.push({cr:crs(function(j){var y=YM[j]*.55,z=(j%2?.05:-.05);return [{p:[1.1,y,z],rz:0,c:1,lean:-.6,g:1,q:qp},{p:[-1.1,y,z],rz:0,c:1,lean:-.6,g:1,q:qm}];}),cel:cel2(.12),nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:1});
+ K.push({cr:crs(function(j){var y=TD[j][1],z=(j%2?.08:-.08),x=TD[j][0];return [{p:[1.25+x,y,z],rz:RZ[j]*.6,c:.3,lean:.05,g:1,q:qp},{p:[-1.25+x,y,z],rz:RZ[j]*.6,c:.3,lean:.05,g:1,q:qm}];}),cel:cel2(.5),nuc:nuc(0,1),poli:[[-1.25,.85,0],[1.25,.85,0]],fib:0});
  var u=JSON.parse(JSON.stringify(K[5]));u.cel=cel2(1);K.push(u);
  /* poli: la chiave ne ha 2 */
  return K;}
@@ -495,7 +495,7 @@ function chiaviMeiosi(){
  K.push({cr:crs(function(j){var q=[LATO[j]*1.45,0,0];return X([LATO[j]*1.15,YT[j]*.75,0],0,1,.22,R_BR,1,q,q);}),cel:C2(.1),nuc:NU(0,0),poli:PI1,fib:1});
  K.push({cr:crs(function(j){return X([cx(j),YT[j]*.6,0],0,.8,.22,R_BR,1);}),cel:C2(1),nuc:NU(0,0),poli:PI2a,fib:0});
  K.push({cr:crs(function(j){var P=[cx(j)+dxII(j),0,0];return X(P,Math.PI/2,1,.22,R_BR,1,[cx(j),.95,0],[cx(j),-.95,0]);}),cel:C2(1),nuc:NU(0,0),poli:PI2,fib:1});
- K.push({cr:crs(function(j){var x=cx(j)+dxII(j)*.8;return [{p:[x,.68,0],rz:Math.PI/2,c:1,lean:-.9,g:1,q:[cx(j),.95,0]},{p:[x,-.68,0],rz:Math.PI/2,c:1,lean:-.9,g:1,q:[cx(j),-.95,0]}];}),cel:C4(.12),nuc:NU(0,0),poli:PI2,fib:1});
+ K.push({cr:crs(function(j){var x=cx(j)+dxII(j)*.8;return [{p:[x,.68,0],rz:Math.PI/2,c:1,lean:-.6,g:1,q:[cx(j),.95,0]},{p:[x,-.68,0],rz:Math.PI/2,c:1,lean:-.6,g:1,q:[cx(j),-.95,0]}];}),cel:C4(.12),nuc:NU(0,0),poli:PI2,fib:1});
  K.push({cr:crs(function(j){var x=cx(j),o=j<2?.13:-.13;return [{p:[x,.8+o,0],rz:Math.PI/2,c:.4,lean:.05,g:1,q:[x,.95,0]},{p:[x,-.8+o,0],rz:Math.PI/2,c:.4,lean:.05,g:1,q:[x,-.95,0]}];}),cel:C4(1),nuc:NU(0,1),poli:[[1.3,1.35,0],[-1.3,1.35,0],[1.3,-1.35,0],[-1.3,-1.35,0]],fib:0});
  return K;}
 var FASI_S=[
@@ -548,7 +548,7 @@ var modS=vS?Divisione(vS,chiaviMeiosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1,0,
 /* crossing-over: le punte dei cromatidi interni delle tetradi si scambiano il colore a metà della fase 2 */
 var INTERNI=[[0,0,COL.pat],[1,1,COL.mat],[2,1,COL.pat],[3,0,COL.mat]],U_CROSS=2.5/9;
 var filmS=Film({fasi:FASI_S,fine:FINE_S,mod:modS,vista:vS,range:'sTempo',play:'sPlay',fase:'sFase',chips:null,img:'pf-meiosi',fum:'fu-meiosi',
- fumFine:'Quattro cellule diverse con metà dei cromosomi. Sono i gameti, che si uniscono nella fecondazione.',
+ fumFine:'Quattro cellule diverse con metà dei cromosomi. Da queste si formano i gameti, che si uniscono nella fecondazione.',
  dopo:function(u){if(!modS)return;INTERNI.forEach(function(x){var c=modS.cr[x[0]*2+x[1]],orig=x[0]%2?COL.pat:COL.mat;c.mX.color.set(u>=U_CROSS?x[2]:orig);});}});
 
 /* ================= 02 CICLO CELLULARE ================= */
