@@ -97,7 +97,8 @@ button{font-family:inherit}
  <button class="scheda" role="tab" aria-selected="false" data-p="2"><span class="num">03</span>Le proteine</button>
  <button class="scheda" role="tab" aria-selected="false" data-p="3"><span class="num">04</span>I lipidi</button>
  <button class="scheda" role="tab" aria-selected="false" data-p="4"><span class="num">05</span>Vitamine e sali minerali</button>
- <button class="scheda" role="tab" aria-selected="false" data-p="quiz"><span class="num">06</span>Allenati</button>
+ <button class="scheda" role="tab" aria-selected="false" data-p="5"><span class="num">06</span>Gli acidi nucleici</button>
+ <button class="scheda" role="tab" aria-selected="false" data-p="quiz"><span class="num">07</span>Allenati</button>
 </nav>
 
 <section id="p-esplora">
@@ -294,7 +295,9 @@ function dipeptide(){var m=new Mol();var a=amminoacido(m,V(-1.7,0,0),'H',0,true)
  m.acqua.push({p:m.at[b.N].p.clone().add(m.at[a.C].p).multiplyScalar(.5).add(V(0,.3,0)),d:V(0,1,.4).normalize()});
  m.etich.push({t:'legame peptidico',p:m.at[b.N].p.clone().add(m.at[a.C].p).multiplyScalar(.5).add(V(0,-1.6,.4)),c:'#ffd08a'});
  m.parti=[V(-2.4,.4,0),V(2.4,-.4,0)];return m.centra();}
-function speciale(t){var m=new Mol();m.speciale=t;return m;}   /* modelli schematici, costruiti nella scena (SPECIALI) */
+function speciale(t,leg){var m=new Mol();m.speciale=t;if(leg)m.leg=leg;return m;}
+function legBasi(u){return [['A adenina','#6fd08c'],u?['U uracile','#ff8a5b']:['T timina','#d46aa0'],['C citosina','#6aa5ff'],['G guanina','#e0d24a'],['zucchero','#c9aaff'],['fosfato','#f08a24']]
+ .map(function(q){return '<span><i style="background:'+q[1]+'"></i>'+q[0]+'</span>';}).join('');}   /* modelli schematici, costruiti nella scena (SPECIALI) */
 
 /* --- lipidi --- */
 function acidoGrasso(m,pO,parte,insaturo,lato,fan){/* da un ossigeno estere: carbonio con doppio O, poi catena; fan apre le code a ventaglio */
@@ -349,29 +352,18 @@ function eme(){var m=new Mol(),fe=m.atomo('Fe',V(0,0,0)),Ca=[];
  m.orizzontale();   /* anello quasi orizzontale, ossigeno in alto */
  m.etich.push({t:'ferro',p:V(1.15,-.55,.35),c:'#f2b27a',h:.32});m.etich.push({t:'ossigeno',p:m.at[o2].p.clone().add(V(0,.6,0)),c:'#ff9a9a',h:.32});return m;}
 function ione(lista){var m=new Mol();lista.forEach(function(q,i){m.extra.push({tipo:'ione',p:V((i-(lista.length-1)/2)*2.2,0,0),c:q.c,t:q.t,r:q.r});});return m;}
-function acidiNucleici(){var m=new Mol();m.perline=null;
- for(var i=0;i<14;i++){var f=i*.62,y=i*.38-2.5;var a=V(Math.cos(f)*1.1,y,Math.sin(f)*1.1),b=V(Math.cos(f+Math.PI)*1.1,y,Math.sin(f+Math.PI)*1.1);
-  m.extra.push({tipo:'base',p:a,c:'#f08a24'});m.extra.push({tipo:'base',p:b,c:'#f08a24'});m.extra.push({tipo:'ponte',a:a,b:b,c:['#6aa5ff','#e0d24a','#d46aa0','#6fd08c'][i%4]});
-  if(i){var fp=(i-1)*.62,yp=(i-1)*.38-2.5;m.extra.push({tipo:'stecca',a:V(Math.cos(fp)*1.1,yp,Math.sin(fp)*1.1),b:a});m.extra.push({tipo:'stecca',a:V(Math.cos(fp+Math.PI)*1.1,yp,Math.sin(fp+Math.PI)*1.1),b:b});}}
- return m;}
-
 /* ================= contenuti delle schede =================
    Ogni scheda ha la riga sotto il titolo, la frase ancora, la frase di Prof. T e i gruppi di chip.
    Ogni chip ha nome, colore del pallino, molecola (funzione), testo e, se serve, un elenco di dati. */
 var SCHEDE=[
  {sub:'Lo scheletro delle molecole della vita',anchor:'Il carbonio fa quattro legami. Per questo forma catene e anelli, lo scheletro di tutte le biomolecole.',
   prof:'Tocca <b>Metano</b> e guarda come il carbonio si lega a quattro atomi di idrogeno.',posa:'fornello',
-  gruppi:[{n:'Il carbonio e gli idrocarburi',c:[
+  gruppi:[{n:'Gli idrocarburi',c:[
    {k:'met',n:'Metano',col:'#3d434c',m:metano,d:'<p>Un carbonio e quattro idrogeni. È l\'idrocarburo più semplice, un aeriforme che si usa per cucinare e per riscaldare.</p><p><b>Idrocarburi</b>, molecole fatte solo di carbonio e idrogeno.</p>'},
    {k:'et',n:'Etano',col:'#3d434c',m:etano,d:'<p>Due carboni legati tra loro, ognuno con tre idrogeni. Il legame tra due carboni è il primo passo di una catena.</p>'},
    {k:'pro',n:'Propano',col:'#3d434c',m:function(){return alcano(3);},d:'<p>Tre carboni in fila. È un aeriforme che, compresso, diventa liquido. Insieme al butano forma il <b>GPL</b> delle bombole e delle auto.</p>'},
    {k:'but',n:'Butano',col:'#3d434c',m:function(){return alcano(4);},d:'<p>Quattro carboni. La catena non è diritta ma a zig zag, perché i quattro legami di ogni carbonio sono rivolti in direzioni diverse.</p><p>È l\'aeriforme degli accendini, dove sta liquido sotto pressione. Nelle biomolecole le catene possono avere decine di carboni.</p>'},
-   {k:'cic',n:'Anello',col:'#3d434c',m:cicloesano,d:'<p>Sei carboni che si chiudono ad anello (cicloesano). Anche gli zuccheri, come il glucosio, hanno un anello.</p>'}]},
-  {n:'Le biomolecole',c:[
-   {k:'f1',n:'Carboidrati',col:'#e0d24a',m:function(){return glucosio();},cap:'Esempio, il glucosio',d:'<p>Carbonio, idrogeno e ossigeno. Danno energia alle cellule e la mettono da parte.</p><p><button class="vai" data-vai="1">Vai alla scheda dei carboidrati</button></p>'},
-   {k:'f2',n:'Lipidi',col:'#f2c94c',m:function(){return soloAcido(false);},cap:'Esempio, un acido grasso con la catena accorciata',d:'<p>Soprattutto carbonio e idrogeno, con poco ossigeno. Riserva di energia e membrane delle cellule.</p><p><button class="vai" data-vai="3">Vai alla scheda dei lipidi</button></p>'},
-   {k:'f3',n:'Proteine',col:'#6aa5ff',m:alanina,cap:'Esempio, un amminoacido, il mattone delle proteine',d:'<p>Carbonio, idrogeno, ossigeno e azoto. Lunghe catene di amminoacidi che fanno quasi tutti i lavori della cellula.</p><p><button class="vai" data-vai="2">Vai alla scheda delle proteine</button></p>'},
-   {k:'f4',n:'Acidi nucleici',col:'#f08a24',m:acidiNucleici,cap:'Schema della doppia elica, non è un modello atomico',d:'<p><b>DNA</b> e <b>RNA</b>. Lunghe catene di nucleotidi, con carbonio, idrogeno, ossigeno, azoto e fosforo.</p><p>Portano l\'<b>informazione</b> per costruire le proteine e passano da una cellula alle cellule figlie.</p><p>Come si copiano e si dividono lo vedi in <a href="divisione_cellulare.html" style="color:#8ee0a6">La divisione cellulare</a>.</p>'}]}]},
+   {k:'cic',n:'Anello',col:'#3d434c',m:cicloesano,d:'<p>Sei carboni che si chiudono ad anello (cicloesano). Anche gli zuccheri, come il glucosio, hanno un anello.</p>'}]}]},
  {sub:'Zuccheri semplici e catene di zuccheri',anchor:'I carboidrati sono la fonte di energia più usata dalle cellule. Le catene lunghe sono riserve da smontare quando serve.',
   prof:'Tocca <b>Saccarosio</b> e guarda glucosio e fruttosio che si uniscono.',posa:'pentolino',kcal:4,
   gruppi:[{n:'Zuccheri semplici',c:[
@@ -391,8 +383,8 @@ var SCHEDE=[
   {n:'Le quattro strutture',c:[
    {k:'pri',n:'Primaria',col:'#9cc0ff',m:function(){return speciale('primaria');},cap:'Schema, ogni forma è un tipo di amminoacido',d:'<p>L\'<b>ordine</b> degli amminoacidi nella catena, come le lettere in una parola. Spesso sono centinaia.</p><p>Un solo amminoacido diverso può cambiare la forma e il lavoro di tutta la proteina.</p>'},
    {k:'sec',n:'Secondaria',col:'#9cc0ff',m:function(){return speciale('secondaria');},cap:'Schema, l\'elica come una molla, i filamenti beta come nastri con la freccia. In azzurro i legami a idrogeno',d:'<p>Tratti di catena si avvolgono a spirale come una molla (<b>alfa elica</b>) oppure si distendono e si affiancano piegati a fisarmonica (<b>foglietto beta pieghettato</b>). La freccia indica il verso della catena.</p><p>Li tengono in forma i <b>legami a idrogeno</b> tra parti vicine della catena.</p>'},
-   {k:'ter',n:'Terziaria',col:'#9cc0ff',m:function(){return speciale('terziaria');},cap:'Mioglobina, schema. Ogni spirale è un\'alfa elica, il disco rosso è il gruppo eme',d:'<p>Tutta la catena si ripiega in una forma precisa. Qui la <b>mioglobina</b>, che conserva l\'ossigeno nei muscoli.</p><p>Una sola catena di circa 150 amminoacidi, con <b>8 alfa eliche</b> che si raccolgono a gomitolo intorno al gruppo <b>eme</b>. Il ferro al centro dell\'eme trattiene l\'ossigeno.</p>'},
-   {k:'qua',n:'Quaternaria',col:'#9cc0ff',m:function(){return speciale('quaternaria');},cap:'Emoglobina, schema. In rosa le catene alfa, in blu le catene beta',d:'<p>Più catene si uniscono. L\'<b>emoglobina</b> dei globuli rossi ha <b>quattro catene</b>, due alfa e due beta.</p><p>Ognuna è ripiegata come la mioglobina e ha il suo gruppo eme.</p>'}]},
+   {k:'ter',n:'Terziaria',col:'#9cc0ff',m:function(){return speciale('terziaria');},cap:'Lisozima, schema. Le spirali sono alfa eliche, i nastri con la freccia filamenti beta',d:'<p>Tutta la catena si ripiega in una forma precisa, con alfa eliche e foglietti beta insieme. Qui il <b>lisozima</b>, un enzima delle lacrime, della saliva e dell\'albume che rompe la parete dei batteri.</p><p>Una sola catena di 129 amminoacidi. Un solco, il <b>sito attivo</b>, la divide in due parti, una con le alfa eliche e una con il foglietto beta.</p>'},
+   {k:'qua',n:'Quaternaria',col:'#9cc0ff',m:function(){return speciale('quaternaria');},cap:'Emoglobina, schema. In rosa le catene alfa, in blu le catene beta',d:'<p>Più catene si uniscono. L\'<b>emoglobina</b> dei globuli rossi ha <b>quattro catene</b>, due alfa e due beta.</p><p>Ognuna è fatta di alfa eliche ripiegate e ha il suo <b>gruppo eme</b>, con il ferro che trattiene l\'ossigeno.</p>'}]},
   {n:'Che lavoro fanno',c:[
    {k:'s',n:'Struttura',col:'#8ee0a6',m:function(){return speciale('collagene');},cap:'Collagene, schema',d:'<p>Costruiscono e sostengono il corpo. Il <b>collagene</b>, circa un quarto di tutte le proteine del corpo, è fatto di tre catene avvolte come una corda. Sta nella pelle, nei tendini e nelle ossa.</p><p>La cheratina forma capelli e unghie.</p>'},
    {k:'e',n:'Enzimi',col:'#8ee0a6',m:function(){return speciale('enzima');},cap:'Schema, un enzima della digestione e un pezzo di amido',d:'<p>Rendono veloci le reazioni chimiche. Un enzima della digestione ha un solco, il <b>sito attivo</b>, dove un pezzo di <b>amido</b> si incastra come una chiave nella serratura. Lì l\'enzima lo spezza.</p><p>Poi resta uguale, pronto per il pezzo successivo.</p>'},
@@ -423,7 +415,15 @@ var SCHEDE=[
    {k:'ca',n:'Calcio',col:'#3fa862',m:function(){return ione([{t:'Ca²⁺',c:'#3fa862',r:.8}]);},cap:'Schema, lo ione non è in scala',d:'<p>Forma <b>ossa e denti</b> e serve alla contrazione dei muscoli.</p>',al:'latte, formaggi, yogurt, alcune verdure'},
    {k:'fe',n:'Ferro',col:'#e08a3a',m:eme,cap:'Gruppo eme semplificato, idrogeni al posto delle catene laterali, con una molecola di ossigeno',d:'<p>Sta al centro del <b>gruppo eme</b>, un anello di carbonio e azoto. Il ferro trattiene l\'ossigeno.</p><p>Ogni catena dell\'<b>emoglobina</b> ha un gruppo eme. <button class="vai" data-vai="2">Vai alla scheda delle proteine</button></p>',al:'carne, pesce, legumi, verdure a foglia verde'},
    {k:'nak',n:'Sodio e potassio',col:'#9a6fe8',m:function(){return ione([{t:'Na⁺',c:'#ab5cf2',r:.75},{t:'K⁺',c:'#7a3fd0',r:.95}]);},cap:'Schema, gli ioni non sono in scala',d:'<p>Regolano l\'acqua dentro e fuori le cellule e fanno funzionare <b>nervi e muscoli</b>.</p>',al:'sodio nel sale da cucina, potassio in frutta e verdura'},
-   {k:'iod',n:'Iodio',col:'#8a5cc0',m:function(){return ione([{t:'I⁻',c:'#8a5cc0',r:1.0}]);},cap:'Schema, lo ione non è in scala',d:'<p>La <b>tiroide</b> lo usa per produrre i suoi ormoni, importanti per la crescita e per lo sviluppo del sistema nervoso.</p>',al:'pesce di mare, latte, sale iodato'}]}]}];
+   {k:'iod',n:'Iodio',col:'#8a5cc0',m:function(){return ione([{t:'I⁻',c:'#8a5cc0',r:1.0}]);},cap:'Schema, lo ione non è in scala',d:'<p>La <b>tiroide</b> lo usa per produrre i suoi ormoni, importanti per la crescita e per lo sviluppo del sistema nervoso.</p>',al:'pesce di mare, latte, sale iodato'}]}]},
+ {sub:'DNA e RNA, le molecole dell\'informazione',anchor:'Gli acidi nucleici sono catene di nucleotidi. L\'ordine delle basi è l\'informazione per costruire le proteine.',
+  prof:'Tocca <b>DNA</b> e guarda le basi che si incastrano a coppie.',posa:'pentolino',
+  gruppi:[{n:'I mattoni',c:[
+   {k:'nuc',n:'Nucleotide',col:'#c9aaff',m:function(){return speciale('nucleotide',legBasi(false));},cap:'Schema, ogni parte ha una forma e un colore',d:'<p>Il mattone degli acidi nucleici. Ha tre parti, un <b>fosfato</b>, uno <b>zucchero</b> a cinque atomi di carbonio e una <b>base azotata</b>.</p><p>Nel DNA lo zucchero è il deossiribosio, nell\'RNA il ribosio.</p>'},
+   {k:'bas',n:'Coppie di basi',col:'#c9aaff',m:function(){return speciale('basi',legBasi(false));},cap:'Schema, le forme mostrano quali basi si incastrano',d:'<p>Le basi del DNA sono quattro, <b>A</b> adenina, <b>T</b> timina, <b>C</b> citosina e <b>G</b> guanina. Si incastrano solo a coppie, <b>A con T</b> e <b>C con G</b>, tenute insieme da legami a idrogeno.</p><p>A e G sono più grandi, T e C più piccole, così ogni coppia ha la stessa lunghezza.</p>'}]},
+  {n:'Le molecole',c:[
+   {k:'dna',n:'DNA',col:'#6fd08c',m:function(){return speciale('dna',legBasi(false));},cap:'Schema della doppia elica, le forme delle basi mostrano gli incastri',d:'<p>Due filamenti avvolti a <b>doppia elica</b>. All\'esterno lo scheletro di zuccheri e fosfati, all\'interno le basi che si incastrano a coppie.</p><p>Conoscendo un filamento si ricava l\'altro, perché le basi sono complementari. Come il DNA si avvolge nei cromosomi e si copia lo vedi in <a href="divisione_cellulare.html" style="color:#8ee0a6">La divisione cellulare</a>.</p>'},
+   {k:'rna',n:'RNA',col:'#ff8a5b',m:function(){return speciale('rna',legBasi(true));},cap:'Schema, un filamento con lo zucchero ribosio',d:'<p>Un solo filamento, con lo zucchero <b>ribosio</b> e la base <b>U</b> (uracile) al posto della T. L\'uracile si incastra con l\'adenina.</p><p>L\'RNA messaggero copia un tratto di DNA e porta le istruzioni ai ribosomi, dove si costruiscono le proteine.</p>'}]}]}];
 
 /* ================= scena 3D ================= */
 var S={sch:0,sel:null};
@@ -464,13 +464,13 @@ function Scena(el){
  function asta(a,b,r,m,t0){var me=cil(a,b,r,m);gruppo.add(me);
   return {o:me,upd:function(T){var u=cresce(T,t0);me.visible=u>.01;posCil(me,a,b,r*Math.max(.01,u));}};}
  function etichetta(t,p,c,t0,h){var sp=testo(t,c,h||.42);gruppo.add(sp);return {o:sp,t0:t0,sp:sp.scale.clone(),base:p,et:true};}
- /* globina: le 8 alfa eliche (A-H) della mioglobina, centro, direzione e lunghezza in nm circa; schema, non coordinate reali */
+ /* globina: le 8 alfa eliche (A-H) di ogni catena dell'emoglobina, centro, direzione e lunghezza in nm circa; schema, non coordinate reali */
  var GLOB=[{c:V(-1.16,0.09,-0.17),d:V(-0.03,-0.55,0.83),l:2.4},{c:V(-0.08,-0.06,1.12),d:V(0.91,0.24,-0.34),l:2.4},{c:V(0.55,-0.26,0.10),d:V(-0.82,0.24,-0.52),l:1.05},
   {c:V(-0.02,0.77,0.66),d:V(0.01,0.75,0.66),l:1.05},{c:V(0.00,0.84,-0.40),d:V(-0.13,-0.63,-0.76),l:2.85},{c:V(-0.64,-0.86,-0.55),d:V(-0.71,-0.42,0.56),l:1.5},
   {c:V(0.38,-1.12,-0.52),d:V(0.77,0.21,-0.61),l:2.85},{c:V(0.96,0.60,-0.24),d:V(-0.04,0.56,0.83),l:3.9}];   /* disposizione compatta calcolata: eliche distanti, anse corte */
  var EME={p:V(-.6,.2,.2),n:V(.3,.2,.93)};   /* eme in una tasca vicino alle eliche E e F, girato verso chi guarda */
  var geoEl={};
- /* alfa elica come una molla: lunghezza l, raggio R, spessore r, passo (nm circa nella mioglobina) */
+ /* alfa elica come una molla: lunghezza l, raggio R, spessore r, passo (nm circa) */
  function geoElica(l,R,r,passo){R=R||.23;r=r||.085;passo=passo||.54;var key=[l,R,r,passo].join('|');if(geoEl[key])return geoEl[key];
   var giri=l/passo,n=Math.ceil(giri*16),pts=[];
   for(var k=0;k<=n;k++){var t=k/n,a=t*giri*2*Math.PI;pts.push(V(Math.cos(a)*R,-l/2+t*l,Math.sin(a)*R));}
@@ -486,18 +486,41 @@ function Scena(el){
  /* tubo che cresce lungo un percorso di punti (anse e curve) */
  function geoTubo(pts,r){return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),Math.max(8,pts.length*10),r,6,false);}
  function cresceGeo(me,g,u,passo){var c=g.index.count;me.visible=u>.002;g.setDrawRange(0,Math.floor(c*u/passo)*passo);}
- function creaGlobina(col,cAnsa){var g=new THREE.Group(),el=[],anse=[];
-  GLOB.forEach(function(h,i){var me=new THREE.Mesh(geoElica(h.l),mat(Array.isArray(col)?col[i]:col));g.add(me);
-   var q=new THREE.Quaternion().setFromUnitVectors(V(0,1,0),h.d.clone().normalize());me.position.copy(h.c);me.quaternion.copy(q);
-   el.push({o:me,l:h.l,p1:h.c.clone(),q1:q});});
-  for(var i=0;i<7;i++){var c=new THREE.Mesh(GC,mat(cAnsa));g.add(c);anse.push(c);}
-  var eme=new THREE.Group(),dk=new THREE.Mesh(GC,mat('#b3262e'));dk.scale.set(.4,.07,.4);eme.add(dk);
-  var fe=new THREE.Mesh(GS,mat('#e08a3a'));fe.scale.setScalar(.14);eme.add(fe);
-  eme.position.copy(EME.p);eme.quaternion.setFromUnitVectors(V(0,1,0),EME.n);g.add(eme);
-  function agg(){for(var i=0;i<7;i++){var a=el[i],b=el[i+1];anse[i].visible=a.o.visible&&b.o.visible;
+ /* proteina ripiegata: elenco di eliche (t:'a') e filamenti beta (t:'b') con centro, direzione, lunghezza; anse tra uno e l'altro */
+ function creaPieghe(lista,col,cAnsa,conEme){var g=new THREE.Group(),el=[],anse=[],MS=mat('#f2c94c','{"side":2}');
+  lista.forEach(function(h,i){var b=h.t==='b',me=new THREE.Mesh(b?geoNastro(h.l,.42,.08,.3):geoElica(h.l),b?MS:mat(Array.isArray(col)?col[i]:col));g.add(me);
+   var q=new THREE.Quaternion().setFromUnitVectors(V(0,1,0),h.d.clone().normalize());if(b)q.multiply(qe(0,Math.PI/2,0));   /* nastro largo nel piano del foglietto */
+   me.position.copy(h.c);me.quaternion.copy(q);el.push({o:me,l:h.l,p1:h.c.clone(),q1:q});});
+  for(var i=0;i<lista.length-1;i++){var c=new THREE.Mesh(GC,mat(cAnsa));g.add(c);anse.push(c);}
+  var eme=null;
+  if(conEme){eme=new THREE.Group();var dk=new THREE.Mesh(GC,mat('#b3262e'));dk.scale.set(.4,.07,.4);eme.add(dk);
+   var fe=new THREE.Mesh(GS,mat('#e08a3a'));fe.scale.setScalar(.14);eme.add(fe);
+   eme.position.copy(EME.p);eme.quaternion.setFromUnitVectors(V(0,1,0),EME.n);g.add(eme);}
+  function agg(){for(var i=0;i<anse.length;i++){var a=el[i],b=el[i+1];anse[i].visible=a.o.visible&&b.o.visible;
    var pa=a.o.position.clone().add(V(0,a.l/2*a.o.scale.y,0).applyQuaternion(a.o.quaternion)),pb=b.o.position.clone().add(V(0,-b.l/2*b.o.scale.y,0).applyQuaternion(b.o.quaternion));
-   posCil(anse[i],pa,pb,.05);}}
+   posCil(anse[i],pa,pb,lista===LISO?.035:.05);}}
   agg();return {g:g,el:el,eme:eme,anse:agg};}
+ function creaGlobina(col,cAnsa){return creaPieghe(GLOB,col,cAnsa,true);}
+ /* lisozima: 4 alfa eliche e un foglietto beta di tre filamenti, nell'ordine della catena; disposizione calcolata (schema, non coordinate reali) */
+ var LISO=[{c:V(-1.16,-0.76,-0.42),d:V(-0.18,-0.35,0.92),l:1.65,t:'a'},{c:V(-0.50,-0.38,0.60),d:V(0.97,0.20,-0.13),l:1.8,t:'a'},{c:V(0.97,0.31,0.56),d:V(0,1,0),l:1.2,t:'b'},
+  {c:V(0.97,0.31,0.06),d:V(0,-1,0),l:1.2,t:'b'},{c:V(0.97,0.16,-0.44),d:V(0,1,0),l:0.9,t:'b'},{c:V(-0.47,0.67,-0.24),d:V(-1,0.03,0.03),l:1.65,t:'a'},{c:V(-0.79,-0.33,-0.11),d:V(0.64,-0.76,0),l:1.05,t:'a'}];
+ /* basi degli acidi nucleici come pezzi a incastro: A e G (più lunghe) hanno una sporgenza, T, U e C l'incavo corrispondente.
+    Triangolo per la coppia A-T (o A-U), rettangolo per G-C. Il pezzo parte dallo zucchero (x=0) verso il centro dell'elica. */
+ var COL_B={A:'#6fd08c',T:'#d46aa0',G:'#e0d24a',C:'#6aa5ff',U:'#ff8a5b'},COMPL={A:'T',T:'A',G:'C',C:'G'},geoB={};
+ function geoBase(b,h){h=h||.2;var key=b+h;if(geoB[key])return geoB[key];var sh=new THREE.Shape(),pur=b==='A'||b==='G',L=pur?1.25:1.05,tri=b==='A'||b==='T'||b==='U',t=h*.6,d=.22;
+  sh.moveTo(0,-h);sh.lineTo(L,-h);sh.lineTo(L,-t);
+  if(pur){if(tri)sh.lineTo(L+d,0);else{sh.lineTo(L+d,-t);sh.lineTo(L+d,t);}}   /* sporgenza: triangolo (A) o rettangolo (G) */
+  else{if(tri)sh.lineTo(L-d,0);else{sh.lineTo(L-d,-t);sh.lineTo(L-d,t);}}   /* incavo corrispondente: T e U, oppure C */
+  sh.lineTo(L,t);sh.lineTo(L,h);sh.lineTo(0,h);sh.lineTo(0,-h);
+  var g=new THREE.ExtrudeGeometry(sh,{depth:.14,bevelEnabled:false});g.translate(0,0,-.07);return (geoB[key]=g);}
+ var GZ=new THREE.CylinderGeometry(.22,.22,.12,5);   /* zucchero a cinque atomi di carbonio, come un pentagono */
+ /* un nucleotide: zucchero in p0, base verso dir (lunghezza lungo dir, altezza lungo su) */
+ function nucleotide(b,p0,dir,su,zuc,h){var g=new THREE.Group(),X=dir.clone().normalize(),Y=su.clone().normalize(),Z=X.clone().cross(Y).normalize();
+  var zz=new THREE.Mesh(GZ,mat(zuc||'#c9aaff'));zz.position.copy(p0);zz.quaternion.setFromUnitVectors(V(0,1,0),Z);g.add(zz);
+  var ba=new THREE.Mesh(geoBase(b,h),mat(COL_B[b]));ba.position.copy(p0).add(X.clone().multiplyScalar(.18));
+  ba.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,Y,Z));g.add(ba);return g;}
+ function fosfato(p){var me=new THREE.Mesh(GS,mat('#f08a24'));me.scale.setScalar(.15);me.position.copy(p);return me;}
+ function compare(o,t0,sc){return {o:o,upd:function(T){var c=cresce(T,t0);o.visible=c>.01;o.scale.setScalar((sc||1)*Math.max(.01,c));}};}
  var COL_EL=['#6aa5ff','#4fc3c3','#6fd08c','#b5d86a','#e0d24a','#e8a33d','#ff8a5b','#d46aa0'];
  function qe(x,y,z){return new THREE.Quaternion().setFromEuler(new THREE.Euler(x,y,z));}
  var SUB=[{p:V(-1.85,1.37,.96),q:qe(0,0,0),c:'#e8707c'},{p:V(1.85,1.37,-.96),q:qe(0,Math.PI,0),c:'#e8707c'},
@@ -540,41 +563,55 @@ function Scena(el){
    for(var j=0;j<8;j++){var yy=-1.35+j*.39;[0,1].forEach(function(q){out.push(asta(V(xs[q]+.3,yy,0),V(xs[q+1]-.3,yy,0),.03,MH,tH));});}
    out.push(etichetta('alfa elica',V(-2.3,-3.0,0),'#f2b0b8',tH+.2,.34));out.push(etichetta('foglietto beta pieghettato',V(1.3,-3.0,0),'#f2d98a',tH+.2,.34));
    return {ogg:out,box:[V(-3,3.1,0),V(3,-3.2,0)],durata:tH+T_ATOMO+.8};},
-  terziaria:function(){var out=[],G=creaGlobina(COL_EL,'#c8d3e3');gruppo.add(G.g);
-   /* all'inizio le eliche stanno in fila su un cerchio, come una catena distesa */
-   var tot=0;GLOB.forEach(function(h){tot+=h.l+.3;});var R=tot/(2*Math.PI),cum=0;
-   G.el.forEach(function(e){var a=(cum+e.l/2)/R,ang=Math.PI/2-a;cum+=e.l+.3;
-    e.p0=V(Math.cos(ang)*R,Math.sin(ang)*R,0);e.q0=new THREE.Quaternion().setFromUnitVectors(V(0,1,0),V(Math.sin(ang),-Math.cos(ang),0));});
-   var passo=(T_COSTRUISCI-T_ATOMO)/7,tP=T_COSTRUISCI+.2,tE=tP+T_PIEGA;
+  terziaria:function(){var out=[],G=creaPieghe(LISO,'#e8707c','#c8d3e3',false);gruppo.add(G.g);
+   /* all'inizio eliche e filamenti stanno in fila su un cerchio, come una catena distesa */
+   var tot=0;LISO.forEach(function(h){tot+=h.l+.3;});var R=tot/(2*Math.PI),cum=0;
+   G.el.forEach(function(e,i){var a=(cum+e.l/2)/R,ang=Math.PI/2-a;cum+=e.l+.3;
+    e.p0=V(Math.cos(ang)*R,Math.sin(ang)*R,0);e.q0=new THREE.Quaternion().setFromUnitVectors(V(0,1,0),V(Math.sin(ang),-Math.cos(ang),0));
+    if(LISO[i].t==='b')e.q0.multiply(qe(0,Math.PI/2,0));});
+   var n=G.el.length,passo=(T_COSTRUISCI-T_ATOMO)/(n-1),tP=T_COSTRUISCI+.2,tE=tP+T_PIEGA;
    out.push({o:G.g,upd:function(T){var u=ease((T-tP)/T_PIEGA);
     G.el.forEach(function(e,i){var s=cresce(T,i*passo);e.o.visible=s>.01;e.o.scale.set(1,Math.max(.01,s),1);
-     e.o.position.copy(e.p0).lerp(e.p1,u);e.o.quaternion.copy(e.q0).slerp(e.q1,u);});
-    G.anse();var se=cresce(T,tE);G.eme.visible=se>.01;G.eme.scale.setScalar(Math.max(.01,se));}});
-   out.push(etichetta('eme',EME.p.clone().add(V(-.75,.5,.8)),'#ff9a9a',tE+.2,.2));
-   return {ogg:out,box:[V(R+.4,R+.4,0),V(-R-.4,-R-.4,0)],durata:tE+T_ATOMO+.8,zoom:{t:tP+T_PIEGA*.5,r:2.3}};},   /* a metà ripiegamento la camera si avvicina al gomitolo */
-  vitamine:function(){var out=[],t0=.4;
-   var bic=new THREE.Mesh(new THREE.CylinderGeometry(1.7,1.7,4,40,1,true),new THREE.MeshStandardMaterial({color:0xc8d3e3,transparent:true,opacity:.14,side:2,depthWrite:false}));
-   bic.position.y=-.2;bic.renderOrder=1;gruppo.add(bic);out.push({o:bic,t0:0,s:1,base:V(0,-.2,0)});
-   [[V(0,-1.15,0),2.1,'#5bc8f0'],[V(0,.6,0),1.4,'#f2c94c']].forEach(function(q){var me=new THREE.Mesh(new THREE.CylinderGeometry(1.62,1.62,q[1],40),
-    new THREE.MeshStandardMaterial({color:q[2],transparent:true,opacity:.32,depthWrite:false}));me.renderOrder=2;gruppo.add(me);out.push({o:me,t0:0,s:1,base:q[0]});});
-   [['B',-1],['C',-1],['A',1],['D',1],['E',1],['K',1]].forEach(function(q,i){var a=V((i-2.5)*.55,-.1,.9),b=V(q[1]<0?(i-.5)*1.1:(i-3.5)*.75,q[1]<0?-1.25:.6,.9);
-    var sp=testo(q[0],'#ffffff',.6);gruppo.add(sp);var sc=sp.scale.clone();
-    out.push({o:sp,upd:function(T){var c=cresce(T,.1+i*.05);sp.visible=c>.01;sp.scale.set(sc.x*c,sc.y*c,1);sp.position.copy(a).lerp(b,ease((T-t0)/T_UNIONE));}});});
-   out.push(etichetta('olio',V(2.45,.6,0),'#f2d98a',0,.36));out.push(etichetta('acqua',V(2.55,-1.15,0),'#9fd8ff',0,.36));
-   return {ogg:out,box:[V(-2.6,2,0),V(3,-2.4,0)],durata:t0+T_UNIONE+.6};},
-  sale:function(){var out=[],P=[],tD=T_COSTRUISCI+.4;
-   for(var i=-1;i<=1;i++)for(var j=-1;j<=1;j++)for(var k=-1;k<=1;k++)P.push({p:V(i,j,k).multiplyScalar(.95),na:(i+j+k+3)%2===0});
-   var passo=(T_COSTRUISCI-T_ATOMO)/(P.length-1),AL=new THREE.MeshStandardMaterial({color:0x5bc8f0,transparent:true,opacity:.14,depthWrite:false});
-   P.forEach(function(q,n){var r=q.na?.3:.5,me=new THREE.Mesh(GS,mat(q.na?'#ab5cf2':'#5fd35f'));gruppo.add(me);
-    var dove=q.p.clone().multiplyScalar(2.4).add(V(Math.sin(n*2.1),Math.cos(n*1.7),Math.sin(n*3.3)).multiplyScalar(.35));q.f=dove;
-    var al=new THREE.Mesh(GS,AL);al.renderOrder=3;gruppo.add(al);
-    out.push({o:me,upd:function(T){var c=cresce(T,n*passo),u=ease((T-tD)/T_UNIONE);me.visible=c>.01;me.scale.setScalar(r*Math.max(.01,c));
-     me.position.copy(q.p).lerp(dove,u);al.visible=u>.02;al.position.copy(me.position);al.scale.setScalar((r+.38)*Math.max(.01,u));}});});
-   var na=P.filter(function(q){return q.na&&q.p.lengthSq()>2.5;})[0],cl=P.filter(function(q){return !q.na&&q.p.y>.5&&q.p.x<-.5;})[0];
-   out.push(etichetta('Na⁺ sodio',na.f.clone().add(V(0,.75,0)),'#d2a8ff',tD+T_UNIONE,.34));out.push(etichetta('Cl⁻ cloruro',cl.f.clone().add(V(0,.95,0)),'#9fe89f',tD+T_UNIONE,.34));
-   var ec=etichetta('cristallo di sale',V(0,-1.95,0),'#c8d3e3',T_COSTRUISCI,.34);   /* scompare quando il cristallo si scioglie */
-   ec.upd=function(T){var c=cresce(T,T_COSTRUISCI)*(1-clamp((T-tD)/.4,0,1));ec.o.visible=c>.01;ec.o.scale.set(ec.sp.x*c,ec.sp.y*c,1);ec.o.position.copy(ec.base);};out.push(ec);
-   return {ogg:out,box:[V(3.9,3.9,1),V(-3.9,-3.9,-1)],durata:tD+T_UNIONE+.6};},
+     e.o.position.copy(e.p0).lerp(e.p1,u);e.o.quaternion.copy(e.q0).slerp(e.q1,u);});G.anse();}});
+   out.push(etichetta('alfa eliche',V(-1.3,1.45,.4),'#f2b0b8',tE,.2));out.push(etichetta('foglietto beta',V(1.1,1.35,.4),'#f2d98a',tE,.2));
+   out.push(etichetta('sito attivo',V(.2,-.1,1.25),'#8fe3e3',tE,.2));
+   return {ogg:out,box:[V(R+.4,R+.4,0),V(-R-.4,-R-.4,0)],durata:tE+T_ATOMO+.8,zoom:{t:tP+T_PIEGA*.5,r:1.75}};},   /* a metà ripiegamento la camera si avvicina */
+  nucleotide:function(){var out=[],X=V(1,0,0),Y=V(0,1,0);
+   var g=nucleotide('A',V(-.9,0,0),X,Y,null,.28);g.scale.setScalar(1.5);var zz=g.children[0],ba=g.children[1];gruppo.add(g);
+   var fo=fosfato(V(-2.4,.65,0));fo.scale.setScalar(.3);gruppo.add(fo);var st=new THREE.Group();st.add(cil(V(-2.4,.65,0),V(-1.35,0,0),.07,MB));gruppo.add(st);
+   out.push(compare(fo,0,.3),compare(st,.3),compare(zz,.6),compare(ba,.9));
+   out.push(etichetta('fosfato',V(-2.4,1.35,0),'#f2b27a',.4,.34),etichetta('zucchero',V(-1.35,-.75,0),'#d6c2ff',.7,.34),etichetta('base',V(.6,.6,0),'#9fe8b4',1,.34));
+   return {ogg:out,box:[V(-3,1.6,0),V(2.2,-1.2,0)],durata:1+T_ATOMO+.8};},
+  basi:function(){var out=[],Y=V(0,1,0);
+   [['A',1.15],['G',-1.15]].forEach(function(q){var b=q[0],c=COMPL[b],y=q[1];
+    var g1=nucleotide(b,V(-1.33,y,0),V(1,0,0),Y,null,.3),g2=nucleotide(c,V(1.33,y,0),V(-1,0,0),Y,null,.3);gruppo.add(g1);gruppo.add(g2);
+    out.push({o:g1,upd:function(T){var c1=cresce(T,0);g1.visible=c1>.01;g1.position.x=-1.3*(1-ease((T-.4)/T_UNIONE));}});
+    out.push({o:g2,upd:function(T){var c1=cresce(T,0);g2.visible=c1>.01;g2.position.x=1.3*(1-ease((T-.4)/T_UNIONE));}});
+    var nomi={A:'A adenina',T:'T timina',G:'G guanina',C:'C citosina'};
+    out.push(etichetta(nomi[b],V(-1.9,y+.55,0),'#e6ecf5',.1,.3),etichetta(nomi[c],V(1.9,y+.55,0),'#e6ecf5',.1,.3));});
+   out.push(etichetta('si incastrano solo a coppie',V(0,-2.15,0),'#c8d3e3',.4+T_UNIONE,.32));
+   return {ogg:out,box:[V(-2.5,1.9,0),V(2.5,-2.3,0)],durata:.4+T_UNIONE+.8};},
+  dna:function(){var out=[],N=10,dy=.58,Rb=1.33,SEQ_D=['A','T','G','C','C','A','T','G','A','C'],passo=(T_COSTRUISCI-T_ATOMO)/(N-1),tU=T_COSTRUISCI+.2,Y=V(0,1,0);
+   var pA=[],pB=[];
+   for(var i=0;i<N;i++){var f=i*2*Math.PI/10,y=(i-(N-1)/2)*dy,a=V(Math.cos(f)*Rb,y,Math.sin(f)*Rb),b=V(-a.x,y,-a.z);pA.push(a);pB.push(b);
+    var dir=b.clone().sub(a);dir.y=0;
+    var n1=nucleotide(SEQ_D[i],a,dir,Y);gruppo.add(n1);out.push(compare(n1,i*passo));
+    /* secondo filamento: ogni nucleotide arriva da fuori e la sua base si incastra */
+    var n2=nucleotide(COMPL[SEQ_D[i]],b,dir.clone().negate(),Y),fuori=b.clone().setY(0).normalize().multiplyScalar(1.4);gruppo.add(n2);
+    (function(n2,fuori,k){out.push({o:n2,upd:function(T){var u=ease((T-tU-k*.06)/T_UNIONE);n2.visible=T>tU+k*.06;n2.position.copy(fuori).multiplyScalar(1-u);}});})(n2,fuori,i);}
+   [pA,pB].forEach(function(P,s){for(var i=0;i+1<N;i++){var m=P[i].clone().add(P[i+1]).multiplyScalar(.5),r=Math.hypot(m.x,m.z);m.x*=1.12*Rb/r;m.z*=1.12*Rb/r;
+    var fo=fosfato(m),s1=cil(P[i],m,.05,MB),s2=cil(m,P[i+1],.05,MB),G=new THREE.Group();G.add(fo,s1,s2);gruppo.add(G);
+    if(s===0)out.push(compare(G,(i+.5)*passo));
+    else (function(G,fuori,k){out.push({o:G,upd:function(T){var u=ease((T-tU-k*.06)/T_UNIONE);G.visible=T>tU+k*.06;G.position.copy(fuori).multiplyScalar(1-u);}});})(G,m.clone().setY(0).normalize().multiplyScalar(1.4),i);}});
+   out.push(etichetta('zucchero e fosfato',V(-2.3,-3.15,0),'#d6c2ff',tU+T_UNIONE,.3),etichetta('basi appaiate',V(1.6,-3.15,0),'#c8d3e3',tU+T_UNIONE,.3));
+   return {ogg:out,box:[V(-2.4,3.2,1.4),V(2.4,-3.2,-1.4)],durata:tU+.6+T_UNIONE+.6};},
+  rna:function(){var out=[],S=['A','U','G','C','U','A','G','C'],n=S.length,P=[],passo=(T_COSTRUISCI-T_ATOMO)/(n-1);
+   for(var i=0;i<n;i++)P.push(V((i-(n-1)/2)*.62,.9+Math.sin(i*.8)*.35,Math.cos(i*.8)*.3));
+   for(i=0;i<n;i++){var tg=(P[Math.min(n-1,i+1)].clone().sub(P[Math.max(0,i-1)])).normalize();
+    var g=nucleotide(S[i],P[i],V(0,-1,0),tg,'#e3c6ff');gruppo.add(g);out.push(compare(g,i*passo));
+    if(i){var m=P[i-1].clone().add(P[i]).multiplyScalar(.5).add(V(0,.22,0)),G=new THREE.Group();G.add(fosfato(m),cil(P[i-1],m,.05,MB),cil(m,P[i],.05,MB));gruppo.add(G);out.push(compare(G,(i-.5)*passo));}}
+   out.push(etichetta('un solo filamento',V(0,2.1,0),'#d6c2ff',T_COSTRUISCI,.32),etichetta('U al posto di T',P[1].clone().add(V(0,-1.9,0)),'#ffb08a',T_COSTRUISCI,.3));
+   return {ogg:out,box:[V(-2.8,2.4,0),V(2.8,-1.4,0)],durata:T_COSTRUISCI+.8};},
   quaternaria:function(){return emoglobina(false);},
   trasporto:function(){return emoglobina(true);},
   collagene:function(){var out=[],cols=['#e8a33d','#f2c94c','#d9734a'];
@@ -737,7 +774,7 @@ function say(t,posa){var im=$('profImg'),src=IMG[posa||'hi'];if(im.getAttribute(
 
 /* ================= pannello ================= */
 var LEG=['C','H','O','N','P','Fe'];
-function legenda(m){var usati={};if(m&&m.at)m.at.forEach(function(a){usati[a.el]=1;});
+function legenda(m){if(m&&m.leg){$('legenda').innerHTML=m.leg;return;}var usati={};if(m&&m.at)m.at.forEach(function(a){usati[a.el]=1;});
  var v=LEG.filter(function(e){return usati[e];});
  $('legenda').innerHTML=v.map(function(e){return '<span><i style="background:'+EL[e].c+'"></i>'+e+' '+EL[e].n+'</span>';}).join('');}
 function chipTrova(k){var r=null;SCHEDE[S.sch].gruppi.forEach(function(g){g.c.forEach(function(c){if(c.k===k)r=c;});});return r;}
@@ -772,7 +809,7 @@ function apriScheda(i){
  else say(sc.prof,'idle');
  S.parlato[i]=true;
  if(scena)scena.resize();
- var primo=sc.gruppi[0].c[0].k;if(i===0)primo='met';if(i===1)primo='glu';if(i===2)primo='aa';if(i===3)primo='gl';if(i===4)primo='acq';
+ var primo=sc.gruppi[0].c[0].k;if(i===0)primo='met';if(i===1)primo='glu';if(i===2)primo='aa';if(i===3)primo='gl';if(i===4)primo='acq';if(i===5)primo='nuc';
  scegli(primo);}
 document.querySelectorAll('.scheda').forEach(function(t){t.addEventListener('click',function(){apriScheda(t.dataset.p==='quiz'?'quiz':+t.dataset.p);});});
 $('bReset').onclick=function(){if(scena)scena.reset();};
@@ -807,8 +844,12 @@ var DOMANDE=[
  {l:2,q:'Perché il sapone toglie il grasso?',o:['Le code delle sue molecole chiudono il grasso dentro le micelle','Trasforma il grasso in acqua','Rende il grasso più pesante, così cade','Il sapone contiene vitamine'],d:['','Il grasso non diventa acqua, resta grasso ma chiuso dentro le micelle.','Non è una questione di peso. Le code del sapone catturano il grasso e l\'acqua lo porta via.','Le vitamine non c\'entrano. Conta la forma delle molecole del sapone, con una testa e una coda.']},
  {l:2,q:'Che cosa fanno gli enzimi della digestione?',o:['Spezzano le molecole grandi degli alimenti in pezzi più piccoli','Trasportano l\'ossigeno','Formano le membrane delle cellule','Danno la forma a capelli e unghie'],d:['','L\'ossigeno lo trasporta l\'emoglobina.','Le membrane sono fatte di fosfolipidi.','Capelli e unghie sono fatti di cheratina, una proteina di struttura.']},
  {l:2,q:'Quale minerale serve alla tiroide per produrre i suoi ormoni?',o:['Lo iodio','Il calcio','Il ferro','Il potassio'],d:['','Il calcio forma ossa e denti.','Il ferro sta nel gruppo eme dell\'emoglobina.','Il potassio serve a nervi e muscoli.']},
- {l:3,q:'L\'emoglobina è fatta di quattro catene unite. Questa è la sua struttura',o:['quaternaria','primaria','secondaria','terziaria'],d:['','La primaria è l\'ordine degli amminoacidi in una catena.','La secondaria sono le eliche e i foglietti di una catena.','La terziaria è il ripiegamento di una sola catena, come nella mioglobina.']},
+ {l:3,q:'L\'emoglobina è fatta di quattro catene unite. Questa è la sua struttura',o:['quaternaria','primaria','secondaria','terziaria'],d:['','La primaria è l\'ordine degli amminoacidi in una catena.','La secondaria sono le eliche e i foglietti di una catena.','La terziaria è il ripiegamento di una sola catena, come nel lisozima.']},
  {l:3,q:'Che cosa succede al sale da cucina quando si scioglie in acqua?',o:['Gli ioni sodio e cloruro si separano','Si trasforma in zucchero','Diventa un grasso','Gli atomi spariscono'],d:['','Il sale non cambia sostanza, i suoi ioni si allontanano uno dall\'altro.','Il sale non cambia sostanza, i suoi ioni si allontanano uno dall\'altro.','Gli atomi non spariscono mai. Gli ioni restano in acqua, separati.']},
+ {l:1,q:'Nel DNA, con quale base si incastra l\'adenina (A)?',o:['La timina (T)','La guanina (G)','La citosina (C)','Un\'altra adenina'],d:['','La guanina si incastra con la citosina.','La citosina si incastra con la guanina.','Due basi uguali non si incastrano, A va sempre con T.']},
+ {l:2,q:'Di che cosa è fatto un nucleotide?',o:['Un fosfato, uno zucchero e una base','Tre amminoacidi','Un glicerolo e tre acidi grassi','Solo carbonio e idrogeno'],d:['','Gli amminoacidi sono i mattoni delle proteine.','Glicerolo e acidi grassi formano i trigliceridi.','Solo carbonio e idrogeno sono gli idrocarburi.']},
+ {l:2,q:'Che cosa ha l\'RNA al posto della timina?',o:['L\'uracile (U)','La guanina (G)','Il glucosio','Il fosforo'],d:['','La guanina c\'è sia nel DNA sia nell\'RNA.','Il glucosio è uno zucchero ma non sta negli acidi nucleici.','Il fosforo sta nel fosfato, in tutti i nucleotidi.']},
+ {l:3,q:'Perché nel DNA A si appaia solo con T e C solo con G?',o:['Le loro forme e i loro legami a idrogeno sono compatibili','Hanno lo stesso colore','Sono le basi più pesanti','La cellula le sceglie a caso'],d:['','I colori sono solo una convenzione dello schema.','A e G sono le più grandi, T e C le più piccole. Si appaia sempre una grande con una piccola.','Non è a caso, si incastrano solo le coppie giuste.']},
  {l:3,q:'Che cosa portano gli acidi nucleici, DNA e RNA?',o:['L\'informazione per costruire le proteine','L\'energia per i muscoli','Il calcio per le ossa','L\'ossigeno per le cellule'],d:['','L\'energia viene soprattutto da carboidrati e lipidi.','Il calcio è un sale minerale.','L\'ossigeno lo trasporta l\'emoglobina, una proteina.']}];
 var GIRO=[1,1,1,2,2,2,3,3],Q={round:null,i:0,punti:0,giri:0};
 function mescola(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
@@ -838,8 +879,8 @@ function fine(){
 apriScheda(0);
 })();
 </script>
-<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Le biomolecole in 3D, a partire dal carbonio con i suoi quattro legami e gli idrocarburi, i carboidrati dal glucosio all'amido e alla cellulosa, le proteine con le loro quattro strutture e i lavori che fanno, i lipidi con trigliceridi, fosfolipidi, membrane e micelle del sapone, vitamine, sali minerali e acqua, con un accenno agli acidi nucleici e domande per allenarsi. DNA e RNA sono protagonisti della pagina <a href="divisione_cellulare.html" style="color:#8ee0a6">La divisione cellulare</a>.</p>
-<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Il GPL è una miscela di propano e butano, liquefatti per compressione. <a href="https://www.lautomobile.aci.it/?p=11670" target="_blank" rel="noopener">ACI, L'Automobile, Il GPL per autotrazione</a></li><li>Carboidrati e proteine circa 4 kcal per grammo, lipidi circa 9 kcal per grammo. <a href="https://www.msdmanuals.com/it/casa/disturbi-alimentari/panoramica-sulla-nutrizione/carboidrati-proteine-e-grassi" target="_blank" rel="noopener">Manuale MSD, Carboidrati, proteine e grassi</a></li><li>Glicogeno di riserva nel fegato e nei muscoli; grassi saturi in genere solidi e insaturi in genere liquidi a temperatura ambiente. <a href="https://www.msdmanuals.com/it/casa/disturbi-alimentari/panoramica-sulla-nutrizione/carboidrati-proteine-e-grassi" target="_blank" rel="noopener">Manuale MSD, Carboidrati, proteine e grassi</a></li><li>Le proteine sono fatte di 20 amminoacidi, uniti dal legame peptidico con perdita di una molecola d'acqua. <a href="https://www.britannica.com/science/amino-acid" target="_blank" rel="noopener">Encyclopaedia Britannica, Amino acid</a></li><li>Mioglobina, una sola catena di circa 150 amminoacidi ripiegata in 8 alfa eliche intorno al gruppo eme, conserva l'ossigeno nei muscoli. <a href="https://www.ebi.ac.uk/pdbe/node/49243" target="_blank" rel="noopener">EMBL-EBI, PDBe, The protein that lets you hold your breath</a></li><li>Emoglobina con quattro catene, due alfa e due beta, ognuna simile alla mioglobina e con un gruppo eme con il ferro che lega l'ossigeno. <a href="https://pdb101.rcsb.org/motm/41" target="_blank" rel="noopener">RCSB PDB-101, Molecule of the Month, Hemoglobin</a></li><li>Collagene, circa un quarto delle proteine del corpo, tre catene avvolte in una tripla elica. <a href="https://pdb101.rcsb.org/motm/4" target="_blank" rel="noopener">RCSB PDB-101, Molecule of the Month, Collagen</a></li><li>Anticorpi a forma di Y con quattro catene, due lunghe e due corte, con i siti di legame sulle punte. <a href="https://pdb101.rcsb.org/motm/21" target="_blank" rel="noopener">RCSB PDB-101, Molecule of the Month, Antibodies</a></li><li>Le molecole del sapone formano micelle con le code all'interno, dove resta chiuso il grasso che l'acqua porta via. <a href="https://van.physics.illinois.edu/ask/listing/465" target="_blank" rel="noopener">University of Illinois, Ask the Van, How does soap work</a></li><li>Nel cristallo di sale ioni sodio e cloruro si alternano e ognuno ha sei vicini dell'altro tipo. <a href="https://www.britannica.com/science/sodium-chloride-structure" target="_blank" rel="noopener">Encyclopaedia Britannica, Sodium chloride structure</a></li><li>Vitamine idrosolubili (gruppo B e C) da assumere ogni giorno, liposolubili (A, D, E, K) assorbite con i grassi e accumulate nel fegato. <a href="https://www.epicentro.iss.it/vitamine/" target="_blank" rel="noopener">EpiCentro, Istituto Superiore di Sanità, Vitamine</a></li><li>Lo iodio serve alla tiroide per produrre i suoi ormoni, importanti per la crescita e lo sviluppo del sistema nervoso; sale iodato. <a href="https://www.epicentro.iss.it/iodio/" target="_blank" rel="noopener">EpiCentro, Istituto Superiore di Sanità, Iodio</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Le biomolecole in 3D, a partire dal carbonio con i suoi quattro legami e gli idrocarburi, i carboidrati dal glucosio all'amido e alla cellulosa, le proteine con le loro quattro strutture e i lavori che fanno, i lipidi con trigliceridi, fosfolipidi, membrane e micelle del sapone, vitamine, sali minerali e acqua, gli acidi nucleici con le basi che si incastrano a coppie e domande per allenarsi. DNA e RNA sono protagonisti della pagina <a href="divisione_cellulare.html" style="color:#8ee0a6">La divisione cellulare</a>.</p>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Il GPL è una miscela di propano e butano, liquefatti per compressione. <a href="https://www.lautomobile.aci.it/?p=11670" target="_blank" rel="noopener">ACI, L'Automobile, Il GPL per autotrazione</a></li><li>Carboidrati e proteine circa 4 kcal per grammo, lipidi circa 9 kcal per grammo. <a href="https://www.msdmanuals.com/it/casa/disturbi-alimentari/panoramica-sulla-nutrizione/carboidrati-proteine-e-grassi" target="_blank" rel="noopener">Manuale MSD, Carboidrati, proteine e grassi</a></li><li>Glicogeno di riserva nel fegato e nei muscoli; grassi saturi in genere solidi e insaturi in genere liquidi a temperatura ambiente. <a href="https://www.msdmanuals.com/it/casa/disturbi-alimentari/panoramica-sulla-nutrizione/carboidrati-proteine-e-grassi" target="_blank" rel="noopener">Manuale MSD, Carboidrati, proteine e grassi</a></li><li>Le proteine sono fatte di 20 amminoacidi, uniti dal legame peptidico con perdita di una molecola d'acqua. <a href="https://www.britannica.com/science/amino-acid" target="_blank" rel="noopener">Encyclopaedia Britannica, Amino acid</a></li><li>Lisozima, enzima delle lacrime, della saliva e dell'albume che rompe la parete dei batteri. <a href="https://pdb101.rcsb.org/motm/9" target="_blank" rel="noopener">RCSB PDB-101, Molecule of the Month, Lysozyme</a></li><li>Lisozima, una sola catena di 129 amminoacidi con un solco, il sito attivo. <a href="https://bmrb.io/featuredSys/Lysozyme/" target="_blank" rel="noopener">BMRB, Featured System, Lysozyme</a></li><li>Emoglobina con quattro catene, due alfa e due beta, ognuna con un gruppo eme con il ferro che lega l'ossigeno. <a href="https://pdb101.rcsb.org/motm/41" target="_blank" rel="noopener">RCSB PDB-101, Molecule of the Month, Hemoglobin</a></li><li>Collagene, circa un quarto delle proteine del corpo, tre catene avvolte in una tripla elica. <a href="https://pdb101.rcsb.org/motm/4" target="_blank" rel="noopener">RCSB PDB-101, Molecule of the Month, Collagen</a></li><li>Anticorpi a forma di Y con quattro catene, due lunghe e due corte, con i siti di legame sulle punte. <a href="https://pdb101.rcsb.org/motm/21" target="_blank" rel="noopener">RCSB PDB-101, Molecule of the Month, Antibodies</a></li><li>Le molecole del sapone formano micelle con le code all'interno, dove resta chiuso il grasso che l'acqua porta via. <a href="https://van.physics.illinois.edu/ask/listing/465" target="_blank" rel="noopener">University of Illinois, Ask the Van, How does soap work</a></li><li>Nel cristallo di sale ioni sodio e cloruro si alternano e ognuno ha sei vicini dell'altro tipo. <a href="https://www.britannica.com/science/sodium-chloride-structure" target="_blank" rel="noopener">Encyclopaedia Britannica, Sodium chloride structure</a></li><li>Nucleotide fatto di zucchero (ribosio nell'RNA, deossiribosio nel DNA), fosfato e base; basi A, C, G e T. <a href="https://www.genome.gov/genetics-glossary/Nucleotide" target="_blank" rel="noopener">NHGRI, Nucleotide</a></li><li>Basi appaiate A con T e C con G, tenute insieme da legami a idrogeno. <a href="https://www.genome.gov/genetics-glossary/Base-Pair" target="_blank" rel="noopener">NHGRI, Base Pair</a></li><li>Nell'RNA l'uracile (U) al posto della timina. <a href="https://www.genome.gov/genetics-glossary/Uracil" target="_blank" rel="noopener">NHGRI, Uracil</a></li><li>L'RNA messaggero porta le istruzioni dal DNA ai ribosomi, dove si costruiscono le proteine. <a href="https://www.genome.gov/genetics-glossary/messenger-RNA" target="_blank" rel="noopener">NHGRI, Messenger RNA</a></li><li>Vitamine idrosolubili (gruppo B e C) da assumere ogni giorno, liposolubili (A, D, E, K) assorbite con i grassi e accumulate nel fegato. <a href="https://www.epicentro.iss.it/vitamine/" target="_blank" rel="noopener">EpiCentro, Istituto Superiore di Sanità, Vitamine</a></li><li>Lo iodio serve alla tiroide per produrre i suoi ormoni, importanti per la crescita e lo sviluppo del sistema nervoso; sale iodato. <a href="https://www.epicentro.iss.it/iodio/" target="_blank" rel="noopener">EpiCentro, Istituto Superiore di Sanità, Iodio</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6fd08c!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(111,208,140,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Biologia</a>
 <script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
