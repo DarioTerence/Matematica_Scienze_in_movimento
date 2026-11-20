@@ -217,10 +217,6 @@ function etano(){var m=new Mol();var a=m.atomo('C',V(-.5,0,0)),b=m.atomo('C',V(.
 function alcano(n){var m=new Mol();m.catena(n,V(-(n-1)*.41,0,0),V(1,0,0),V(0,0,1));return m.idrogeni().centra();}
 function cicloesano(){var m=new Mol(),r=[];for(var i=0;i<6;i++){var f=i*Math.PI/3;r.push(m.atomo('C',V(Math.cos(f),Math.sin(f),i%2?.25:-.25)));}
  for(i=0;i<6;i++)m.lega(r[i],r[(i+1)%6]);return m.idrogeni();}
-function carbonio(){var m=new Mol();m.atomo('C',V(0,0,0));
- m.libere(0,4,'tet').forEach(function(d){m.extra.push({tipo:'braccio',p:d.clone().multiplyScalar(.85),d:d});});
- m.etich.push({t:'4 legami',p:V(0,-1.3,0),c:'#c8d3e3',h:.2});return m;}
-
 /* --- carboidrati (anelli semplificati, ossidrili sopra o sotto il piano come negli schemi) --- */
 /* anello di n atomi nel piano xy; el[i] elemento; sost[i] per ogni carbonio dice cosa va 'su' e 'giu' */
 function anello(m,n,R,c0,el,sost,parte){
@@ -366,7 +362,6 @@ var SCHEDE=[
  {sub:'Lo scheletro delle molecole della vita',anchor:'Il carbonio fa quattro legami. Per questo forma catene e anelli, lo scheletro di tutte le biomolecole.',
   prof:'Tocca <b>Metano</b> e guarda come il carbonio si lega a quattro atomi di idrogeno.',posa:'fornello',
   gruppi:[{n:'Il carbonio e gli idrocarburi',c:[
-   {k:'carb',n:'Carbonio',col:'#3d434c',m:carbonio,d:'<p>L\'atomo di carbonio forma <b>quattro legami</b>, rivolti come i vertici di una piramide a base triangolare (tetraedro).</p><p>Si lega facilmente ad altri atomi di carbonio, così nascono catene lunghe e anelli.</p>'},
    {k:'met',n:'Metano',col:'#3d434c',m:metano,d:'<p>Un carbonio e quattro idrogeni. È l\'idrocarburo più semplice, un aeriforme che si usa per cucinare e per riscaldare.</p><p><b>Idrocarburi</b>, molecole fatte solo di carbonio e idrogeno.</p>'},
    {k:'et',n:'Etano',col:'#3d434c',m:etano,d:'<p>Due carboni legati tra loro, ognuno con tre idrogeni. Il legame tra due carboni è il primo passo di una catena.</p>'},
    {k:'pro',n:'Propano',col:'#3d434c',m:function(){return alcano(3);},d:'<p>Tre carboni in fila. È un aeriforme che, compresso, diventa liquido. Insieme al butano forma il <b>GPL</b> delle bombole e delle auto.</p>'},
@@ -395,12 +390,12 @@ var SCHEDE=[
    {k:'pep',n:'Legame peptidico',col:'#6aa5ff',m:dipeptide,unione:true,d:'<p>Il gruppo carbossilico di un amminoacido si lega al gruppo amminico del successivo e si libera una molecola d\'<b>acqua</b>.</p>'}]},
   {n:'Le quattro strutture',c:[
    {k:'pri',n:'Primaria',col:'#9cc0ff',m:function(){return speciale('primaria');},cap:'Schema, ogni forma è un tipo di amminoacido',d:'<p>L\'<b>ordine</b> degli amminoacidi nella catena, come le lettere in una parola. Spesso sono centinaia.</p><p>Un solo amminoacido diverso può cambiare la forma e il lavoro di tutta la proteina.</p>'},
-   {k:'sec',n:'Secondaria',col:'#9cc0ff',m:function(){return speciale('secondaria');},cap:'Schema, in azzurro i legami a idrogeno',d:'<p>Tratti di catena si avvolgono a spirale (<b>alfa elica</b>) oppure si piegano a fisarmonica, affiancati (<b>foglietto beta</b>).</p><p>Li tengono in forma i <b>legami a idrogeno</b> tra parti vicine della catena.</p>'},
+   {k:'sec',n:'Secondaria',col:'#9cc0ff',m:function(){return speciale('secondaria');},cap:'Schema, l\'elica come una molla, i filamenti beta come nastri con la freccia. In azzurro i legami a idrogeno',d:'<p>Tratti di catena si avvolgono a spirale come una molla (<b>alfa elica</b>) oppure si distendono e si affiancano piegati a fisarmonica (<b>foglietto beta pieghettato</b>). La freccia indica il verso della catena.</p><p>Li tengono in forma i <b>legami a idrogeno</b> tra parti vicine della catena.</p>'},
    {k:'ter',n:'Terziaria',col:'#9cc0ff',m:function(){return speciale('terziaria');},cap:'Mioglobina, schema. Ogni spirale è un\'alfa elica, il disco rosso è il gruppo eme',d:'<p>Tutta la catena si ripiega in una forma precisa. Qui la <b>mioglobina</b>, che conserva l\'ossigeno nei muscoli.</p><p>Una sola catena di circa 150 amminoacidi, con <b>8 alfa eliche</b> che si raccolgono a gomitolo intorno al gruppo <b>eme</b>. Il ferro al centro dell\'eme trattiene l\'ossigeno.</p>'},
    {k:'qua',n:'Quaternaria',col:'#9cc0ff',m:function(){return speciale('quaternaria');},cap:'Emoglobina, schema. In rosa le catene alfa, in blu le catene beta',d:'<p>Più catene si uniscono. L\'<b>emoglobina</b> dei globuli rossi ha <b>quattro catene</b>, due alfa e due beta.</p><p>Ognuna è ripiegata come la mioglobina e ha il suo gruppo eme.</p>'}]},
   {n:'Che lavoro fanno',c:[
    {k:'s',n:'Struttura',col:'#8ee0a6',m:function(){return speciale('collagene');},cap:'Collagene, schema',d:'<p>Costruiscono e sostengono il corpo. Il <b>collagene</b>, circa un quarto di tutte le proteine del corpo, è fatto di tre catene avvolte come una corda. Sta nella pelle, nei tendini e nelle ossa.</p><p>La cheratina forma capelli e unghie.</p>'},
-   {k:'e',n:'Enzimi',col:'#8ee0a6',m:function(){return speciale('enzima');},cap:'Schema, un enzima della digestione e un pezzo di amido',d:'<p>Rendono veloci le reazioni chimiche. Un enzima della digestione accoglie un pezzo di <b>amido</b> nella sua tasca e lo spezza.</p><p>Poi resta uguale, pronto per il pezzo successivo.</p>'},
+   {k:'e',n:'Enzimi',col:'#8ee0a6',m:function(){return speciale('enzima');},cap:'Schema, un enzima della digestione e un pezzo di amido',d:'<p>Rendono veloci le reazioni chimiche. Un enzima della digestione ha un solco, il <b>sito attivo</b>, dove un pezzo di <b>amido</b> si incastra come una chiave nella serratura. Lì l\'enzima lo spezza.</p><p>Poi resta uguale, pronto per il pezzo successivo.</p>'},
    {k:'t',n:'Trasporto',col:'#8ee0a6',m:function(){return speciale('trasporto');},cap:'Emoglobina, schema. Le sfere rosse sono molecole di ossigeno',d:'<p>Portano sostanze da un punto all\'altro. L\'<b>emoglobina</b> carica l\'ossigeno nei polmoni, una molecola su ogni gruppo eme, e lo porta a tutte le cellule.</p>'},
    {k:'dif',n:'Difesa',col:'#8ee0a6',m:function(){return speciale('anticorpo');},cap:'Schema, in blu le due catene lunghe, in giallo le due corte',d:'<p>Gli <b>anticorpi</b> hanno la forma di una Y, con quattro catene. Con le punte riconoscono un virus o un batterio e lo agganciano, così le altre difese dell\'organismo lo trovano.</p>'}]}],
   al:'carne, pesce, uova, latte e formaggi, legumi'},
@@ -475,9 +470,22 @@ function Scena(el){
   {c:V(0.38,-1.12,-0.52),d:V(0.77,0.21,-0.61),l:2.85},{c:V(0.96,0.60,-0.24),d:V(-0.04,0.56,0.83),l:3.9}];   /* disposizione compatta calcolata: eliche distanti, anse corte */
  var EME={p:V(-.6,.2,.2),n:V(.3,.2,.93)};   /* eme in una tasca vicino alle eliche E e F, girato verso chi guarda */
  var geoEl={};
- function geoElica(l){if(geoEl[l])return geoEl[l];var giri=l/.54,n=Math.ceil(giri*14),pts=[];
-  for(var k=0;k<=n;k++){var t=k/n,a=t*giri*2*Math.PI;pts.push(V(Math.cos(a)*.23,-l/2+t*l,Math.sin(a)*.23));}
-  return (geoEl[l]=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),n,.085,6,false));}
+ /* alfa elica come una molla: lunghezza l, raggio R, spessore r, passo (nm circa nella mioglobina) */
+ function geoElica(l,R,r,passo){R=R||.23;r=r||.085;passo=passo||.54;var key=[l,R,r,passo].join('|');if(geoEl[key])return geoEl[key];
+  var giri=l/passo,n=Math.ceil(giri*16),pts=[];
+  for(var k=0;k<=n;k++){var t=k/n,a=t*giri*2*Math.PI;pts.push(V(Math.cos(a)*R,-l/2+t*l,Math.sin(a)*R));}
+  return (geoEl[key]=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),n,r,8,false));}
+ /* filamento beta come nastro pieghettato con la freccia: lungo y da -l/2 a l/2, largo w, pieghe di ampiezza amp ogni passo */
+ function geoNastro(l,w,amp,passo){var key=['n',l,w,amp,passo].join('|');if(geoEl[key])return geoEl[key];
+  var fr=Math.min(.55,l*.22),corpo=l-fr,n=Math.max(2,Math.round(corpo/passo)),pos=[],idx=[];
+  for(var k=0;k<=n;k++){var y=-l/2+corpo*k/n,z=k%2?amp:-amp;pos.push(-w/2,y,z,w/2,y,z);
+   if(k){var a=2*(k-1);idx.push(a,a+1,a+2,a+1,a+3,a+2);}}
+  var y0=-l/2+corpo,z0=n%2?amp:-amp,b=pos.length/3;pos.push(-w*.9,y0,z0,w*.9,y0,z0,0,l/2,-z0);idx.push(b,b+1,b+2);
+  var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
+  return (geoEl[key]=g);}
+ /* tubo che cresce lungo un percorso di punti (anse e curve) */
+ function geoTubo(pts,r){return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),Math.max(8,pts.length*10),r,6,false);}
+ function cresceGeo(me,g,u,passo){var c=g.index.count;me.visible=u>.002;g.setDrawRange(0,Math.floor(c*u/passo)*passo);}
  function creaGlobina(col,cAnsa){var g=new THREE.Group(),el=[],anse=[];
   GLOB.forEach(function(h,i){var me=new THREE.Mesh(geoElica(h.l),mat(Array.isArray(col)?col[i]:col));g.add(me);
    var q=new THREE.Quaternion().setFromUnitVectors(V(0,1,0),h.d.clone().normalize());me.position.copy(h.c);me.quaternion.copy(q);
@@ -514,17 +522,24 @@ function Scena(el){
    for(i=0;i<n;i++){out.push(perla(SEQ[i],P[i],.24,i*passo,i*.7));if(i)out.push(asta(P[i-1],P[i],.06,MB,i*passo));}
    out.push(etichetta('legame peptidico',V(.31,-.75,0),'#ffd08a',T_COSTRUISCI+.1,.3));
    return {ogg:out,box:P.concat([V(0,1,0),V(0,-1,0)]),durata:T_COSTRUISCI+.8};},
-  secondaria:function(){var out=[],P=[];
-   for(var i=0;i<18;i++){var f=i*2*Math.PI/3.6;P.push(V(-2.4+Math.cos(f)*.55,-2.1+i*.25,Math.sin(f)*.55));}   /* alfa elica, 3,6 amminoacidi per giro */
-   P.push(V(-1.4,2.5,.2),V(-.3,2.4,0));
-   [.5,1.5,2.5].forEach(function(x,s){var giu=s%2===0;for(var j=0;j<6;j++)P.push(V(x,giu?1.6-j*.62:-1.5+j*.62,j%2?.15:-.15));   /* foglietto, tre filamenti */
-    if(s<2){var yc=giu?-2.15:2.25;P.push(V(x+.25,yc,0),V(x+.75,yc,0));}});
-   var n=P.length,passo=(T_COSTRUISCI-T_ATOMO)/(n-1),tH=T_COSTRUISCI+.1,MH=mat('#9fd8ff');
-   for(i=0;i<n;i++){out.push(perla(SEQ[i%SEQ.length],P[i],.15,i*passo,i*.7));if(i)out.push(asta(P[i-1],P[i],.045,MB,i*passo));}
-   for(i=0;i+4<18;i++)out.push(asta(P[i],P[i+4],.022,MH,tH));
-   for(var j=0;j<6;j++){out.push(asta(P[20+j],P[28+5-j],.022,MH,tH));out.push(asta(P[28+5-j],P[36+j],.022,MH,tH));}
-   out.push(etichetta('alfa elica',V(-2.4,-2.9,0),'#c8d3e3',tH+.2,.34));out.push(etichetta('foglietto beta',V(1.5,-2.9,0),'#c8d3e3',tH+.2,.34));
-   return {ogg:out,box:P.concat([V(-2.4,-3.1,0)]),durata:tH+T_ATOMO+.8};},
+  secondaria:function(){var out=[],pz=[],MS=mat('#f2c94c','{"side":2}');
+   /* alfa elica a sinistra, cresce dal basso; poi ansa e tre filamenti antiparalleli del foglietto beta */
+   var L=4.4,RE=.5,PE=1.1,el=new THREE.Mesh(geoElica(L,RE,.16,PE),mat('#e8707c'));el.position.set(-2.3,0,0);gruppo.add(el);pz.push({o:el,g:el.geometry,l:13.3,q:6});
+   var xs=[.3,1.3,2.3],LS=3.8,fine=V(-2.3+RE,L/2,0);
+   var ansa=new THREE.Mesh(geoTubo([fine,V(-1.3,2.8,0),V(-.3,2.75,0),V(xs[0],LS/2,0)],.07),mat('#c8d3e3'));gruppo.add(ansa);pz.push({o:ansa,g:ansa.geometry,l:2.8,q:6});
+   xs.forEach(function(x,k){var me=new THREE.Mesh(geoNastro(LS,.55,.14,.42),MS);me.position.set(x,0,0);if(k%2===0)me.rotation.x=Math.PI;gruppo.add(me);
+    pz.push({o:me,g:me.geometry,l:LS,q:3});
+    if(k<2){var y=k%2===0?-LS/2:LS/2,s2=k%2===0?-1:1,cu=new THREE.Mesh(geoTubo([V(x,y,0),V(x+.15,y+s2*.45,0),V(x+.85,y+s2*.45,0),V(x+1,y,0)],.07),mat('#c8d3e3'));
+     gruppo.add(cu);pz.push({o:cu,g:cu.geometry,l:1.4,q:6});}});
+   var tot=0;pz.forEach(function(q){tot+=q.l;});var TT=T_COSTRUISCI*1.6,t=0;
+   pz.forEach(function(q){q.t0=t;q.d=TT*q.l/tot;t+=q.d;out.push({o:q.o,upd:function(T){cresceGeo(q.o,q.g,clamp((T-q.t0)/q.d,0,1),q.q);}});});
+   /* legami a idrogeno: nell'elica tra un giro e il successivo, nel foglietto tra filamenti vicini */
+   var tH=TT+.15,MH=mat('#9fd8ff');
+   for(var k=0;k<7;k++){var a=k*2.2+.6,y=-L/2+.4+k*.48;if(y+PE>L/2-.2)break;
+    out.push(asta(V(-2.3+Math.cos(a)*RE,y,Math.sin(a)*RE),V(-2.3+Math.cos(a)*RE,y+PE,Math.sin(a)*RE),.03,MH,tH));}
+   for(var j=0;j<8;j++){var yy=-1.35+j*.39;[0,1].forEach(function(q){out.push(asta(V(xs[q]+.3,yy,0),V(xs[q+1]-.3,yy,0),.03,MH,tH));});}
+   out.push(etichetta('alfa elica',V(-2.3,-3.0,0),'#f2b0b8',tH+.2,.34));out.push(etichetta('foglietto beta pieghettato',V(1.3,-3.0,0),'#f2d98a',tH+.2,.34));
+   return {ogg:out,box:[V(-3,3.1,0),V(3,-3.2,0)],durata:tH+T_ATOMO+.8};},
   terziaria:function(){var out=[],G=creaGlobina(COL_EL,'#c8d3e3');gruppo.add(G.g);
    /* all'inizio le eliche stanno in fila su un cerchio, come una catena distesa */
    var tot=0;GLOB.forEach(function(h){tot+=h.l+.3;});var R=tot/(2*Math.PI),cum=0;
@@ -570,18 +585,25 @@ function Scena(el){
    out.push(etichetta('tre catene avvolte',V(0,-1.25,0),'#c8d3e3',T_COSTRUISCI+.1,.34));
    return {ogg:out,box:[V(-4.2,1.2,0),V(4.2,-1.4,0)],durata:T_COSTRUISCI+.8};},
   enzima:function(){var out=[],tS=T_UNIONE+.3;
-   var QE=new THREE.Quaternion().setFromAxisAngle(V(0,1,0),-.7);   /* la tasca guarda verso chi osserva */
-   if(!geoEnz)geoEnz=new THREE.SphereGeometry(1.6,40,28,Math.PI+.42,2*Math.PI-.84);   /* sfera con uno spicchio aperto, la tasca */
-   out.push({o:(function(){var me=new THREE.Mesh(geoEnz,mat('#4fc3c3','{"side":2}'));me.quaternion.copy(QE);gruppo.add(me);return me;})(),t0:0,s:1,base:V(0,0,0)});
-   var F=[0,1,2,3].map(function(k){return V(.95,(k-1.5)*.74,0);}),
-    pos=function(k,T){return F[k].clone().add(V(3.6*(1-ease(T/T_UNIONE)),0,0)).add((k>1?V(2,1.4,0):V(2,-1.4,0)).multiplyScalar(ease((T-tS)/T_ACQUA))).applyQuaternion(QE);};
-   F.forEach(function(p,k){var me=new THREE.Mesh(GM,mat('#e0c25a'));me.quaternion.copy(QE).multiply(qe(Math.PI/2,0,0));gruppo.add(me);
+   var QE=new THREE.Quaternion().setFromAxisAngle(V(0,1,0),-.7);   /* il sito attivo guarda verso chi osserva */
+   if(!geoEnz){geoEnz=new THREE.SphereGeometry(1.9,72,54);var pa=geoEnz.attributes.position,v=new THREE.Vector3(),sm=function(t){return ease(t);};
+    for(var i=0;i<pa.count;i++){v.fromBufferAttribute(pa,i);var n=v.clone().normalize();
+     v.multiplyScalar(1+.05*Math.sin(5*n.x+1)*Math.sin(4*n.y+2)*Math.sin(3*n.z+.5)+.03*Math.sin(9*n.y+3*n.x));   /* proteina globulare, superficie irregolare */
+     var h=Math.hypot(v.x,v.z),a=Math.abs(Math.atan2(v.z,v.x)),g=(1-sm((a-.26)/.14))*(1-sm((Math.abs(v.y)-1.2)/.3));   /* solco del sito attivo verso +x */
+     if(g>0&&v.x>0&&h>.95){var hn=h-g*(h-.95);v.x*=hn/h;v.z*=hn/h;}
+     pa.setXYZ(i,v.x,v.y,v.z);}
+    geoEnz.computeVertexNormals();}
+   var en=new THREE.Mesh(geoEnz,mat('#4fc3c3'));en.quaternion.copy(QE);gruppo.add(en);out.push({o:en,t0:0,s:1,base:V(0,0,0)});
+   var F=[0,1,2,3].map(function(k){return V(1.12,(k-1.5)*.72,0);}),QH=qe(0,0,-Math.PI/2),
+    pos=function(k,T){return F[k].clone().add(V(3.2*(1-ease(T/T_UNIONE)),0,0)).add((k>1?V(1.9,1.3,0):V(1.9,-1.3,0)).multiplyScalar(ease((T-tS)/T_ACQUA))).applyQuaternion(QE);};
+   F.forEach(function(p,k){var me=new THREE.Mesh(GM,mat('#e0c25a'));me.quaternion.copy(QE).multiply(QH);gruppo.add(me);   /* esagono disteso nel solco */
     out.push({o:me,upd:function(T){var c=cresce(T,0);me.visible=c>.01;me.scale.setScalar(Math.max(.01,c));me.position.copy(pos(k,T));}});
     if(k){var st=new THREE.Mesh(GC,MB);gruppo.add(st);
      out.push({o:st,upd:function(T){st.visible=T>.05&&(k!==2||T<tS+.05);posCil(st,pos(k-1,T),pos(k,T),.07);}});}});
-   out.push(etichetta('enzima',V(-.6,-2.15,0),'#8fe3e3',.1,.36));
+   out.push(etichetta('enzima',V(-.8,-2.45,0),'#8fe3e3',.1,.36));
+   out.push(etichetta('sito attivo',V(1.5,1.95,0).applyQuaternion(QE),'#8fe3e3',.1,.32));
    out.push(etichetta('due pezzi più piccoli',V(3.0,0,0).applyQuaternion(QE),'#f2d98a',tS+T_ACQUA,.32));
-   return {ogg:out,box:[V(-1.8,2.4,0),V(5.4,-2.4,0).applyQuaternion(QE)],durata:tS+T_ACQUA+.6};},
+   return {ogg:out,box:[V(-2.1,2.4,0),V(5.2,-2.5,0).applyQuaternion(QE)],durata:tS+T_ACQUA+.6};},
   anticorpo:function(){var out=[],ab=new THREE.Group(),dom=[];
    [-.32,.32].forEach(function(x){[-2.6,-1.6].forEach(function(y){dom.push({p:V(x,y,0),c:'#6aa5ff',d:V(0,1,0)});});});   /* tronco, due catene lunghe */
    var cer=V(0,-.75,0);
@@ -614,11 +636,7 @@ function Scena(el){
    off.forEach(function(o){var me=new THREE.Mesh(GC,MB);gruppo.add(me);ogg.push({o:me,t0:t0,cil:[b.a,b.b],off:o,r:b.o===2?.055:.08,ponte:A.parte!==B.parte});});});
   var mattoni=[];
   m.extra.forEach(function(e){var me;
-   if(e.tipo==='braccio'){me=cil(V(0,0,0),e.p,.09,mat('#a9b2bd'));gruppo.add(me);ogg.push({o:me,t0:T_ATOMO,braccio:e});
-    /* punta del legame libero: un piccolo cono grigio, nessuna sfera */
-    var pu=new THREE.Mesh(GP,mat('#a9b2bd'));pu.quaternion.setFromUnitVectors(V(0,1,0),e.d.clone().normalize());gruppo.add(pu);
-    ogg.push({o:pu,t0:T_ATOMO*2,s:.2,base:e.p.clone().add(e.d.clone().normalize().multiplyScalar(.1))});}
-   else if(e.tipo==='mattone'){me=new THREE.Mesh(GM,mat(e.cap?'#e8cf7a':'#e0c25a'));me.rotation.set(Math.PI/2,e.r||0,0);gruppo.add(me);var t0=(k++)*passo;ogg.push({o:me,t0:t0,s:1,base:e.p});mattoni.push({p:e.p,t0:t0});}
+   if(e.tipo==='mattone'){me=new THREE.Mesh(GM,mat(e.cap?'#e8cf7a':'#e0c25a'));me.rotation.set(Math.PI/2,e.r||0,0);gruppo.add(me);var t0=(k++)*passo;ogg.push({o:me,t0:t0,s:1,base:e.p});mattoni.push({p:e.p,t0:t0});}
    else if(e.tipo==='stecca'||e.tipo==='ponte'){me=cil(e.a,e.b,e.tipo==='ponte'?.05:.07,e.tipo==='ponte'?mat(e.c||'#9fd8ff'):MB);gruppo.add(me);ogg.push({o:me,t0:0,steccaDi:e,sc:me.scale.clone()});}
    else if(e.tipo==='base'){me=new THREE.Mesh(GS,mat(e.c));gruppo.add(me);ogg.push({o:me,t0:(k++)*passo,s:.2,base:e.p});}
    else if(e.tipo==='fosfo'){var g=new THREE.Group(),hd=new THREE.Mesh(GS,mat(e.c||'#f08a24'));hd.scale.setScalar(.3);g.add(hd);
@@ -665,7 +683,6 @@ function Scena(el){
     if(q.off){var d=pb.clone().sub(pa),n=perp(d).multiplyScalar(q.off);pa=pa.clone().add(n);pb=pb.clone().add(n);}
     q.o.visible=vis>.01;posCil(q.o,pa,pb,q.r*Math.max(.01,vis));return;}
    if(q.steccaDi){var v=ease(clamp((T-.15)/T_COSTRUISCI,0,1));q.o.visible=v>.02;q.o.scale.set(q.sc.x*v,q.sc.y,q.sc.z*v);return;}
-   if(q.braccio){q.o.visible=s>.01;posCil(q.o,V(0,0,0),q.braccio.p.clone().multiplyScalar(Math.max(.01,s)),.09);return;}
    q.o.visible=s>.01;
    if(q.sp)q.o.scale.set(q.sp.x*s,q.sp.y*s,1);else q.o.scale.setScalar((q.s||1)*Math.max(.001,s));
    if(q.base&&q.parte==null)q.o.position.copy(q.base);});
@@ -755,7 +772,7 @@ function apriScheda(i){
  else say(sc.prof,'idle');
  S.parlato[i]=true;
  if(scena)scena.resize();
- var primo=sc.gruppi[0].c[0].k;if(i===0)primo='carb';if(i===1)primo='glu';if(i===2)primo='aa';if(i===3)primo='gl';if(i===4)primo='acq';
+ var primo=sc.gruppi[0].c[0].k;if(i===0)primo='met';if(i===1)primo='glu';if(i===2)primo='aa';if(i===3)primo='gl';if(i===4)primo='acq';
  scegli(primo);}
 document.querySelectorAll('.scheda').forEach(function(t){t.addEventListener('click',function(){apriScheda(t.dataset.p==='quiz'?'quiz':+t.dataset.p);});});
 $('bReset').onclick=function(){if(scena)scena.reset();};
