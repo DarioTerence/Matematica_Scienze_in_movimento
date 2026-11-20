@@ -298,13 +298,7 @@ function dipeptide(){var m=new Mol();var a=amminoacido(m,V(-1.7,0,0),'H',0,true)
  m.acqua.push({p:m.at[b.N].p.clone().add(m.at[a.C].p).multiplyScalar(.5).add(V(0,.3,0)),d:V(0,1,.4).normalize()});
  m.etich.push({t:'legame peptidico',p:m.at[b.N].p.clone().add(m.at[a.C].p).multiplyScalar(.5).add(V(0,-1.6,.4)),c:'#ffd08a'});
  m.parti=[V(-2.4,.4,0),V(2.4,-.4,0)];return m.centra();}
-var COL_AA=['#e8a33d','#6fd08c','#6aa5ff','#d46aa0','#c9aaff','#e0d24a','#4fc3c3','#ff8a5b'];
-function perline(){var m=new Mol(),n=16;m.perline=[];
- for(var i=0;i<n;i++){var lin=V(i*.72-5.4,0,0),pie;
-  if(i<9){var f=i*1.75;pie=V(Math.cos(f)*.9-1.4,i*.36-1.2,Math.sin(f)*.9);}
-  else{var t=i-9;pie=V(-.1+t*.55,1.9-t*.62+(t%2)*.2,.9+Math.sin(t*1.3)*.9);}
-  m.perline.push({lin:lin,pie:pie,c:COL_AA[(i*5)%COL_AA.length]});}
- return m;}
+function speciale(t){var m=new Mol();m.speciale=t;return m;}   /* modelli schematici, costruiti nella scena (SPECIALI) */
 
 /* --- lipidi --- */
 function acidoGrasso(m,pO,parte,insaturo,lato,fan){/* da un ossigeno estere: carbonio con doppio O, poi catena; fan apre le code a ventaglio */
@@ -379,15 +373,19 @@ var SCHEDE=[
    {k:'cel',n:'Cellulosa',col:'#6fd08c',m:function(){return mattoncini('cellulosa');},cap:'Ogni esagono è un glucosio, uno sì e uno no è capovolto. In azzurro i ponti a idrogeno tra le catene',d:'<p>Catene di glucosio diritte e affiancate, legate tra loro. Forma la parete delle cellule vegetali.</p><p>Il nostro corpo non la digerisce, è la <b>fibra</b> degli alimenti.</p>',al:'verdura, frutta, cereali integrali'}]}]},
  {sub:'Catene di amminoacidi',anchor:'Venti amminoacidi diversi, combinati in catene lunghe e ripiegate, formano migliaia di proteine diverse.',
   prof:'Tocca <b>Legame peptidico</b> e guarda due amminoacidi che si uniscono.',posa:'fornello',kcal:4,
-  gruppi:[{n:'Dagli amminoacidi alle proteine',c:[
+  gruppi:[{n:'I mattoni',c:[
    {k:'aa',n:'Amminoacido',col:'#6aa5ff',m:alanina,d:'<p>Ogni amminoacido ha un <b>gruppo amminico</b> (con l\'azoto), un <b>gruppo carbossilico</b> e un <b>gruppo R</b>, diverso in ognuno. Qui l\'alanina.</p><p>Le proteine sono fatte di <b>20</b> amminoacidi diversi.</p>'},
-   {k:'pep',n:'Legame peptidico',col:'#6aa5ff',m:dipeptide,unione:true,d:'<p>Il gruppo carbossilico di un amminoacido si lega al gruppo amminico del successivo e si libera una molecola d\'<b>acqua</b>.</p>'},
-   {k:'cat',n:'Catena e ripiegamento',col:'#6aa5ff',m:perline,piega:true,cap:'Ogni pallina è un amminoacido',d:'<p>Spesso centinaia di amminoacidi in fila formano una catena, che si avvolge e si <b>ripiega</b> in una forma precisa.</p><p>La forma decide il lavoro della proteina.</p>'}]},
+   {k:'pep',n:'Legame peptidico',col:'#6aa5ff',m:dipeptide,unione:true,d:'<p>Il gruppo carbossilico di un amminoacido si lega al gruppo amminico del successivo e si libera una molecola d\'<b>acqua</b>.</p>'}]},
+  {n:'Le quattro strutture',c:[
+   {k:'pri',n:'Primaria',col:'#9cc0ff',m:function(){return speciale('primaria');},cap:'Schema, ogni forma è un tipo di amminoacido',d:'<p>L\'<b>ordine</b> degli amminoacidi nella catena, come le lettere in una parola. Spesso sono centinaia.</p><p>Un solo amminoacido diverso può cambiare la forma e il lavoro di tutta la proteina.</p>'},
+   {k:'sec',n:'Secondaria',col:'#9cc0ff',m:function(){return speciale('secondaria');},cap:'Schema, in azzurro i legami a idrogeno',d:'<p>Tratti di catena si avvolgono a spirale (<b>alfa elica</b>) oppure si piegano a fisarmonica, affiancati (<b>foglietto beta</b>).</p><p>Li tengono in forma i <b>legami a idrogeno</b> tra parti vicine della catena.</p>'},
+   {k:'ter',n:'Terziaria',col:'#9cc0ff',m:function(){return speciale('terziaria');},cap:'Mioglobina, schema. Ogni spirale è un\'alfa elica, il disco rosso è il gruppo eme',d:'<p>Tutta la catena si ripiega in una forma precisa. Qui la <b>mioglobina</b>, che conserva l\'ossigeno nei muscoli.</p><p>Una sola catena di circa 150 amminoacidi, con <b>8 alfa eliche</b> che si raccolgono a gomitolo intorno al gruppo <b>eme</b>. Il ferro al centro dell\'eme trattiene l\'ossigeno.</p>'},
+   {k:'qua',n:'Quaternaria',col:'#9cc0ff',m:function(){return speciale('quaternaria');},cap:'Emoglobina, schema. In rosa le catene alfa, in blu le catene beta',d:'<p>Più catene si uniscono. L\'<b>emoglobina</b> dei globuli rossi ha <b>quattro catene</b>, due alfa e due beta.</p><p>Ognuna è ripiegata come la mioglobina e ha il suo gruppo eme.</p>'}]},
   {n:'Che lavoro fanno',c:[
-   {k:'s',n:'Struttura',col:'#8ee0a6',m:perline,piega:true,resta:true,cap:'Ogni pallina è un amminoacido',d:'<p>Costruiscono e sostengono il corpo. Cheratina in capelli e unghie, collagene nella pelle e nelle ossa, proteine dei muscoli.</p>'},
-   {k:'e',n:'Enzimi',col:'#8ee0a6',m:perline,piega:true,resta:true,cap:'Ogni pallina è un amminoacido',d:'<p>Rendono veloci le reazioni chimiche. Per esempio gli enzimi della digestione spezzano l\'amido e le proteine degli alimenti.</p>'},
-   {k:'t',n:'Trasporto',col:'#8ee0a6',m:perline,piega:true,resta:true,cap:'Ogni pallina è un amminoacido',d:'<p>Portano sostanze da un punto all\'altro. L\'emoglobina dei globuli rossi trasporta l\'ossigeno.</p>'},
-   {k:'dif',n:'Difesa',col:'#8ee0a6',m:perline,piega:true,resta:true,cap:'Ogni pallina è un amminoacido',d:'<p>Gli anticorpi riconoscono virus e batteri e aiutano a combatterli.</p>'}]}],
+   {k:'s',n:'Struttura',col:'#8ee0a6',m:function(){return speciale('collagene');},cap:'Collagene, schema',d:'<p>Costruiscono e sostengono il corpo. Il <b>collagene</b>, circa un quarto di tutte le proteine del corpo, è fatto di tre catene avvolte come una corda. Sta nella pelle, nei tendini e nelle ossa.</p><p>La cheratina forma capelli e unghie.</p>'},
+   {k:'e',n:'Enzimi',col:'#8ee0a6',m:function(){return speciale('enzima');},cap:'Schema, un enzima della digestione e un pezzo di amido',d:'<p>Rendono veloci le reazioni chimiche. Un enzima della digestione accoglie un pezzo di <b>amido</b> nella sua tasca e lo spezza.</p><p>Poi resta uguale, pronto per il pezzo successivo.</p>'},
+   {k:'t',n:'Trasporto',col:'#8ee0a6',m:function(){return speciale('trasporto');},cap:'Emoglobina, schema. Le sfere rosse sono molecole di ossigeno',d:'<p>Portano sostanze da un punto all\'altro. L\'<b>emoglobina</b> carica l\'ossigeno nei polmoni, una molecola su ogni gruppo eme, e lo porta a tutte le cellule.</p>'},
+   {k:'dif',n:'Difesa',col:'#8ee0a6',m:function(){return speciale('anticorpo');},cap:'Schema, in blu le due catene lunghe, in giallo le due corte',d:'<p>Gli <b>anticorpi</b> hanno la forma di una Y, con quattro catene. Con le punte riconoscono un virus o un batterio e lo agganciano, così le altre difese dell\'organismo lo trovano.</p>'}]}],
   al:'carne, pesce, uova, latte e formaggi, legumi'},
  {sub:'Grassi, oli e membrane',anchor:'I lipidi non si sciolgono in acqua. Sono la riserva di energia più concentrata e formano le membrane delle cellule.',
   prof:'Tocca <b>Trigliceride</b> e guarda il glicerolo che si lega a tre acidi grassi.',posa:'pentolino',kcal:9,
@@ -437,6 +435,126 @@ function Scena(el){
   var tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
   var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthTest:false}));sp.renderOrder=10;
   var hh=h||.42;sp.scale.set(hh*w/cv.height,hh,1);return sp;}
+ /* ===== modelli schematici delle proteine =====
+    Ogni modello restituisce {ogg, box, durata}: ogg sono oggetti con una funzione upd(T) che li aggiorna
+    nel tempo, box i punti che la camera deve inquadrare. */
+ var GF=[GS,new THREE.BoxGeometry(1.5,1.5,1.5),new THREE.CylinderGeometry(1,1,1,6),new THREE.OctahedronGeometry(1.3),
+  new THREE.TetrahedronGeometry(1.45),new THREE.CylinderGeometry(.8,.8,1.5,18)];   /* sfera, cubo, esagono, rombo, piramide, cilindro */
+ var COL_F=['#e8a33d','#6fd08c','#6aa5ff','#d46aa0','#c9aaff','#e0d24a'];
+ var SEQ=[0,3,1,1,4,2,0,5,3,2,4,0,1,5,2,3,0,4,1,5,5,2,0,3];
+ function cresce(T,t0){return ease(clamp((T-t0)/T_ATOMO,0,1));}
+ function perla(f,p,s,t0,rot){var me=new THREE.Mesh(GF[f],mat(COL_F[f]));me.rotation.set(rot,rot*1.3,0);me.position.copy(p);gruppo.add(me);
+  return {o:me,upd:function(T){var u=cresce(T,t0);me.visible=u>.01;me.scale.setScalar(s*Math.max(.01,u));}};}
+ function asta(a,b,r,m,t0){var me=cil(a,b,r,m);gruppo.add(me);
+  return {o:me,upd:function(T){var u=cresce(T,t0);me.visible=u>.01;posCil(me,a,b,r*Math.max(.01,u));}};}
+ function etichetta(t,p,c,t0,h){var sp=testo(t,c,h||.42);gruppo.add(sp);return {o:sp,t0:t0,sp:sp.scale.clone(),base:p,et:true};}
+ /* globina: le 8 alfa eliche (A-H) della mioglobina, centro, direzione e lunghezza in nm circa; schema, non coordinate reali */
+ var GLOB=[{c:V(-1.16,0.09,-0.17),d:V(-0.03,-0.55,0.83),l:2.4},{c:V(-0.08,-0.06,1.12),d:V(0.91,0.24,-0.34),l:2.4},{c:V(0.55,-0.26,0.10),d:V(-0.82,0.24,-0.52),l:1.05},
+  {c:V(-0.02,0.77,0.66),d:V(0.01,0.75,0.66),l:1.05},{c:V(0.00,0.84,-0.40),d:V(-0.13,-0.63,-0.76),l:2.85},{c:V(-0.64,-0.86,-0.55),d:V(-0.71,-0.42,0.56),l:1.5},
+  {c:V(0.38,-1.12,-0.52),d:V(0.77,0.21,-0.61),l:2.85},{c:V(0.96,0.60,-0.24),d:V(-0.04,0.56,0.83),l:3.9}];   /* disposizione compatta calcolata: eliche distanti, anse corte */
+ var EME={p:V(-.6,.2,.2),n:V(.3,.2,.93)};   /* eme in una tasca vicino alle eliche E e F, girato verso chi guarda */
+ var geoEl={};
+ function geoElica(l){if(geoEl[l])return geoEl[l];var giri=l/.54,n=Math.ceil(giri*14),pts=[];
+  for(var k=0;k<=n;k++){var t=k/n,a=t*giri*2*Math.PI;pts.push(V(Math.cos(a)*.23,-l/2+t*l,Math.sin(a)*.23));}
+  return (geoEl[l]=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),n,.085,6,false));}
+ function creaGlobina(col,cAnsa){var g=new THREE.Group(),el=[],anse=[];
+  GLOB.forEach(function(h,i){var me=new THREE.Mesh(geoElica(h.l),mat(Array.isArray(col)?col[i]:col));g.add(me);
+   var q=new THREE.Quaternion().setFromUnitVectors(V(0,1,0),h.d.clone().normalize());me.position.copy(h.c);me.quaternion.copy(q);
+   el.push({o:me,l:h.l,p1:h.c.clone(),q1:q});});
+  for(var i=0;i<7;i++){var c=new THREE.Mesh(GC,mat(cAnsa));g.add(c);anse.push(c);}
+  var eme=new THREE.Group(),dk=new THREE.Mesh(GC,mat('#b3262e'));dk.scale.set(.4,.07,.4);eme.add(dk);
+  var fe=new THREE.Mesh(GS,mat('#e08a3a'));fe.scale.setScalar(.14);eme.add(fe);
+  eme.position.copy(EME.p);eme.quaternion.setFromUnitVectors(V(0,1,0),EME.n);g.add(eme);
+  function agg(){for(var i=0;i<7;i++){var a=el[i],b=el[i+1];anse[i].visible=a.o.visible&&b.o.visible;
+   var pa=a.o.position.clone().add(V(0,a.l/2*a.o.scale.y,0).applyQuaternion(a.o.quaternion)),pb=b.o.position.clone().add(V(0,-b.l/2*b.o.scale.y,0).applyQuaternion(b.o.quaternion));
+   posCil(anse[i],pa,pb,.05);}}
+  agg();return {g:g,el:el,eme:eme,anse:agg};}
+ var COL_EL=['#6aa5ff','#4fc3c3','#6fd08c','#b5d86a','#e0d24a','#e8a33d','#ff8a5b','#d46aa0'];
+ function qe(x,y,z){return new THREE.Quaternion().setFromEuler(new THREE.Euler(x,y,z));}
+ var SUB=[{p:V(-1.85,1.37,.96),q:qe(0,0,0),c:'#e8707c'},{p:V(1.85,1.37,-.96),q:qe(0,Math.PI,0),c:'#e8707c'},
+  {p:V(-1.85,-1.37,-.96),q:qe(Math.PI,0,0),c:'#6aa5ff'},{p:V(1.85,-1.37,.96),q:qe(Math.PI,Math.PI,0),c:'#6aa5ff'}];   /* distanze calcolate: catene a contatto senza compenetrarsi */
+ function emoglobina(conOssigeno){var out=[],box=[];
+  SUB.forEach(function(s,i){var G=creaGlobina(s.c,s.c==='#e8707c'?'#f2b0b8':'#a9c8ff');G.g.quaternion.copy(s.q);gruppo.add(G.g);
+   var da=s.p.clone().add(s.p.clone().normalize().multiplyScalar(conOssigeno?0:1.8));
+   out.push({o:G.g,upd:function(T){var u=conOssigeno?1:ease(T/T_UNIONE),c=cresce(T,0);G.g.visible=c>.01;G.g.scale.setScalar(Math.max(.01,c));
+    G.g.position.copy(da).lerp(s.p,u);}});
+   box.push(s.p.clone().addScalar(2),s.p.clone().addScalar(-2),da);
+   if(conOssigeno){var ew=s.p.clone().add(EME.p.clone().applyQuaternion(s.q)),dir=ew.clone().normalize(),
+     a=ew.clone().add(dir.clone().multiplyScalar(3.4)),b=ew.clone().add(dir.clone().multiplyScalar(.75));
+    var o2=new THREE.Group();[-.13,.13].forEach(function(x){var o=new THREE.Mesh(GS,mat(EL.O.c));o.scale.setScalar(.2);o.position.x=x*1.15;o2.add(o);});
+    gruppo.add(o2);out.push({o:o2,upd:function(T){var u=ease((T-.2-i*.12)/T_UNIONE);o2.visible=T>.1;o2.position.copy(a).lerp(b,u);o2.lookAt(cam.position);}});
+    box.push(a);if(i===0)out.push(etichetta('ossigeno',b.clone().add(dir.clone().multiplyScalar(1.1)).add(V(0,.35,0)),'#ff9a9a',T_UNIONE,.34));}});
+  if(!conOssigeno){out.push(etichetta('catena alfa',V(-1.9,3.7,1),'#f2b0b8',T_UNIONE+.1,.36));out.push(etichetta('catena beta',V(-1.9,-3.7,-1),'#a9c8ff',T_UNIONE+.1,.36));}
+  return {ogg:out,box:box,durata:T_UNIONE+(conOssigeno?.8:.6)};}
+ var geoCol=null,geoEnz=null;
+ var SPECIALI={
+  primaria:function(){var out=[],n=14,P=[],passo=(T_COSTRUISCI-T_ATOMO)/(n-1);
+   for(var i=0;i<n;i++)P.push(V((i-(n-1)/2)*.62,i%2?.12:-.12,0));
+   for(i=0;i<n;i++){out.push(perla(SEQ[i],P[i],.24,i*passo,i*.7));if(i)out.push(asta(P[i-1],P[i],.06,MB,i*passo));}
+   out.push(etichetta('legame peptidico',V(.31,-.75,0),'#ffd08a',T_COSTRUISCI+.1,.3));
+   return {ogg:out,box:P.concat([V(0,1,0),V(0,-1,0)]),durata:T_COSTRUISCI+.8};},
+  secondaria:function(){var out=[],P=[];
+   for(var i=0;i<18;i++){var f=i*2*Math.PI/3.6;P.push(V(-2.4+Math.cos(f)*.55,-2.1+i*.25,Math.sin(f)*.55));}   /* alfa elica, 3,6 amminoacidi per giro */
+   P.push(V(-1.4,2.5,.2),V(-.3,2.4,0));
+   [.5,1.5,2.5].forEach(function(x,s){var giu=s%2===0;for(var j=0;j<6;j++)P.push(V(x,giu?1.6-j*.62:-1.5+j*.62,j%2?.15:-.15));   /* foglietto, tre filamenti */
+    if(s<2){var yc=giu?-2.15:2.25;P.push(V(x+.25,yc,0),V(x+.75,yc,0));}});
+   var n=P.length,passo=(T_COSTRUISCI-T_ATOMO)/(n-1),tH=T_COSTRUISCI+.1,MH=mat('#9fd8ff');
+   for(i=0;i<n;i++){out.push(perla(SEQ[i%SEQ.length],P[i],.15,i*passo,i*.7));if(i)out.push(asta(P[i-1],P[i],.045,MB,i*passo));}
+   for(i=0;i+4<18;i++)out.push(asta(P[i],P[i+4],.022,MH,tH));
+   for(var j=0;j<6;j++){out.push(asta(P[20+j],P[28+5-j],.022,MH,tH));out.push(asta(P[28+5-j],P[36+j],.022,MH,tH));}
+   out.push(etichetta('alfa elica',V(-2.4,-2.9,0),'#c8d3e3',tH+.2,.34));out.push(etichetta('foglietto beta',V(1.5,-2.9,0),'#c8d3e3',tH+.2,.34));
+   return {ogg:out,box:P.concat([V(-2.4,-3.1,0)]),durata:tH+T_ATOMO+.8};},
+  terziaria:function(){var out=[],G=creaGlobina(COL_EL,'#c8d3e3');gruppo.add(G.g);
+   /* all'inizio le eliche stanno in fila su un cerchio, come una catena distesa */
+   var tot=0;GLOB.forEach(function(h){tot+=h.l+.3;});var R=tot/(2*Math.PI),cum=0;
+   G.el.forEach(function(e){var a=(cum+e.l/2)/R,ang=Math.PI/2-a;cum+=e.l+.3;
+    e.p0=V(Math.cos(ang)*R,Math.sin(ang)*R,0);e.q0=new THREE.Quaternion().setFromUnitVectors(V(0,1,0),V(Math.sin(ang),-Math.cos(ang),0));});
+   var passo=(T_COSTRUISCI-T_ATOMO)/7,tP=T_COSTRUISCI+.2,tE=tP+T_PIEGA;
+   out.push({o:G.g,upd:function(T){var u=ease((T-tP)/T_PIEGA);
+    G.el.forEach(function(e,i){var s=cresce(T,i*passo);e.o.visible=s>.01;e.o.scale.set(1,Math.max(.01,s),1);
+     e.o.position.copy(e.p0).lerp(e.p1,u);e.o.quaternion.copy(e.q0).slerp(e.q1,u);});
+    G.anse();var se=cresce(T,tE);G.eme.visible=se>.01;G.eme.scale.setScalar(Math.max(.01,se));}});
+   out.push(etichetta('eme',EME.p.clone().add(V(-.75,.5,.8)),'#ff9a9a',tE+.2,.2));
+   return {ogg:out,box:[V(R+.4,R+.4,0),V(-R-.4,-R-.4,0)],durata:tE+T_ATOMO+.8,zoom:{t:tP+T_PIEGA*.5,r:2.3}};},   /* a metà ripiegamento la camera si avvicina al gomitolo */
+  quaternaria:function(){return emoglobina(false);},
+  trasporto:function(){return emoglobina(true);},
+  collagene:function(){var out=[],cols=['#e8a33d','#f2c94c','#d9734a'];
+   if(!geoCol)geoCol=[0,1,2].map(function(k){var pts=[];for(var i=0;i<=160;i++){var t=i/160,a=t*3.1*2*Math.PI+k*2*Math.PI/3;pts.push(V(-4+8*t,Math.cos(a)*.38,Math.sin(a)*.38));}
+    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),160,.2,8,false);});
+   geoCol.forEach(function(g,k){var me=new THREE.Mesh(g,mat(cols[k]));gruppo.add(me);var tot=g.index.count;
+    out.push({o:me,upd:function(T){var u=ease(T/T_COSTRUISCI);me.visible=u>.01;g.setDrawRange(0,Math.floor(tot*u/6)*6);}});});
+   out.push(etichetta('tre catene avvolte',V(0,-1.25,0),'#c8d3e3',T_COSTRUISCI+.1,.34));
+   return {ogg:out,box:[V(-4.2,1.2,0),V(4.2,-1.4,0)],durata:T_COSTRUISCI+.8};},
+  enzima:function(){var out=[],tS=T_UNIONE+.3;
+   var QE=new THREE.Quaternion().setFromAxisAngle(V(0,1,0),-.7);   /* la tasca guarda verso chi osserva */
+   if(!geoEnz)geoEnz=new THREE.SphereGeometry(1.6,40,28,Math.PI+.42,2*Math.PI-.84);   /* sfera con uno spicchio aperto, la tasca */
+   out.push({o:(function(){var me=new THREE.Mesh(geoEnz,mat('#4fc3c3','{"side":2}'));me.quaternion.copy(QE);gruppo.add(me);return me;})(),t0:0,s:1,base:V(0,0,0)});
+   var F=[0,1,2,3].map(function(k){return V(.95,(k-1.5)*.74,0);}),
+    pos=function(k,T){return F[k].clone().add(V(3.6*(1-ease(T/T_UNIONE)),0,0)).add((k>1?V(2,1.4,0):V(2,-1.4,0)).multiplyScalar(ease((T-tS)/T_ACQUA))).applyQuaternion(QE);};
+   F.forEach(function(p,k){var me=new THREE.Mesh(GM,mat('#e0c25a'));me.quaternion.copy(QE).multiply(qe(Math.PI/2,0,0));gruppo.add(me);
+    out.push({o:me,upd:function(T){var c=cresce(T,0);me.visible=c>.01;me.scale.setScalar(Math.max(.01,c));me.position.copy(pos(k,T));}});
+    if(k){var st=new THREE.Mesh(GC,MB);gruppo.add(st);
+     out.push({o:st,upd:function(T){st.visible=T>.05&&(k!==2||T<tS+.05);posCil(st,pos(k-1,T),pos(k,T),.07);}});}});
+   out.push(etichetta('enzima',V(-.6,-2.15,0),'#8fe3e3',.1,.36));
+   out.push(etichetta('due pezzi più piccoli',V(3.0,0,0).applyQuaternion(QE),'#f2d98a',tS+T_ACQUA,.32));
+   return {ogg:out,box:[V(-1.8,2.4,0),V(5.4,-2.4,0).applyQuaternion(QE)],durata:tS+T_ACQUA+.6};},
+  anticorpo:function(){var out=[],ab=new THREE.Group(),dom=[];
+   [-.32,.32].forEach(function(x){[-2.6,-1.6].forEach(function(y){dom.push({p:V(x,y,0),c:'#6aa5ff',d:V(0,1,0)});});});   /* tronco, due catene lunghe */
+   var cer=V(0,-.75,0);
+   [-1,1].forEach(function(s){var d=V(s*Math.sin(.7),Math.cos(.7),0),pe=V(d.y,-d.x,0).multiplyScalar(s);
+    [0,1].forEach(function(j){var c=cer.clone().add(d.clone().multiplyScalar(.9+j*.95));
+     dom.push({p:c.clone().add(pe.clone().multiplyScalar(-.2)),c:j?'#9cc0ff':'#6aa5ff',d:d});          /* catena lunga */
+     dom.push({p:c.clone().add(pe.clone().multiplyScalar(.42)),c:j?'#f2e68a':'#e0d24a',d:d});});      /* catena corta */
+    var h=cil(V(s*.32,-1.15,0),cer.clone().add(d.clone().multiplyScalar(.9)).add(pe.clone().multiplyScalar(-.2)),.07,mat('#6aa5ff'));ab.add(h);});
+   dom.forEach(function(q){var me=new THREE.Mesh(GS,mat(q.c));me.scale.set(.3,.44,.3);me.position.copy(q.p);me.quaternion.setFromUnitVectors(V(0,1,0),q.d);ab.add(me);});
+   gruppo.add(ab);
+   out.push({o:ab,upd:function(T){var c=cresce(T,0);ab.visible=c>.01;ab.scale.setScalar(Math.max(.01,c));ab.position.y=-2.2*(1-ease(T/T_UNIONE));}});
+   var vc=V(0,1.95,0),vir=new THREE.Group(),sf=new THREE.Mesh(GS,mat('#d46aa0'));sf.scale.setScalar(1.2);vir.add(sf);
+   for(var i=0;i<18;i++){var y=1-2*(i+.5)/18,r=Math.sqrt(1-y*y),f=i*2.4,d=V(Math.cos(f)*r,y,Math.sin(f)*r);
+    var sp=new THREE.Mesh(GP,mat('#e38fbd'));sp.scale.setScalar(.36);sp.position.copy(d.clone().multiplyScalar(1.33));sp.quaternion.setFromUnitVectors(V(0,1,0),d);vir.add(sp);}
+   vir.position.copy(vc);gruppo.add(vir);out.push({o:vir,t0:0,s:1,base:vc});
+   out.push(etichetta('anticorpo',V(0,-3.45,0),'#9cc0ff',T_UNIONE+.1,.36));out.push(etichetta('virus',V(0,3.85,0),'#e38fbd',.1,.36));
+   return {ogg:out,box:[V(-2,-3.7,0),V(2,4,0)],durata:T_UNIONE+.6};}};
  /* oggetti animati: ognuno ha t0 (quando compare), parte (per l'unione) e un modo per aggiornarsi */
  var ogg=[],acque=[],perl=null,legPerl=[],T=0,durata=0,mol=null,unione=false,piega=false,attivo=false,parti=null;
  function pulisci(){while(gruppo.children.length){var o=gruppo.children.pop();if(o.material&&o.material.map){o.material.map.dispose();o.material.dispose();}}ogg=[];acque=[];perl=null;legPerl=[];}
@@ -469,6 +587,7 @@ function Scena(el){
     var al=new THREE.Mesh(GS,new THREE.MeshStandardMaterial({color:0x5bc8f0,transparent:true,opacity:.14,depthWrite:false}));gruppo.add(al);ogg.push({o:al,t0:.2,s:e.r+.55,base:e.p});}
    else if(e.tipo==='carica'){me=testo(e.t,'#9cc0ff',.8);gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,sp:me.scale.clone(),base:e.p});}});
   m.aloni.forEach(function(a){var me=new THREE.Mesh(GS,new THREE.MeshStandardMaterial({color:a.c,transparent:true,opacity:.16,depthWrite:false}));me.renderOrder=3;gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,s:a.r,base:a.p,alone:true});});
+  var spec=m.speciale?SPECIALI[m.speciale]():null;if(spec)spec.ogg.forEach(function(q){ogg.push(q);});
   var tEt=(unione?T_UNIONE:T_COSTRUISCI)+.1;
   m.etich.forEach(function(a){var sp=testo(a.t,a.c,a.h||.42);gruppo.add(sp);ogg.push({o:sp,t0:tEt,sp:sp.scale.clone(),base:a.p,et:true});});
   m.acqua.forEach(function(w){var g=new THREE.Group(),o=new THREE.Mesh(GS,mat(EL.O.c));o.scale.setScalar(EL.O.r);g.add(o);
@@ -478,21 +597,24 @@ function Scena(el){
   if(m.perline){perl=m.perline.map(function(q){var me=new THREE.Mesh(GS,mat(q.c));me.scale.setScalar(.3);gruppo.add(me);return {o:me,q:q,t0:(k++)*passo};});
    for(var i=1;i<perl.length;i++){var c=new THREE.Mesh(GC,MB);gruppo.add(c);legPerl.push(c);}
    if(op.resta){perl.forEach(function(p){p.t0=0;});}}
-  durata=(unione?T_UNIONE+T_ACQUA+.4:T_COSTRUISCI+.5)+(piega?(op.resta?0:T_PIEGA):0)+.6;
+  durata=spec?spec.durata:(unione?T_UNIONE+T_ACQUA+.4:T_COSTRUISCI+.5)+(piega?(op.resta?0:T_PIEGA):0)+.6;
   T=reduce||op.subito?durata:0;piega0=op.resta?1:0;
   /* camera: si allontana quanto basta per vedere tutta la molecola */
   var box=new THREE.Box3(),pp=[];m.at.forEach(function(a){pp.push(a.p);});m.extra.forEach(function(e){if(e.p)pp.push(e.p);if(e.a)pp.push(e.a,e.b);
    var rr=e.tipo==='goccia'?1.7:(e.tipo==='ione'?e.r+.6:0);if(rr)pp.push(e.p.clone().addScalar(rr),e.p.clone().addScalar(-rr));});
-  m.etich.forEach(function(e){pp.push(e.p);});if(m.perline)m.perline.forEach(function(q){pp.push(q.lin,q.pie);});
+  m.etich.forEach(function(e){pp.push(e.p);});if(spec)spec.box.forEach(function(p){pp.push(p);});if(m.perline)m.perline.forEach(function(q){pp.push(q.lin,q.pie);});
   if(unione&&parti)m.at.forEach(function(a){pp.push(a.p.clone().add((parti[a.parte]||V(0,0,0)).clone().multiplyScalar(.4)));});
   pp.forEach(function(p){box.expandByPoint(p);});var sph=box.getBoundingSphere(new THREE.Sphere());
   var kE=Math.max(1,sph.radius/3.2);ogg.forEach(function(q){if(q.sp&&q.et){q.sp.multiplyScalar(kE);}});
-  radDa=rad;radFit=clamp(sph.radius*2.6+1.2,4.5,30);camU=op.subito?1:0;attivo=true;dirty=true;}
+  radDa=rad;radFit=radIniz=clamp(sph.radius*2.6+1.2,4.5,30);camU=op.subito?1:0;attivo=true;dirty=true;
+  zoomTardi=spec&&spec.zoom?{t:spec.zoom.t,r:clamp(spec.zoom.r*2.6+1.2,4.5,30)}:null;zoom0=zoomTardi;
+  if(zoomTardi&&T>=zoomTardi.t){radFit=zoomTardi.r;zoomTardi=null;}}
+ var zoomTardi=null,zoom0=null,radIniz=8;
  var piega0=0;
  function ease(u){u=clamp(u,0,1);return u*u*(3-2*u);}
  function aggiorna(){
   var tU=unione?ease(T/T_UNIONE):1;
-  ogg.forEach(function(q){var u=clamp((T-q.t0)/T_ATOMO,0,1),s=ease(u);
+  ogg.forEach(function(q){if(q.upd){q.upd(T);return;}var u=clamp((T-q.t0)/T_ATOMO,0,1),s=ease(u);
    if(q.cil){var A=mol.at[q.cil[0]],B=mol.at[q.cil[1]];var pa=pos(A),pb=pos(B);
     var ua=ease(clamp((T-A.t0)/T_ATOMO,0,1)),ub=ease(clamp((T-B.t0)/T_ATOMO,0,1));
     var vis=Math.min(ua,ub)*(q.ponte&&unione?clamp((T-T_UNIONE*.85)/(T_UNIONE*.15),0,1):1);
@@ -530,6 +652,7 @@ function Scena(el){
   var dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;     /* intervallo mai negativo */
   if(el.offsetParent===null)return;
   if(attivo){T=Math.min(durata,T+dt);aggiorna();dirty=true;if(T>=durata)attivo=false;}
+  if(zoomTardi&&T>=zoomTardi.t){radDa=rad;radFit=zoomTardi.r;camU=0;zoomTardi=null;}
   if(camU<1){camU=Math.min(1,camU+dt/T_CAMERA);rad=radDa+(radFit-radDa)*ease(camU);dirty=true;}else rad=radFit;
   if(auto&&!reduce){th+=dt*.3;dirty=true;}
   if(!dirty)return;dirty=false;
@@ -537,7 +660,7 @@ function Scena(el){
   acque.forEach(function(w){if(w.g.visible)w.g.lookAt(cam.position);});R.render(scene,cam);})(last);
  resize();
  return {costruisci:costruisci,resize:resize,
-  rifai:function(){if(!mol)return;T=0;attivo=true;dirty=true;},
+  rifai:function(){if(!mol)return;T=0;attivo=true;dirty=true;if(zoom0){zoomTardi=zoom0;radDa=rad;radFit=radIniz;camU=0;}},
   reset:function(){th=V0.th;ph=V0.ph;zoomK=1;dirty=true;},
   zoom:zoomF,ruota:function(on){auto=on;dirty=true;}};
 }
@@ -565,9 +688,9 @@ $('infoD').addEventListener('click',function(e){var b=e.target.closest('[data-va
 function scegli(k,subito){
  var c=chipTrova(k);if(!c)return;S.sel=k;var sc=SCHEDE[S.sch];
  Array.prototype.forEach.call($('gruppi').querySelectorAll('.chip'),function(b){b.classList.toggle('attivo',b.dataset.k===k);});
- var h=c.d,al=c.al||(sc.al&&k==='cat'?sc.al:null),dati=[];
+ var h=c.d,al=c.al||(sc.al&&k==='pri'?sc.al:null),dati=[];
  if(al)dati.push('<li><b>Negli alimenti</b> '+al+'</li>');
- if(sc.kcal&&(k==='glu'||k==='ami'||k==='cat'||k==='tri'))dati.push('<li><b>Energia</b> circa '+sc.kcal+' kcal per grammo</li>');
+ if(sc.kcal&&(k==='glu'||k==='ami'||k==='pri'||k==='tri'))dati.push('<li><b>Energia</b> circa '+sc.kcal+' kcal per grammo</li>');
  if(dati.length)h+='<ul class="dati">'+dati.join('')+'</ul>';
  $('infoT').textContent=c.n;$('infoD').innerHTML=h;
  $('cap').textContent=c.cap||'Modello a sfere e bastoncini, semplificato';
@@ -649,7 +772,7 @@ apriScheda(0);
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Le biomolecole in 3D, a partire dal carbonio con i suoi quattro legami e gli idrocarburi, i carboidrati dal glucosio all'amido e alla cellulosa, le proteine fatte di amminoacidi, i lipidi con trigliceridi e fosfolipidi, vitamine, sali minerali e acqua, con un accenno agli acidi nucleici e domande per allenarsi. DNA e RNA sono protagonisti della pagina <a href="divisione_cellulare.html" style="color:#8ee0a6">La divisione cellulare</a>.</p>
-<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Il GPL è una miscela di propano e butano, liquefatti per compressione. <a href="https://www.lautomobile.aci.it/?p=11670" target="_blank" rel="noopener">ACI, L'Automobile, Il GPL per autotrazione</a></li><li>Carboidrati e proteine circa 4 kcal per grammo, lipidi circa 9 kcal per grammo. <a href="https://www.msdmanuals.com/it/casa/disturbi-alimentari/panoramica-sulla-nutrizione/carboidrati-proteine-e-grassi" target="_blank" rel="noopener">Manuale MSD, Carboidrati, proteine e grassi</a></li><li>Glicogeno di riserva nel fegato e nei muscoli; grassi saturi in genere solidi e insaturi in genere liquidi a temperatura ambiente. <a href="https://www.msdmanuals.com/it/casa/disturbi-alimentari/panoramica-sulla-nutrizione/carboidrati-proteine-e-grassi" target="_blank" rel="noopener">Manuale MSD, Carboidrati, proteine e grassi</a></li><li>Le proteine sono fatte di 20 amminoacidi, uniti dal legame peptidico con perdita di una molecola d'acqua. <a href="https://www.britannica.com/science/amino-acid" target="_blank" rel="noopener">Encyclopaedia Britannica, Amino acid</a></li><li>Vitamine idrosolubili (gruppo B e C) da assumere ogni giorno, liposolubili (A, D, E, K) assorbite con i grassi e accumulate nel fegato. <a href="https://www.epicentro.iss.it/vitamine/" target="_blank" rel="noopener">EpiCentro, Istituto Superiore di Sanità, Vitamine</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Il GPL è una miscela di propano e butano, liquefatti per compressione. <a href="https://www.lautomobile.aci.it/?p=11670" target="_blank" rel="noopener">ACI, L'Automobile, Il GPL per autotrazione</a></li><li>Carboidrati e proteine circa 4 kcal per grammo, lipidi circa 9 kcal per grammo. <a href="https://www.msdmanuals.com/it/casa/disturbi-alimentari/panoramica-sulla-nutrizione/carboidrati-proteine-e-grassi" target="_blank" rel="noopener">Manuale MSD, Carboidrati, proteine e grassi</a></li><li>Glicogeno di riserva nel fegato e nei muscoli; grassi saturi in genere solidi e insaturi in genere liquidi a temperatura ambiente. <a href="https://www.msdmanuals.com/it/casa/disturbi-alimentari/panoramica-sulla-nutrizione/carboidrati-proteine-e-grassi" target="_blank" rel="noopener">Manuale MSD, Carboidrati, proteine e grassi</a></li><li>Le proteine sono fatte di 20 amminoacidi, uniti dal legame peptidico con perdita di una molecola d'acqua. <a href="https://www.britannica.com/science/amino-acid" target="_blank" rel="noopener">Encyclopaedia Britannica, Amino acid</a></li><li>Mioglobina, una sola catena di circa 150 amminoacidi ripiegata in 8 alfa eliche intorno al gruppo eme, conserva l'ossigeno nei muscoli. <a href="https://www.ebi.ac.uk/pdbe/node/49243" target="_blank" rel="noopener">EMBL-EBI, PDBe, The protein that lets you hold your breath</a></li><li>Emoglobina con quattro catene, due alfa e due beta, ognuna simile alla mioglobina e con un gruppo eme con il ferro che lega l'ossigeno. <a href="https://pdb101.rcsb.org/motm/41" target="_blank" rel="noopener">RCSB PDB-101, Molecule of the Month, Hemoglobin</a></li><li>Collagene, circa un quarto delle proteine del corpo, tre catene avvolte in una tripla elica. <a href="https://pdb101.rcsb.org/motm/4" target="_blank" rel="noopener">RCSB PDB-101, Molecule of the Month, Collagen</a></li><li>Anticorpi a forma di Y con quattro catene, due lunghe e due corte, con i siti di legame sulle punte. <a href="https://pdb101.rcsb.org/motm/21" target="_blank" rel="noopener">RCSB PDB-101, Molecule of the Month, Antibodies</a></li><li>Vitamine idrosolubili (gruppo B e C) da assumere ogni giorno, liposolubili (A, D, E, K) assorbite con i grassi e accumulate nel fegato. <a href="https://www.epicentro.iss.it/vitamine/" target="_blank" rel="noopener">EpiCentro, Istituto Superiore di Sanità, Vitamine</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6fd08c!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(111,208,140,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Biologia</a>
 <script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
