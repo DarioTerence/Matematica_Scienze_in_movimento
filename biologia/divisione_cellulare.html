@@ -158,6 +158,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
     <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
     <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
    </div>
+   <div class="chips" id="mTipo" role="group" aria-label="Tipo di cellula" style="margin-top:8px"><button class="chip attivo" data-t="ani" aria-pressed="true" style="--chip:#E8935A">Cellula animale</button><button class="chip" data-t="veg" aria-pressed="false" style="--chip:#6fd08c">Cellula vegetale</button></div>
    <div class="tempo">
     <button class="play" id="mPlay"></button>
     <div class="barra">
@@ -193,10 +194,10 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
     </div>
    </div>
    <p class="fase" id="sFase" aria-live="polite"></p>
-   <div class="leg"><span><i style="background:#D94F6A"></i>dalla madre</span><span><i style="background:#3F7FD9"></i>dal padre</span></div>
+   <div class="leg"><span><i style="background:#D94F6A"></i>cromosoma madre</span><span><i style="background:#3F7FD9"></i>cromosoma padre</span></div>
   </div>
   <aside>
-   <div class="proft"><img id="pf-meiosi" src="../immagini/prof_t/prof_t_naturalista_binocolo.webp" alt="Prof. T naturalista"><div class="fumetto" id="fu-meiosi">Premi il pulsante rotondo e segui i colori, rosso dalla madre e blu dal padre.</div></div>
+   <div class="proft"><img id="pf-meiosi" src="../immagini/prof_t/prof_t_naturalista_binocolo.webp" alt="Prof. T naturalista"><div class="fumetto" id="fu-meiosi">Premi il pulsante rotondo e segui i colori, rosso il cromosoma madre e blu il cromosoma padre.</div></div>
    <div class="card"><div class="sect">Mitosi e meiosi a confronto</div>
     <table class="conf"><thead><tr><th></th><th>Mitosi</th><th>Meiosi</th></tr></thead><tbody>
      <tr><th>Divisioni</th><td>una</td><td>due</td></tr>
@@ -229,10 +230,13 @@ var T_FASE=4;      /* secondi per ogni fase di mitosi e meiosi (anche nel ciclo 
 var T_VOLO=2.4;    /* secondi per spostare la vista da un livello all'altro (scheda 01) */
 
 /* ---- colori fissi ---- */
-var COL={mat:'#D94F6A',pat:'#3F7FD9',memb:'#E8935A',nuc:'#9C7CC9',fuso:'#6FA89A',centr:'#D4A62A',
- A:'#E8574E',T:'#F2C14E',C:'#4F86D9',G:'#4FB35A',U:'#B36AE2',scheletro:'#9AA3AD'};
+var COL={mat:'#D94F6A',pat:'#3F7FD9',memb:'#E8935A',nuc:'#9C7CC9',fuso:'#6FA89A',centr:'#D4A62A',cro:'#56677D',
+ A:'#E8574E',T:'#F2C14E',C:'#4F86D9',G:'#4FB35A',U:'#B36AE2',zuc:'#e2d3b0',zucR:'#f0e4c4',fos:'#f08a24',asta:'#a9b2bd',
+ parete:'#5E9E4A',piastra:'#9BD17F'};
+/* colori di basi, zuccheri e fosfati uguali a quelli della scheda sugli acidi nucleici di Le biomolecole */
 var BASI=[['A','adenina'],['T','timina'],['C','citosina'],['G','guanina'],['U','uracile, solo nell\'RNA']];
-$('basi').innerHTML=BASI.map(function(b){return '<span><i style="background:'+COL[b[0]]+'"></i><b style="color:#e6ecf5">'+b[0]+'</b> '+b[1]+'</span>';}).join('');
+$('basi').innerHTML=BASI.map(function(b){return '<span><i style="background:'+COL[b[0]]+'"></i><b style="color:#e6ecf5">'+b[0]+'</b> '+b[1]+'</span>';}).join('')
+ +'<span><i style="background:'+COL.zuc+'"></i>zucchero</span><span><i style="background:'+COL.fos+';border-radius:50%"></i>fosfato</span>';
 
 /* ---- Prof. T ---- */
 var IMG={hi:'../immagini/prof_t/prof_t_naturalista_saluto.webp',spiega:'../immagini/prof_t/prof_t_naturalista_binocolo.webp',
@@ -255,6 +259,68 @@ else if(!R)avviso('Questo browser non supporta il 3D (WebGL).');
 var clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
 var liscio=function(t){t=clamp(t,0,1);return t*t*(3-2*t);};
 function M(c,o){return new THREE.MeshStandardMaterial({color:c,roughness:.55,metalness:0,transparent:true,opacity:o==null?1:o});}
+var GSF=OK3D?new THREE.SphereGeometry(1,16,12):null,GCI=OK3D?new THREE.CylinderGeometry(1,1,1,10):null;
+function asta(a,b,r,m){var d=b.clone().sub(a),me=new THREE.Mesh(GCI,m);me.scale.set(r,d.length(),r);
+ me.position.copy(a).add(b).multiplyScalar(.5);me.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());return me;}
+
+/* ---- basi a incastro, come in Le biomolecole: A e G più lunghe con la sporgenza, T, U e C con l'incavo;
+   triangolo per A-T (e A-U), rettangolo per G-C. Il pezzo parte dallo zucchero verso il centro dell'elica ---- */
+var geoB={};
+function geoBase(b){if(geoB[b])return geoB[b];var h=.2,sh=new THREE.Shape(),pur=b==='A'||b==='G',L=pur?1.25:1.05,tri=b!=='G'&&b!=='C',t=h*.6,d=.22;
+ sh.moveTo(0,-h);sh.lineTo(L,-h);sh.lineTo(L,-t);
+ if(pur){if(tri)sh.lineTo(L+d,0);else{sh.lineTo(L+d,-t);sh.lineTo(L+d,t);}}
+ else{if(tri)sh.lineTo(L-d,0);else{sh.lineTo(L-d,-t);sh.lineTo(L-d,t);}}
+ sh.lineTo(L,t);sh.lineTo(L,h);sh.lineTo(0,h);sh.lineTo(0,-h);
+ var g=new THREE.ExtrudeGeometry(sh,{depth:.14,bevelEnabled:false});g.translate(0,0,-.07);return (geoB[b]=g);}
+var GZU=OK3D?new THREE.CylinderGeometry(.22,.22,.12,5):null;   /* zucchero a cinque atomi di carbonio, un pentagono */
+/* nucleotide: zucchero in p0, base verso dir; mc dà il materiale di un colore */
+function nucleotide(b,p0,dir,su,zuc,mc){var g=new THREE.Group(),X=dir.clone().normalize(),Y=su.clone().normalize(),Z=X.clone().cross(Y).normalize();
+ var z=new THREE.Mesh(GZU,mc(zuc));z.position.copy(p0);z.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),Z);g.add(z);
+ var ba=new THREE.Mesh(geoBase(b),mc(COL[b]));ba.position.copy(p0).add(X.clone().multiplyScalar(.18));
+ ba.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,Y,Z));g.add(ba);return g;}
+
+/* ---- centriolo: nove triplette di microtubuli disposte a girandola (una sola geometria) ---- */
+var geoCentr=null;
+function geoCentriolo(){if(geoCentr)return geoCentr;
+ var LEN=.28,RC=.08,RT=.013,S=.028,TILT=.6,pos=[],nor=[],m=new THREE.Matrix4();
+ for(var k=0;k<9;k++){var f=k*2*Math.PI/9,u=f+Math.PI/2-TILT;
+  for(var j=-1;j<=1;j++){var g=new THREE.CylinderGeometry(RT,RT,LEN,7,1,false).toNonIndexed();
+   g.applyMatrix4(m.makeTranslation(RC*Math.cos(f)+j*S*Math.cos(u),0,RC*Math.sin(f)+j*S*Math.sin(u)));
+   pos.push(g.attributes.position.array);nor.push(g.attributes.normal.array);}}
+ var n=0;pos.forEach(function(a){n+=a.length;});var P=new Float32Array(n),Nn=new Float32Array(n),o=0;
+ pos.forEach(function(a,i){P.set(a,o);Nn.set(nor[i],o);o+=a.length;});
+ geoCentr=new THREE.BufferGeometry();geoCentr.setAttribute('position',new THREE.BufferAttribute(P,3));geoCentr.setAttribute('normal',new THREE.BufferAttribute(Nn,3));
+ return geoCentr;}
+/* coppia di centrioli perpendicolari: uno in piedi, l'altro sempre rivolto verso chi guarda (g.punta), così si vedono le nove triplette */
+function Centrioli(){var g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:COL.centr,roughness:.5,side:THREE.DoubleSide});
+ var a=new THREE.Mesh(geoCentriolo(),m),h=new THREE.Group(),b=new THREE.Mesh(geoCentriolo(),m);b.rotation.x=Math.PI/2;
+ h.position.set(0,-.25,0);h.add(b);g.add(a,h);g.scale.setScalar(1.15);g.punta=h;return g;}
+
+/* ---- cromatina: il DNA disteso nel nucleo, un filo sottile aggrovigliato (sempre uguale, generato da un seme) ---- */
+function geoCromatina(seme){var s=seme*9301+49297,rnd=function(){s=(s*9301+49297)%233280;return s/233280-.5;};
+ var p=new THREE.Vector3(),pts=[],v=new THREE.Vector3(rnd(),rnd(),rnd()).normalize();
+ for(var i=0;i<120;i++){pts.push(p.clone());v.add(new THREE.Vector3(rnd(),rnd(),rnd()).multiplyScalar(1.5)).normalize();
+  p.add(v.clone().multiplyScalar(.05));if(p.length()>.36)p.multiplyScalar(.36/p.length());}
+ return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),420,.01,5,false);}
+
+/* ---- membrana che si divide: due lobi uguali che si allungano, si strozzano al centro e si separano ---- */
+var NP=40,NI=20,NSP=40;   /* punti del profilo (di cui NI nella parte interna) e spicchi */
+function Lobo(mat){var g=new THREE.BufferGeometry(),idx=[];
+ g.setAttribute('position',new THREE.BufferAttribute(new Float32Array((NP+1)*(NSP+1)*3),3));
+ for(var i=0;i<NP;i++)for(var j=0;j<NSP;j++){var a=i*(NSP+1)+j,b=a+NSP+1;idx.push(a,a+1,b,b,a+1,b+1);}
+ g.setIndex(idx);var me=new THREE.Mesh(g,mat);me.renderOrder=3;return me;}
+/* profilo del lobo lungo il suo asse: parte interna dalla strozzatura al centro del lobo, poi la calotta fino alla punta.
+   d da 0 a 1: fino a .3 la cellula si allunga, fino a .75 si strozza, poi i due lobi si chiudono e diventano sfere */
+function formaLobo(me,st){
+ var e1=liscio(st.d/.3),e2=liscio((st.d-.3)/.45),e3=liscio((st.d-.75)/.25);
+ var ra=st.r0*.9,rb=st.r0*.8,r=st.r0+(ra-st.r0)*e1+(rb-ra)*e2+(st.R-rb)*e3;
+ var c=st.D*(.35*e1+.5*e2+.15*e3),n=r*(1-e2),m=e3,P=me.geometry.attributes.position,A=P.array,k=0;
+ for(var i=0;i<=NP;i++){var y,ro;
+  if(i<=NI){var t=i/NI,h=t*t*(3-2*t),a=t*Math.PI/2;
+   y=(1-m)*(c*t)+m*(c-r*Math.cos(a));ro=(1-m)*(n+(r-n)*h)+m*r*Math.sin(a);}
+  else{var b=(i-NI)/(NP-NI)*Math.PI/2;y=c+r*Math.sin(b);ro=r*Math.cos(b);}
+  for(var j=0;j<=NSP;j++){var f=j*2*Math.PI/NSP;A[k++]=ro*Math.sin(f);A[k++]=y;A[k++]=ro*Math.cos(f);}}
+ P.needsUpdate=true;me.geometry.computeVertexNormals();me.geometry.computeBoundingSphere();}
 function Vista(stageId,V0){
  var v={el:$(stageId),scene:new THREE.Scene(),cam:new THREE.PerspectiveCamera(40,1,.01,200),V0:V0,
   th:V0.th,ph:V0.ph,rad:V0.rad,rmin:V0.rmin,rmax:V0.rmax,t:new THREE.Vector3(0,0,0),dirty:true,tick:null,fit:1};
@@ -298,9 +364,11 @@ if(R){
 
 /* ---- cromatidio: due bracci uniti nel centromero; il braccio superiore ha la punta separata (crossing-over) ---- */
 var R_BR=.075;
-function Cromatidio(L,col,flip){
+function Cromatidio(L,col,flip,seme){
  var out=new THREE.Group(),inn=new THREE.Group();out.add(inn);inn.rotation.y=flip?Math.PI:0;
- var mB=M(col),mX=M(col),bracci=[];
+ var mB=M(col),mX=M(col),bracci=[],cro=null;
+ /* con il seme il cromatidio ha anche la sua cromatina, visibile quando non è condensato (c vicino a 0) */
+ if(seme!=null){cro=new THREE.Mesh(geoCromatina(seme),M(col));cro.rotation.set(seme*.9,seme*1.7,0);out.add(cro);}
  for(var k=0;k<2;k++){
   var arm=new THREE.Group(),mt=k===0?mX:mB;
   var b=new THREE.Mesh(new THREE.CylinderGeometry(R_BR,R_BR,.55*L,14),mB);b.position.y=.275*L;
@@ -314,7 +382,8 @@ function Cromatidio(L,col,flip){
    var th=.4+.6*s.c,ln=1.3-.3*s.c;inn.scale.set(th,ln,th);
    bracci[0].rotation.z=-s.lean;bracci[1].rotation.z=Math.PI+s.lean;
    var g=clamp(s.g,0,1);out.scale.setScalar(Math.max(.001,g));out.visible=g>.02;
-   var o=(op==null?1:op)*(.55+.45*s.c);mB.opacity=mX.opacity=o;mB.depthWrite=mX.depthWrite=o>.6;}};}
+   var o=(op==null?1:op)*(cro?liscio((s.c-.1)/.6):.55+.45*s.c);mB.opacity=mX.opacity=o;mB.depthWrite=mX.depthWrite=o>.6;inn.visible=o>.01;
+   if(cro){var oc=1-liscio(s.c/.7);cro.visible=oc>.01;cro.material.opacity=oc;cro.material.depthWrite=oc>.9;cro.scale.setScalar(1-.6*s.c);}}};}
 
 /* stato di un cromosoma a X (due cromatidi): P posizione, rz rotazione, c condensazione, w distanza dei fratelli, dup duplicazione */
 function X(P,rz,c,lean,w,dup,q0,q1){
@@ -327,19 +396,39 @@ function interp(a,b,t){
  var o={};for(var k in a)o[k]=interp(a[k],b[k],t);return o;}
 
 /* ---- modello di cellula che si divide: chiavi (stati) e fasi tra una chiave e la successiva ---- */
+/* cellePadre: per ogni membrana la membrana da cui nasce (-1 se nessuna); una membrana figlia compare quando la madre ha finito di dividersi */
 function Divisione(v,K,colori,cellePadre,nNuclei){
  var root=new THREE.Group();v.scene.add(root);
- var cr=[],L=[.36,.22];
- for(var j=0;j<4;j++)for(var s=0;s<2;s++){var c=Cromatidio(L[j>>1],colori[j],s===1);root.add(c.g);cr.push(c);}
- var gm=new THREE.SphereGeometry(1,40,28),cel=[];
- for(var i=0;i<cellePadre.length;i++){var m=new THREE.Mesh(gm,new THREE.MeshStandardMaterial({color:COL.memb,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide,roughness:.8}));m.renderOrder=3;root.add(m);cel.push(m);}
+ var cr=[],L=[.36,.22],veg=false;
+ for(var j=0;j<4;j++)for(var s=0;s<2;s++){var c=Cromatidio(L[j>>1],colori[j],s===1,j*2+s+1);root.add(c.g);cr.push(c);}
+ var gm=new THREE.SphereGeometry(1,40,28),cel=[],haFigli=cellePadre.map(function(p,i){return cellePadre.indexOf(i)>=0;});
+ var mMemb=new THREE.MeshStandardMaterial({color:COL.memb,transparent:true,opacity:.42,depthWrite:false,roughness:.75});
+ for(var i=0;i<cellePadre.length;i++){var gr=new THREE.Group(),l1=Lobo(mMemb),l2=Lobo(mMemb);l2.rotation.z=Math.PI;gr.add(l1,l2);root.add(gr);cel.push({g:gr,l:[l1,l2],k:''});}
  var nuc=[];
  for(i=0;i<nNuclei;i++){var n=new THREE.Mesh(gm,new THREE.MeshStandardMaterial({color:COL.nuc,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide,roughness:.8}));n.renderOrder=2;root.add(n);nuc.push(n);}
+ /* cellula vegetale (solo mitosi): parete a scatola e piastra cellulare che cresce dal centro verso la parete */
+ var HX=2.2,HY=1.45,HZ=1.1,par=new THREE.Group();par.visible=false;root.add(par);
+ var mPar=new THREE.MeshStandardMaterial({color:COL.parete,transparent:true,opacity:.22,depthWrite:false,roughness:.8});
+ var box=new THREE.Mesh(new THREE.BoxGeometry(2*HX,2*HY,2*HZ),mPar);box.renderOrder=3;par.add(box);
+ par.add(new THREE.LineSegments(new THREE.EdgesGeometry(box.geometry),new THREE.LineBasicMaterial({color:COL.parete})));
+ var NPL=64,pg=new THREE.BufferGeometry(),pa=new Float32Array((NPL+2)*3),pn=new Float32Array((NPL+2)*3),pi=[];
+ for(i=0;i<NPL;i++)pi.push(0,i+1,i+2);for(i=0;i<NPL+2;i++)pn[i*3]=1;
+ pg.setAttribute('position',new THREE.BufferAttribute(pa,3));pg.setAttribute('normal',new THREE.BufferAttribute(pn,3));pg.setIndex(pi);
+ var piastra=new THREE.Mesh(pg,new THREE.MeshStandardMaterial({color:COL.piastra,transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:false,roughness:.7}));
+ piastra.renderOrder=4;par.add(piastra);
+ var ves=[],mVes=new THREE.MeshStandardMaterial({color:'#d8efc0',roughness:.5});
+ for(i=0;i<20;i++){var vv=new THREE.Mesh(GSF,mVes);vv.scale.setScalar(.055);par.add(vv);ves.push(vv);}
+ /* piastra: un disco che si allarga e diventa via via quadrato, fino a toccare la parete */
+ function formaPiastra(pl){var a=Math.max(.001,pl),p=2+10*pl*pl,ry=HY*a,rz=HZ*a;
+  for(var i=0;i<=NPL;i++){var f=i*2*Math.PI/NPL,cs=Math.cos(f),sn=Math.sin(f),rr=1/Math.pow(Math.pow(Math.abs(cs),p)+Math.pow(Math.abs(sn),p),1/p);
+   pa[(i+1)*3]=0;pa[(i+1)*3+1]=ry*rr*cs;pa[(i+1)*3+2]=rz*rr*sn;}
+  pg.attributes.position.needsUpdate=true;pg.computeBoundingSphere();piastra.visible=pl>.005;
+  ves.forEach(function(s,k){var f=k*2*Math.PI/ves.length,cs=Math.cos(f),sn=Math.sin(f),rr=1/Math.pow(Math.pow(Math.abs(cs),p)+Math.pow(Math.abs(sn),p),1/p);
+   s.position.set(0,ry*rr*cs*1.04,rz*rr*sn*1.04);s.visible=pl>.01&&pl<.97;});}
  /* centrioli ai poli */
  var poli=[];
- for(i=0;i<4;i++){var pg=new THREE.Group(),mc=M(COL.centr);
-  var c1=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.16,10),mc),c2=c1.clone();c2.rotation.x=Math.PI/2;c2.position.x=.07;
-  pg.add(c1,c2);root.add(pg);poli.push(pg);}
+ for(i=0;i<4;i++){var pc=Centrioli();root.add(pc);poli.push(pc);}
+ var prima0=v.prima;v.prima=function(){if(prima0)prima0();poli.forEach(function(g){if(g.visible)g.punta.lookAt(v.cam.position);});};
  /* fibre del fuso */
  var fp=new Float32Array(16*6),fg=new THREE.BufferGeometry();fg.setAttribute('position',new THREE.BufferAttribute(fp,3));
  var fm=new THREE.LineBasicMaterial({color:COL.fuso,transparent:true,opacity:0}),fl=new THREE.LineSegments(fg,fm);root.add(fl);
@@ -348,16 +437,20 @@ function Divisione(v,K,colori,cellePadre,nNuclei){
  function mostra(u){
   var st=stato(u),S=st.s,k=0;
   S.cr.forEach(function(x,i){cr[i].set(x);});
-  /* membrane: una cellula figlia si nasconde finché coincide con la madre */
-  S.cel.forEach(function(c,i){var m=cel[i];m.position.set(c.p[0],c.p[1],c.p[2]);m.scale.setScalar(c.r);
-   var p=cellePadre[i];m.visible=p<0||Math.hypot(c.p[0]-S.cel[p].p[0],c.p[1]-S.cel[p].p[1])>.02;});
+  /* membrane: una figlia compare quando la madre ha finito di dividersi, e la madre allora sparisce */
+  S.cel.forEach(function(c,i){var m=cel[i],p=cellePadre[i];
+   m.g.visible=!veg&&(p<0||S.cel[p].d>=.999)&&!(haFigli[i]&&c.d>=.999);if(!m.g.visible)return;
+   m.g.position.set(c.p[0],c.p[1],c.p[2]);m.g.rotation.z=c.a-Math.PI/2;
+   var chiave=[c.d,c.r0].map(function(x){return x.toFixed(4);}).join();
+   if(chiave!==m.k){m.k=chiave;formaLobo(m.l[0],c);m.l[1].geometry=m.l[0].geometry;}});
+  par.visible=veg;if(veg)formaPiastra(S.pl||0);
   S.nuc.forEach(function(c,i){var m=nuc[i];m.position.set(c.p[0],c.p[1],c.p[2]);m.scale.setScalar(c.r);m.material.opacity=.22*c.o;m.visible=c.o>.02;});
-  poli.forEach(function(g,i){var p=S.poli[i];g.visible=!!p;if(p)g.position.set(p[0],p[1],p[2]);});
+  poli.forEach(function(g,i){var p=S.poli[i];g.visible=!!p&&!veg;if(p)g.position.set(p[0],p[1],p[2]);});
   /* fibre dal polo al centromero di ogni cromatidio */
   S.cr.forEach(function(x,i){fp.set(x.q,i*6);fp.set(x.p,i*6+3);k++;});
   fg.attributes.position.needsUpdate=true;fg.setDrawRange(0,k*2);fm.opacity=.85*S.fib;fl.visible=S.fib>.02;
   return st;}
- return {mostra:mostra,cr:cr,n:n};}
+ return {mostra:mostra,cr:cr,n:n,vegetale:function(x){veg=!!x;}};}
 
 /* ================= 01 DAL DNA AI CROMOSOMI ================= */
 var LIV=[
@@ -375,11 +468,11 @@ if(R)(function(){
  var sc=v.scene;
  var memb=new THREE.Mesh(new THREE.SphereGeometry(1.6,48,32),new THREE.MeshStandardMaterial({color:COL.memb,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide,roughness:.8}));memb.renderOrder=3;sc.add(memb);
  var nucl=new THREE.Mesh(new THREE.SphereGeometry(.62,40,28),new THREE.MeshStandardMaterial({color:COL.nuc,transparent:true,opacity:.25,depthWrite:false,side:THREE.DoubleSide,roughness:.8}));nucl.renderOrder=2;sc.add(nucl);
- /* cromosomi nel nucleo (solo alcuni): coppie di omologhi con lo stesso colore chiaro e scuro */
- var crom=[],PAL=['#D94F6A','#3F7FD9','#E39A3B','#4FB35A','#9C6AD9','#2BA8A8'];
+ /* cromosomi nel nucleo (solo alcuni), tutti dello stesso colore neutro per non confonderli con le basi */
+ var crom=[];
  var POS=[[.12,.05,.26],[-.25,.2,.1],[.3,-.2,-.05],[-.1,-.28,.2],[-.3,-.05,-.22],[.05,.3,-.2],[.25,.22,.12],[-.05,-.1,-.32],[.32,-.02,-.25],[-.22,-.3,-.05]];
  POS.forEach(function(p,i){
-  var g=new THREE.Group(),L=i<2?.48:.24+.04*(i%4),col=PAL[(i>>1)%PAL.length];
+  var g=new THREE.Group(),L=i<2?.48:.24+.04*(i%4),col=COL.cro;
   var a=Cromatidio(L,col,false),b=Cromatidio(L,col,true);
   var st=X([0,0,0],0,1,.22,R_BR,1);a.set(st[0]);b.set(st[1]);g.add(a.g,b.g);
   g.position.set(p[0],p[1],p[2]);g.scale.setScalar(.16);g.rotation.set(i*1.3,i*.7,i*2.1);
@@ -390,32 +483,30 @@ if(R)(function(){
  var arm=crom[0].bracci[0],P0=arm.localToWorld(new THREE.Vector3(0,.12,0)),P1=arm.localToWorld(new THREE.Vector3(0,.4,0));
  var dir=P1.clone().sub(P0).normalize();
  var N=14,SEQ='ATGCCGTAAGCTTA',COMP={A:'T',T:'A',C:'G',G:'C'},RNAC={A:'U',T:'A',C:'G',G:'C'};
- var el=new THREE.Group(),sd=.0105;
- var p1=[],p2=[],mS=M(COL.scheletro),mPonte=M('#ffffff');
- var cil=function(a,b,r,m){var d=b.clone().sub(a),me=new THREE.Mesh(new THREE.CylinderGeometry(r,r,d.length(),10),m);
-  me.position.copy(a).add(b).multiplyScalar(.5);me.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());return me;};
- for(var i=0;i<N;i++){var an=i*.6,y=(i-(N-1)/2)*.34*1.6;
-  var a=new THREE.Vector3(Math.cos(an),y,Math.sin(an)),b=new THREE.Vector3(Math.cos(an+2.4),y,Math.sin(an+2.4));
-  p1.push(a);p2.push(b);
-  var mid=a.clone().add(b).multiplyScalar(.5),gap=b.clone().sub(a).normalize().multiplyScalar(.09);
-  var b1=SEQ[i],b2=COMP[b1];
-  el.add(cil(a,mid.clone().sub(gap),.13,M(COL[b1])),cil(mid.clone().add(gap),b,.13,M(COL[b2])),cil(mid.clone().sub(gap),mid.clone().add(gap),.035,mPonte));
-  var s1=new THREE.Mesh(new THREE.SphereGeometry(.2,12,8),mS);s1.position.copy(a);var s2=s1.clone();s2.position.copy(b);el.add(s1,s2);}
- [p1,p2].forEach(function(pp){el.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pp),N*6,.09,8,false),mS));});
- /* RNA: un filamento solo, appaiato al primo filamento, con U al posto di T */
- var rna=new THREE.Group(),pr=[],mR=M('#C8B48A');
- for(i=0;i<10;i++){var yy=(i-4.5)*.34*1.6,pt=new THREE.Vector3(3.3,yy,.35*Math.sin(i*.8));pr.push(pt);
-  var base=RNAC[SEQ[i]];rna.add(cil(pt,pt.clone().add(new THREE.Vector3(-.95,0,0)),.13,M(COL[base])));
-  var ss=new THREE.Mesh(new THREE.SphereGeometry(.2,12,8),mR);ss.position.copy(pt);rna.add(ss);}
- rna.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pr),60,.09,8,false),mR));
+ var el=new THREE.Group(),sd=.0085,Rb=1.33,DY=.58,Y=new THREE.Vector3(0,1,0);
+ /* materiali separati per DNA e RNA, perché l'RNA compare e scompare */
+ var cD={},cR={},mcD=function(c){return cD[c]||(cD[c]=M(c));},mcR=function(c){return cR[c]||(cR[c]=M(c));};
+ var fos=function(m,mc){var s=new THREE.Mesh(GSF,mc(COL.fos));s.scale.setScalar(.15);s.position.copy(m);return s;};
+ var pA=[],pB=[];
+ for(var i=0;i<N;i++){var f=i*2*Math.PI/10,y=(i-(N-1)/2)*DY,a=new THREE.Vector3(Math.cos(f)*Rb,y,Math.sin(f)*Rb),b=new THREE.Vector3(-a.x,y,-a.z);
+  pA.push(a);pB.push(b);var dd=b.clone().sub(a);dd.y=0;
+  el.add(nucleotide(SEQ[i],a,dd,Y,COL.zuc,mcD),nucleotide(COMP[SEQ[i]],b,dd.clone().negate(),Y,COL.zuc,mcD));}
+ /* scheletro: tra due zuccheri vicini un fosfato, un po' più esterno */
+ [pA,pB].forEach(function(P){for(var i=0;i+1<N;i++){var m=P[i].clone().add(P[i+1]).multiplyScalar(.5),r=Math.hypot(m.x,m.z);m.x*=1.12*Rb/r;m.z*=1.12*Rb/r;
+  el.add(fos(m,mcD),asta(P[i],m,.05,mcD(COL.asta)),asta(m,P[i+1],.05,mcD(COL.asta)));}});
+ /* RNA: un filamento solo, che copia il primo filamento con U al posto di T */
+ var rna=new THREE.Group(),pr=[];
+ for(i=0;i<10;i++){var pt=new THREE.Vector3(4.1,(i-4.5)*DY,.3*Math.sin(i*.8));pr.push(pt);
+  rna.add(nucleotide(RNAC[SEQ[i]],pt,new THREE.Vector3(-1,0,0),Y,COL.zucR,mcR));
+  if(i){var mm=pr[i-1].clone().add(pt).multiplyScalar(.5).add(new THREE.Vector3(.25,0,0));rna.add(fos(mm,mcR),asta(pr[i-1],mm,.05,mcR(COL.asta)),asta(mm,pt,.05,mcR(COL.asta)));}}
  el.add(rna);
  var mats=[];el.traverse(function(o){if(o.material&&mats.indexOf(o.material)<0)mats.push(o.material);});
  var matsR=[];rna.traverse(function(o){if(o.material&&matsR.indexOf(o.material)<0)matsR.push(o.material);});
  el.scale.setScalar(sd);el.position.copy(P0.clone().add(P1).multiplyScalar(.5));el.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir);
  sc.add(el);sc.updateMatrixWorld(true);
- var Pdna=el.position.clone(),Prna=el.localToWorld(new THREE.Vector3(1.8,0,0));
+ var Pdna=el.position.clone(),Prna=el.localToWorld(new THREE.Vector3(1.9,0,0));
  var Pcro=new THREE.Vector3(POS[0][0],POS[0][1],POS[0][2]);
- var MIRA=[{t:new THREE.Vector3(),r:6.5},{t:new THREE.Vector3(),r:2.2},{t:Pcro,r:.55},{t:Pdna,r:.11},{t:Prna,r:.13}];
+ var MIRA=[{t:new THREE.Vector3(),r:6.5},{t:new THREE.Vector3(),r:2.2},{t:Pcro,r:.55},{t:Pdna,r:.1},{t:Prna,r:.12}];
  var volo=null,rnaO=0;
  v.vai=function(i){var m=MIRA[i];volo={a:v.t.clone(),b:m.t.clone(),ra:v.rad,rb:m.r,k:0};v.rmin=m.r*.45;v.rmax=m.r*2.2;};
  v.reset=function(){v.th=v.V0.th;v.ph=v.V0.ph;v.vai(D.liv);};
@@ -445,28 +536,31 @@ function livello(i,auto){
 var PN=[[-.22,.16,.08],[.2,-.18,-.08],[.06,.28,-.12],[-.1,-.26,.16]],RZ=[.6,-.4,1.2,-1],YM=[.9,.05,-.6,-1.1],TD=[[-.14,.22],[.12,-.08],[-.04,-.22],[.16,.1]];
 var POLO=[1.45,0,0];
 function chiaviMitosi(){
- var K=[],cell=function(k,r){return [{p:[0,0,0],r:r||1.6},{p:[1.25*k,0,0],r:1.6+(1.15-1.6)*k}];};
- var cel2=function(k){return [{p:[-1.25*k,0,0],r:1.6+(1.15-1.6)*k},{p:[1.25*k,0,0],r:1.6+(1.15-1.6)*k}];};
+ /* membrana: d avanzamento della citodieresi (0 una cellula, 1 due cellule); pl piastra della cellula vegetale */
+ var K=[],cel2=function(d,r0){return [{p:[0,0,0],a:0,r0:r0||1.6,R:1.15,D:1.25,d:d}];};
  var nuc=function(o,od){return [{p:[0,0,0],r:.72,o:o},{p:[-1.25,0,0],r:.55,o:od},{p:[1.25,0,0],r:.55,o:od}];};
  var qp=[POLO[0],0,0],qm=[-POLO[0],0,0];
  function crs(f){var a=[];for(var j=0;j<4;j++)a=a.concat(f(j));return a;}
  var cen=[[0,1,0],[0,1,0]];
- K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.05,.045,0,PN[j],PN[j]);}),cel:cel2(0).map(function(c){c.r=1.45;return c;}),nuc:nuc(1,0),poli:[[0,.95,0],[0,.95,0]],fib:0});
- K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.08,.045,1,PN[j],PN[j]);}),cel:cel2(0),nuc:nuc(1,0),poli:[[-.12,.95,0],[.12,.95,0]],fib:0});
- K.push({cr:crs(function(j){var P=PN[j].map(function(x){return x*1.7;});return X(P,RZ[j]*.5,1,.22,R_BR,1,qp,qm);}),cel:cel2(0),nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:.5});
- K.push({cr:crs(function(j){var P=[0,YM[j],(j%2?.1:-.1)];return X(P,0,1,.22,R_BR,1,qp,qm);}),cel:cel2(0),nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:1});
- K.push({cr:crs(function(j){var y=YM[j]*.55,z=(j%2?.05:-.05);return [{p:[1.1,y,z],rz:0,c:1,lean:-.6,g:1,q:qp},{p:[-1.1,y,z],rz:0,c:1,lean:-.6,g:1,q:qm}];}),cel:cel2(.12),nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:1});
- K.push({cr:crs(function(j){var y=TD[j][1],z=(j%2?.08:-.08),x=TD[j][0];return [{p:[1.25+x,y,z],rz:RZ[j]*.6,c:.3,lean:.05,g:1,q:qp},{p:[-1.25+x,y,z],rz:RZ[j]*.6,c:.3,lean:.05,g:1,q:qm}];}),cel:cel2(.5),nuc:nuc(0,1),poli:[[-1.25,.85,0],[1.25,.85,0]],fib:0});
- var u=JSON.parse(JSON.stringify(K[5]));u.cel=cel2(1);K.push(u);
+ K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.05,.045,0,PN[j],PN[j]);}),cel:cel2(0,1.45),pl:0,nuc:nuc(1,0),poli:[[0,.95,0],[0,.95,0]],fib:0});
+ K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.08,.045,1,PN[j],PN[j]);}),cel:cel2(0),pl:0,nuc:nuc(1,0),poli:[[-.12,.95,0],[.12,.95,0]],fib:0});
+ K.push({cr:crs(function(j){var P=PN[j].map(function(x){return x*1.7;});return X(P,RZ[j]*.5,1,.22,R_BR,1,qp,qm);}),cel:cel2(0),pl:0,nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:.5});
+ K.push({cr:crs(function(j){var P=[0,YM[j],(j%2?.1:-.1)];return X(P,0,1,.22,R_BR,1,qp,qm);}),cel:cel2(0),pl:0,nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:1});
+ K.push({cr:crs(function(j){var y=YM[j]*.55,z=(j%2?.05:-.05);return [{p:[1.1,y,z],rz:0,c:1,lean:-.6,g:1,q:qp},{p:[-1.1,y,z],rz:0,c:1,lean:-.6,g:1,q:qm}];}),cel:cel2(.3),pl:0,nuc:nuc(0,0),poli:[[-1.45,0,0],[1.45,0,0]],fib:1});
+ K.push({cr:crs(function(j){var y=TD[j][1],z=(j%2?.08:-.08),x=TD[j][0];return [{p:[1.25+x,y,z],rz:RZ[j]*.6,c:.3,lean:.05,g:1,q:qp},{p:[-1.25+x,y,z],rz:RZ[j]*.6,c:.3,lean:.05,g:1,q:qm}];}),cel:cel2(.62),pl:.04,nuc:nuc(0,1),poli:[[-1.25,.85,0],[1.25,.85,0]],fib:0});
+ var u=JSON.parse(JSON.stringify(K[5]));u.cel=cel2(1);u.pl=1;K.push(u);
  /* poli: la chiave ne ha 2 */
  return K;}
 var FASI_M=[
- {n:'Interfase',d:'La cellula cresce e duplica il DNA. Ogni cromosoma diventa due cromatidi fratelli uniti nel centromero.'},
- {n:'Profase',d:'I cromosomi si condensano e diventano visibili. La membrana del nucleo scompare e si forma il fuso. Nelle cellule animali i centrioli vanno ai poli.'},
+ {n:'Interfase',d:'La cellula cresce. Il DNA, disteso nel nucleo come cromatina, si duplica.'},
+ {n:'Profase',d:''},
  {n:'Metafase',d:'I cromosomi si allineano al centro della cellula, agganciati alle fibre del fuso.'},
  {n:'Anafase',d:'I cromatidi fratelli si separano e sono tirati verso i poli opposti.'},
- {n:'Telofase',d:'Ai due poli si formano due nuovi nuclei e i cromosomi tornano a distendersi.'},
- {n:'Citodieresi',d:'Il citoplasma si divide in due.'}];
+ {n:'Telofase',d:'Ai due poli si formano due nuovi nuclei e i cromosomi tornano a distendersi in cromatina.'},
+ {n:'Citodieresi',d:''}];
+var TESTI_M={ani:{pro:'La cromatina si condensa in cromosomi a X, due cromatidi fratelli uniti nel centromero. La membrana del nucleo scompare e si forma il fuso. I centrioli vanno ai poli.',cit:'La membrana si allunga e si stringe al centro, sempre di più, finché la cellula si separa in due.'},
+ veg:{pro:'La cromatina si condensa in cromosomi a X, due cromatidi fratelli uniti nel centromero. La membrana del nucleo scompare e si forma il fuso, senza centrioli.',cit:'La parete rigida non si può stringere. Al centro si forma la piastra cellulare, che cresce verso l\'esterno e diventa la nuova parete.'}};
+FASI_M[1].d=TESTI_M.ani.pro;FASI_M[5].d=TESTI_M.ani.cit;
 var FINE_M='<b>Fine.</b> Due cellule figlie identiche, ciascuna con 4 cromosomi come la cellula madre. Nell\'uomo sono 46.';
 
 /* ================= CHIAVI DELLA MEIOSI ================= */
@@ -475,32 +569,31 @@ var LATO=[-1,1,1,-1],YT=[.48,.48,-.5,-.5];
 function chiaviMeiosi(){
  var K=[],d=.17;
  function crs(f){var a=[];for(var j=0;j<4;j++)a=a.concat(f(j));return a;}
- var C1=function(){return [{p:[0,0,0],r:1.6},{p:[0,0,0],r:1.6},{p:[0,0,0],r:1.6},{p:[0,0,0],r:1.6}];};
- var C2=function(k){var r=1.6+(1.15-1.6)*k;return [{p:[1.3*k,0,0],r:r},{p:[-1.3*k,0,0],r:r},{p:[1.3*k,0,0],r:r},{p:[-1.3*k,0,0],r:r}];};
- var C4=function(k){var r=1.15+(.75-1.15)*k;return [{p:[1.3,.8*k,0],r:r},{p:[-1.3,.8*k,0],r:r},{p:[1.3,-.8*k,0],r:r},{p:[-1.3,-.8*k,0],r:r}];};
+ /* membrane: la prima si divide in due (meiosi I), poi ognuna delle due figlie si divide in verticale (meiosi II) */
+ var CM=function(d0,d1,r0){return [{p:[0,0,0],a:0,r0:r0||1.6,R:1.15,D:1.3,d:d0},{p:[1.3,0,0],a:Math.PI/2,r0:1.15,R:.75,D:.8,d:d1},{p:[-1.3,0,0],a:Math.PI/2,r0:1.15,R:.75,D:.8,d:d1}];};
  var NU=function(o,od){return [{p:[0,0,0],r:.72,o:o},{p:[1.3,.8,0],r:.45,o:od},{p:[-1.3,.8,0],r:.45,o:od},{p:[1.3,-.8,0],r:.45,o:od},{p:[-1.3,-.8,0],r:.45,o:od}];};
  var PI1=[[1.45,0,0],[-1.45,0,0],[1.45,0,0],[-1.45,0,0]];
  var PI2=[[1.3,.95,0],[-1.3,.95,0],[1.3,-.95,0],[-1.3,-.95,0]];
  var PI2a=[[1.3,.95,0],[-1.3,.95,0],[1.3,.95,0],[-1.3,.95,0]];
  var cx=function(j){return LATO[j]*1.3;};
  var dxII=function(j){return j<2?-.42:.48;};
- K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.05,.045,0);}),cel:C1().map(function(c){c.r=1.45;return c;}),nuc:NU(1,0),poli:[[-.1,.95,0],[.1,.95,0],[-.1,.95,0],[.1,.95,0]],fib:0});
- K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.08,.045,1);}),cel:C1(),nuc:NU(1,0),poli:[[-.1,.95,0],[.1,.95,0],[-.1,.95,0],[.1,.95,0]],fib:0});
+ K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.05,.045,0);}),cel:CM(0,0,1.45),nuc:NU(1,0),poli:[[-.1,.95,0],[.1,.95,0],[-.1,.95,0],[.1,.95,0]],fib:0});
+ K.push({cr:crs(function(j){return X(PN[j],RZ[j],0,.08,.045,1);}),cel:CM(0,0),nuc:NU(1,0),poli:[[-.1,.95,0],[.1,.95,0],[-.1,.95,0],[.1,.95,0]],fib:0});
  var tetr=function(j,lean,lin,yy,xx){var P=[xx+LATO[j]*d,yy,0],q=[LATO[j]*1.45,0,0];var a=X(P,0,1,lean,R_BR,1,q,q);
   /* il cromatidio interno della tetrade si piega verso l'omologo */
   var interno=LATO[j]<0?0:1;a[interno].lean=lin;return a;};
- K.push({cr:crs(function(j){return tetr(j,.22,.22,YT[j]*.9,j<2?-.3:.35);}),cel:C1(),nuc:NU(0,0),poli:PI1,fib:0});
- K.push({cr:crs(function(j){return tetr(j,.22,.4,YT[j]*.9,j<2?-.3:.35);}),cel:C1(),nuc:NU(0,0),poli:PI1,fib:.3});
- K.push({cr:crs(function(j){return tetr(j,.22,.22,YT[j],0);}),cel:C1(),nuc:NU(0,0),poli:PI1,fib:1});
- K.push({cr:crs(function(j){var q=[LATO[j]*1.45,0,0];return X([LATO[j]*1.15,YT[j]*.75,0],0,1,.22,R_BR,1,q,q);}),cel:C2(.1),nuc:NU(0,0),poli:PI1,fib:1});
- K.push({cr:crs(function(j){return X([cx(j),YT[j]*.6,0],0,.8,.22,R_BR,1);}),cel:C2(1),nuc:NU(0,0),poli:PI2a,fib:0});
- K.push({cr:crs(function(j){var P=[cx(j)+dxII(j),0,0];return X(P,Math.PI/2,1,.22,R_BR,1,[cx(j),.95,0],[cx(j),-.95,0]);}),cel:C2(1),nuc:NU(0,0),poli:PI2,fib:1});
- K.push({cr:crs(function(j){var x=cx(j)+dxII(j)*.8;return [{p:[x,.68,0],rz:Math.PI/2,c:1,lean:-.6,g:1,q:[cx(j),.95,0]},{p:[x,-.68,0],rz:Math.PI/2,c:1,lean:-.6,g:1,q:[cx(j),-.95,0]}];}),cel:C4(.12),nuc:NU(0,0),poli:PI2,fib:1});
- K.push({cr:crs(function(j){var x=cx(j),o=j<2?.13:-.13;return [{p:[x,.8+o,0],rz:Math.PI/2,c:.4,lean:.05,g:1,q:[x,.95,0]},{p:[x,-.8+o,0],rz:Math.PI/2,c:.4,lean:.05,g:1,q:[x,-.95,0]}];}),cel:C4(1),nuc:NU(0,1),poli:[[1.3,1.35,0],[-1.3,1.35,0],[1.3,-1.35,0],[-1.3,-1.35,0]],fib:0});
+ K.push({cr:crs(function(j){return tetr(j,.22,.22,YT[j]*.9,j<2?-.3:.35);}),cel:CM(0,0),nuc:NU(0,0),poli:PI1,fib:0});
+ K.push({cr:crs(function(j){return tetr(j,.22,.4,YT[j]*.9,j<2?-.3:.35);}),cel:CM(0,0),nuc:NU(0,0),poli:PI1,fib:.3});
+ K.push({cr:crs(function(j){return tetr(j,.22,.22,YT[j],0);}),cel:CM(0,0),nuc:NU(0,0),poli:PI1,fib:1});
+ K.push({cr:crs(function(j){var q=[LATO[j]*1.45,0,0];return X([LATO[j]*1.15,YT[j]*.75,0],0,1,.22,R_BR,1,q,q);}),cel:CM(.3,0),nuc:NU(0,0),poli:PI1,fib:1});
+ K.push({cr:crs(function(j){return X([cx(j),YT[j]*.6,0],0,.8,.22,R_BR,1);}),cel:CM(1,0),nuc:NU(0,0),poli:PI2a,fib:0});
+ K.push({cr:crs(function(j){var P=[cx(j)+dxII(j),0,0];return X(P,Math.PI/2,1,.22,R_BR,1,[cx(j),.95,0],[cx(j),-.95,0]);}),cel:CM(1,0),nuc:NU(0,0),poli:PI2,fib:1});
+ K.push({cr:crs(function(j){var x=cx(j)+dxII(j)*.8;return [{p:[x,.68,0],rz:Math.PI/2,c:1,lean:-.6,g:1,q:[cx(j),.95,0]},{p:[x,-.68,0],rz:Math.PI/2,c:1,lean:-.6,g:1,q:[cx(j),-.95,0]}];}),cel:CM(1,.3),nuc:NU(0,0),poli:PI2,fib:1});
+ K.push({cr:crs(function(j){var x=cx(j),o=j<2?.13:-.13;return [{p:[x,.8+o,0],rz:Math.PI/2,c:.4,lean:.05,g:1,q:[x,.95,0]},{p:[x,-.8+o,0],rz:Math.PI/2,c:.4,lean:.05,g:1,q:[x,-.95,0]}];}),cel:CM(1,1),nuc:NU(0,1),poli:[[1.3,1.12,0],[-1.3,1.12,0],[1.3,-1.12,0],[-1.3,-1.12,0]],fib:0});
  return K;}
 var FASI_S=[
- {n:'Interfase',d:'Il DNA si duplica. Ogni cromosoma ora ha due cromatidi fratelli.'},
- {n:'Profase I',d:'I cromosomi omologhi, uno dalla madre e uno dal padre, si avvicinano e si appaiano.'},
+ {n:'Interfase',d:'Il DNA, disteso come cromatina, si duplica.'},
+ {n:'Profase I',d:'La cromatina si condensa in cromosomi a X. Gli omologhi, uno dalla madre e uno dal padre, si avvicinano e si appaiano.'},
  {n:'Profase I, crossing-over',d:'Ancora nella profase I gli omologhi appaiati si scambiano tratti di DNA. Compaiono cromatidi in parte rossi e in parte blu.'},
  {n:'Metafase I',d:'Le coppie di omologhi si allineano al centro della cellula.'},
  {n:'Anafase I',d:'Gli omologhi si separano e vanno ai poli opposti. I cromatidi fratelli restano uniti.'},
@@ -536,15 +629,18 @@ function Film(o){
  F.agg=agg;return F;}
 
 /* ---- 03 mitosi ---- */
-var vM=R?Vista('st-mitosi',{th:-.25,ph:1.35,rad:7.4,rmin:3,rmax:14}):null;
-var modM=vM?Divisione(vM,chiaviMitosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1,0],3):null;
+var vM=R?Vista('st-mitosi',{th:-.25,ph:1.35,rad:7.4,rmin:1.8,rmax:14}):null;
+var modM=vM?Divisione(vM,chiaviMitosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1],3):null;
 var filmM=Film({fasi:FASI_M,fine:FINE_M,mod:modM,vista:vM,range:'mTempo',play:'mPlay',fase:'mFase',chips:'mFasi',img:'pf-mitosi',fum:'fu-mitosi',
  fumFine:'Due cellule identiche alla madre. Così crescono i tessuti e si sostituiscono le cellule vecchie.'});
 filmM.agg();
+$('mTipo').addEventListener('click',function(e){var b=e.target.closest('[data-t]');if(!b)return;var t=b.dataset.t;
+ Array.prototype.forEach.call(this.children,function(x){var on=x===b;x.classList.toggle('attivo',on);x.setAttribute('aria-pressed',on);});
+ FASI_M[1].d=TESTI_M[t].pro;FASI_M[5].d=TESTI_M[t].cit;if(modM)modM.vegetale(t==='veg');filmM.agg();});
 
 /* ---- 04 meiosi ---- */
-var vS=R?Vista('st-meiosi',{th:-.2,ph:1.4,rad:8.4,rmin:3,rmax:15}):null;
-var modS=vS?Divisione(vS,chiaviMeiosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1,0,0,1],5):null;
+var vS=R?Vista('st-meiosi',{th:-.2,ph:1.4,rad:8.4,rmin:1.8,rmax:15}):null;
+var modS=vS?Divisione(vS,chiaviMeiosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1,0,0],5):null;
 /* crossing-over: le punte dei cromatidi interni delle tetradi si scambiano il colore a metà della fase 2 */
 var INTERNI=[[0,0,COL.pat],[1,1,COL.mat],[2,1,COL.pat],[3,0,COL.mat]],U_CROSS=2.5/9;
 var filmS=Film({fasi:FASI_S,fine:FINE_S,mod:modS,vista:vS,range:'sTempo',play:'sPlay',fase:'sFase',chips:null,img:'pf-meiosi',fum:'fu-meiosi',
@@ -552,13 +648,13 @@ var filmS=Film({fasi:FASI_S,fine:FINE_S,mod:modS,vista:vS,range:'sTempo',play:'s
  dopo:function(u){if(!modS)return;INTERNI.forEach(function(x){var c=modS.cr[x[0]*2+x[1]],orig=x[0]%2?COL.pat:COL.mat;c.mX.color.set(u>=U_CROSS?x[2]:orig);});}});
 
 /* ================= 02 CICLO CELLULARE ================= */
-var vC=R?Vista('st-ciclo',{th:-.25,ph:1.35,rad:6.6,rmin:3,rmax:14}):null;
-var modC=vC?Divisione(vC,chiaviMitosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1,0],3):null;
+var vC=R?Vista('st-ciclo',{th:-.25,ph:1.35,rad:6.6,rmin:1.8,rmax:14}):null;
+var modC=vC?Divisione(vC,chiaviMitosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1],3):null;
 var CIC=[
- {id:'G1',f:.4,c:'#8ee0a6',u:.03,t:'Fase G1',d:'La cellula cresce e lavora. Ogni cromosoma è un solo filamento di DNA, disteso nel nucleo.'},
- {id:'S',f:.3,c:'#5cc47f',u:.82/6,t:'Fase S',d:'Il DNA si duplica. Ogni cromosoma diventa due cromatidi fratelli identici, uniti nel centromero.'},
- {id:'G2',f:.18,c:'#3fa862',u:1/6,t:'Fase G2',d:'La cellula continua a crescere e si prepara a dividersi. Anche i centrioli si sono duplicati.'},
- {id:'M',f:.12,c:'#F2C14E',u:3/6,t:'Fase M',d:'Mitosi e citodieresi. Il nucleo e poi il citoplasma si dividono, e nascono due cellule figlie. Qui la mitosi comincia, guardala tutta nella scheda 03.'}];
+ {id:'G1',f:.4,c:'#8ee0a6',u:.03,t:'Fase G1',d:'La cellula cresce e lavora. Il DNA è disteso nel nucleo come cromatina, un groviglio di fili sottili. Ogni cromosoma è un solo filamento.'},
+ {id:'S',f:.3,c:'#5cc47f',u:.82/6,t:'Fase S',d:'Il DNA si duplica e la cromatina raddoppia. Ogni cromosoma diventa due copie identiche, i cromatidi fratelli.'},
+ {id:'G2',f:.18,c:'#3fa862',u:1/6,t:'Fase G2',d:'La cellula continua a crescere e si prepara a dividersi. Il DNA è ancora cromatina. Anche i centrioli si sono duplicati.'},
+ {id:'M',f:.12,c:'#F2C14E',u:3/6,t:'Fase M',d:'Mitosi e citodieresi. La cromatina si condensa in cromosomi a X, poi il nucleo e il citoplasma si dividono e nascono due cellule figlie. Guarda tutta la mitosi nella scheda 03.'}];
 var CS={i:0,u:CIC[0].u};
 /* nella fase di interfase la duplicazione avviene tra il 30% e l'80% (fase S) */
 function uCiclo(u){if(u>=1/6)return u;var t=u*6;return clamp((t-.3)/.5,0,1)/6;}
@@ -653,8 +749,8 @@ function fine(){
 livello(0,true);filmS.agg();vaiScheda('dna');
 })();
 </script>
-<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Dal DNA ai cromosomi, con le basi appaiate della doppia elica e l'RNA, il ciclo cellulare con le fasi G1, S, G2 e M, la mitosi e la meiosi in tre dimensioni, con l'appaiamento degli omologhi e il crossing-over. Il DNA è un acido nucleico, una delle quattro famiglie della pagina <a href="biomolecole.html" style="color:#8ee0a6">Le biomolecole</a>.</p>
-<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Cellula umana con 46 cromosomi in 23 coppie, gameti con un solo cromosoma per coppia. <a href="https://www.genome.gov/about-genomics/fact-sheets/Chromosomes-Fact-Sheet" target="_blank" rel="noopener">NHGRI, Chromosomes Fact Sheet</a></li><li>Doppia elica, scheletro di zucchero e fosfato, basi A, T, C, G appaiate A con T e C con G da ponti a idrogeno. <a href="https://www.genome.gov/genetics-glossary/Base-Pair" target="_blank" rel="noopener">NHGRI, Base Pair</a></li><li>Nell'RNA l'uracile (U) al posto della timina. <a href="https://www.genome.gov/genetics-glossary/Uracil" target="_blank" rel="noopener">NHGRI, Uracil</a></li><li>L'RNA messaggero porta le istruzioni dal DNA ai ribosomi, che costruiscono le proteine. <a href="https://www.genome.gov/genetics-glossary/messenger-RNA" target="_blank" rel="noopener">NHGRI, Messenger RNA</a></li><li>Ciclo cellulare con le fasi G1, S, G2 e M, duplicazione del DNA nella fase S. <a href="https://www.genome.gov/genetics-glossary/Cell-Cycle" target="_blank" rel="noopener">NHGRI, Cell Cycle</a></li><li>Mitosi, due nuclei identici e poi divisione del citoplasma in due cellule figlie. <a href="https://www.genome.gov/genetics-glossary/Mitosis" target="_blank" rel="noopener">NHGRI, Mitosis</a></li><li>Centrioli nelle cellule animali, vicino al nucleo, organizzano i microtubuli. <a href="https://www.genome.gov/genetics-glossary/Centriole" target="_blank" rel="noopener">NHGRI, Centriole</a></li><li>Meiosi, due divisioni e quattro cellule con metà dei cromosomi, i gameti. <a href="https://www.genome.gov/genetics-glossary/Meiosis" target="_blank" rel="noopener">NHGRI, Meiosis</a></li><li>Crossing-over, scambio di DNA tra cromosomi omologhi durante la meiosi. <a href="https://www.genome.gov/genetics-glossary/Crossing-Over" target="_blank" rel="noopener">NHGRI, Crossing Over</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
+<p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Dal DNA ai cromosomi, con le basi appaiate della doppia elica e l'RNA, il ciclo cellulare con la cromatina e le fasi G1, S, G2 e M, la mitosi in tre dimensioni nella cellula animale e in quella vegetale, con la piastra cellulare, e la meiosi, con l'appaiamento degli omologhi e il crossing-over. Il DNA è un acido nucleico, una delle quattro famiglie della pagina <a href="biomolecole.html" style="color:#8ee0a6">Le biomolecole</a>.</p>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Cellula umana con 46 cromosomi in 23 coppie, gameti con un solo cromosoma per coppia. <a href="https://www.genome.gov/about-genomics/fact-sheets/Chromosomes-Fact-Sheet" target="_blank" rel="noopener">NHGRI, Chromosomes Fact Sheet</a></li><li>Doppia elica, scheletro di zucchero e fosfato, basi A, T, C, G appaiate A con T e C con G da ponti a idrogeno. <a href="https://www.genome.gov/genetics-glossary/Base-Pair" target="_blank" rel="noopener">NHGRI, Base Pair</a></li><li>Nell'RNA l'uracile (U) al posto della timina. <a href="https://www.genome.gov/genetics-glossary/Uracil" target="_blank" rel="noopener">NHGRI, Uracil</a></li><li>L'RNA messaggero porta le istruzioni dal DNA ai ribosomi, che costruiscono le proteine. <a href="https://www.genome.gov/genetics-glossary/messenger-RNA" target="_blank" rel="noopener">NHGRI, Messenger RNA</a></li><li>Ciclo cellulare con le fasi G1, S, G2 e M, duplicazione del DNA nella fase S. <a href="https://www.genome.gov/genetics-glossary/Cell-Cycle" target="_blank" rel="noopener">NHGRI, Cell Cycle</a></li><li>Mitosi, due nuclei identici e poi divisione del citoplasma in due cellule figlie. <a href="https://www.genome.gov/genetics-glossary/Mitosis" target="_blank" rel="noopener">NHGRI, Mitosis</a></li><li>Centrioli nelle cellule animali, vicino al nucleo, organizzano i microtubuli. <a href="https://www.genome.gov/genetics-glossary/Centriole" target="_blank" rel="noopener">NHGRI, Centriole</a></li><li>Meiosi, due divisioni e quattro cellule con metà dei cromosomi, i gameti. <a href="https://www.genome.gov/genetics-glossary/Meiosis" target="_blank" rel="noopener">NHGRI, Meiosis</a></li><li>Crossing-over, scambio di DNA tra cromosomi omologhi durante la meiosi. <a href="https://www.genome.gov/genetics-glossary/Crossing-Over" target="_blank" rel="noopener">NHGRI, Crossing Over</a></li><li>Cromatina, il DNA con le sue proteine disteso nel nucleo, che si condensa nei cromosomi quando la cellula si divide. <a href="https://www.genome.gov/genetics-glossary/Chromatin" target="_blank" rel="noopener">NHGRI, Chromatin</a></li><li>Centriolo fatto di un anello di nove triplette di microtubuli. <a href="https://fibroblast.crbs.ucsd.edu/images/7724" target="_blank" rel="noopener">Cell Image Library, CIL 7724, Centriole</a></li><li>Citodieresi, nelle cellule animali la cellula si stringe al centro, nelle cellule vegetali si forma la piastra cellulare che diventa la nuova parete. <a href="https://www.britannica.com/science/cytokinesis" target="_blank" rel="noopener">Encyclopaedia Britannica, Cytokinesis</a></li><li>Cellule vegetali senza centrioli, il fuso si forma lo stesso. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3266115" target="_blank" rel="noopener">PubMed Central, articolo PMC3266115 sui fusi senza centrosomi</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6fd08c!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(111,208,140,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Biologia</a>
 <script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
