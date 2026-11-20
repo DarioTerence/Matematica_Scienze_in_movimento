@@ -84,6 +84,14 @@ button{font-family:inherit}
 .ciclo .arco{cursor:pointer}
 .ciclo text{font:700 15px Calibri,Carlito,sans-serif;fill:#0a0f1a;pointer-events:none}
 .ciclo text.fuori{fill:#8fa0b8;font-size:12px;font-weight:400;letter-spacing:.06em}
+/* chip divisa a metà dentro la scena: cellula animale o cellula delle piante */
+.duo{position:absolute;left:8px;top:8px;z-index:3;display:flex;border-radius:999px;overflow:hidden;border:1px solid #3a4d70;background:rgba(17,26,43,.9);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.duo button{border:0;background:none;color:#c8d3e3;font-size:14px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.duo button+button{border-left:1px solid #3a4d70}
+.duo button[data-t=ani].attivo{background:#E8935A;color:#1a1208;font-weight:700}
+.duo button[data-t=veg].attivo{background:#6fd08c;color:#0a1a10;font-weight:700}
+.duo button:focus-visible{outline:2px solid #fff;outline-offset:-2px}
+@media(max-width:400px){.duo button{font-size:13px;padding:6px 9px}}
 table.conf{width:100%;border-collapse:collapse;font-size:14px}
 table.conf th,table.conf td{border-top:1px solid var(--line);padding:5px 4px;text-align:left;vertical-align:top}
 table.conf th{color:var(--mut);font-weight:400}
@@ -154,11 +162,11 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
   <div>
    <div class="stage" id="st-mitosi">
     <div class="cap">Modello stilizzato con 4 cromosomi</div>
+    <div class="duo" id="mTipo" role="group" aria-label="Tipo di cellula"><button class="attivo" data-t="ani" aria-pressed="true">Cellula animale</button><button data-t="veg" aria-pressed="false">Cellula piante</button></div>
     <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
     <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
     <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
    </div>
-   <div class="chips" id="mTipo" role="group" aria-label="Tipo di cellula" style="margin-top:8px"><button class="chip attivo" data-t="ani" aria-pressed="true" style="--chip:#E8935A">Cellula animale</button><button class="chip" data-t="veg" aria-pressed="false" style="--chip:#6fd08c">Cellula vegetale</button></div>
    <div class="tempo">
     <button class="play" id="mPlay"></button>
     <div class="barra">
@@ -407,10 +415,20 @@ function Divisione(v,K,colori,cellePadre,nNuclei){
  var nuc=[];
  for(i=0;i<nNuclei;i++){var n=new THREE.Mesh(gm,new THREE.MeshStandardMaterial({color:COL.nuc,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide,roughness:.8}));n.renderOrder=2;root.add(n);nuc.push(n);}
  /* cellula vegetale (solo mitosi): parete a scatola e piastra cellulare che cresce dal centro verso la parete */
- var HX=2.2,HY=1.45,HZ=1.1,par=new THREE.Group();par.visible=false;root.add(par);
- var mPar=new THREE.MeshStandardMaterial({color:COL.parete,transparent:true,opacity:.22,depthWrite:false,roughness:.8});
- var box=new THREE.Mesh(new THREE.BoxGeometry(2*HX,2*HY,2*HZ),mPar);box.renderOrder=3;par.add(box);
- par.add(new THREE.LineSegments(new THREE.EdgesGeometry(box.geometry),new THREE.LineBasicMaterial({color:COL.parete})));
+ /* parete: forma arrotondata (superellissoide) con piccole irregolarità, come una cellula vera; con la piastra si stringe un po' al centro */
+ var HX=2.25,HY=1.5,HZ=1.15,PE=3,par=new THREE.Group();par.visible=false;root.add(par);
+ var mPar=new THREE.MeshStandardMaterial({color:COL.parete,transparent:true,opacity:.3,depthWrite:false,roughness:.8});
+ var gPar=new THREE.SphereGeometry(1,56,36),dirP=gPar.attributes.position.array.slice(),parK=-1;
+ var pare=new THREE.Mesh(gPar,mPar);pare.renderOrder=3;par.add(pare);
+ var cito=new THREE.Mesh(gPar,new THREE.MeshStandardMaterial({color:'#dff2d0',transparent:true,opacity:.18,depthWrite:false,side:THREE.BackSide,roughness:.9}));
+ cito.scale.setScalar(.95);cito.renderOrder=2;par.add(cito);
+ var rSup=function(x,y,z,p){return 1/Math.pow(Math.pow(Math.abs(x/HX),p)+Math.pow(Math.abs(y/HY),p)+Math.pow(Math.abs(z/HZ),p),1/p);};
+ var stretta=function(x,pl){return 1-.07*pl*Math.exp(-x*x/.18);};   /* la parete nuova tira un po' verso l'interno quella vecchia */
+ function formaParete(pl){var k=Math.round(pl*200);if(k===parK)return;parK=k;var A=gPar.attributes.position.array;
+  for(var i=0;i<A.length;i+=3){var x=dirP[i],y=dirP[i+1],z=dirP[i+2],r=rSup(x,y,z,PE);
+   var ond=1+.025*Math.sin(3*x+1.3)*Math.cos(2*y+.4)+.02*Math.sin(2.5*z+3*y);   /* irregolarità lievi */
+   x*=r*ond;y*=r*ond;z*=r*ond;var st=stretta(x,pl);A[i]=x;A[i+1]=y*st;A[i+2]=z*st;}
+  gPar.attributes.position.needsUpdate=true;gPar.computeVertexNormals();gPar.computeBoundingSphere();}
  var NPL=64,pg=new THREE.BufferGeometry(),pa=new Float32Array((NPL+2)*3),pn=new Float32Array((NPL+2)*3),pi=[];
  for(i=0;i<NPL;i++)pi.push(0,i+1,i+2);for(i=0;i<NPL+2;i++)pn[i*3]=1;
  pg.setAttribute('position',new THREE.BufferAttribute(pa,3));pg.setAttribute('normal',new THREE.BufferAttribute(pn,3));pg.setIndex(pi);
@@ -419,7 +437,7 @@ function Divisione(v,K,colori,cellePadre,nNuclei){
  var ves=[],mVes=new THREE.MeshStandardMaterial({color:'#d8efc0',roughness:.5});
  for(i=0;i<20;i++){var vv=new THREE.Mesh(GSF,mVes);vv.scale.setScalar(.055);par.add(vv);ves.push(vv);}
  /* piastra: un disco che si allarga e diventa via via quadrato, fino a toccare la parete */
- function formaPiastra(pl){var a=Math.max(.001,pl),p=2+10*pl*pl,ry=HY*a,rz=HZ*a;
+ function formaPiastra(pl){formaParete(pl);var a=Math.max(.001,pl)*.95*stretta(0,pl),p=2+(PE-2)*pl,ry=HY*a,rz=HZ*a;
   for(var i=0;i<=NPL;i++){var f=i*2*Math.PI/NPL,cs=Math.cos(f),sn=Math.sin(f),rr=1/Math.pow(Math.pow(Math.abs(cs),p)+Math.pow(Math.abs(sn),p),1/p);
    pa[(i+1)*3]=0;pa[(i+1)*3+1]=ry*rr*cs;pa[(i+1)*3+2]=rz*rr*sn;}
   pg.attributes.position.needsUpdate=true;pg.computeBoundingSphere();piastra.visible=pl>.005;
