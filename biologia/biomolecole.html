@@ -576,6 +576,29 @@ function Scena(el){
    out.push(etichetta('alfa eliche',V(-1.3,1.45,.4),'#f2b0b8',tE,.2));out.push(etichetta('foglietto beta',V(1.1,1.35,.4),'#f2d98a',tE,.2));
    out.push(etichetta('sito attivo',V(.2,-.1,1.25),'#8fe3e3',tE,.2));
    return {ogg:out,box:[V(R+.4,R+.4,0),V(-R-.4,-R-.4,0)],durata:tE+T_ATOMO+.8,zoom:{t:tP+T_PIEGA*.5,r:1.75}};},   /* a metà ripiegamento la camera si avvicina */
+  vitamine:function(){var out=[],t0=.4;
+   var bic=new THREE.Mesh(new THREE.CylinderGeometry(1.7,1.7,4,40,1,true),new THREE.MeshStandardMaterial({color:0xc8d3e3,transparent:true,opacity:.14,side:2,depthWrite:false}));
+   bic.position.y=-.2;bic.renderOrder=1;gruppo.add(bic);out.push({o:bic,t0:0,s:1,base:V(0,-.2,0)});
+   [[V(0,-1.15,0),2.1,'#5bc8f0'],[V(0,.6,0),1.4,'#f2c94c']].forEach(function(q){var me=new THREE.Mesh(new THREE.CylinderGeometry(1.62,1.62,q[1],40),
+    new THREE.MeshStandardMaterial({color:q[2],transparent:true,opacity:.32,depthWrite:false}));me.renderOrder=2;gruppo.add(me);out.push({o:me,t0:0,s:1,base:q[0]});});
+   [['B',-1],['C',-1],['A',1],['D',1],['E',1],['K',1]].forEach(function(q,i){var a=V((i-2.5)*.55,-.1,.9),b=V(q[1]<0?(i-.5)*1.1:(i-3.5)*.75,q[1]<0?-1.25:.6,.9);
+    var sp=testo(q[0],'#ffffff',.6);gruppo.add(sp);var sc=sp.scale.clone();
+    out.push({o:sp,upd:function(T){var c=cresce(T,.1+i*.05);sp.visible=c>.01;sp.scale.set(sc.x*c,sc.y*c,1);sp.position.copy(a).lerp(b,ease((T-t0)/T_UNIONE));}});});
+   out.push(etichetta('olio',V(2.45,.6,0),'#f2d98a',0,.36));out.push(etichetta('acqua',V(2.55,-1.15,0),'#9fd8ff',0,.36));
+   return {ogg:out,box:[V(-2.6,2,0),V(3,-2.4,0)],durata:t0+T_UNIONE+.6};},
+  sale:function(){var out=[],P=[],tD=T_COSTRUISCI+.4;
+   for(var i=-1;i<=1;i++)for(var j=-1;j<=1;j++)for(var k=-1;k<=1;k++)P.push({p:V(i,j,k).multiplyScalar(.95),na:(i+j+k+3)%2===0});
+   var passo=(T_COSTRUISCI-T_ATOMO)/(P.length-1),AL=new THREE.MeshStandardMaterial({color:0x5bc8f0,transparent:true,opacity:.14,depthWrite:false});
+   P.forEach(function(q,n){var r=q.na?.3:.5,me=new THREE.Mesh(GS,mat(q.na?'#ab5cf2':'#5fd35f'));gruppo.add(me);
+    var dove=q.p.clone().multiplyScalar(2.4).add(V(Math.sin(n*2.1),Math.cos(n*1.7),Math.sin(n*3.3)).multiplyScalar(.35));q.f=dove;
+    var al=new THREE.Mesh(GS,AL);al.renderOrder=3;gruppo.add(al);
+    out.push({o:me,upd:function(T){var c=cresce(T,n*passo),u=ease((T-tD)/T_UNIONE);me.visible=c>.01;me.scale.setScalar(r*Math.max(.01,c));
+     me.position.copy(q.p).lerp(dove,u);al.visible=u>.02;al.position.copy(me.position);al.scale.setScalar((r+.38)*Math.max(.01,u));}});});
+   var na=P.filter(function(q){return q.na&&q.p.lengthSq()>2.5;})[0],cl=P.filter(function(q){return !q.na&&q.p.y>.5&&q.p.x<-.5;})[0];
+   out.push(etichetta('Na⁺ sodio',na.f.clone().add(V(0,.75,0)),'#d2a8ff',tD+T_UNIONE,.34));out.push(etichetta('Cl⁻ cloruro',cl.f.clone().add(V(0,.95,0)),'#9fe89f',tD+T_UNIONE,.34));
+   var ec=etichetta('cristallo di sale',V(0,-1.95,0),'#c8d3e3',T_COSTRUISCI,.34);   /* scompare quando il cristallo si scioglie */
+   ec.upd=function(T){var c=cresce(T,T_COSTRUISCI)*(1-clamp((T-tD)/.4,0,1));ec.o.visible=c>.01;ec.o.scale.set(ec.sp.x*c,ec.sp.y*c,1);ec.o.position.copy(ec.base);};out.push(ec);
+   return {ogg:out,box:[V(3.9,3.9,1),V(-3.9,-3.9,-1)],durata:tD+T_UNIONE+.6};},
   nucleotide:function(){var out=[],X=V(1,0,0),Y=V(0,1,0);
    var g=nucleotide('A',V(-.9,0,0),X,Y,null,.28);g.scale.setScalar(1.5);var zz=g.children[0],ba=g.children[1];gruppo.add(g);
    var fo=fosfato(V(-2.4,.65,0));fo.scale.setScalar(.3);gruppo.add(fo);var st=new THREE.Group();st.add(cil(V(-2.4,.65,0),V(-1.35,0,0),.07,MB));gruppo.add(st);
