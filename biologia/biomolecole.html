@@ -92,7 +92,7 @@ button{font-family:inherit}
 <p class="sub" id="sub"></p>
 
 <nav class="schede" role="tablist" aria-label="Schede" id="schede">
- <button class="scheda attiva" role="tab" aria-selected="true" data-p="0"><span class="num">01</span>Il carbonio</button>
+ <button class="scheda attiva" role="tab" aria-selected="true" data-p="0"><span class="num">01</span>Gli idrocarburi</button>
  <button class="scheda" role="tab" aria-selected="false" data-p="1"><span class="num">02</span>I carboidrati</button>
  <button class="scheda" role="tab" aria-selected="false" data-p="2"><span class="num">03</span>Le proteine</button>
  <button class="scheda" role="tab" aria-selected="false" data-p="3"><span class="num">04</span>I lipidi</button>
@@ -214,11 +214,12 @@ Mol.prototype.centra=function(){var c=V(0,0,0),n=0;this.at.forEach(function(a){c
 /* --- idrocarburi --- */
 function metano(){var m=new Mol();m.atomo('C',V(0,0,0));return m.idrogeni();}
 function etano(){var m=new Mol();var a=m.atomo('C',V(-.5,0,0)),b=m.atomo('C',V(.5,0,0));m.lega(a,b);m.at[a].rif=V(0,1,0);m.at[b].rif=V(0,-1,0);return m.idrogeni();}
-function esano(){var m=new Mol();m.catena(6,V(-2.05,0,0),V(1,0,0),V(0,0,1));return m.idrogeni().centra();}
+function alcano(n){var m=new Mol();m.catena(n,V(-(n-1)*.41,0,0),V(1,0,0),V(0,0,1));return m.idrogeni().centra();}
 function cicloesano(){var m=new Mol(),r=[];for(var i=0;i<6;i++){var f=i*Math.PI/3;r.push(m.atomo('C',V(Math.cos(f),Math.sin(f),i%2?.25:-.25)));}
  for(i=0;i<6;i++)m.lega(r[i],r[(i+1)%6]);return m.idrogeni();}
 function carbonio(){var m=new Mol();m.atomo('C',V(0,0,0));
- m.libere(0,4,'tet').forEach(function(d){m.extra.push({tipo:'braccio',p:d.clone().multiplyScalar(.85),d:d});});return m;}
+ m.libere(0,4,'tet').forEach(function(d){m.extra.push({tipo:'braccio',p:d.clone().multiplyScalar(.85),d:d});});
+ m.etich.push({t:'4 legami',p:V(0,-1.3,0),c:'#c8d3e3',h:.2});return m;}
 
 /* --- carboidrati (anelli semplificati, ossidrili sopra o sotto il piano come negli schemi) --- */
 /* anello di n atomi nel piano xy; el[i] elemento; sost[i] per ogni carbonio dice cosa va 'su' e 'giu' */
@@ -356,10 +357,11 @@ var SCHEDE=[
   gruppi:[{n:'Il carbonio e gli idrocarburi',c:[
    {k:'carb',n:'Carbonio',col:'#3d434c',m:carbonio,d:'<p>L\'atomo di carbonio forma <b>quattro legami</b>, rivolti come i vertici di una piramide a base triangolare (tetraedro).</p><p>Si lega facilmente ad altri atomi di carbonio, così nascono catene lunghe e anelli.</p>'},
    {k:'met',n:'Metano',col:'#3d434c',m:metano,d:'<p>Un carbonio e quattro idrogeni. È l\'idrocarburo più semplice, un aeriforme che si usa per cucinare e per riscaldare.</p><p><b>Idrocarburi</b>, molecole fatte solo di carbonio e idrogeno.</p>'},
-   {k:'et',n:'Etano',col:'#3d434c',m:etano,d:'<p>Due carboni legati tra loro, ognuno con tre idrogeni. Il legame tra i due carboni è il primo anello di una catena.</p>'},
-   {k:'es',n:'Catena',col:'#3d434c',m:esano,d:'<p>Sei carboni in fila (esano). La catena non è diritta ma a zig zag, perché i quattro legami di ogni carbonio sono rivolti in direzioni diverse.</p><p>Nelle biomolecole le catene possono essere molto più lunghe.</p>'},
+   {k:'et',n:'Etano',col:'#3d434c',m:etano,d:'<p>Due carboni legati tra loro, ognuno con tre idrogeni. Il legame tra due carboni è il primo passo di una catena.</p>'},
+   {k:'pro',n:'Propano',col:'#3d434c',m:function(){return alcano(3);},d:'<p>Tre carboni in fila. È un aeriforme che, compresso, diventa liquido. Insieme al butano forma il <b>GPL</b> delle bombole e delle auto.</p>'},
+   {k:'but',n:'Butano',col:'#3d434c',m:function(){return alcano(4);},d:'<p>Quattro carboni. La catena non è diritta ma a zig zag, perché i quattro legami di ogni carbonio sono rivolti in direzioni diverse.</p><p>È l\'aeriforme degli accendini, dove sta liquido sotto pressione. Nelle biomolecole le catene possono avere decine di carboni.</p>'},
    {k:'cic',n:'Anello',col:'#3d434c',m:cicloesano,d:'<p>Sei carboni che si chiudono ad anello (cicloesano). Anche gli zuccheri, come il glucosio, hanno un anello.</p>'}]},
-  {n:'Le quattro famiglie',c:[
+  {n:'Le biomolecole',c:[
    {k:'f1',n:'Carboidrati',col:'#e0d24a',m:function(){return glucosio();},cap:'Esempio, il glucosio',d:'<p>Carbonio, idrogeno e ossigeno. Danno energia alle cellule e la mettono da parte.</p><p><button class="vai" data-vai="1">Vai alla scheda dei carboidrati</button></p>'},
    {k:'f2',n:'Lipidi',col:'#f2c94c',m:function(){return soloAcido(false);},cap:'Esempio, un acido grasso con la catena accorciata',d:'<p>Soprattutto carbonio e idrogeno, con poco ossigeno. Riserva di energia e membrane delle cellule.</p><p><button class="vai" data-vai="3">Vai alla scheda dei lipidi</button></p>'},
    {k:'f3',n:'Proteine',col:'#6aa5ff',m:alanina,cap:'Esempio, un amminoacido, il mattone delle proteine',d:'<p>Carbonio, idrogeno, ossigeno e azoto. Lunghe catene di amminoacidi che fanno quasi tutti i lavori della cellula.</p><p><button class="vai" data-vai="2">Vai alla scheda delle proteine</button></p>'},
@@ -421,7 +423,7 @@ function Scena(el){
  var l2=new THREE.DirectionalLight(0xbfd4ff,.3);l2.position.set(-5,-2,-4);scene.add(l2);
  var V0={th:.35,ph:1.35},th=V0.th,ph=V0.ph,rad=8,radFit=8,radDa=8,camU=1,fit=1,dirty=true,auto=false;
  var clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
- var GS=new THREE.SphereGeometry(1,28,20),GC=new THREE.CylinderGeometry(1,1,1,14),GM=new THREE.CylinderGeometry(.36,.36,.16,6);
+ var GS=new THREE.SphereGeometry(1,28,20),GC=new THREE.CylinderGeometry(1,1,1,14),GM=new THREE.CylinderGeometry(.36,.36,.16,6),GP=new THREE.ConeGeometry(.45,1,14);
  var matCache={};
  function mat(c,ex){var k=c+(ex||'');if(!matCache[k])matCache[k]=new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.45,metalness:.05},ex?JSON.parse(ex):{}));return matCache[k];}
  var MB=new THREE.MeshStandardMaterial({color:0xa9b2bd,roughness:.5});
@@ -451,7 +453,9 @@ function Scena(el){
   var mattoni=[];
   m.extra.forEach(function(e){var me;
    if(e.tipo==='braccio'){me=cil(V(0,0,0),e.p,.09,mat('#a9b2bd'));gruppo.add(me);ogg.push({o:me,t0:T_ATOMO,braccio:e});
-    var pu=new THREE.Mesh(GS,mat('#8ee0a6','{"transparent":true,"opacity":0.55}'));pu.position.copy(e.p.clone().multiplyScalar(1.12));pu.scale.setScalar(.12);gruppo.add(pu);ogg.push({o:pu,t0:T_ATOMO+.4,s:.13,base:e.p.clone().multiplyScalar(1.12)});}
+    /* punta del legame libero: un piccolo cono grigio, nessuna sfera */
+    var pu=new THREE.Mesh(GP,mat('#a9b2bd'));pu.quaternion.setFromUnitVectors(V(0,1,0),e.d.clone().normalize());gruppo.add(pu);
+    ogg.push({o:pu,t0:T_ATOMO*2,s:.2,base:e.p.clone().add(e.d.clone().normalize().multiplyScalar(.1))});}
    else if(e.tipo==='mattone'){me=new THREE.Mesh(GM,mat(e.cap?'#e8cf7a':'#e0c25a'));me.rotation.set(Math.PI/2,e.r||0,0);gruppo.add(me);var t0=(k++)*passo;ogg.push({o:me,t0:t0,s:1,base:e.p});mattoni.push({p:e.p,t0:t0});}
    else if(e.tipo==='stecca'||e.tipo==='ponte'){me=cil(e.a,e.b,e.tipo==='ponte'?.05:.07,e.tipo==='ponte'?mat(e.c||'#9fd8ff'):MB);gruppo.add(me);ogg.push({o:me,t0:0,steccaDi:e,sc:me.scale.clone()});}
    else if(e.tipo==='base'){me=new THREE.Mesh(GS,mat(e.c));gruppo.add(me);ogg.push({o:me,t0:(k++)*passo,s:.2,base:e.p});}
@@ -466,7 +470,7 @@ function Scena(el){
    else if(e.tipo==='carica'){me=testo(e.t,'#9cc0ff',.8);gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,sp:me.scale.clone(),base:e.p});}});
   m.aloni.forEach(function(a){var me=new THREE.Mesh(GS,new THREE.MeshStandardMaterial({color:a.c,transparent:true,opacity:.16,depthWrite:false}));me.renderOrder=3;gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,s:a.r,base:a.p,alone:true});});
   var tEt=(unione?T_UNIONE:T_COSTRUISCI)+.1;
-  m.etich.forEach(function(a){var sp=testo(a.t,a.c,.42);gruppo.add(sp);ogg.push({o:sp,t0:tEt,sp:sp.scale.clone(),base:a.p,et:true});});
+  m.etich.forEach(function(a){var sp=testo(a.t,a.c,a.h||.42);gruppo.add(sp);ogg.push({o:sp,t0:tEt,sp:sp.scale.clone(),base:a.p,et:true});});
   m.acqua.forEach(function(w){var g=new THREE.Group(),o=new THREE.Mesh(GS,mat(EL.O.c));o.scale.setScalar(EL.O.r);g.add(o);
    [[.5,-.38],[-.5,-.38]].forEach(function(q){var h=new THREE.Mesh(GS,mat(EL.H.c));h.scale.setScalar(EL.H.r);h.position.set(q[0],q[1],0);g.add(h);
     var c=cil(V(0,0,0),V(q[0],q[1],0),.06);g.add(c);});
@@ -605,7 +609,7 @@ var DOMANDE=[
  {l:1,q:'Quale minerale forma ossa e denti?',o:['Il calcio','Il ferro','Il sodio','Il potassio'],d:['','Il ferro sta nell\'emoglobina e serve a trasportare l\'ossigeno.','Il sodio regola l\'acqua delle cellule e serve a nervi e muscoli.','Il potassio regola l\'acqua delle cellule e serve a nervi e muscoli.']},
  {l:2,q:'Quando glucosio e fruttosio si uniscono nel saccarosio, che cosa si libera?',o:['Una molecola d\'acqua','Una molecola di metano','Un atomo di carbonio','Niente'],d:['','Il metano è un idrocarburo e non c\'entra con l\'unione degli zuccheri.','Gli atomi di carbonio restano tutti nella molecola.','Ogni volta che due zuccheri si legano esce una molecola d\'acqua.']},
  {l:2,q:'Dove gli animali mettono da parte il glicogeno?',o:['Nel fegato e nei muscoli','Nelle ossa','Nella parete delle cellule','Nel sangue, come grasso'],d:['','Nelle ossa c\'è soprattutto calcio.','Le cellule animali non hanno la parete, ce l\'hanno le piante.','Il glicogeno è un carboidrato, non un grasso.']},
- {l:2,q:'Da quanti amminoacidi diversi sono fatte le proteine?',o:['20','4','100','Migliaia'],d:['','Quattro sono le famiglie delle biomolecole.','Sono molti meno, ma bastano per fare migliaia di proteine diverse.','Migliaia sono le proteine diverse, non gli amminoacidi.']},
+ {l:2,q:'Da quanti amminoacidi diversi sono fatte le proteine?',o:['20','4','100','Migliaia'],d:['','Quattro sono i gruppi di biomolecole, carboidrati, lipidi, proteine e acidi nucleici.','Sono molti meno, ma bastano per fare migliaia di proteine diverse.','Migliaia sono le proteine diverse, non gli amminoacidi.']},
  {l:2,q:'Un acido grasso con un doppio legame nella catena è',o:['insaturo','saturo','un amminoacido','uno zucchero'],d:['','Saturo vuol dire con soli legami semplici, la catena è diritta.','Gli amminoacidi hanno il gruppo amminico con l\'azoto.','Gli zuccheri hanno un anello con molti gruppi OH.']},
  {l:2,q:'Perché il burro è solido e l\'olio d\'oliva è liquido a temperatura ambiente?',o:['Il burro ha più grassi saturi, con catene diritte','Il burro ha più acqua','L\'olio ha più proteine','L\'olio ha più zuccheri'],d:['','Non è l\'acqua. Conta la forma delle catene, diritte nei grassi saturi.','Le proteine nell\'olio sono quasi assenti.','L\'olio è fatto quasi solo di lipidi.']},
  {l:2,q:'Quali vitamine si sciolgono nei grassi?',o:['A, D, E e K','C e B','Solo la C','Nessuna'],d:['','C e B si sciolgono in acqua.','La C si scioglie in acqua.','Quattro vitamine si sciolgono nei grassi e si accumulano nel fegato.']},
@@ -645,7 +649,7 @@ apriScheda(0);
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Le biomolecole in 3D, a partire dal carbonio con i suoi quattro legami e gli idrocarburi, i carboidrati dal glucosio all'amido e alla cellulosa, le proteine fatte di amminoacidi, i lipidi con trigliceridi e fosfolipidi, vitamine, sali minerali e acqua, con un accenno agli acidi nucleici e domande per allenarsi. DNA e RNA sono protagonisti della pagina <a href="divisione_cellulare.html" style="color:#8ee0a6">La divisione cellulare</a>.</p>
-<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Carboidrati e proteine circa 4 kcal per grammo, lipidi circa 9 kcal per grammo. <a href="https://www.msdmanuals.com/it/casa/disturbi-alimentari/panoramica-sulla-nutrizione/carboidrati-proteine-e-grassi" target="_blank" rel="noopener">Manuale MSD, Carboidrati, proteine e grassi</a></li><li>Glicogeno di riserva nel fegato e nei muscoli; grassi saturi in genere solidi e insaturi in genere liquidi a temperatura ambiente. <a href="https://www.msdmanuals.com/it/casa/disturbi-alimentari/panoramica-sulla-nutrizione/carboidrati-proteine-e-grassi" target="_blank" rel="noopener">Manuale MSD, Carboidrati, proteine e grassi</a></li><li>Le proteine sono fatte di 20 amminoacidi, uniti dal legame peptidico con perdita di una molecola d'acqua. <a href="https://www.britannica.com/science/amino-acid" target="_blank" rel="noopener">Encyclopaedia Britannica, Amino acid</a></li><li>Vitamine idrosolubili (gruppo B e C) da assumere ogni giorno, liposolubili (A, D, E, K) assorbite con i grassi e accumulate nel fegato. <a href="https://www.epicentro.iss.it/vitamine/" target="_blank" rel="noopener">EpiCentro, Istituto Superiore di Sanità, Vitamine</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Il GPL è una miscela di propano e butano, liquefatti per compressione. <a href="https://www.lautomobile.aci.it/?p=11670" target="_blank" rel="noopener">ACI, L'Automobile, Il GPL per autotrazione</a></li><li>Carboidrati e proteine circa 4 kcal per grammo, lipidi circa 9 kcal per grammo. <a href="https://www.msdmanuals.com/it/casa/disturbi-alimentari/panoramica-sulla-nutrizione/carboidrati-proteine-e-grassi" target="_blank" rel="noopener">Manuale MSD, Carboidrati, proteine e grassi</a></li><li>Glicogeno di riserva nel fegato e nei muscoli; grassi saturi in genere solidi e insaturi in genere liquidi a temperatura ambiente. <a href="https://www.msdmanuals.com/it/casa/disturbi-alimentari/panoramica-sulla-nutrizione/carboidrati-proteine-e-grassi" target="_blank" rel="noopener">Manuale MSD, Carboidrati, proteine e grassi</a></li><li>Le proteine sono fatte di 20 amminoacidi, uniti dal legame peptidico con perdita di una molecola d'acqua. <a href="https://www.britannica.com/science/amino-acid" target="_blank" rel="noopener">Encyclopaedia Britannica, Amino acid</a></li><li>Vitamine idrosolubili (gruppo B e C) da assumere ogni giorno, liposolubili (A, D, E, K) assorbite con i grassi e accumulate nel fegato. <a href="https://www.epicentro.iss.it/vitamine/" target="_blank" rel="noopener">EpiCentro, Istituto Superiore di Sanità, Vitamine</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#6fd08c!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(111,208,140,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Biologia</a>
 <script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
