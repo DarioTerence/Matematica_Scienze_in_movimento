@@ -255,7 +255,7 @@ function OrganuliCellula(THREE, M){
     d=rad.clone().multiplyScalar(Math.cos(.9)).addScaledVector(tg,Math.sin(.9));
     for(let j=0;j<3;j++)L.push({p:rad.clone().multiplyScalar(.072*s).addScaledVector(d,(j-1)*.021*s).applyQuaternion(q).add(c),q});}};
   cent(V(0,0,0),new THREE.Quaternion());
-  cent(V(.06*s,h*.62,0),new THREE.Quaternion().setFromAxisAngle(V(0,0,1),PI/2));
+  cent(V(.21*s,-h*.28,0),new THREE.Quaternion().setFromAxisAngle(V(0,0,1),PI/2));   // accanto al primo, vicino alla sua base, senza compenetrarlo
   g.add(copie(new THREE.CylinderGeometry(.011*s,.011*s,h,8),M(o.col||0xD4A62A,1,{shininess:60}),L));
   return g;}
 

@@ -299,10 +299,10 @@ function geoCentriolo(){if(geoCentr)return geoCentr;
  pos.forEach(function(a,i){P.set(a,o);Nn.set(nor[i],o);o+=a.length;});
  geoCentr=new THREE.BufferGeometry();geoCentr.setAttribute('position',new THREE.BufferAttribute(P,3));geoCentr.setAttribute('normal',new THREE.BufferAttribute(Nn,3));
  return geoCentr;}
-/* coppia di centrioli perpendicolari: uno in piedi, l'altro sempre rivolto verso chi guarda (g.punta), così si vedono le nove triplette */
+/* coppia di centrioli perpendicolari: uno in piedi, l'altro fisso e rivolto verso la vista iniziale, così all'apertura si vedono le nove triplette e ruotando si vede di fianco */
 function Centrioli(){var g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:COL.centr,roughness:.5,side:THREE.DoubleSide});
  var a=new THREE.Mesh(geoCentriolo(),m),h=new THREE.Group(),b=new THREE.Mesh(geoCentriolo(),m);b.rotation.x=Math.PI/2;
- h.position.set(0,-.25,0);h.add(b);g.add(a,h);g.scale.setScalar(1.15);g.punta=h;return g;}
+ h.position.set(0,-.25,0);h.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),new THREE.Vector3(-.24,.21,.95).normalize());h.add(b);g.add(a,h);g.scale.setScalar(1.15);return g;}
 
 /* ---- cromatina: il DNA disteso nel nucleo, un filo sottile aggrovigliato (sempre uguale, generato da un seme) ---- */
 function geoCromatina(seme){var s=seme*9301+49297,rnd=function(){s=(s*9301+49297)%233280;return s/233280-.5;};
@@ -446,7 +446,6 @@ function Divisione(v,K,colori,cellePadre,nNuclei){
  /* centrioli ai poli */
  var poli=[];
  for(i=0;i<4;i++){var pc=Centrioli();root.add(pc);poli.push(pc);}
- var prima0=v.prima;v.prima=function(){if(prima0)prima0();poli.forEach(function(g){if(g.visible)g.punta.lookAt(v.cam.position);});};
  /* fibre del fuso */
  var fp=new Float32Array(16*6),fg=new THREE.BufferGeometry();fg.setAttribute('position',new THREE.BufferAttribute(fp,3));
  var fm=new THREE.LineBasicMaterial({color:COL.fuso,transparent:true,opacity:0}),fl=new THREE.LineSegments(fg,fm);root.add(fl);
