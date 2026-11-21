@@ -344,9 +344,9 @@ function sferaPiena(m,R,verso,passo,op){var nl=Math.max(4,Math.round(Math.PI*R/p
    var rr=Math.atan2(Math.sin(rel),Math.cos(rel));
    m.extra.push({tipo:'fosfoS',p:d.clone().multiplyScalar(R),d:d.clone().multiplyScalar(verso),sc:op.sc,code:op.code,c:op.c,fetta:rr>-W_APRI+1e-6&&rr<W_APRI-1e-6});}}}
 function vescicola(){var m=new Mol();sferaPiena(m,3.4,1,.7,{sc:.8});sferaPiena(m,1.4,-1,.7,{sc:.8});
- m.etich.push({t:'acqua fuori',p:V(0,4.3,0),c:'#9fd8ff'});m.etich.push({t:'acqua dentro',p:V(0,0,0),c:'#9fd8ff'});return m;}
+ m.etich.push({t:'acqua fuori',p:V(0,4.3,0),c:'#9fd8ff'});m.etich.push({t:'acqua dentro',p:V(0,-.65,0),c:'#9fd8ff',h:.26,dentro:true});return m;}
 function micella(){var m=new Mol();m.extra.push({tipo:'goccia',p:V(0,0,0),c:'#f2c94c',r:.85});sferaPiena(m,2.05,1,.62,{sc:.85,code:1,c:'#9a6fe8'});
- m.etich.push({t:'grasso',p:V(0,0,1),c:'#f2d98a'});m.etich.push({t:'acqua',p:V(0,2.9,0),c:'#9fd8ff'});return m;}
+ m.etich.push({t:'grasso',p:V(0,-.6,.3),c:'#f2d98a',h:.26,dentro:true});m.etich.push({t:'acqua',p:V(0,2.9,0),c:'#9fd8ff'});return m;}
 /* gruppo eme semplificato: quattro anelli a cinque atomi intorno al ferro, idrogeni al posto delle catene laterali, una molecola di ossigeno */
 function eme(){var m=new Mol(),fe=m.atomo('Fe',V(0,0,0)),Ca=[];
  for(var q=0;q<4;q++){var th=q*Math.PI/2,u=V(Math.cos(th),Math.sin(th),0),c=u.clone().multiplyScalar(2.27),f0=th+Math.PI,
@@ -739,7 +739,7 @@ function Scena(el){
   m.aloni.forEach(function(a){var me=new THREE.Mesh(GS,new THREE.MeshStandardMaterial({color:a.c,transparent:true,opacity:.16,depthWrite:false}));me.renderOrder=3;gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,s:a.r,base:a.p,alone:true});});
   var spec=m.speciale?SPECIALI[m.speciale]():null;if(spec)spec.ogg.forEach(function(q){ogg.push(q);});
   var tEt=(unione?T_UNIONE:T_COSTRUISCI)+.1;
-  m.etich.forEach(function(a){var sp=testo(a.t,a.c,a.h||.42);gruppo.add(sp);ogg.push({o:sp,t0:tEt,sp:sp.scale.clone(),base:a.p,et:true});});
+  m.etich.forEach(function(a){var sp=testo(a.t,a.c,a.h||.42);gruppo.add(sp);ogg.push({o:sp,t0:tEt,sp:sp.scale.clone(),base:a.p,et:true,dentro:!!a.dentro});});   /* dentro: etichetta dell'interno, visibile solo a sfera aperta */
   m.acqua.forEach(function(w){var g=new THREE.Group(),o=new THREE.Mesh(GS,mat(EL.O.c));o.scale.setScalar(EL.O.r);g.add(o);
    [[.5,-.38],[-.5,-.38]].forEach(function(q){var h=new THREE.Mesh(GS,mat(EL.H.c));h.scale.setScalar(EL.H.r);h.position.set(q[0],q[1],0);g.add(h);
     var c=cil(V(0,0,0),V(q[0],q[1],0),.06);g.add(c);});
@@ -772,6 +772,7 @@ function Scena(el){
     q.o.visible=vis>.01;posCil(q.o,pa,pb,q.r*Math.max(.01,vis));return;}
    if(q.steccaDi){var v=ease(clamp((T-.15)/T_COSTRUISCI,0,1));q.o.visible=v>.02;q.o.scale.set(q.sc.x*v,q.sc.y,q.sc.z*v);return;}
    q.o.visible=s>.01;
+   if(q.dentro){s*=ease(apre.v);q.o.visible=s>.01;}
    if(q.sp)q.o.scale.set(q.sp.x*s,q.sp.y*s,1);else q.o.scale.setScalar((q.s||1)*Math.max(.001,s));
    if(q.base&&q.parte==null)q.o.position.copy(q.base);});
   /* atomi: posizione con lo spostamento delle parti durante l'unione */
