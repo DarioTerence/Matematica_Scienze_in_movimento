@@ -111,6 +111,7 @@ button{font-family:inherit}
     <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
     <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
     <button class="comando-scena" id="bRifai" aria-label="Rifai l'animazione" title="Rifai l'animazione" style="right:8px;top:134px;z-index:3">&#8635;</button>
+    <button class="comando-scena hide" id="bApri" aria-label="Apri o chiudi la sfera" title="Apri o chiudi la sfera" style="right:8px;top:176px;z-index:3"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="display:block;margin:auto"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 4a8 8 0 0 0 0 16Z" fill="currentColor"/></svg></button>
    </div>
    <p class="hint">Trascina per ruotare. Tocca un nome per costruire la molecola, ↻ per rivederla.</p>
    <details class="opzioni">
@@ -147,6 +148,7 @@ var T_UNIONE=2.2;      /* due o più molecole che si avvicinano e si legano */
 var T_ACQUA=1.6;       /* molecola d'acqua che si allontana dopo l'unione */
 var T_PIEGA=2.6;       /* ripiegamento della catena di amminoacidi */
 var T_CAMERA=.8;       /* spostamento della camera sulla nuova molecola */
+var T_APRI=1.4;        /* apertura e chiusura della mezza sfera di vescicola e micella */
 
 /* ---- colori degli atomi (convenzionali) ---- */
 var EL={C:{c:'#3d434c',r:.3,n:'carbonio'},H:{c:'#f4f4f4',r:.2,n:'idrogeno'},O:{c:'#e0393e',r:.29,n:'ossigeno'},
@@ -331,13 +333,19 @@ function membrana(){var m=new Mol();for(var s=0;s<2;s++)for(var i=0;i<7;i++)for(
 
 /* --- acqua, vitamine e sali --- */
 function acqua(){var m=new Mol();var o=m.atomo('O',V(0,0,0));m.attacca(o,'H',V(.79,-.61,0));m.attacca(o,'H',V(-.79,-.61,0));return m.centra();}
-/* sezione di una sfera di molecole a testa e coda: due anelli sfalsati, come una fetta della sfera vista di fronte */
-function sferaDi(m,R,verso,passo,op){var n=Math.round(2*Math.PI*R/passo);
- [-.28,.28].forEach(function(z,r){for(var i=0;i<n;i++){var f=(i+r*.5)*2*Math.PI/n,d=V(Math.cos(f),Math.sin(f),0);
-  m.extra.push({tipo:'fosfo',p:d.clone().multiplyScalar(R).add(V(0,0,z)),d:d.clone().multiplyScalar(verso),sc:op.sc,code:op.code,c:op.c});}});}
-function vescicola(){var m=new Mol();sferaDi(m,3.4,1,.6,{sc:.8});sferaDi(m,1.4,-1,.6,{sc:.8});
+/* sfera intera di molecole a testa e coda, disposte su paralleli. Quando si apre, la metà rivolta verso chi
+   guarda (fetta) si allontana e sparisce; il taglio è un po' obliquo rispetto alla camera iniziale (V0.th = .35),
+   così si vede la conca. Le molecole sul bordo del taglio restano e mostrano la sezione degli strati */
+var AZ_APRI=.35+.5,W_APRI=Math.PI/2;   /* centro e mezza ampiezza della parte che si apre */
+function sferaPiena(m,R,verso,passo,op){var nl=Math.max(4,Math.round(Math.PI*R/passo));
+ for(var j=0;j<nl;j++){var fi=(j+.5)*Math.PI/nl,y=Math.cos(fi),r=Math.sin(fi),
+   n=Math.max(4,4*Math.round(2*Math.PI*R*r/passo/4));   /* multiplo di 4: i bordi del taglio cadono su una molecola */
+  for(var i=0;i<n;i++){var rel=-W_APRI+i*2*Math.PI/n,az=AZ_APRI+rel,d=V(Math.sin(az)*r,y,Math.cos(az)*r);
+   var rr=Math.atan2(Math.sin(rel),Math.cos(rel));
+   m.extra.push({tipo:'fosfoS',p:d.clone().multiplyScalar(R),d:d.clone().multiplyScalar(verso),sc:op.sc,code:op.code,c:op.c,fetta:rr>-W_APRI+1e-6&&rr<W_APRI-1e-6});}}}
+function vescicola(){var m=new Mol();sferaPiena(m,3.4,1,.7,{sc:.8});sferaPiena(m,1.4,-1,.7,{sc:.8});
  m.etich.push({t:'acqua fuori',p:V(0,4.3,0),c:'#9fd8ff'});m.etich.push({t:'acqua dentro',p:V(0,0,0),c:'#9fd8ff'});return m;}
-function micella(){var m=new Mol();m.extra.push({tipo:'goccia',p:V(0,0,0),c:'#f2c94c',r:.85});sferaDi(m,2.05,1,.6,{sc:.85,code:1,c:'#9a6fe8'});
+function micella(){var m=new Mol();m.extra.push({tipo:'goccia',p:V(0,0,0),c:'#f2c94c',r:.85});sferaPiena(m,2.05,1,.62,{sc:.85,code:1,c:'#9a6fe8'});
  m.etich.push({t:'grasso',p:V(0,0,1),c:'#f2d98a'});m.etich.push({t:'acqua',p:V(0,2.9,0),c:'#9fd8ff'});return m;}
 /* gruppo eme semplificato: quattro anelli a cinque atomi intorno al ferro, idrogeni al posto delle catene laterali, una molecola di ossigeno */
 function eme(){var m=new Mol(),fe=m.atomo('Fe',V(0,0,0)),Ca=[];
@@ -402,8 +410,8 @@ var SCHEDE=[
    {k:'fos',n:'Fosfolipide',col:'#f08a24',m:fosfolipide,cap:'Catene accorciate, quelle vere sono più lunghe',d:'<p>Un glicerolo, due acidi grassi e un gruppo con il <b>fosforo</b>. La testa sta volentieri vicino all\'acqua, le due code la evitano.</p>'}]},
   {n:'Come si dispongono in acqua',c:[
    {k:'mem',n:'Membrana',col:'#f08a24',m:membrana,cap:'Schema, ogni figura è un fosfolipide',d:'<p>I fosfolipidi si dispongono su <b>due strati</b>, con le teste verso l\'acqua e le code verso l\'interno. Così è fatta la membrana di ogni cellula.</p>'},
-   {k:'ves',n:'Vescicola',col:'#f08a24',m:vescicola,cap:'Schema in sezione, una fetta della sfera. Ogni figura è un fosfolipide',d:'<p>Il doppio strato si chiude su se stesso e forma una sfera con l\'acqua dentro e fuori. Così le code restano sempre nascoste.</p><p>Così è chiusa ogni cellula, e così sono fatte le piccole <b>vescicole</b> che portano sostanze da una parte all\'altra della cellula.</p>'},
-   {k:'mic',n:'Micella del sapone',col:'#9a6fe8',m:micella,cap:'Schema in sezione, una fetta della sfera. Ogni figura è una molecola di sapone',d:'<p>Le molecole del <b>sapone</b> hanno una testa che sta volentieri nell\'acqua e <b>una sola coda</b>, che la evita. In acqua formano piccole sfere, le <b>micelle</b>, con le code verso il centro.</p><p>Le code catturano il grasso, che resta chiuso dentro la micella e va via con l\'acqua del risciacquo.</p>'}]}]},
+   {k:'ves',n:'Vescicola',col:'#f08a24',m:vescicola,cap:'Sfera aperta a metà, il pulsante con il mezzo cerchio la chiude e la riapre. Ogni figura è un fosfolipide',d:'<p>Il doppio strato si chiude su se stesso e forma una sfera con l\'acqua dentro e fuori. Così le code restano sempre nascoste.</p><p>Così è chiusa ogni cellula, e così sono fatte le piccole <b>vescicole</b> che portano sostanze da una parte all\'altra della cellula.</p>'},
+   {k:'mic',n:'Micella del sapone',col:'#9a6fe8',m:micella,cap:'Sfera aperta a metà, il pulsante con il mezzo cerchio la chiude e la riapre. Ogni figura è una molecola di sapone',d:'<p>Le molecole del <b>sapone</b> hanno una testa che sta volentieri nell\'acqua e <b>una sola coda</b>, che la evita. In acqua formano piccole sfere, le <b>micelle</b>, con le code verso il centro.</p><p>Le code catturano il grasso, che resta chiuso dentro la micella e va via con l\'acqua del risciacquo.</p>'}]}]},
  {sub:'Non danno energia ma sono indispensabili',anchor:'Vitamine e sali minerali servono in piccole quantità, ma senza di loro il corpo non funziona. Si trovano soprattutto in frutta, verdura e alimenti vari.',
   prof:'Tocca <b>Vitamine</b> e guarda dove va ogni lettera, nell\'acqua o nell\'olio.',posa:'fornello',kcal:0,
   gruppi:[{n:'Acqua',c:[
@@ -682,11 +690,29 @@ function Scena(el){
    out.push(etichetta('anticorpo',V(0,-3.45,0),'#9cc0ff',T_UNIONE+.1,.36));out.push(etichetta('virus',V(0,3.85,0),'#e38fbd',.1,.36));
    return {ogg:out,box:[V(-2,-3.7,0),V(2,4,0)],durata:T_UNIONE+.6};}};
  /* oggetti animati: ognuno ha t0 (quando compare), parte (per l'unione) e un modo per aggiornarsi */
+ var apre={has:false,v:0,target:0,auto:false};   /* sfera aperta (1) o chiusa (0) di vescicola e micella */
  var ogg=[],acque=[],perl=null,legPerl=[],T=0,durata=0,mol=null,unione=false,piega=false,attivo=false,parti=null;
  function pulisci(){while(gruppo.children.length){var o=gruppo.children.pop();if(o.material&&o.material.map){o.material.map.dispose();o.material.dispose();}}ogg=[];acque=[];perl=null;legPerl=[];}
+ /* sfera di vescicola e micella: centinaia di molecole disegnate con due sole InstancedMesh (teste e code),
+    leggere anche su telefono e LIM. Ogni molecola compare al suo t0; quelle della metà che si apre escono con apre.v */
+ function sferaIstanze(lista){
+  var code=lista[0].e.code===1?[0]:[-.11,.11],N=lista.length;
+  var teste=new THREE.InstancedMesh(GS,mat(lista[0].e.c||'#f08a24'),N),cod=new THREE.InstancedMesh(GC,mat('#c8b27a'),N*code.length);
+  teste.frustumCulled=false;cod.frustumCulled=false;gruppo.add(teste,cod);
+  var Mg=new THREE.Matrix4(),Ml=new THREE.Matrix4(),Mt=new THREE.Matrix4(),pv=new THREE.Vector3(),sv=new THREE.Vector3(),
+   Lc=code.map(function(x){return new THREE.Matrix4().compose(new THREE.Vector3(x,-.625,0),new THREE.Quaternion(),new THREE.Vector3(.05,1.25,.05));}),
+   Lh=new THREE.Matrix4().makeScale(.3,.3,.3);
+  var dati=lista.map(function(q){return {p:q.e.p,dir:q.e.p.clone().normalize(),s:q.e.sc||1,t0:q.t0,f:!!q.e.fetta,
+   q:new THREE.Quaternion().setFromUnitVectors(V(0,1,0),q.e.d.clone().normalize())};});
+  return {o:teste,upd:function(T){var ka=ease(apre.v);
+   dati.forEach(function(d,i){var u=ease(clamp((T-d.t0)/T_ATOMO,0,1)),k=d.f?ka:0,s=Math.max(.0001,d.s*u*(1-k));
+    pv.copy(d.p).addScaledVector(d.dir,k*1.5);sv.set(s,s,s);Mg.compose(pv,d.q,sv);
+    teste.setMatrixAt(i,Mt.multiplyMatrices(Mg,Lh));
+    Lc.forEach(function(L,j){cod.setMatrixAt(i*code.length+j,Mt.multiplyMatrices(Mg,L));});});
+   teste.instanceMatrix.needsUpdate=true;cod.instanceMatrix.needsUpdate=true;}};}
  function costruisci(m,op){
-  pulisci();mol=m;op=op||{};unione=!!op.unione&&!!m.parti;piega=!!op.piega;parti=m.parti||null;
-  var n=m.at.length+m.extra.filter(function(e){return e.tipo==='mattone'||e.tipo==='fosfo'||e.tipo==='base';}).length+(m.perline?m.perline.length:0),k=0;
+  pulisci();mol=m;op=op||{};apre.has=false;apre.v=0;apre.target=0;unione=!!op.unione&&!!m.parti;piega=!!op.piega;parti=m.parti||null;
+  var n=m.at.length+m.extra.filter(function(e){return e.tipo==='mattone'||e.tipo==='fosfo'||e.tipo==='fosfoS'||e.tipo==='base';}).length+(m.perline?m.perline.length:0),k=0;
   var passo=n>1?(T_COSTRUISCI-T_ATOMO)/(n-1):0;
   if(unione)passo=0;/* nell'unione le parti sono già pronte e si avvicinano */
   m.at.forEach(function(a,i){var e=EL[a.el],me=new THREE.Mesh(GS,mat(e.c));gruppo.add(me);a.t0=(k++)*passo;
@@ -694,7 +720,7 @@ function Scena(el){
   m.bo.forEach(function(b){var A=m.at[b.a],B=m.at[b.b];var t0=Math.max(A.t0,B.t0);
    var off=[0];if(b.o===2)off=[-.075,.075];
    off.forEach(function(o){var me=new THREE.Mesh(GC,MB);gruppo.add(me);ogg.push({o:me,t0:t0,cil:[b.a,b.b],off:o,r:b.o===2?.055:.08,ponte:A.parte!==B.parte});});});
-  var mattoni=[];
+  var mattoni=[],sfera=[];
   m.extra.forEach(function(e){var me;
    if(e.tipo==='mattone'){me=new THREE.Mesh(GM,mat(e.cap?'#e8cf7a':'#e0c25a'));me.rotation.set(Math.PI/2,e.r||0,0);gruppo.add(me);var t0=(k++)*passo;ogg.push({o:me,t0:t0,s:1,base:e.p});mattoni.push({p:e.p,t0:t0});}
    else if(e.tipo==='stecca'||e.tipo==='ponte'){me=cil(e.a,e.b,e.tipo==='ponte'?.05:.07,e.tipo==='ponte'?mat(e.c||'#9fd8ff'):MB);gruppo.add(me);ogg.push({o:me,t0:0,steccaDi:e,sc:me.scale.clone()});}
@@ -702,12 +728,14 @@ function Scena(el){
    else if(e.tipo==='fosfo'){var g=new THREE.Group(),hd=new THREE.Mesh(GS,mat(e.c||'#f08a24'));hd.scale.setScalar(.3);g.add(hd);
     (e.code===1?[0]:[-.11,.11]).forEach(function(x){var c=cil(V(x,0,0),V(x,-1.25,0),.05,mat('#c8b27a'));g.add(c);});   /* due code (fosfolipide) o una (sapone) */
     g.position.copy(e.p);g.quaternion.setFromUnitVectors(V(0,1,0),(e.d||V(0,e.su?1:-1,0)).clone().normalize());gruppo.add(g);ogg.push({o:g,t0:(k++)*passo,s:e.sc||1,base:e.p});}
+   else if(e.tipo==='fosfoS'){sfera.push({e:e,t0:(k++)*passo});if(e.fetta)apre.has=true;}
    else if(e.tipo==='goccia'){me=new THREE.Mesh(GS,new THREE.MeshStandardMaterial({color:e.c,transparent:true,opacity:.35,roughness:.2,depthWrite:false}));var rg=e.r||1.6;me.scale.setScalar(rg);me.renderOrder=2;gruppo.add(me);ogg.push({o:me,t0:0,s:rg,base:e.p});}
    else if(e.tipo==='lettera'){me=testo(e.t,'#ffffff',.7);gruppo.add(me);ogg.push({o:me,t0:.3+(k++)*.25,sp:me.scale.clone(),base:e.p});}
    else if(e.tipo==='ione'){me=new THREE.Mesh(GS,mat(e.c));gruppo.add(me);ogg.push({o:me,t0:0,s:e.r,base:e.p});
     var tt=testo(e.t,'#ffffff',.6);gruppo.add(tt);ogg.push({o:tt,t0:.4,sp:tt.scale.clone(),base:e.p.clone().add(V(0,e.r+.55,0))});
     var al=new THREE.Mesh(GS,new THREE.MeshStandardMaterial({color:0x5bc8f0,transparent:true,opacity:.14,depthWrite:false}));gruppo.add(al);ogg.push({o:al,t0:.2,s:e.r+.55,base:e.p});}
    else if(e.tipo==='carica'){me=testo(e.t,'#9cc0ff',.8);gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,sp:me.scale.clone(),base:e.p});}});
+  if(sfera.length)ogg.push(sferaIstanze(sfera));
   m.aloni.forEach(function(a){var me=new THREE.Mesh(GS,new THREE.MeshStandardMaterial({color:a.c,transparent:true,opacity:.16,depthWrite:false}));me.renderOrder=3;gruppo.add(me);ogg.push({o:me,t0:T_COSTRUISCI,s:a.r,base:a.p,alone:true});});
   var spec=m.speciale?SPECIALI[m.speciale]():null;if(spec)spec.ogg.forEach(function(q){ogg.push(q);});
   var tEt=(unione?T_UNIONE:T_COSTRUISCI)+.1;
@@ -720,7 +748,7 @@ function Scena(el){
    for(var i=1;i<perl.length;i++){var c=new THREE.Mesh(GC,MB);gruppo.add(c);legPerl.push(c);}
    if(op.resta){perl.forEach(function(p){p.t0=0;});}}
   durata=spec?spec.durata:(unione?T_UNIONE+T_ACQUA+.4:T_COSTRUISCI+.5)+(piega?(op.resta?0:T_PIEGA):0)+.6;
-  T=reduce||op.subito?durata:0;piega0=op.resta?1:0;
+  T=reduce||op.subito?durata:0;piega0=op.resta?1:0;apre.auto=apre.has;
   /* camera: si allontana quanto basta per vedere tutta la molecola */
   var box=new THREE.Box3(),pp=[];m.at.forEach(function(a){pp.push(a.p);});m.extra.forEach(function(e){if(e.p)pp.push(e.p);if(e.a)pp.push(e.a,e.b);
    var rr=e.tipo==='goccia'?(e.r||1.6)+.1:(e.tipo==='ione'?e.r+.6:0);if(rr)pp.push(e.p.clone().addScalar(rr),e.p.clone().addScalar(-rr));});
@@ -773,6 +801,8 @@ function Scena(el){
   var dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;     /* intervallo mai negativo */
   if(el.offsetParent===null)return;
   if(attivo){T=Math.min(durata,T+dt);aggiorna();dirty=true;if(T>=durata)attivo=false;}
+  if(apre.auto&&T>=T_COSTRUISCI+.3){apre.target=1;apre.auto=false;}
+  if(apre.v!==apre.target){apre.v=reduce?apre.target:(apre.target>apre.v?Math.min(apre.target,apre.v+dt/T_APRI):Math.max(apre.target,apre.v-dt/T_APRI));aggiorna();dirty=true;}
   if(zoomTardi&&T>=zoomTardi.t){radDa=rad;radFit=zoomTardi.r;camU=0;zoomTardi=null;}
   if(camU<1){camU=Math.min(1,camU+dt/T_CAMERA);rad=radDa+(radFit-radDa)*ease(camU);dirty=true;}else rad=radFit;
   if(auto&&!reduce){th+=dt*.3;dirty=true;}
@@ -781,9 +811,11 @@ function Scena(el){
   acque.forEach(function(w){if(w.g.visible)w.g.lookAt(cam.position);});R.render(scene,cam);})(last);
  resize();
  return {costruisci:costruisci,resize:resize,
-  rifai:function(){if(!mol)return;T=0;attivo=true;dirty=true;if(zoom0){zoomTardi=zoom0;radDa=rad;radFit=radIniz;camU=0;}},
+  rifai:function(){if(!mol)return;T=0;attivo=true;dirty=true;apre.v=0;apre.target=0;apre.auto=apre.has;if(zoom0){zoomTardi=zoom0;radDa=rad;radFit=radIniz;camU=0;}},
   reset:function(){th=V0.th;ph=V0.ph;zoomK=1;dirty=true;},
-  zoom:zoomF,ruota:function(on){auto=on;dirty=true;}};
+  zoom:zoomF,ruota:function(on){auto=on;dirty=true;},
+  haSfera:function(){return apre.has;},
+  apri:function(){if(!apre.has)return;apre.auto=false;apre.target=apre.target>.5?0:1;dirty=true;}};
 }
 var scena=Scena($('stage'));
 
@@ -817,6 +849,7 @@ function scegli(k,subito){
  $('cap').textContent=c.cap||'Modello a sfere e bastoncini, semplificato';
  var m=c.m();legenda(m);
  if(scena)scena.costruisci(m,{unione:c.unione,piega:c.piega,resta:c.resta&&S.ultimaPiega,subito:subito});
+ $('bApri').classList.toggle('hide',!(scena&&scena.haSfera()));
  if(c.piega)S.ultimaPiega=true;
  if(!subito&&S.parlato[S.sch]){if(c.unione)say('Guarda bene, quando le molecole si legano esce una molecola d\'<b>acqua</b>.','pentolino');else if(S.unioneDetta)say(sc.prof,'idle');}
  S.unioneDetta=!!c.unione;}
@@ -839,6 +872,7 @@ $('bReset').onclick=function(){if(scena)scena.reset();};
 $('bPiu').onclick=function(){if(scena)scena.zoom(.8);};
 $('bMeno').onclick=function(){if(scena)scena.zoom(1.25);};
 $('bRifai').onclick=function(){if(scena)scena.rifai();};
+$('bApri').onclick=function(){if(scena)scena.apri();};
 $('oRot').onclick=function(){var on=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',on);if(scena)scena.ruota(on);};
 
 /* ================= Allenati =================
