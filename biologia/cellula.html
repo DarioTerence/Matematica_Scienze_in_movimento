@@ -40,10 +40,10 @@ button{font-family:inherit;cursor:pointer}
 .anchor{background:rgba(255,180,84,.12);border-left:4px solid #ffb454;padding:8px 12px;margin-top:16px;border-radius:6px;font-style:italic;color:var(--ink)}
 .modalita .pt{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:0}
 /* Prof. T con il fumetto */
-.proft{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:end;margin-bottom:12px}
-.proft img{width:84px;height:auto}
+.proft{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:end;margin-bottom:12px}
+.proft img{height:190px;width:auto}
 .fumetto{background:var(--panel);border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:9px 12px;line-height:1.4;font-size:15px}
-@media(max-width:760px){.proft{grid-template-columns:64px 1fr}.proft img{width:64px}}
+@media(max-width:760px){.proft{grid-template-columns:auto 1fr}.proft img{height:145px}}
 
 /* ---- 01 La cellula ---- */
 .row{display:flex;gap:8px;flex-wrap:wrap}
@@ -143,7 +143,7 @@ button{font-family:inherit;cursor:pointer}
       </details>
     </div>
     <div>
-      <div class="proft"><img src="../immagini/prof_t/prof_t_naturalista_saluto.webp" alt="Prof. T naturalista"><div class="fumetto">Scegli Animali, Piante o Funghi, poi tocca una struttura nel modello o nell'elenco.</div></div>
+      <div class="proft"><img src="../immagini/prof_t/prof_t_biologo_cellula.webp" alt="Prof. T biologo"><div class="fumetto">Scegli Animali, Piante o Funghi, poi tocca una struttura nel modello o nell'elenco.</div></div>
       <div class="card info"><h3 id="t">Tocca una struttura</h3><p id="d" class="hint"></p><p id="d2" class="lav" hidden></p></div>
       <div class="card"><div id="groups"></div>
         <div class="small">Trascina per ruotare, pizzica o usa la rotella per ingrandire. Tocca di nuovo la stessa struttura per deselezionarla.</div></div>
@@ -183,7 +183,7 @@ button{font-family:inherit;cursor:pointer}
     <div class="card" id="cardP"><h3>Piante</h3><div class="chips spaziatore" aria-hidden="true" style="margin:0 0 10px;visibility:hidden"><button class="chip" tabindex="-1" disabled>Cellula vegetale</button></div><div class="view" id="vP"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div><div class="status" id="stP"></div></div>
   </div>
   <div class="small">Trascina sulla vasca per ruotarla (animale e pianta ruotano insieme); pizzica o usa la rotella per ingrandire.</div>
-  <div class="proft"><img src="../immagini/prof_t/prof_t_naturalista_binocolo.webp" alt="Prof. T naturalista"><div class="fumetto">Sposta il cursore o tocca Ipotonica e Ipertonica, poi guarda da che parte vanno le gocce d'acqua.</div></div>
+  <div class="proft"><img src="../immagini/prof_t/prof_t_biologo_microscopio.webp" alt="Prof. T biologo"><div class="fumetto">Sposta il cursore o tocca Ipotonica e Ipertonica, poi guarda da che parte vanno le gocce d'acqua.</div></div>
   <div class="anchor">L'acqua si muove dove c'è meno acqua libera, cioè dove c'è più soluto.</div>
   </section>
 
@@ -854,9 +854,9 @@ setC(50);loop(performance.now());
 var $=function(id){return document.getElementById(id);};
 
 /* ---- Prof. T ---- */
-var IMG={hi:'../immagini/prof_t/prof_t_naturalista_saluto.webp',ok:'../immagini/prof_t/prof_t_naturalista_occhiolino_indica.webp',
- ko:'../immagini/prof_t/prof_t_naturalista_fungo.webp',idle:'../immagini/prof_t/prof_t_naturalista_braccia_conserte.webp',
- fine:'../immagini/prof_t/prof_t_naturalista_piantina.webp'};
+var IMG={hi:'../immagini/prof_t/prof_t_biologo_saluto.webp',ok:'../immagini/prof_t/prof_t_biologo_occhiolino_indica.webp',
+ ko:'../immagini/prof_t/prof_t_biologo_vetrino_pensieroso.webp',idle:'../immagini/prof_t/prof_t_biologo_braccia_conserte.webp',
+ fine:'../immagini/prof_t/prof_t_biologo_provetta_trionfo.webp'};
 precarica(IMG);
 
 /* ---- schede ---- */

@@ -122,7 +122,7 @@ button{font-family:inherit}
   <aside>
    <div class="card" id="chipCard"><div id="gruppi"></div></div>
    <div class="card" id="infoCard" aria-live="polite"><h2 id="infoT"></h2><div id="infoD"></div></div>
-   <div class="prof"><img id="profImg" alt="Prof. T con il grembiule da cucina"><div class="bubble" id="bubble" aria-live="polite"></div></div>
+   <div class="prof"><img id="profImg" alt="Prof. T biologo"><div class="bubble" id="bubble" aria-live="polite"></div></div>
    <div class="anchor" id="anchor"></div>
   </aside>
  </div>
@@ -365,7 +365,7 @@ function ione(lista){var m=new Mol();lista.forEach(function(q,i){m.extra.push({t
    Ogni chip ha nome, colore del pallino, molecola (funzione), testo e, se serve, un elenco di dati. */
 var SCHEDE=[
  {sub:'Lo scheletro delle molecole della vita',anchor:'Il carbonio fa quattro legami. Per questo forma catene e anelli, lo scheletro di tutte le biomolecole.',
-  prof:'Tocca <b>Metano</b> e guarda come il carbonio si lega a quattro atomi di idrogeno.',posa:'fornello',
+  prof:'Tocca <b>Metano</b> e guarda come il carbonio si lega a quattro atomi di idrogeno.',posa:'mic',
   gruppi:[{n:'Gli idrocarburi',c:[
    {k:'met',n:'Metano',col:'#3d434c',m:metano,d:'<p>Un carbonio e quattro idrogeni. È l\'idrocarburo più semplice, un aeriforme che si usa per cucinare e per riscaldare.</p><p><b>Idrocarburi</b>, molecole fatte solo di carbonio e idrogeno.</p>'},
    {k:'et',n:'Etano',col:'#3d434c',m:etano,d:'<p>Due carboni legati tra loro, ognuno con tre idrogeni. Il legame tra due carboni è il primo passo di una catena.</p>'},
@@ -373,7 +373,7 @@ var SCHEDE=[
    {k:'but',n:'Butano',col:'#3d434c',m:function(){return alcano(4);},d:'<p>Quattro carboni. La catena non è diritta ma a zig zag, perché i quattro legami di ogni carbonio sono rivolti in direzioni diverse.</p><p>È l\'aeriforme degli accendini, dove sta liquido sotto pressione. Nelle biomolecole le catene possono avere decine di carboni.</p>'},
    {k:'cic',n:'Anello',col:'#3d434c',m:cicloesano,d:'<p>Sei carboni che si chiudono ad anello (cicloesano). Anche gli zuccheri, come il glucosio, hanno un anello.</p>'}]}]},
  {sub:'Zuccheri semplici e catene di zuccheri',anchor:'I carboidrati sono la fonte di energia più usata dalle cellule. Le catene lunghe sono riserve da smontare quando serve.',
-  prof:'Tocca <b>Saccarosio</b> e guarda glucosio e fruttosio che si uniscono.',posa:'pentolino',kcal:4,
+  prof:'Tocca <b>Saccarosio</b> e guarda glucosio e fruttosio che si uniscono.',posa:'ali',kcal:4,
   gruppi:[{n:'Zuccheri semplici',c:[
    {k:'glu',n:'Glucosio',col:'#e0d24a',m:glucosio,d:'<p>Lo zucchero che le cellule usano come carburante, nella respirazione cellulare. Ha un anello di cinque carboni e un ossigeno.</p>',al:'frutta, miele, si forma dalla digestione dell\'amido'},
    {k:'fru',n:'Fruttosio',col:'#e0d24a',m:fruttosio,d:'<p>Stessi atomi del glucosio, disposti in modo diverso. Ha un anello più piccolo, a cinque atomi.</p>',al:'frutta, miele'}]},
@@ -384,7 +384,7 @@ var SCHEDE=[
    {k:'gli',n:'Glicogeno',col:'#d9a62e',m:function(){return mattoncini('glicogeno');},cap:'Ogni esagono è un glucosio',d:'<p>Catena di glucosio molto ramificata. È la riserva degli animali, nel <b>fegato</b> e nei <b>muscoli</b>.</p><p>Il corpo lo costruisce con il glucosio e lo smonta quando serve energia.</p>'},
    {k:'cel',n:'Cellulosa',col:'#6fd08c',m:function(){return mattoncini('cellulosa');},cap:'Ogni esagono è un glucosio, uno sì e uno no è capovolto. In azzurro i ponti a idrogeno tra le catene',d:'<p>Catene di glucosio diritte e affiancate, legate tra loro. Forma la parete delle cellule vegetali.</p><p>Il nostro corpo non la digerisce, è la <b>fibra</b> degli alimenti.</p>',al:'verdura, frutta, cereali integrali'}]}]},
  {sub:'Catene di amminoacidi',anchor:'Venti amminoacidi diversi, combinati in catene lunghe e ripiegate, formano migliaia di proteine diverse.',
-  prof:'Tocca <b>Legame peptidico</b> e guarda due amminoacidi che si uniscono.',posa:'fornello',kcal:4,
+  prof:'Tocca <b>Legame peptidico</b> e guarda due amminoacidi che si uniscono.',posa:'cel',kcal:4,
   gruppi:[{n:'I mattoni',c:[
    {k:'aa',n:'Amminoacido',col:'#6aa5ff',m:alanina,d:'<p>Ogni amminoacido ha un <b>gruppo amminico</b> (con l\'azoto), un <b>gruppo carbossilico</b> e un <b>gruppo R</b>, diverso in ognuno. Qui l\'alanina.</p><p>Le proteine sono fatte di <b>20</b> amminoacidi diversi.</p>'},
    {k:'pep',n:'Legame peptidico',col:'#6aa5ff',m:dipeptide,unione:true,d:'<p>Il gruppo carbossilico di un amminoacido si lega al gruppo amminico del successivo e si libera una molecola d\'<b>acqua</b>.</p>'}]},
@@ -400,7 +400,7 @@ var SCHEDE=[
    {k:'dif',n:'Difesa',col:'#8ee0a6',m:function(){return speciale('anticorpo');},cap:'Schema, in blu le due catene lunghe, in giallo le due corte',d:'<p>Gli <b>anticorpi</b> hanno la forma di una Y, con quattro catene. Con le punte riconoscono un virus o un batterio e lo agganciano, così le altre difese dell\'organismo lo trovano.</p>'}]}],
   al:'carne, pesce, uova, latte e formaggi, legumi'},
  {sub:'Grassi, oli e membrane',anchor:'I lipidi non si sciolgono in acqua. Sono la riserva di energia più concentrata e formano le membrane delle cellule.',
-  prof:'Tocca <b>Trigliceride</b> e guarda il glicerolo che si lega a tre acidi grassi.',posa:'pentolino',kcal:9,
+  prof:'Tocca <b>Trigliceride</b> e guarda il glicerolo che si lega a tre acidi grassi.',posa:'ali',kcal:9,
   gruppi:[{n:'I mattoni',c:[
    {k:'gl',n:'Glicerolo',col:'#f2c94c',m:soloGlicerolo,d:'<p>Piccola molecola con tre carboni, ognuno con un gruppo OH. È la base a cui si attaccano gli acidi grassi.</p>'},
    {k:'sat',n:'Acido grasso saturo',col:'#f2c94c',m:function(){return soloAcido(false);},cap:'Catena accorciata, quelle vere sono più lunghe',d:'<p>Lunga catena di carboni con <b>soli legami semplici</b>, diritta. Le catene diritte si impacchettano bene, così i grassi saturi sono in genere <b>solidi</b> a temperatura ambiente.</p>',al:'burro, lardo, grassi della carne, formaggi'},
@@ -413,7 +413,7 @@ var SCHEDE=[
    {k:'ves',n:'Vescicola',col:'#f08a24',m:vescicola,cap:'Sfera aperta a metà, il pulsante con il mezzo cerchio la chiude e la riapre. Ogni figura è un fosfolipide',d:'<p>Il doppio strato si chiude su se stesso e forma una sfera con l\'acqua dentro e fuori. Così le code restano sempre nascoste.</p><p>Così è chiusa ogni cellula, e così sono fatte le piccole <b>vescicole</b> che portano sostanze da una parte all\'altra della cellula.</p>'},
    {k:'mic',n:'Micella del sapone',col:'#9a6fe8',m:micella,cap:'Sfera aperta a metà, il pulsante con il mezzo cerchio la chiude e la riapre. Ogni figura è una molecola di sapone',d:'<p>Le molecole del <b>sapone</b> hanno una testa che sta volentieri nell\'acqua e <b>una sola coda</b>, che la evita. In acqua formano piccole sfere, le <b>micelle</b>, con le code verso il centro.</p><p>Le code catturano il grasso, che resta chiuso dentro la micella e va via con l\'acqua del risciacquo.</p>'}]}]},
  {sub:'Non danno energia ma sono indispensabili',anchor:'Vitamine e sali minerali servono in piccole quantità, ma senza di loro il corpo non funziona. Si trovano soprattutto in frutta, verdura e alimenti vari.',
-  prof:'Tocca <b>Vitamine</b> e guarda dove va ogni lettera, nell\'acqua o nell\'olio.',posa:'fornello',kcal:0,
+  prof:'Tocca <b>Vitamine</b> e guarda dove va ogni lettera, nell\'acqua o nell\'olio.',posa:'pro',kcal:0,
   gruppi:[{n:'Acqua',c:[
    {k:'acq',n:'Acqua',col:'#5bc8f0',m:acqua,d:'<p>Non dà energia ma è il componente più abbondante del corpo. Scioglie e trasporta le sostanze ed è il luogo delle reazioni chimiche della cellula.</p>',al:'acqua da bere, frutta, verdura, minestre'}]},
   {n:'Vitamine',c:[
@@ -425,7 +425,7 @@ var SCHEDE=[
    {k:'nak',n:'Sodio e potassio',col:'#9a6fe8',m:function(){return ione([{t:'Na⁺',c:'#ab5cf2',r:.75},{t:'K⁺',c:'#7a3fd0',r:.95}]);},cap:'Schema, gli ioni non sono in scala',d:'<p>Regolano l\'acqua dentro e fuori le cellule e fanno funzionare <b>nervi e muscoli</b>.</p>',al:'sodio nel sale da cucina, potassio in frutta e verdura'},
    {k:'iod',n:'Iodio',col:'#8a5cc0',m:function(){return ione([{t:'I⁻',c:'#8a5cc0',r:1.0}]);},cap:'Schema, lo ione non è in scala',d:'<p>La <b>tiroide</b> lo usa per produrre i suoi ormoni, importanti per la crescita e per lo sviluppo del sistema nervoso.</p>',al:'pesce di mare, latte, sale iodato'}]}]},
  {sub:'DNA e RNA, le molecole dell\'informazione',anchor:'Gli acidi nucleici sono catene di nucleotidi. L\'ordine delle basi è l\'informazione per costruire le proteine.',
-  prof:'Tocca <b>DNA</b> e guarda le basi che si incastrano a coppie.',posa:'pentolino',
+  prof:'Tocca <b>DNA</b> e guarda le basi che si incastrano a coppie.',posa:'dna',
   gruppi:[{n:'I mattoni',c:[
    {k:'nuc',n:'Nucleotide',col:'#e2d3b0',m:function(){return speciale('nucleotide',legBasi(false));},cap:'Schema, ogni parte ha una forma e un colore',d:'<p>Il mattone degli acidi nucleici. Ha tre parti, un <b>fosfato</b>, uno <b>zucchero</b> a cinque atomi di carbonio e una <b>base azotata</b>.</p><p>Nel DNA lo zucchero è il deossiribosio, nell\'RNA il ribosio.</p>'},
    {k:'bas',n:'Coppie di basi',col:'#e2d3b0',m:function(){return speciale('basi',legBasi(false));},cap:'Schema, le forme mostrano quali basi si incastrano',d:'<p>Le basi del DNA sono quattro, <b>A</b> adenina, <b>T</b> timina, <b>C</b> citosina e <b>G</b> guanina. Si incastrano solo a coppie, <b>A con T</b> e <b>C con G</b>, tenute insieme da ponti a idrogeno.</p><p>A e G sono più grandi, T e C più piccole, così ogni coppia ha la stessa lunghezza.</p>'}]},
@@ -820,11 +820,11 @@ function Scena(el){
 }
 var scena=Scena($('stage'));
 
-/* ================= Prof. T in cucina ================= */
-var IMG={hi:'../immagini/prof_t/prof_t_cucina_saluto.webp',fornello:'../immagini/prof_t/prof_t_cucina_fornello.webp',
- pentolino:'../immagini/prof_t/prof_t_cucina_pentolino.webp',ko:'../immagini/prof_t/prof_t_cucina_termometro.webp',
- ok:'../immagini/prof_t/prof_t_cucina_occhiolino_indica.webp',idle:'../immagini/prof_t/prof_t_cucina_braccia_conserte.webp',
- fine:'../immagini/prof_t/prof_t_cucina_pentolino.webp'};
+/* ================= Prof. T biologo ================= */
+var IMG={hi:'../immagini/prof_t/prof_t_biologo_saluto.webp',mic:'../immagini/prof_t/prof_t_biologo_microscopio.webp',ali:'../immagini/prof_t/prof_t_biologo_alimenti.webp',
+ cel:'../immagini/prof_t/prof_t_biologo_cellula.webp',pro:'../immagini/prof_t/prof_t_biologo_provetta_trionfo.webp',dna:'../immagini/prof_t/prof_t_biologo_dna.webp',
+ ko:'../immagini/prof_t/prof_t_biologo_vetrino_pensieroso.webp',ok:'../immagini/prof_t/prof_t_biologo_occhiolino_indica.webp',
+ idle:'../immagini/prof_t/prof_t_biologo_braccia_conserte.webp',fine:'../immagini/prof_t/prof_t_biologo_provetta_trionfo.webp'};
 precarica(IMG);
 function say(t,posa){var im=$('profImg'),src=IMG[posa||'hi'];if(im.getAttribute('src')!==src){im.src=src;im.classList.remove('pop');void im.offsetWidth;im.classList.add('pop');}$('bubble').innerHTML=t;}
 
@@ -852,7 +852,7 @@ function scegli(k,subito){
  if(scena)scena.costruisci(m,{unione:c.unione,piega:c.piega,resta:c.resta&&S.ultimaPiega,subito:subito});
  $('bApri').classList.toggle('hide',!(scena&&scena.haSfera()));
  if(c.piega)S.ultimaPiega=true;
- if(!subito&&S.parlato[S.sch]){if(c.unione)say('Guarda bene, quando le molecole si legano esce una molecola d\'<b>acqua</b>.','pentolino');else if(S.unioneDetta)say(sc.prof,'idle');}
+ if(!subito&&S.parlato[S.sch]){if(c.unione)say('Guarda bene, quando le molecole si legano esce una molecola d\'<b>acqua</b>.','mic');else if(S.unioneDetta)say(sc.prof,'idle');}
  S.unioneDetta=!!c.unione;}
 S.parlato={};S.ultimaPiega=false;
 function apriScheda(i){

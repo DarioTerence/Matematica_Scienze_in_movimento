@@ -72,10 +72,10 @@ button{font-family:inherit}
 .barra .estremi{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-top:-2px}
 .fase{min-height:2.9em;margin:8px 2px 0;line-height:1.4}
 .fase b{color:var(--disciplina)}
-.proft{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:end;margin-bottom:12px}
-.proft img{width:84px;height:auto}
+.proft{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:end;margin-bottom:12px}
+.proft img{height:190px;width:auto}
 .fumetto{background:var(--panel);border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:9px 12px;line-height:1.4;font-size:15px}
-@media(max-width:760px){.proft{grid-template-columns:64px 1fr}.proft img{width:64px}}
+@media(max-width:760px){.proft{grid-template-columns:auto 1fr}.proft img{height:145px}}
 .basi{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--mut);margin-top:4px}
 .basi i,.leg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;margin:8px 2px 0;color:var(--mut)}
@@ -127,7 +127,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
    <p class="hint">Trascina per ruotare. Tocca un livello per avvicinarti.</p>
   </div>
   <aside>
-   <div class="proft"><img id="pf-dna" src="../immagini/prof_t/prof_t_naturalista_saluto.webp" alt="Prof. T naturalista"><div class="fumetto" id="fu-dna">Tocca i livelli uno dopo l'altro, da Cellula fino a RNA, e guarda come ci avviciniamo al DNA.</div></div>
+   <div class="proft"><img id="pf-dna" src="../immagini/prof_t/prof_t_biologo_dna.webp" alt="Prof. T biologo"><div class="fumetto" id="fu-dna">Tocca i livelli uno dopo l'altro, da Cellula fino a RNA, e guarda come ci avviciniamo al DNA.</div></div>
    <div class="card" aria-live="polite"><h2 id="dnaT"></h2><p id="dnaD" style="margin:0"></p></div>
    <div class="card"><div class="sect">Le basi</div><div class="basi" id="basi"></div></div>
    <div class="anchor">Il DNA contiene le istruzioni della cellula. Nella cellula umana è diviso in 46 cromosomi, 23 coppie.</div>
@@ -148,7 +148,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
    <div class="azioni"><button class="azione primaria" id="cAvanti">Fase successiva ›</button><button class="azione link hide" id="cMitosi">Guarda la mitosi ›</button></div>
   </div>
   <aside>
-   <div class="proft"><img id="pf-ciclo" src="../immagini/prof_t/prof_t_naturalista_binocolo.webp" alt="Prof. T naturalista"><div class="fumetto">Tocca una fase nel cerchio oppure Fase successiva.</div></div>
+   <div class="proft"><img id="pf-ciclo" src="../immagini/prof_t/prof_t_biologo_microscopio.webp" alt="Prof. T biologo"><div class="fumetto">Tocca una fase nel cerchio oppure Fase successiva.</div></div>
    <div class="card ciclo"><svg id="anello" viewBox="0 0 240 240" role="group" aria-label="Fasi del ciclo cellulare"></svg></div>
    <div class="card" aria-live="polite"><h2 id="cicT"></h2><p id="cicD" style="margin:0"></p></div>
    <div class="anchor">L'interfase (G1, S, G2) è la parte più lunga del ciclo. La divisione (fase M) è breve. Proporzioni del cerchio indicative.</div>
@@ -177,7 +177,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
    <p class="fase" id="mFase" aria-live="polite"></p>
   </div>
   <aside>
-   <div class="proft"><img id="pf-mitosi" src="../immagini/prof_t/prof_t_naturalista_binocolo.webp" alt="Prof. T naturalista"><div class="fumetto" id="fu-mitosi">Premi il pulsante rotondo e guarda la cellula dividersi. Puoi anche trascinare il cursore.</div></div>
+   <div class="proft"><img id="pf-mitosi" src="../immagini/prof_t/prof_t_biologo_cromosomi.webp" alt="Prof. T biologo"><div class="fumetto" id="fu-mitosi">Premi il pulsante rotondo e guarda la cellula dividersi. Puoi anche trascinare il cursore.</div></div>
    <div class="card"><div class="sect">Le fasi</div><div class="fasi chips" id="mFasi" style="margin:0"></div></div>
    <div class="anchor">Con la mitosi da una cellula nascono due cellule figlie identiche, con lo stesso numero di cromosomi.</div>
   </aside>
@@ -205,7 +205,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
    <div class="leg"><span><i style="background:#D94F6A"></i>cromosoma madre</span><span><i style="background:#3F7FD9"></i>cromosoma padre</span></div>
   </div>
   <aside>
-   <div class="proft"><img id="pf-meiosi" src="../immagini/prof_t/prof_t_naturalista_binocolo.webp" alt="Prof. T naturalista"><div class="fumetto" id="fu-meiosi">Premi il pulsante rotondo e segui i colori, rosso il cromosoma madre e blu il cromosoma padre.</div></div>
+   <div class="proft"><img id="pf-meiosi" src="../immagini/prof_t/prof_t_biologo_cromosomi.webp" alt="Prof. T biologo"><div class="fumetto" id="fu-meiosi">Premi il pulsante rotondo e segui i colori, rosso il cromosoma madre e blu il cromosoma padre.</div></div>
    <div class="card"><div class="sect">Mitosi e meiosi a confronto</div>
     <table class="conf"><thead><tr><th></th><th>Mitosi</th><th>Meiosi</th></tr></thead><tbody>
      <tr><th>Divisioni</th><td>una</td><td>due</td></tr>
@@ -247,9 +247,9 @@ $('basi').innerHTML=BASI.map(function(b){return '<span><i style="background:'+CO
  +'<span><i style="background:'+COL.zuc+'"></i>zucchero</span><span><i style="background:'+COL.fos+';border-radius:50%"></i>fosfato</span>';
 
 /* ---- Prof. T ---- */
-var IMG={hi:'../immagini/prof_t/prof_t_naturalista_saluto.webp',spiega:'../immagini/prof_t/prof_t_naturalista_binocolo.webp',
- ok:'../immagini/prof_t/prof_t_naturalista_occhiolino_indica.webp',ko:'../immagini/prof_t/prof_t_naturalista_fungo.webp',
- idle:'../immagini/prof_t/prof_t_naturalista_braccia_conserte.webp',fine:'../immagini/prof_t/prof_t_naturalista_piantina.webp'};
+var IMG={hi:'../immagini/prof_t/prof_t_biologo_saluto.webp',spiega:'../immagini/prof_t/prof_t_biologo_microscopio.webp',
+ ok:'../immagini/prof_t/prof_t_biologo_occhiolino_indica.webp',ko:'../immagini/prof_t/prof_t_biologo_vetrino_pensieroso.webp',
+ idle:'../immagini/prof_t/prof_t_biologo_braccia_conserte.webp',fine:'../immagini/prof_t/prof_t_biologo_provetta_trionfo.webp'};
 precarica(IMG);
 
 var SUB={dna:'Dalla cellula alla doppia elica del DNA, e l\'RNA che ne copia un tratto.',
