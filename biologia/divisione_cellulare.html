@@ -81,7 +81,9 @@ button{font-family:inherit}
 .leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;margin:8px 2px 0;color:var(--mut)}
 .fasi{display:flex;flex-wrap:wrap;gap:6px}
 .ciclo svg{display:block;width:100%;max-width:240px;height:auto;margin:0 auto}
-.ciclo .arco{cursor:pointer}
+.ciclo .arco{cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent}
+.ciclo .arco:focus,.ciclo .arco:focus-visible{outline:none}
+.ciclo .arco:focus-visible .bordo{opacity:1}
 .ciclo text{font:700 15px Calibri,Carlito,sans-serif;fill:#0a0f1a;pointer-events:none}
 .ciclo text.fuori{fill:#8fa0b8;font-size:12px;font-weight:400;letter-spacing:.06em}
 /* chip divisa a metà dentro la scena: cellula animale o cellula delle piante */
