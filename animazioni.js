@@ -124,6 +124,9 @@ function tastierinaCollega(pad, campo, op) {
    Stile in animazioni.css. */
 var CONSOLE_INVITO_MS = 4000;   /* durata dell'invito quando si gira il telefono */
 function schermoIntero(blocco, pulsante, alCambio) {
+  /* pulsante può essere anche un elenco: un pulsante per ogni scena della scheda (es. due vasche) */
+  var pulsanti = pulsante.tagName ? [pulsante] : Array.prototype.slice.call(pulsante);
+  pulsante = pulsanti[0];
   var APRI = '<svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 7h9a5 5 0 0 1 4.7 6.7l-1.2 3.4a2.3 2.3 0 0 1-3.9.7L14.5 16h-5l-1.6 1.8a2.3 2.3 0 0 1-3.9-.7l-1.2-3.4A5 5 0 0 1 7.5 7z"/><path d="M8 10v3.4M6.3 11.7h3.4"/><circle cx="15.6" cy="10.6" r=".5"/><circle cx="17.6" cy="12.6" r=".5"/></svg>',
       CHIUDI = '<svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
   var CHIAVE = 'sim_console_usata';
@@ -140,7 +143,7 @@ function schermoIntero(blocco, pulsante, alCambio) {
       if (sp) sp.remove();
     });
   }
-  pulsante.classList.add('comando-console');
+  pulsanti.forEach(function (b) { b.classList.add('comando-console'); });
   /* a schermo intero la pagina dichiara viewport-fit=cover: così il telefono comunica lo spazio di tacca e fotocamera */
   var vp = document.querySelector('meta[name=viewport]'), vpBase = vp ? vp.getAttribute('content') : '';
   function aggiorna(on) {
@@ -149,11 +152,13 @@ function schermoIntero(blocco, pulsante, alCambio) {
     blocco.classList.toggle('intero', on);
     document.documentElement.classList.toggle('in-intero', on);
     var pillola = !on && !usata();
-    pulsante.classList.toggle('pillola', pillola);
-    pulsante.innerHTML = on ? CHIUDI : APRI + (pillola ? '<span>Modalità console</span>' : '');
     var t = on ? 'Esci dalla modalità console' : 'Modalità console';
-    pulsante.title = t;
-    pulsante.setAttribute('aria-label', t);
+    pulsanti.forEach(function (b) {
+      b.classList.toggle('pillola', pillola);
+      b.innerHTML = on ? CHIUDI : APRI + (pillola ? '<span>Modalità console</span>' : '');
+      b.title = t;
+      b.setAttribute('aria-label', t);
+    });
     if (on) nascondiInvito();
     if (alCambio) alCambio(on);
   }
@@ -184,7 +189,7 @@ function schermoIntero(blocco, pulsante, alCambio) {
     if (storia) { storia = false; history.back(); return; }   /* popstate chiude */
     aggiorna(false);
   }
-  pulsante.addEventListener('click', function () { if (dentro) esci(); else entra(); });
+  pulsanti.forEach(function (b) { b.addEventListener('click', function () { if (dentro) esci(); else entra(); }); });
   function cambioVero() {
     if (!elementoVero() && dentro && !storia) aggiorna(false);
     else if (dentro) setTimeout(function () { if (alCambio) alCambio(true); }, 60);

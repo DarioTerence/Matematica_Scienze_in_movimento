@@ -97,6 +97,50 @@ button{font-family:inherit;cursor:pointer}
  #p-cellula.intero .opzioni[open]{left:auto;right:calc(20px + var(--sr));bottom:auto;width:260px}
  #p-cellula.intero .legenda{left:calc(220px + var(--sl));right:calc(172px + var(--sr));bottom:auto;top:calc(12px + var(--st));justify-content:center}
  #p-cellula.intero:has(.opzioni[open]) #stage canvas{opacity:1}}
+/* ---- 02 L'osmosi: modalità console (24 nov 2026) ----
+   Le due vasche occupano lo schermo (in verticale una alla volta, con Animali e Piante in alto);
+   concentrazione, Ipotonica, Isotonica, Ipertonica e Reset su pannelli; legenda e testi solo nella pagina.
+   Il pulsante della modalità sta in ogni vasca (in orizzontale si vede solo quello della vasca di destra). */
+.pannello-o{display:none}
+#p-osmosi.intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--pan:#232b3b;--bordo:#2a3850}
+#p-osmosi.intero .pannello-o{display:block;position:absolute;z-index:2;background:var(--pan);border:1px solid var(--bordo);border-radius:16px}
+#p-osmosi.intero .ctrl,#p-osmosi.intero .ctrl>div:first-child,#p-osmosi.intero .rowbtns{display:contents}
+#p-osmosi.intero #zoneLbl,#p-osmosi.intero .ctrl .chips,#p-osmosi.intero #resetBtn,#p-osmosi.intero .bar{position:absolute;z-index:4;margin:0}
+#p-osmosi.intero .duo{position:absolute;z-index:1}
+#p-osmosi.intero .duo>.card{background:none;border:0;padding:0;border-radius:0;display:flex;flex-direction:column;min-height:0}
+#p-osmosi.intero .duo h3{display:none}
+#p-osmosi.intero .view{flex:1;height:auto;min-height:0;border-radius:12px}
+#p-osmosi.intero .status{min-height:0;margin:6px 4px 0;font-size:13px;color:#c8d3e3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#p-osmosi.intero #tipoA{margin:0 0 8px!important}
+/* vasche affiancate (schermi larghi): un solo pulsante della modalità, nella vasca di destra */
+@media(min-width:761px){#vA .console-osmosi{display:none}#vA .resetvista{top:8px!important}}
+#p-osmosi.intero .comando-console{top:8px!important}
+/* verticale: una vasca alla volta */
+@media(orientation:portrait){
+ #p-osmosi.intero #seg{display:flex;position:absolute;z-index:4;margin:0;top:calc(12px + var(--st));left:calc(12px + var(--sl));right:calc(12px + var(--sr));max-width:none}
+ #p-osmosi.intero .duo{top:calc(62px + var(--st));left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(166px + var(--sb));display:block}
+ #p-osmosi.intero .duo>.card{height:100%}
+ #p-osmosi.intero .duo[data-show="A"] #cardP,#p-osmosi.intero .duo[data-show="P"] #cardA{display:none}
+ #p-osmosi.intero .chips.spaziatore{display:none}
+ #p-osmosi.intero .pannello-o{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));height:146px}
+ #p-osmosi.intero .pannello-o.barra-o{display:none}
+ #p-osmosi.intero #zoneLbl{left:calc(26px + var(--sl));bottom:calc(122px + var(--sb))}
+ #p-osmosi.intero #resetBtn{right:calc(22px + var(--sr));bottom:calc(114px + var(--sb))}
+ #p-osmosi.intero .ctrl .chips{left:calc(22px + var(--sl));right:calc(22px + var(--sr));bottom:calc(64px + var(--sb));justify-content:center;flex-wrap:nowrap}
+ #p-osmosi.intero .bar{left:calc(34px + var(--sl));right:calc(34px + var(--sr));bottom:calc(30px + var(--sb))}}
+/* orizzontale (telefono, desktop, LIM): colonna sinistra con soluzione e comandi, due vasche affiancate, barra in basso */
+@media(orientation:landscape){
+ #p-osmosi.intero #seg{display:none}
+ #p-osmosi.intero .duo{top:calc(12px + var(--st));left:calc(220px + var(--sl));right:calc(12px + var(--sr));bottom:calc(80px + var(--sb));display:grid;grid-template-columns:1fr 1fr;gap:12px}
+ #p-osmosi.intero #cardA,#p-osmosi.intero #cardP{display:flex}
+ #p-osmosi.intero #vA .comando-console{display:none}
+ #p-osmosi.intero #vA .resetvista{top:8px!important}
+ #p-osmosi.intero .pannello-o{left:calc(12px + var(--sl));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:196px}
+ #p-osmosi.intero .pannello-o.barra-o{left:calc(220px + var(--sl));right:calc(12px + var(--sr));top:auto;width:auto;height:56px}
+ #p-osmosi.intero #zoneLbl{left:calc(24px + var(--sl));top:calc(26px + var(--st));width:172px}
+ #p-osmosi.intero .ctrl .chips{left:calc(22px + var(--sl));top:calc(80px + var(--st));width:176px;flex-direction:column;align-items:stretch}
+ #p-osmosi.intero #resetBtn{left:calc(26px + var(--sl));top:calc(226px + var(--st))}
+ #p-osmosi.intero .bar{left:calc(244px + var(--sl));right:calc(36px + var(--sr));bottom:calc(32px + var(--sb))}}
 /* ---- 01 La cellula ---- */
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .main{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:12px}
@@ -207,7 +251,8 @@ button{font-family:inherit;cursor:pointer}
   </section>
 
   <!-- ================= 02 L'OSMOSI ================= -->
-  <section id="p-osmosi" class="hide">
+  <section id="p-osmosi" class="hide" data-intero>
+  <div class="pannello-o" aria-hidden="true"></div><div class="pannello-o barra-o" aria-hidden="true"></div>
   <div class="card ctrl">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
       <div class="zonebox" id="zoneLbl">Soluzione isotonica</div>
@@ -221,8 +266,8 @@ button{font-family:inherit;cursor:pointer}
       </div>
     </div>
     <div class="bar"><input type="range" id="conc" min="0" max="100" value="50" aria-label="Concentrazione di soluto nella soluzione esterna"></div>
-    <div class="zl"><span class="end" style="left:0;transform:none">poco soluto</span><span style="left:31%">ipotonica</span><span style="left:50%">isotonica</span><span style="left:73%">ipertonica</span><span class="end" style="right:0;left:auto;transform:none">molto soluto</span></div>
-    <div class="legendrow">
+    <div class="zl solo-pagina"><span class="end" style="left:0;transform:none">poco soluto</span><span style="left:31%">ipotonica</span><span style="left:50%">isotonica</span><span style="left:73%">ipertonica</span><span class="end" style="right:0;left:auto;transform:none">molto soluto</span></div>
+    <div class="legendrow solo-pagina">
       <span class="lg"><i class="sym" style="background:#8E44AD;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)"></i><span>cristalli viola = soluto; più cristalli e sfondo più viola = più soluto</span></span>
       <span class="lg"><i class="sym" style="border-radius:50%;background:#5BC8F0"></i><span>gocce azzurre = acqua. Se attraversano il contorno più in un verso che nell'altro, l'acqua si sposta in quel verso</span></span>
       <span class="lg"><i class="sym" style="border-radius:2px;background:#C46060"></i><span>zone rosse, oltre questi valori la cellula animale subisce danni irreversibili (lisi a sinistra, crenatura a destra)</span></span>
@@ -234,12 +279,12 @@ button{font-family:inherit;cursor:pointer}
     <button data-v="P" aria-pressed="false"><span class="pt" style="background:#E2F0D9"></span>Piante</button>
   </div>
   <div class="duo" id="duo" data-show="A">
-    <div class="card" id="cardA"><h3>Animali</h3><div class="chips" id="tipoA" role="group" aria-label="Cellula animale da osservare" style="margin:0 0 10px"><button class="chip attivo" data-a="cell" aria-pressed="true" style="--chip:#FCE4D6">Cellula animale</button><button class="chip" data-a="rbc" aria-pressed="false" style="--chip:#C0392B">Globulo rosso</button></div><div class="view" id="vA"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div><div class="status" id="stA"></div></div>
-    <div class="card" id="cardP"><h3>Piante</h3><div class="chips spaziatore" aria-hidden="true" style="margin:0 0 10px;visibility:hidden"><button class="chip" tabindex="-1" disabled>Cellula vegetale</button></div><div class="view" id="vP"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div><div class="status" id="stP"></div></div>
+    <div class="card" id="cardA"><h3>Animali</h3><div class="chips" id="tipoA" role="group" aria-label="Cellula animale da osservare" style="margin:0 0 10px"><button class="chip attivo" data-a="cell" aria-pressed="true" style="--chip:#FCE4D6">Cellula animale</button><button class="chip" data-a="rbc" aria-pressed="false" style="--chip:#C0392B">Globulo rosso</button></div><div class="view" id="vA"><div class="tint"></div><button class="comando-scena console-osmosi" style="right:8px;top:8px;z-index:3"></button><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button></div><div class="status" id="stA"></div></div>
+    <div class="card" id="cardP"><h3>Piante</h3><div class="chips spaziatore" aria-hidden="true" style="margin:0 0 10px;visibility:hidden"><button class="chip" tabindex="-1" disabled>Cellula vegetale</button></div><div class="view" id="vP"><div class="tint"></div><button class="comando-scena console-osmosi" style="right:8px;top:8px;z-index:3"></button><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button></div><div class="status" id="stP"></div></div>
   </div>
-  <div class="small">Trascina sulla vasca per ruotarla (animale e pianta ruotano insieme); pizzica o usa la rotella per ingrandire.</div>
-  <div class="proft"><img src="../immagini/prof_t/prof_t_biologo_microscopio.webp" alt="Prof. T biologo"><div class="fumetto">Sposta il cursore o tocca Ipotonica e Ipertonica, poi guarda da che parte vanno le gocce d'acqua.</div></div>
-  <div class="anchor">L'acqua si muove dove c'è meno acqua libera, cioè dove c'è più soluto.</div>
+  <div class="small solo-pagina">Trascina sulla vasca per ruotarla (animale e pianta ruotano insieme); pizzica o usa la rotella per ingrandire.</div>
+  <div class="proft solo-pagina"><img src="../immagini/prof_t/prof_t_biologo_microscopio.webp" alt="Prof. T biologo"><div class="fumetto">Sposta il cursore o tocca Ipotonica e Ipertonica, poi guarda da che parte vanno le gocce d'acqua. Prova anche la modalità console, in alto a destra nella vasca.</div></div>
+  <div class="anchor solo-pagina">L'acqua si muove dove c'è meno acqua libera, cioè dove c'è più soluto.</div>
   </section>
 
   <!-- ================= 03 ALLENATI ================= -->
@@ -869,6 +914,7 @@ function attachControls(cv){
  cv.addEventListener('wheel',e=>{e.preventDefault();CAM.rad=clamp(CAM.rad*(1+e.deltaY*.001),6.5,15);dirty=1;},{passive:false});
 }
 document.querySelectorAll('.resetvista').forEach(b=>b.onclick=()=>{CAM.th=-.65;CAM.ph=1.2;CAM.rad=10.5;dirty=1;});
+schermoIntero(document.getElementById('p-osmosi'),document.querySelectorAll('.console-osmosi'),()=>{dirty=1;});
 
 // ---------- stato e animazione (le cellule inseguono la barra con un po' di ritardo) ----------
 if(!R3){document.querySelectorAll('.view').forEach(v=>v.innerHTML='<p style="padding:16px;color:#5c6572">'+MSG_3D+'</p>');return;}
