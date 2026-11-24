@@ -393,7 +393,7 @@ a.card:focus-visible {
 .astronomia { --colore: var(--astronomia); }
 
 /* Discipline senza animazioni: spente, bordo tratteggiato */
-/* etichetta dorata "console" nelle card delle animazioni che hanno la modalità console (dal 24 nov 2026):
+/* etichetta dorata (solo l'icona del controller) nelle card delle animazioni che hanno la modalità console (dal 24 nov 2026):
    l'oro indica una funzione in più; stesso stile della pillola nella scena (animazioni.css) */
 .etichetta-console {
   position: absolute;
@@ -401,18 +401,16 @@ a.card:focus-visible {
   right: 8px;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 1px 7px 1px 5px;
-  border-radius: 999px;
-  border: 1px solid #e8c15a;
-  background: rgba(232, 193, 90, .10);
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(232, 193, 90, .7);
+  background: rgba(232, 193, 90, .08);
   color: #f3d47e;
-  font-family: ui-monospace, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  box-shadow: 0 0 8px rgba(232, 193, 90, .3);
+  box-shadow: 0 0 6px rgba(232, 193, 90, .25);
 }
-.etichetta-console svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.etichetta-console svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 .card.in-arrivo {
   background: var(--pannello-off);
