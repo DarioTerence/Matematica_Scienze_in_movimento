@@ -47,6 +47,74 @@ button{font-family:inherit}
 .fail{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;color:#e6ecf5;text-align:center}
 /* ---- stili propri dell'animazione ---- */
 /* striscia dei margini: una riga che scorre, come le schede */
+/* ---- modalità console (24 nov 2026), schede 01, 02, 03 ----
+   La scena occupa tutto. Orizzontale (telefono, desktop, LIM): colonna sinistra con cosa si guarda
+   (levette del globo, selettore di luogo, margine o vulcano con frecce su e giù, nome e descrizione
+   della parte toccata), colonna destra con i comandi (vista, Opzioni, Planisfero), barra del tempo in basso.
+   Verticale: comandi della vista in alto a destra, Opzioni in alto a sinistra, pannello in basso. */
+.csel,.cpan,.cdesc{display:none}
+[data-intero].intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--pan:#232b3b;--bordo:#2a3850}
+[data-intero].intero .layout,[data-intero].intero .layout>div,[data-intero].intero .tempo{display:contents}
+[data-intero].intero .stage{position:absolute;inset:0;height:auto;border:0;border-radius:0}
+[data-intero].intero .cpan{display:block;position:absolute;z-index:2;background:var(--pan);border:1px solid var(--bordo);border-radius:16px}
+[data-intero].intero .csel{display:flex;align-items:center;justify-content:space-between;gap:6px;position:absolute;z-index:4}
+[data-intero].intero .cdesc{display:block;position:absolute;z-index:4;margin:0;color:#c8d3e3;font-size:13px;line-height:1.35;overflow:auto}
+[data-intero].intero .cdesc b{color:#d2bcff}
+.freccia{width:44px;height:44px;border:0;border-radius:12px;background:#1a2333;color:#e6ecf5;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.freccia svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.freccia:focus-visible{outline:2px solid var(--disciplina);outline-offset:2px}
+.cnome{flex:1;text-align:center;font-size:16px;font-weight:700;color:#d2bcff;line-height:1.2}
+[data-intero].intero .play,[data-intero].intero .barra,[data-intero].intero .strati,[data-intero].intero .opzioni{position:absolute;z-index:4;margin:0}
+[data-intero].intero .opzioni{z-index:5;background:var(--pan);border-color:var(--bordo)}
+[data-intero].intero .opzioni summary{padding:10px 14px;gap:8px}
+[data-intero].intero .opzioni[open] summary::after{content:"\2715"}
+[data-intero].intero .orologio{top:calc(12px + var(--st));right:auto;left:50%;transform:translateX(-50%)}
+[data-intero].intero .comando-console{top:calc(12px + var(--st))!important;right:calc(12px + var(--sr))!important}
+[data-intero].intero [id$=Reset]{top:calc(54px + var(--st))!important;right:calc(12px + var(--sr))!important}
+[data-intero].intero [id$=Piu]{top:calc(96px + var(--st))!important;right:calc(12px + var(--sr))!important}
+[data-intero].intero [id$=Meno]{top:calc(138px + var(--st))!important;right:calc(12px + var(--sr))!important}
+[data-intero].intero #gPlan{top:calc(12px + var(--st))!important;left:calc(12px + var(--sl))!important}
+@media(orientation:portrait){
+ [data-intero].intero .cpan.sx,[data-intero].intero .cpan.dx{display:none}
+ [data-intero].intero .cpan.basso{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));height:168px}
+ [data-intero].intero .csel{left:calc(20px + var(--sl));right:calc(20px + var(--sr));bottom:calc(122px + var(--sb))}
+ [data-intero].intero .cdesc{left:calc(26px + var(--sl));right:calc(26px + var(--sr));bottom:calc(76px + var(--sb));max-height:40px}
+ [data-intero].intero .play{left:calc(24px + var(--sl));bottom:calc(22px + var(--sb))}
+ [data-intero].intero .barra{left:calc(86px + var(--sl));right:calc(26px + var(--sr));bottom:calc(22px + var(--sb))}
+ [data-intero].intero .opzioni{left:calc(12px + var(--sl));top:calc(12px + var(--st));width:150px}
+ [data-intero].intero .opzioni[open]{width:auto;right:calc(60px + var(--sr))}
+ #p-globo.intero .opzioni{top:calc(56px + var(--st))}
+ #p-globo.intero .cpan.basso{height:262px}
+ #p-globo.intero .strati{left:calc(20px + var(--sl));right:calc(20px + var(--sr));bottom:calc(76px + var(--sb));grid-template-columns:1fr 1fr}
+ #p-globo.intero .strati .levetta{font-size:14px;padding:8px 10px}
+ #p-globo.intero .csel{bottom:calc(214px + var(--sb))}
+ #p-globo.intero .cdesc{bottom:calc(168px + var(--sb))}}
+@media(orientation:landscape){
+ /* la scena sta tra le due colonne, così il blocco o il globo si inquadra nello spazio libero */
+ [data-intero].intero .stage{left:calc(236px + var(--sl));right:calc(164px + var(--sr));overflow:visible}
+ /* i comandi stanno nella scena ma vanno nella colonna destra: posizioni misurate dal bordo destro della scena */
+ [data-intero].intero .cpan.sx{left:calc(12px + var(--sl));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:220px}
+ [data-intero].intero .cpan.dx{right:calc(12px + var(--sr));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:148px}
+ [data-intero].intero .cpan.basso{left:calc(244px + var(--sl));right:calc(172px + var(--sr));bottom:calc(12px + var(--sb));height:64px}
+ [data-intero].intero .csel{flex-direction:column;left:calc(24px + var(--sl));width:196px;top:calc(24px + var(--st))}
+ [data-intero].intero .csel .freccia{width:100%;height:36px}
+ [data-intero].intero .csel .freccia svg{transform:rotate(90deg)}
+ [data-intero].intero .cnome{flex:none;width:100%;font-size:15px}
+ [data-intero].intero .cdesc{left:calc(26px + var(--sl));width:192px;top:calc(140px + var(--st));bottom:calc(22px + var(--sb))}
+ [data-intero].intero .play{left:calc(256px + var(--sl));bottom:calc(20px + var(--sb))}
+ [data-intero].intero .barra{left:calc(316px + var(--sl));right:calc(190px + var(--sr));bottom:calc(18px + var(--sb))}
+ [data-intero].intero .comando-console{right:-96px!important;top:calc(22px + var(--st))!important}
+ [data-intero].intero [id$=Reset]{right:-138px!important;top:calc(22px + var(--st))!important}
+ [data-intero].intero [id$=Piu]{right:-96px!important;top:calc(64px + var(--st))!important}
+ [data-intero].intero [id$=Meno]{right:-138px!important;top:calc(64px + var(--st))!important}
+ [data-intero].intero .opzioni{right:calc(20px + var(--sr));top:calc(112px + var(--st));width:132px}
+ [data-intero].intero .opzioni[open]{width:260px}
+ #p-globo.intero #gPlan{left:auto!important;right:-144px!important;top:auto!important;bottom:calc(24px + var(--sb));width:132px!important}
+ #p-globo.intero .strati{left:calc(24px + var(--sl));width:196px;top:calc(24px + var(--st));grid-template-columns:1fr}
+ #p-globo.intero .strati .levetta{font-size:14px;padding:7px 10px;border-left:0;border-top:1px solid #1a2438}
+ #p-globo.intero .strati .levetta:first-child{border-top:0}
+ #p-globo.intero .csel{top:calc(196px + var(--st))}
+ #p-globo.intero .cdesc{top:calc(306px + var(--st))}}
 .margini{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:10px 0 10px;padding-bottom:2px}
 .margini::-webkit-scrollbar{display:none}
 .margini .chip{flex:none;white-space:nowrap}
@@ -111,7 +179,7 @@ button{font-family:inherit}
 #legG{min-height:1.4em;font-size:14px;color:var(--mut)}
 #legG i{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 5px 0 2px}
 /* il tempo del globo, dentro la scena accanto ai comandi della vista */
-.orologio{position:absolute;right:52px;top:8px;z-index:3;height:36px;padding:3px 10px 0;border-radius:10px;background:rgba(10,15,26,.6);border:1px solid rgba(154,111,232,.35);text-align:right;pointer-events:none;line-height:1}
+.orologio{position:absolute;right:52px;top:50px;z-index:3;height:36px;padding:3px 10px 0;border-radius:10px;background:rgba(10,15,26,.6);border:1px solid rgba(154,111,232,.35);text-align:right;pointer-events:none;line-height:1}
 .orologio b{display:block;font:700 19px/1 Cambria,Georgia,serif;color:#d2bcff;font-variant-numeric:tabular-nums}
 .orologio small{display:block;font-size:11px;color:var(--mut);margin-top:2px}
 .orologio.oggi{padding-top:0;display:flex;align-items:center}
@@ -135,19 +203,23 @@ button{font-family:inherit}
  <button class="scheda" role="tab" aria-selected="false" data-s="5"><span class="num">05</span>Allenati</button>
 </nav>
 
-<section id="p-globo">
- <div class="margini" id="luoghi" role="group" aria-label="Luoghi da visitare"></div>
+<section id="p-globo" data-intero>
+ <div class="margini solo-pagina" id="luoghi" role="group" aria-label="Luoghi da visitare"></div>
  <div class="layout">
   <div>
    <div class="stage" id="stageG">
     <div class="attesa" id="attesaG">Sto preparando il globo…</div>
-    <div class="cap" id="capG"></div>
+    <div class="cap solo-pagina" id="capG"></div>
     <button class="comando-scena" id="gPlan" style="left:8px;top:8px;z-index:3;width:auto;padding:0 12px">Planisfero</button>
     <div class="orologio" id="oraG"><b id="oraN"></b><small id="oraU"></small></div>
-    <button class="comando-scena" id="gReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
-    <button class="comando-scena" id="gPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
-    <button class="comando-scena" id="gMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+    <button class="comando-scena" id="gIntero" style="right:8px;top:8px;z-index:3"></button>
+    <button class="comando-scena" id="gReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
+    <button class="comando-scena" id="gPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:92px;z-index:3">+</button>
+    <button class="comando-scena" id="gMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:134px;z-index:3">&minus;</button>
    </div>
+   <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+   <div class="csel" id="gSel"><button class="freccia" data-d="-1" aria-label="Luogo precedente" title="Luogo precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome" id="gNome"></span><button class="freccia" data-d="1" aria-label="Luogo successivo" title="Luogo successivo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+   <p class="cdesc" id="gDesc"></p>
    <div class="tempo">
     <button class="play" id="gPlay" aria-label="Rivedi da Pangea" title="Rivedi da Pangea"></button>
     <div class="barra">
@@ -155,39 +227,43 @@ button{font-family:inherit}
      <div class="estremi"><span>250 milioni di anni fa</span><span>oggi</span></div>
     </div>
    </div>
-   <p class="fase" id="faseG" aria-live="polite"></p>
+   <p class="fase solo-pagina" id="faseG" aria-live="polite"></p>
    <div class="strati" role="group" aria-label="Che cosa mostrare sul globo">
     <button class="levetta" role="switch" id="gTer" aria-checked="false"><span><i class="pal" style="background:#ffe14d"></i>Terremoti</span></button>
     <button class="levetta" role="switch" id="gVul" aria-checked="false"><span><i class="pal tri"></i>Vulcani</span></button>
     <button class="levetta" role="switch" id="gPla" aria-checked="false"><span><i class="pal lin"></i>Placche</span></button>
     <button class="levetta" role="switch" id="gEta" aria-checked="false"><span><i class="pal" style="background:linear-gradient(90deg,#ff3030,#ffe13c,#28aad7)"></i>Età dei fondali</span></button>
    </div>
-   <p class="fase" id="legG" aria-live="polite"></p>
+   <p class="fase solo-pagina" id="legG" aria-live="polite"></p>
    <details class="opzioni">
     <summary><b>Opzioni</b></summary>
     <button class="levetta" role="switch" id="gEt" aria-checked="true">Etichette</button>
     <button class="levetta" role="switch" id="gRot" aria-checked="false">Rotazione automatica</button>
    </details>
   </div>
-  <aside>
+  <aside class="solo-pagina">
    <div class="card" aria-live="polite"><h2 id="gT"></h2><p id="gD" style="margin:0"></p><div class="azioni hide" id="gAz" style="margin-top:10px"><button class="azione primaria" id="gVai">Guarda il margine in sezione</button></div></div>
    <div class="anchor"><b>Tettonica delle placche</b><br>La litosfera, il guscio rigido della Terra, è divisa in placche che si muovono lentamente. Quasi tutti i terremoti e i vulcani stanno lungo i margini delle placche.</div>
-   <div class="proft"><img src="../immagini/prof_t/prof_t_geologo_lente.webp" alt="Prof. T geologo"><div class="fumetto" id="fumG">Accendi una levetta alla volta e guarda che disegno compare. Poi premi il pulsante rotondo e torna indietro di 250 milioni di anni.</div></div>
+   <div class="proft"><img src="../immagini/prof_t/prof_t_geologo_lente.webp" alt="Prof. T geologo"><div class="fumetto" id="fumG">Accendi una levetta alla volta e guarda che disegno compare. Poi premi il pulsante rotondo e torna indietro di 250 milioni di anni. Prova anche la modalità console, in alto a destra nella scena.</div></div>
   </aside>
  </div>
 </section>
 
-<section id="p-margini" class="hide">
- <div class="margini" id="margini" role="group" aria-label="Tipo di margine"></div>
+<section id="p-margini" data-intero class="hide">
+ <div class="margini solo-pagina" id="margini" role="group" aria-label="Tipo di margine"></div>
  <div class="layout">
   <div>
    <div class="stage" id="stage">
     <div class="attesa" id="attesa">Sto preparando il blocco…</div>
-    <div class="cap" id="cap"></div>
-    <button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
-    <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
-    <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+    <div class="cap solo-pagina" id="cap"></div>
+    <button class="comando-scena" id="bIntero" style="right:8px;top:8px;z-index:3"></button>
+    <button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
+    <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:92px;z-index:3">+</button>
+    <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:134px;z-index:3">&minus;</button>
    </div>
+   <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+   <div class="csel" id="bSel"><button class="freccia" data-d="-1" aria-label="Margine precedente" title="Margine precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome" id="bNome"></span><button class="freccia" data-d="1" aria-label="Margine successivo" title="Margine successivo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+   <p class="cdesc" id="bDesc"></p>
    <div class="tempo">
     <button class="play" id="bPlay" aria-label="Rivedi dall'inizio" title="Rivedi dall'inizio"></button>
     <div class="barra">
@@ -195,7 +271,7 @@ button{font-family:inherit}
      <div class="estremi"><span id="tIni">inizio</span><span id="tFin">oggi</span></div>
     </div>
    </div>
-   <p class="fase" id="fase" aria-live="polite"></p>
+   <p class="fase solo-pagina" id="fase" aria-live="polite"></p>
    <details class="opzioni">
     <summary><b>Opzioni</b></summary>
     <button class="levetta" role="switch" id="oEt" aria-checked="true">Etichette</button>
@@ -203,25 +279,29 @@ button{font-family:inherit}
     <button class="levetta" role="switch" id="oRot" aria-checked="false">Rotazione automatica</button>
    </details>
   </div>
-  <aside>
+  <aside class="solo-pagina">
    <div class="card" aria-live="polite"><h2 id="infoT"></h2><p id="infoD" style="margin:0"></p></div>
    <div class="card"><div class="sect">Che cosa c'è nel blocco</div><div class="chips" id="parti" style="margin:0"></div></div>
    <div class="anchor" id="ancora"></div>
-   <div class="proft"><img id="prof" src="../immagini/prof_t/prof_t_geologo_placche.webp" alt="Prof. T geologo"><div class="fumetto" id="fum">Premi il pulsante rotondo per rivedere tutto dall'inizio, oppure trascina il cursore del tempo. Il blocco si gira con un dito.</div></div>
+   <div class="proft"><img id="prof" src="../immagini/prof_t/prof_t_geologo_placche.webp" alt="Prof. T geologo"><div class="fumetto" id="fum">Premi il pulsante rotondo per rivedere tutto dall'inizio, oppure trascina il cursore del tempo. Il blocco si gira con un dito. Prova anche la modalità console, in alto a destra nella scena.</div></div>
   </aside>
  </div>
 </section>
 
-<section id="p-vulcani" class="hide">
- <div class="margini" id="tipiV" role="group" aria-label="Tipo di vulcano"></div>
+<section id="p-vulcani" data-intero class="hide">
+ <div class="margini solo-pagina" id="tipiV" role="group" aria-label="Tipo di vulcano"></div>
  <div class="layout">
   <div>
    <div class="stage" id="stageV">
-    <div class="cap" id="capV">Modello in sezione, non in scala</div>
-    <button class="comando-scena" id="vReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
-    <button class="comando-scena" id="vPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
-    <button class="comando-scena" id="vMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+    <div class="cap solo-pagina" id="capV">Modello in sezione, non in scala</div>
+    <button class="comando-scena" id="vIntero" style="right:8px;top:8px;z-index:3"></button>
+    <button class="comando-scena" id="vReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
+    <button class="comando-scena" id="vPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:92px;z-index:3">+</button>
+    <button class="comando-scena" id="vMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:134px;z-index:3">&minus;</button>
    </div>
+   <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+   <div class="csel" id="vSel"><button class="freccia" data-d="-1" aria-label="Vulcano precedente" title="Vulcano precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome" id="vNome"></span><button class="freccia" data-d="1" aria-label="Vulcano successivo" title="Vulcano successivo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+   <p class="cdesc" id="vDesc"></p>
    <div class="tempo">
     <button class="play" id="vPlay" aria-label="Avvia" title="Avvia"></button>
     <div class="barra">
@@ -229,17 +309,17 @@ button{font-family:inherit}
      <div class="estremi"><span id="vIni">inizio</span><span id="vFin">fine</span></div>
     </div>
    </div>
-   <p class="fase" id="faseV" aria-live="polite"></p>
+   <p class="fase solo-pagina" id="faseV" aria-live="polite"></p>
    <details class="opzioni">
     <summary><b>Opzioni</b></summary>
     <button class="levetta" role="switch" id="vEt" aria-checked="true">Etichette</button>
    </details>
   </div>
-  <aside>
+  <aside class="solo-pagina">
    <div class="card" aria-live="polite"><h2 id="vT"></h2><p id="vD" style="margin:0"></p></div>
    <div class="card"><div class="sect">Che cosa c'è da sapere</div><div class="chips" id="partiV" style="margin:0"></div></div>
    <div class="anchor" id="ancoraV"></div>
-   <div class="proft"><img src="../immagini/prof_t/prof_t_geologo_vulcano.webp" alt="Prof. T geologo"><div class="fumetto">Premi il pulsante rotondo per far partire l'eruzione. Tocca un elemento per capire com'è fatto il vulcano.</div></div>
+   <div class="proft"><img src="../immagini/prof_t/prof_t_geologo_vulcano.webp" alt="Prof. T geologo"><div class="fumetto">Premi il pulsante rotondo per far partire l'eruzione. Tocca un elemento per capire com'è fatto il vulcano. Prova anche la modalità console, in alto a destra nella scena.</div></div>
   </aside>
  </div>
 </section>
@@ -1789,6 +1869,27 @@ function scheda(n,blocco){
 navS.addEventListener('click',function(e){var b=e.target.closest('[data-s]');if(b&&!b.disabled)scheda(+b.dataset.s);});
 precarica(['../immagini/prof_t/prof_t_geologo_lente.webp','../immagini/prof_t/prof_t_geologo_vulcano.webp','../immagini/prof_t/prof_t_geologo_sismogramma.webp'].concat(Object.keys(QIMG).map(function(k){return QIMG[k];})));
 scheda(1);
+/* ---- modalità console delle schede 01, 02, 03 ----
+   Le frecce toccano il chip vicino (luogo, margine, vulcano); nome e descrizione copiano la striscia e il riquadro della pagina. */
+function selConsole(sel,chips,nome,desc,t,d,vuoto){
+ var C=$(chips);
+ function agg(){
+  var a=C.querySelector('.attivo');$(nome).textContent=a?a.firstChild.textContent.trim():vuoto;
+  var p=$(desc);p.textContent='';var tt=$(t).textContent.trim();
+  if(tt){var b=document.createElement('b');b.textContent=tt+' ';p.appendChild(b);}
+  p.appendChild(document.createTextNode($(d).textContent));}
+ $(sel).addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;
+  var k=Array.prototype.filter.call(C.children,function(c){return !c.disabled;}),n=k.length;if(!n)return;
+  var i=k.indexOf(C.querySelector('.attivo')),dd=+b.dataset.d;k[i<0?(dd>0?0:n-1):(i+dd+n)%n].click();});
+ var mo=new MutationObserver(agg);
+ [C,$(t),$(d)].forEach(function(x){mo.observe(x,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});});
+ agg();}
+selConsole('gSel','luoghi','gNome','gDesc','gT','gD','Scegli un luogo');
+selConsole('bSel','margini','bNome','bDesc','infoT','infoD','');
+selConsole('vSel','tipiV','vNome','vDesc','vT','vD','');
+schermoIntero($('p-globo'),$('gIntero'));
+schermoIntero($('p-margini'),$('bIntero'));
+schermoIntero($('p-vulcani'),$('vIntero'));
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Tettonica delle placche, vulcani e terremoti in 3D. Il globo con terremoti, vulcani, placche ed età dei fondali, i margini delle placche con sei esempi veri, quattro tipi di vulcano, le faglie, magnitudo e intensità, la ricerca dell'epicentro e dieci domande per allenarsi.</p>
