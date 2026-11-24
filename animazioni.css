@@ -347,6 +347,28 @@ input[readonly][inputmode="none"] { caret-color: transparent; }
 .fonti a:hover,
 .fonti a:focus-visible { color: #c6d4ea; text-decoration-color: currentColor; }
 
+/* ---------- Schermo intero di una scheda (dal 24 nov 2026) ---------- */
+/* Il blocco della scheda porta data-intero; il pulsante e la logica sono in schermoIntero()
+   di animazioni.js. A schermo intero il blocco riempie la finestra: dentro restano la scena
+   e tutti i comandi (chip, barra del tempo, opzioni); il testo si nasconde con .solo-pagina.
+   .solo-intero compare solo a schermo intero (es. il nome della fase). La disposizione
+   dei comandi la decide ogni animazione con le regole .intero nel proprio stile. */
+.comando-intero svg { width: 18px; height: 18px; display: block; fill: none; stroke: currentColor;
+  stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+html.in-intero, html.in-intero body { overflow: hidden; }
+html.in-intero .torna-sito { display: none !important; }
+[data-intero].intero {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  margin: 0;
+  box-sizing: border-box;
+  background: #0a0f1a;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+[data-intero].intero .solo-pagina { display: none !important; }
+[data-intero]:not(.intero) .solo-intero { display: none !important; }
+
 @media (prefers-reduced-motion: reduce) {
   .levetta::after { transition: none; }
   .azione:active:not(:disabled) { transform: none; }

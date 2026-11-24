@@ -107,3 +107,57 @@ function tastierinaCollega(pad, campo, op) {
     inp.dispatchEvent(new Event('input', { bubbles: true }));
   };
 }
+
+/* ---------- Schermo intero di una scheda (dal 24 nov 2026) ----------
+   schermoIntero(blocco, pulsante, alCambio) porta a schermo intero il blocco (con data-intero)
+   e fa funzionare il pulsante nell'angolo della scena (entra ed esce, cambia l'icona).
+   Dove il browser lo permette usa lo schermo intero vero, che nasconde anche le barre del browser;
+   altrimenti (iPhone) il blocco riempie solo la finestra. Si esce con il pulsante, con Esc
+   e con il tasto o il gesto indietro del telefono. alCambio(dentro) avvisa l'animazione,
+   che ridimensiona la scena. Stile in animazioni.css. */
+function schermoIntero(blocco, pulsante, alCambio) {
+  var APRI = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>',
+      CHIUDI = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
+  var dentro = false, storia = false;
+  var vero = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  function elementoVero() { return document.fullscreenElement || document.webkitFullscreenElement; }
+  function aggiorna(on) {
+    dentro = on;
+    blocco.classList.toggle('intero', on);
+    document.documentElement.classList.toggle('in-intero', on);
+    var t = on ? 'Esci dallo schermo intero' : 'Schermo intero';
+    pulsante.innerHTML = on ? CHIUDI : APRI;
+    pulsante.title = t;
+    pulsante.setAttribute('aria-label', t);
+    if (alCambio) alCambio(on);
+  }
+  /* nello schermo intero simulato una voce nella cronologia: il gesto indietro chiude solo lo schermo intero */
+  function segnaStoria() { history.pushState({ intero: 1 }, ''); storia = true; }
+  function entra() {
+    aggiorna(true);
+    var chiedi = blocco.requestFullscreen || blocco.webkitRequestFullscreen;
+    if (vero && chiedi) {
+      try {
+        var p = chiedi.call(blocco);
+        if (p && p.catch) p.catch(segnaStoria);
+      } catch (e) { segnaStoria(); }
+    } else segnaStoria();
+  }
+  function esci() {
+    if (elementoVero()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+    if (storia) { storia = false; history.back(); return; }   /* popstate chiude */
+    aggiorna(false);
+  }
+  pulsante.classList.add('comando-intero');
+  pulsante.addEventListener('click', function () { if (dentro) esci(); else entra(); });
+  function cambioVero() {
+    if (!elementoVero() && dentro && !storia) aggiorna(false);
+    else if (dentro) setTimeout(function () { if (alCambio) alCambio(true); }, 60);
+  }
+  document.addEventListener('fullscreenchange', cambioVero);
+  document.addEventListener('webkitfullscreenchange', cambioVero);
+  window.addEventListener('popstate', function () { if (dentro && !elementoVero()) { storia = false; aggiorna(false); } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && dentro && !elementoVero()) esci(); });
+  aggiorna(false);
+  return { esci: esci, dentro: function () { return dentro; } };
+}
