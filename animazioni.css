@@ -353,7 +353,7 @@ input[readonly][inputmode="none"] { caret-color: transparent; }
    e tutti i comandi (chip, barra del tempo, opzioni); il testo si nasconde con .solo-pagina.
    .solo-intero compare solo a schermo intero (es. il nome della fase). La disposizione
    dei comandi la decide ogni animazione con le regole .intero nel proprio stile. */
-.comando-intero svg { width: 18px; height: 18px; display: block; fill: none; stroke: currentColor;
+.comando-scena svg.icona { width: 18px; height: 18px; display: block; fill: none; stroke: currentColor;
   stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 html.in-intero, html.in-intero body { overflow: hidden; }
 html.in-intero .torna-sito { display: none !important; }

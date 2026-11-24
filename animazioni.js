@@ -116,13 +116,16 @@ function tastierinaCollega(pad, campo, op) {
    e con il tasto o il gesto indietro del telefono. alCambio(dentro) avvisa l'animazione,
    che ridimensiona la scena. Stile in animazioni.css. */
 function schermoIntero(blocco, pulsante, alCambio) {
-  var APRI = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>',
-      CHIUDI = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
+  var APRI = '<svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>',
+      CHIUDI = '<svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
   var dentro = false, storia = false;
   var vero = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
   function elementoVero() { return document.fullscreenElement || document.webkitFullscreenElement; }
+  /* a schermo intero la pagina dichiara viewport-fit=cover: così il telefono comunica lo spazio di tacca e fotocamera */
+  var vp = document.querySelector('meta[name=viewport]'), vpBase = vp ? vp.getAttribute('content') : '';
   function aggiorna(on) {
     dentro = on;
+    if (vp) vp.setAttribute('content', on ? vpBase + ', viewport-fit=cover' : vpBase);
     blocco.classList.toggle('intero', on);
     document.documentElement.classList.toggle('in-intero', on);
     var t = on ? 'Esci dallo schermo intero' : 'Schermo intero';
@@ -148,7 +151,6 @@ function schermoIntero(blocco, pulsante, alCambio) {
     if (storia) { storia = false; history.back(); return; }   /* popstate chiude */
     aggiorna(false);
   }
-  pulsante.classList.add('comando-intero');
   pulsante.addEventListener('click', function () { if (dentro) esci(); else entra(); });
   function cambioVero() {
     if (!elementoVero() && dentro && !storia) aggiorna(false);

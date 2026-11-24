@@ -94,23 +94,45 @@ button{font-family:inherit}
 .duo button[data-t=veg].attivo{background:#6fd08c;color:#0a1a10;font-weight:700}
 .duo button:focus-visible{outline:2px solid #fff;outline-offset:-2px}
 @media(max-width:400px){.duo button{font-size:13px;padding:6px 9px}}
-/* schermo intero della mitosi: scena sopra, sotto una fascia con chip delle fasi, nome della fase e barra del tempo */
-.layout.intero{display:flex;flex-direction:column;align-items:stretch;gap:0}
-.layout.intero>div,.layout.intero>aside{display:contents}
-.layout.intero .stage{order:0;flex:1;min-height:0;height:auto;border:0;border-radius:0}
-.layout.intero .card{order:1;background:none;border:0;padding:10px 12px 0;margin:0}
-.layout.intero .fasi{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;justify-content:safe center}
-.layout.intero .fasi::-webkit-scrollbar{display:none}
-.layout.intero .fasi .chip{flex:none}
-.nome-fase{order:2;margin:8px 14px 0;font-size:14px;font-weight:700;color:var(--disciplina);line-height:1.2}
-.layout.intero .tempo{order:3;margin:6px 14px 10px}
-/* telefono in orizzontale: chip e barra del tempo sulla stessa riga, per lasciare più altezza alla scena */
-@media(orientation:landscape) and (max-height:500px){
- .layout.intero{display:grid;grid-template-columns:minmax(0,auto) minmax(200px,1fr);grid-template-rows:minmax(0,1fr) auto auto;align-items:center}
- .layout.intero .stage{grid-area:1/1/2/3;align-self:stretch}
- .nome-fase{grid-area:2/1/3/3;margin-top:6px}
- .layout.intero .card{grid-area:3/1/4/2;padding:4px 0 8px 12px}
- .layout.intero .tempo{grid-area:3/2/4/3;margin:4px 14px 8px 4px}}
+/* schermo intero della mitosi, stile console: la scena occupa tutto, i comandi stanno su pannelli scuri sopra il bianco.
+   Verticale: pannello in basso con selettore della fase e barra del tempo. Orizzontale (telefono, desktop, LIM):
+   colonna sinistra con fase e tipo di cellula, colonna destra con play e comandi della vista, barra in basso. */
+.selettore,.pannello-d{display:none}
+.layout.intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--pan:rgba(17,26,43,.92);--bordo:#2a3850;display:block}
+.layout.intero>div,.layout.intero>aside,.layout.intero .tempo{display:contents}
+.layout.intero .stage{position:absolute;inset:0;height:auto;border:0;border-radius:0}
+.layout.intero .selettore{display:flex;align-items:center;justify-content:space-between;position:absolute;z-index:4}
+.layout.intero .pannello-d{display:block;position:absolute;z-index:2;background:var(--pan);border:1px solid var(--bordo);border-radius:16px}
+.freccia{width:44px;height:44px;border:0;border-radius:12px;background:#1e2a3c;color:#e6ecf5;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.freccia svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.freccia:focus-visible{outline:2px solid var(--disciplina);outline-offset:2px}
+.nome-fase{font-size:17px;font-weight:700;color:var(--disciplina);text-align:center;flex:1;line-height:1.2}
+.layout.intero .play{position:absolute;z-index:4}
+.layout.intero .barra{position:absolute;z-index:4}
+.layout.intero .duo{top:calc(12px + var(--st));left:calc(12px + var(--sl))}
+.layout.intero #mIntero{top:calc(12px + var(--st))!important;right:calc(12px + var(--sr))!important}
+.layout.intero [data-v=reset]{top:calc(54px + var(--st))!important;right:calc(12px + var(--sr))!important}
+.layout.intero [data-v=piu]{top:calc(96px + var(--st))!important;right:calc(12px + var(--sr))!important}
+.layout.intero [data-v=meno]{top:calc(138px + var(--st))!important;right:calc(12px + var(--sr))!important}
+/* verticale */
+.layout.intero .pannello-d{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));height:118px}
+.layout.intero .selettore{left:calc(22px + var(--sl));right:calc(22px + var(--sr));bottom:calc(76px + var(--sb))}
+.layout.intero .play{left:calc(24px + var(--sl));bottom:calc(22px + var(--sb))}
+.layout.intero .barra{left:calc(86px + var(--sl));right:calc(26px + var(--sr));bottom:calc(24px + var(--sb))}
+@media(orientation:landscape){
+ .layout.intero .selettore{flex-direction:column;justify-content:center;gap:14px;left:calc(12px + var(--sl));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));right:auto;width:132px;padding:0 8px 64px;box-sizing:border-box;background:var(--pan);border:1px solid var(--bordo);border-radius:16px;z-index:2}
+ .layout.intero .selettore .freccia svg{transform:rotate(90deg)}
+ .layout.intero .nome-fase{flex:none}
+ .layout.intero .duo{top:auto;bottom:calc(24px + var(--sb));left:calc(20px + var(--sl));width:116px;flex-direction:column;border-radius:12px}
+ .layout.intero .duo button{font-size:13px;padding:7px 6px}
+ .layout.intero .duo button+button{border-left:0;border-top:1px solid #3a4d70}
+ .layout.intero .pannello-d{left:auto;width:84px;top:calc(12px + var(--st));height:auto}
+ .layout.intero #mIntero{top:calc(22px + var(--st))!important;right:calc(36px + var(--sr))!important}
+ .layout.intero [data-v=reset]{top:calc(64px + var(--st))!important;right:calc(36px + var(--sr))!important}
+ .layout.intero [data-v=piu]{top:auto!important;bottom:calc(64px + var(--sb));right:calc(36px + var(--sr))!important}
+ .layout.intero [data-v=meno]{top:auto!important;bottom:calc(22px + var(--sb));right:calc(36px + var(--sr))!important}
+ .layout.intero .play{left:auto;right:calc(30px + var(--sr));bottom:auto;top:50%;margin-top:-24px}
+ .layout.intero .barra{left:calc(160px + var(--sl));right:calc(112px + var(--sr));bottom:calc(12px + var(--sb));background:var(--pan);border:1px solid var(--bordo);border-radius:14px;padding:4px 14px 6px}}
 table.conf{width:100%;border-collapse:collapse;font-size:14px}
 table.conf th,table.conf td{border-top:1px solid var(--line);padding:5px 4px;text-align:left;vertical-align:top}
 table.conf th{color:var(--mut);font-weight:400}
@@ -138,7 +160,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
   <div>
    <div class="stage" id="st-dna">
     <div class="cap">Modello stilizzato, non in scala, con pochi cromosomi</div>
-    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
     <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
     <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
    </div>
@@ -160,7 +182,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
   <div>
    <div class="stage" id="st-ciclo">
     <div class="cap">Modello stilizzato con 4 cromosomi</div>
-    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
     <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
     <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
    </div>
@@ -183,11 +205,12 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
     <div class="cap solo-pagina">Modello stilizzato con 4 cromosomi</div>
     <div class="duo" id="mTipo" role="group" aria-label="Tipo di cellula"><button class="attivo" data-t="ani" aria-pressed="true">Cellula animale</button><button data-t="veg" aria-pressed="false">Cellula piante</button></div>
     <button class="comando-scena" id="mIntero" style="right:8px;top:8px;z-index:3"></button>
-    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3">&#10226;</button>
+    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
     <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:92px;z-index:3">+</button>
     <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:134px;z-index:3">&minus;</button>
    </div>
-   <p class="nome-fase solo-intero" id="mNome" aria-hidden="true"></p>
+   <div class="selettore" id="mSel"><button class="freccia" data-d="-1" aria-label="Fase precedente" title="Fase precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="nome-fase" id="mNome"></span><button class="freccia" data-d="1" aria-label="Fase successiva" title="Fase successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+   <div class="pannello-d" aria-hidden="true"></div>
    <div class="tempo">
     <button class="play" id="mPlay"></button>
     <div class="barra">
@@ -199,7 +222,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
   </div>
   <aside>
    <div class="proft solo-pagina"><img id="pf-mitosi" src="../immagini/prof_t/prof_t_biologo_cromosomi.webp" alt="Prof. T biologo"><div class="fumetto" id="fu-mitosi">Premi il pulsante rotondo e guarda la cellula dividersi. Puoi anche trascinare il cursore.</div></div>
-   <div class="card"><div class="sect solo-pagina">Le fasi</div><div class="fasi chips" id="mFasi" style="margin:0"></div></div>
+   <div class="card solo-pagina"><div class="sect">Le fasi</div><div class="fasi chips" id="mFasi" style="margin:0"></div></div>
    <div class="anchor solo-pagina">Con la mitosi da una cellula nascono due cellule figlie identiche, con lo stesso numero di cromosomi.</div>
   </aside>
  </div>
@@ -211,7 +234,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
   <div>
    <div class="stage" id="st-meiosi">
     <div class="cap">Modello stilizzato con 2 coppie di cromosomi</div>
-    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
     <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
     <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
    </div>
@@ -655,7 +678,7 @@ function Film(o){
   $(o.range).value=Math.round(F.u*1000);
   var f=Math.min(n-1,Math.floor(F.u*n)),fine=F.u>=1,h=fine?o.fine:'<b>'+o.fasi[f].n+'.</b> '+o.fasi[f].d;
   if($(o.fase).innerHTML!==h)$(o.fase).innerHTML=h;
-  if(o.nome){var nm=fine?'Fine':o.fasi[f].n;if($(o.nome).textContent!==nm)$(o.nome).textContent=nm;}
+  if(o.nome){var nm=fine?'Fine':o.fasi[f].n;if($(o.nome).textContent!==nm)$(o.nome).textContent=nm;$(o.nome).dataset.f=fine?n-1:f;}
   if(o.chips)Array.prototype.forEach.call($(o.chips).children,function(b){b.classList.toggle('attivo',+b.dataset.f===f&&F.u>0);});
   if(fine&&F.visto){$(o.img).src=IMG.fine;$(o.fum).textContent=o.fumFine;}
   var s=F.play?'ferma':(F.u>=1?'rifai':'vai');
@@ -673,6 +696,7 @@ var modM=vM?Divisione(vM,chiaviMitosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1],3
 var filmM=Film({fasi:FASI_M,fine:FINE_M,mod:modM,vista:vM,range:'mTempo',play:'mPlay',fase:'mFase',nome:'mNome',chips:'mFasi',img:'pf-mitosi',fum:'fu-mitosi',
  fumFine:'Due cellule identiche alla madre. Così crescono i tessuti e si sostituiscono le cellule vecchie.'});
 filmM.agg();
+$('mSel').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;var c=$('mFasi').querySelector('[data-f="'+(+$('mNome').dataset.f+(+b.dataset.d))+'"]');if(c)c.click();});
 schermoIntero($('iMitosi'),$('mIntero'),function(){if(R&&cur===vM){ridimensiona();requestAnimationFrame(ridimensiona);}});
 $('mTipo').addEventListener('click',function(e){var b=e.target.closest('[data-t]');if(!b)return;var t=b.dataset.t;
  Array.prototype.forEach.call(this.children,function(x){var on=x===b;x.classList.toggle('attivo',on);x.setAttribute('aria-pressed',on);});
