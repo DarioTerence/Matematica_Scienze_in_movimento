@@ -33,6 +33,65 @@ h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px}
 .sub{color:var(--muted);margin:0 0 14px}
 .lbl:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .grid{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;align-items:start}
+/* ---- modalità console della scheda 01 (24 nov 2026), comandi stile controller ----
+   Orizzontale: colonna sinistra con Per composizione / Per rigidità, croce degli strati e descrizione;
+   colonna destra con uscita, Reset vista, Ruota (tasto tondo grande), Sposta, − e + (tasti tondi piccoli), Opzioni.
+   Verticale: modalità in alto, pannello in basso con croce, descrizione e tasti tondi. */
+.csel,.cpan,.cdesc{display:none}
+#p-spicchi.intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--pan:#232b3b;--bordo:#2a3850}
+#p-spicchi.intero .grid,#p-spicchi.intero .grid>div,#p-spicchi.intero .panel,#p-spicchi.intero .ctl{display:contents}
+#p-spicchi.intero #stage{position:absolute;inset:0;height:auto;z-index:auto;aspect-ratio:auto;min-height:0;border:0;border-radius:0;overflow:visible}
+#p-spicchi.intero .cpan{display:block;position:absolute;z-index:2;background:var(--pan);border:1px solid var(--bordo);border-radius:16px}
+#p-spicchi.intero .csel{display:flex;align-items:center;position:absolute;z-index:4}
+#p-spicchi.intero .cdesc{display:block;position:absolute;z-index:4;margin:0;color:#c8d3e3;font-size:13px;line-height:1.35;overflow:auto}
+.freccia{width:44px;height:44px;border:0;color:#e6ecf5;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.freccia svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.cnome{flex:1;text-align:center;font-size:16px;font-weight:700;color:#d2bcff;line-height:1.2}
+#p-spicchi.intero .modalita{position:absolute;z-index:4;margin:0;max-width:none}
+#p-spicchi.intero .opzioni{position:absolute;z-index:5;margin:0;background:var(--pan);border-color:var(--bordo)}
+#p-spicchi.intero .opzioni summary{padding:10px 14px;gap:8px}
+#p-spicchi.intero .opzioni[open] summary::after{content:"\2715"}
+#p-spicchi.intero .cb{position:absolute;z-index:4;border-radius:50%;width:44px;height:44px;min-width:0;padding:0;font-size:11px;background:#1a2333;border:1px solid #34476b;color:#e6ecf5;box-shadow:inset 0 -3px 0 rgba(0,0,0,.35)}
+#p-spicchi.intero .cb:active{transform:translateY(1px);box-shadow:none}
+#p-spicchi.intero #cPiu,#p-spicchi.intero #cMeno{font-size:20px}
+#p-spicchi.intero #bReset svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:block;margin:auto}
+#p-spicchi.intero .cb.on{background:var(--acc);color:#0a0f1a;border-color:transparent}
+#p-spicchi.intero #cRuota{width:58px;height:58px;font-size:12px}
+@media(orientation:portrait){
+ #p-spicchi.intero .cpan.sx,#p-spicchi.intero .cpan.dx{display:none}
+ #p-spicchi.intero .modalita{top:calc(12px + var(--st));left:calc(12px + var(--sl));right:calc(60px + var(--sr))}
+ #p-spicchi.intero #sIntero{top:calc(12px + var(--st))!important;right:calc(12px + var(--sr))!important}
+ #p-spicchi.intero #bReset{top:calc(54px + var(--st));right:calc(12px + var(--sr));width:36px;height:36px}
+ #p-spicchi.intero .opzioni{top:calc(62px + var(--st));left:calc(12px + var(--sl));width:150px}
+ #p-spicchi.intero .opzioni[open]{width:auto;right:calc(60px + var(--sr))}
+ #p-spicchi.intero .badge{display:none}
+ #p-spicchi.intero .cpan.basso{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));height:184px}
+ #p-spicchi.intero .csel{left:calc(20px + var(--sl));right:calc(20px + var(--sr));bottom:calc(138px + var(--sb))}
+ #p-spicchi.intero .cdesc{left:calc(26px + var(--sl));right:calc(26px + var(--sr));bottom:calc(88px + var(--sb));max-height:44px}
+ #p-spicchi.intero #cMeno{left:calc(24px + var(--sl));bottom:calc(26px + var(--sb))}
+ #p-spicchi.intero #cPiu{left:calc(76px + var(--sl));bottom:calc(26px + var(--sb))}
+ #p-spicchi.intero #cSposta{right:calc(94px + var(--sr));bottom:calc(26px + var(--sb))}
+ #p-spicchi.intero #cRuota{right:calc(26px + var(--sr));bottom:calc(20px + var(--sb))}}
+@media(orientation:landscape){
+ #p-spicchi.intero #stage{left:calc(236px + var(--sl));right:calc(164px + var(--sr))}
+ #p-spicchi.intero .cpan.sx{left:calc(12px + var(--sl));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:220px}
+ #p-spicchi.intero .cpan.dx{right:calc(12px + var(--sr));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:148px}
+ #p-spicchi.intero .cpan.basso{display:none}
+ #p-spicchi.intero .modalita{left:calc(24px + var(--sl));width:196px;top:calc(22px + var(--st));flex-direction:column;border-radius:14px}
+ #p-spicchi.intero .modalita button{padding:7px 10px;font-size:14px}
+ #p-spicchi.intero .csel{flex-direction:column;left:calc(24px + var(--sl));width:196px;top:calc(110px + var(--st))}
+ #p-spicchi.intero .cnome{flex:none;width:100%;font-size:15px}
+ #p-spicchi.intero .cdesc{left:calc(26px + var(--sl));width:192px;top:calc(232px + var(--st));bottom:calc(22px + var(--sb))}
+ #p-spicchi.intero .badge{top:12px!important;right:auto;left:50%;transform:translateX(-50%)}
+ #p-spicchi.intero #sIntero{right:auto!important;left:calc(100% + 42px);top:calc(22px + var(--st))!important}
+ #p-spicchi.intero #bReset{left:calc(100% + 94px);top:calc(22px + var(--st));width:36px;height:36px}
+ #p-spicchi.intero #cRuota{left:calc(100% + 30px);top:calc(74px + var(--st))}
+ #p-spicchi.intero #cSposta{left:calc(100% + 96px);top:calc(81px + var(--st))}
+ #p-spicchi.intero #cMeno{left:calc(100% + 36px);top:calc(146px + var(--st))}
+ #p-spicchi.intero #cPiu{left:calc(100% + 92px);top:calc(146px + var(--st))}
+ #p-spicchi.intero .opzioni{right:calc(20px + var(--sr));top:auto;bottom:calc(20px + var(--sb));width:132px;max-height:calc(100% - 230px - var(--st) - var(--sb));overflow:auto}
+ #p-spicchi.intero .csel .freccia svg{transform:rotate(90deg)}
+ #p-spicchi.intero .opzioni[open]{width:260px}}
 .grid>*{min-width:0}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
 .hint{color:var(--muted);font-size:14px;margin:8px 2px 0}
@@ -152,24 +211,28 @@ input[type=range]{accent-color:var(--acc);height:28px}
   <button class="scheda" role="tab" id="t-allenati" aria-selected="false" aria-controls="p-allenati"><span class="num">04</span>Allenati</button>
  </div>
 
- <section id="p-spicchi" role="tabpanel" aria-labelledby="t-spicchi">
+ <section id="p-spicchi" role="tabpanel" aria-labelledby="t-spicchi" data-intero>
   <div class="modalita" role="group" aria-label="Tipo di suddivisione">
    <button id="mComp" class="on" aria-pressed="true">Per composizione</button>
    <button id="mRig" aria-pressed="false">Per rigidità</button>
   </div>
+  <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+  <div class="csel" id="sSel"><button class="freccia" data-d="-1" aria-label="Strato precedente" title="Strato precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome" id="sNome"></span><button class="freccia" data-d="1" aria-label="Strato successivo" title="Strato successivo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+  <p class="cdesc" id="sDesc"></p>
   <div class="grid">
    <div>
     <div class="stage" id="stage">
+     <button class="comando-scena" id="sIntero" style="right:8px;top:8px;z-index:4"></button>
      <div class="lbls" id="lbls"></div>
-     <div class="ctl" role="group" aria-label="Comandi della vista"><button class="cb on" id="cRuota" aria-pressed="true">Ruota</button><button class="cb" id="cSposta" aria-pressed="false">Sposta</button><button class="cb" id="cPiu" aria-label="Avvicina">+</button><button class="cb" id="cMeno" aria-label="Allontana">&minus;</button><button class="cb" id="bReset" aria-label="Reset vista" title="Reset vista">&#10226;</button></div>
-     <div class="badge" id="badge">crosta e mantello superiore ingranditi</div>
-     <div class="cap" id="cap1">Trascina per ruotare, due dita per spostare, doppio tocco per avvicinarti.</div>
+     <div class="ctl" role="group" aria-label="Comandi della vista"><button class="cb on" id="cRuota" aria-pressed="true">Ruota</button><button class="cb" id="cSposta" aria-pressed="false">Sposta</button><button class="cb" id="cPiu" aria-label="Avvicina">+</button><button class="cb" id="cMeno" aria-label="Allontana">&minus;</button><button class="cb" id="bReset" aria-label="Reset vista" title="Reset vista"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button></div>
+     <div class="badge" id="badge" style="top:52px">crosta e mantello superiore ingranditi</div>
+     <div class="cap solo-pagina" id="cap1">Trascina per ruotare, due dita per spostare, doppio tocco per avvicinarti.</div>
     </div>
    </div>
    <aside class="panel">
-    <div class="sect">Strati</div>
-    <div class="chips" id="layerBtns" style="margin:0 0 12px"></div>
-    <div class="card" id="info" aria-live="polite"></div>
+    <div class="sect solo-pagina">Strati</div>
+    <div class="chips solo-pagina" id="layerBtns" style="margin:0 0 12px"></div>
+    <div class="card solo-pagina" id="info" aria-live="polite"></div>
     <details class="opzioni">
      <summary><b>Opzioni</b></summary>
      <button class="levetta on" role="switch" id="bOpen" aria-checked="true">Spicchio aperto</button>
@@ -666,8 +729,9 @@ void main(){
 const info=document.getElementById('info'),lb=document.getElementById('layerBtns');
 const GUIDE='<p class="hint" style="margin:0">Tocca uno strato o un pulsante.</p>';
 function showInfo(k){
- if(k<0){info.innerHTML=GUIDE;return}
- const L=LAYERS[k];
+ var sN=document.getElementById('sNome'),sD=document.getElementById('sDesc');
+ if(k<0){info.innerHTML=GUIDE;sN.textContent='Scegli uno strato';sN.style.color='';sD.textContent='Tocca uno strato o usa le frecce.';return}
+ const L=LAYERS[k];const lc='color-mix(in srgb,'+L.c+' 55%,#fff)';sN.textContent=L.n;sN.style.color=lc;sD.innerHTML='<b style="color:'+lc+'">'+L.stato+'.</b> '+L.t;
  info.innerHTML=`<h2>${L.n}</h2><span class="pill" style="color:${L.c};border-color:${L.c}">${L.stato}</span>`+
   `<dl class="dati">${L.dati.map(d=>`<dt>${d[0]}</dt><dd>${d[1]}</dd>`).join('')}</dl><p>${L.t}</p>`+
   (L.a?`<div class="ancora"><b>Attenzione</b>${L.a}</div>`:'');
@@ -694,6 +758,10 @@ if(window.terra){
  document.getElementById('cPiu').addEventListener('click',()=>T.zoom(.75));document.getElementById('cMeno').addEventListener('click',()=>T.zoom(1/.75));
  const setM=m=>{mode=m;tog(mComp,m===0);tog(mRig,m===1);T.setMode(m);buildBtns()};
  mComp.addEventListener('click',()=>setM(0));mRig.addEventListener('click',()=>setM(1));
+ /* modalità console: le frecce toccano il chip dello strato vicino (che porta la camera sullo strato) */
+ document.getElementById('sSel').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(!b)return;
+  const k=[...lb.children],n=k.length,i=k.findIndex(c=>+c.dataset.k===cur),d=+b.dataset.d;k[i<0?(d>0?0:n-1):(i+d+n)%n].click();});
+ schermoIntero(document.getElementById('p-spicchi'),document.getElementById('sIntero'));
 }
 /* ---------- Scheda 2: viaggio al centro ---------- */
 (function(){
