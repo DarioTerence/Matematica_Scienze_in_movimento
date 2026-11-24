@@ -1242,6 +1242,7 @@ function Globo(el){
 
  /* ---- vista: sul globo si gira intorno, sulla carta ci si sposta ---- */
  var C={th:.24,ph:.4,d:3.2,px:0,py:0},CT=null,e01=0,auto=false,pronta=false,asp=1.5;
+ var stretto=null;
  var dGlobo=function(){return asp>=1.15?3.2:3.2*1.15/asp;},dCarta=function(){return Math.max(Math.PI/(TAN20*asp),Math.PI/2/TAN20)*1.03;};
  var lim=function(){return GS.carta?[.5,dCarta()*1.15]:[1.45,dGlobo()*1.6];};
  function casa(){return GS.carta?{th:0,ph:0,d:dCarta(),px:0,py:0}:{th:C.th,ph:.4,d:dGlobo(),px:0,py:0};}
@@ -1258,7 +1259,9 @@ function Globo(el){
  var su=function(e){ptr.delete(e.pointerId);pd=0;};
  cv.addEventListener('pointerup',su);cv.addEventListener('pointercancel',su);
  cv.addEventListener('wheel',function(e){e.preventDefault();if(CT)return;var L=lim();C.d=clamp(C.d*Math.exp(e.deltaY*.0011),L[0],L[1]);},{passive:false});
- function resize(){var w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;var primo=asp===1.5&&!pronta;R.setSize(w,h,false);asp=w/h;cam.aspect=asp;cam.updateProjectionMatrix();if(!ptr.size&&!CT&&(e01===0||e01===1)){var L=lim();C.d=clamp(primo?casa().d:C.d,L[0],L[1]);}}
+ function resize(){var w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;var primo=asp===1.5&&!pronta;R.setSize(w,h,false);asp=w/h;cam.aspect=asp;cam.updateProjectionMatrix();if(!ptr.size&&!CT&&(e01===0||e01===1)){var L=lim();C.d=clamp(primo?casa().d:C.d,L[0],L[1]);}
+  /* scena molto stretta (telefono in verticale nella modalità console): quando la forma passa da larga a stretta o viceversa, il globo torna alla distanza giusta per quella forma */
+  var str=asp<.75;if(str!==stretto){if(stretto!==null&&!GS.carta&&!CT){var L2=lim();C.d=clamp(dGlobo(),L2[0],L2[1]);}stretto=str;}}
  if(window.ResizeObserver)new ResizeObserver(resize).observe(el);else window.addEventListener('resize',resize);
  resize();C.d=dGlobo();
 
