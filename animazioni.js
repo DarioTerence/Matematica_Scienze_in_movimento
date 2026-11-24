@@ -117,7 +117,7 @@ function tastierinaCollega(pad, campo, op) {
    che ridimensiona la scena. Per farla scoprire senza docenti:
    - finché non è mai stata usata su quel dispositivo il pulsante è una pillola dorata "Modalità console";
    - sul telefono, girandolo in orizzontale compare per qualche secondo l'invito "Modalità console?";
-   - all'ingresso il telefono resta nell'orientamento in cui si trova (solo dove il browser lo permette);
+   - l'orientamento non si blocca: dentro si può girare il telefono quando si vuole;
    - ogni ingresso è contato da GoatCounter come evento "console-<pagina>", senza dati personali.
    Stile in animazioni.css. */
 var CONSOLE_INVITO_MS = 4000;   /* durata dell'invito quando si gira il telefono */
@@ -149,12 +149,6 @@ function schermoIntero(blocco, pulsante, alCambio) {
   }
   /* nello schermo intero simulato una voce nella cronologia: il gesto indietro chiude solo lo schermo intero */
   function segnaStoria() { history.pushState({ intero: 1 }, ''); storia = true; }
-  function bloccaOrientamento() {
-    try {
-      var o = screen.orientation;
-      if (TOUCH && o && o.lock) { var p = o.lock(o.type.indexOf('landscape') === 0 ? 'landscape' : 'portrait'); if (p && p.catch) p.catch(function () {}); }
-    } catch (e) {}
-  }
   function conta() {
     try {
       if (window.goatcounter && goatcounter.count) {
@@ -171,12 +165,11 @@ function schermoIntero(blocco, pulsante, alCambio) {
     if (vero && chiedi) {
       try {
         var p = chiedi.call(blocco);
-        if (p && p.then) p.then(bloccaOrientamento, segnaStoria);
+        if (p && p.catch) p.catch(segnaStoria);
       } catch (e) { segnaStoria(); }
     } else segnaStoria();
   }
   function esci() {
-    try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
     if (elementoVero()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
     if (storia) { storia = false; history.back(); return; }   /* popstate chiude */
     aggiorna(false);
