@@ -129,7 +129,15 @@ function schermoIntero(blocco, pulsante, alCambio) {
   var vero = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
   function elementoVero() { return document.fullscreenElement || document.webkitFullscreenElement; }
   function usata() { try { return localStorage.getItem(CHIAVE) === '1'; } catch (e) { return false; } }
-  function segnaUsata() { try { localStorage.setItem(CHIAVE, '1'); } catch (e) {} }
+  function segnaUsata() {
+    try { localStorage.setItem(CHIAVE, '1'); } catch (e) {}
+    /* le altre schede della pagina perdono subito la pillola */
+    Array.prototype.forEach.call(document.querySelectorAll('.comando-console.pillola'), function (x) {
+      x.classList.remove('pillola');
+      var sp = x.querySelector('span');
+      if (sp) sp.remove();
+    });
+  }
   pulsante.classList.add('comando-console');
   /* a schermo intero la pagina dichiara viewport-fit=cover: così il telefono comunica lo spazio di tacca e fotocamera */
   var vp = document.querySelector('meta[name=viewport]'), vpBase = vp ? vp.getAttribute('content') : '';

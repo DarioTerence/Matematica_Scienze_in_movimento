@@ -110,10 +110,12 @@ button{font-family:inherit}
 .layout.intero .play{position:absolute;z-index:4}
 .layout.intero .barra{position:absolute;z-index:4}
 .layout.intero .duo{top:calc(12px + var(--st));left:calc(12px + var(--sl))}
-.layout.intero #mIntero{top:calc(12px + var(--st))!important;right:calc(12px + var(--sr))!important}
+.layout.intero .comando-console{top:calc(12px + var(--st))!important;right:calc(12px + var(--sr))!important}
 .layout.intero [data-v=reset]{top:calc(54px + var(--st))!important;right:calc(12px + var(--sr))!important}
 .layout.intero [data-v=piu]{top:calc(96px + var(--st))!important;right:calc(12px + var(--sr))!important}
 .layout.intero [data-v=meno]{top:calc(138px + var(--st))!important;right:calc(12px + var(--sr))!important}
+/* legenda dei colori (meiosi) al posto del chip divisa */
+.layout.intero .leg{position:absolute;z-index:4;margin:0;top:calc(12px + var(--st));left:calc(12px + var(--sl));background:var(--pan);border:1px solid var(--bordo);border-radius:12px;padding:6px 10px;color:#c8d3e3;font-size:13px}
 /* verticale */
 .layout.intero .pannello-d{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));height:118px}
 .layout.intero .selettore{left:calc(22px + var(--sl));right:calc(22px + var(--sr));bottom:calc(76px + var(--sb))}
@@ -127,11 +129,12 @@ button{font-family:inherit}
  .layout.intero .duo button{font-size:13px;padding:7px 6px}
  .layout.intero .duo button+button{border-left:0;border-top:1px solid #3a4d70}
  .layout.intero .pannello-d{left:auto;width:84px;top:calc(12px + var(--st));height:auto}
- .layout.intero #mIntero{top:calc(22px + var(--st))!important;right:calc(36px + var(--sr))!important}
+ .layout.intero .comando-console{top:calc(22px + var(--st))!important;right:calc(36px + var(--sr))!important}
  .layout.intero [data-v=reset]{top:calc(64px + var(--st))!important;right:calc(36px + var(--sr))!important}
  .layout.intero [data-v=piu]{top:auto!important;bottom:calc(64px + var(--sb));right:calc(36px + var(--sr))!important}
  .layout.intero [data-v=meno]{top:auto!important;bottom:calc(22px + var(--sb));right:calc(36px + var(--sr))!important}
  .layout.intero .play{left:auto;right:calc(30px + var(--sr));bottom:auto;top:50%;margin-top:-24px}
+ .layout.intero .leg{top:auto;bottom:calc(24px + var(--sb));left:calc(20px + var(--sl));width:116px;flex-direction:column;gap:6px;font-size:12px}
  .layout.intero .barra{left:calc(160px + var(--sl));right:calc(112px + var(--sr));bottom:calc(12px + var(--sb));background:var(--pan);border:1px solid var(--bordo);border-radius:14px;padding:4px 14px 6px}}
 table.conf{width:100%;border-collapse:collapse;font-size:14px}
 table.conf th,table.conf td{border-top:1px solid var(--line);padding:5px 4px;text-align:left;vertical-align:top}
@@ -230,14 +233,17 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
 
 <!-- 04 la meiosi -->
 <section id="p-meiosi" class="hide">
- <div class="layout">
+ <div class="layout" data-intero id="iMeiosi">
   <div>
    <div class="stage" id="st-meiosi">
-    <div class="cap">Modello stilizzato con 2 coppie di cromosomi</div>
-    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
-    <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
-    <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+    <div class="cap solo-pagina">Modello stilizzato con 2 coppie di cromosomi</div>
+    <button class="comando-scena" id="sIntero" style="right:8px;top:8px;z-index:3"></button>
+    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
+    <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:92px;z-index:3">+</button>
+    <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:134px;z-index:3">&minus;</button>
    </div>
+   <div class="selettore" id="sSel"><button class="freccia" data-d="-1" aria-label="Fase precedente" title="Fase precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="nome-fase" id="sNome"></span><button class="freccia" data-d="1" aria-label="Fase successiva" title="Fase successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+   <div class="pannello-d" aria-hidden="true"></div>
    <div class="tempo">
     <button class="play" id="sPlay"></button>
     <div class="barra">
@@ -245,12 +251,12 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
      <div class="estremi"><span>interfase</span><span>quattro cellule</span></div>
     </div>
    </div>
-   <p class="fase" id="sFase" aria-live="polite"></p>
+   <p class="fase solo-pagina" id="sFase" aria-live="polite"></p>
    <div class="leg"><span><i style="background:#D94F6A"></i>cromosoma madre</span><span><i style="background:#3F7FD9"></i>cromosoma padre</span></div>
   </div>
   <aside>
-   <div class="proft"><img id="pf-meiosi" src="../immagini/prof_t/prof_t_biologo_cromosomi.webp" alt="Prof. T biologo"><div class="fumetto" id="fu-meiosi">Premi il pulsante rotondo e segui i colori, rosso il cromosoma madre e blu il cromosoma padre.</div></div>
-   <div class="card"><div class="sect">Mitosi e meiosi a confronto</div>
+   <div class="proft solo-pagina"><img id="pf-meiosi" src="../immagini/prof_t/prof_t_biologo_cromosomi.webp" alt="Prof. T biologo"><div class="fumetto" id="fu-meiosi">Premi il pulsante rotondo e segui i colori, rosso il cromosoma madre e blu il cromosoma padre. Prova anche la modalità console, in alto a destra nella scena.</div></div>
+   <div class="card solo-pagina"><div class="sect">Mitosi e meiosi a confronto</div>
     <table class="conf"><thead><tr><th></th><th>Mitosi</th><th>Meiosi</th></tr></thead><tbody>
      <tr><th>Divisioni</th><td>una</td><td>due</td></tr>
      <tr><th>Cellule prodotte</th><td>2</td><td>4</td></tr>
@@ -258,7 +264,7 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
      <tr><th>Cellule figlie</th><td>identiche</td><td>in genere diverse</td></tr>
      <tr><th>Serve a</th><td>crescere e riparare</td><td>formare i gameti</td></tr>
     </tbody></table></div>
-   <div class="anchor">Con la meiosi una cellula produce quattro cellule con metà dei cromosomi, da cui si formano i gameti. Nell'uomo 23 invece di 46.</div>
+   <div class="anchor solo-pagina">Con la meiosi una cellula produce quattro cellule con metà dei cromosomi, da cui si formano i gameti. Nell'uomo 23 invece di 46.</div>
   </aside>
  </div>
 </section>
@@ -688,6 +694,7 @@ function Film(o){
  $(o.play).addEventListener('click',function(){if(F.play)F.play=false;else{if(F.u>=1)F.u=0;F.play=true;F.visto=true;}
   $(o.img).src=IMG.spiega;agg();});
  if(o.vista)o.vista.tick=function(dt){if(!F.play)return false;F.u=Math.min(1,F.u+(reduce?dt*3:dt)/(T_FASE*n));if(F.u>=1)F.play=false;agg();return true;};
+ F.vai=function(f){if(f<0||f>=n)return;F.play=false;F.u=(f+.999)/n;F.visto=true;agg();};
  F.agg=agg;return F;}
 
 /* ---- 03 mitosi ---- */
@@ -696,7 +703,8 @@ var modM=vM?Divisione(vM,chiaviMitosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1],3
 var filmM=Film({fasi:FASI_M,fine:FINE_M,mod:modM,vista:vM,range:'mTempo',play:'mPlay',fase:'mFase',nome:'mNome',chips:'mFasi',img:'pf-mitosi',fum:'fu-mitosi',
  fumFine:'Due cellule identiche alla madre. Così crescono i tessuti e si sostituiscono le cellule vecchie.'});
 filmM.agg();
-$('mSel').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;var c=$('mFasi').querySelector('[data-f="'+(+$('mNome').dataset.f+(+b.dataset.d))+'"]');if(c)c.click();});
+function selettore(id,nome,film){$(id).addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(b)film.vai(+$(nome).dataset.f+(+b.dataset.d));});}
+selettore('mSel','mNome',filmM);
 schermoIntero($('iMitosi'),$('mIntero'),function(){if(R&&cur===vM){ridimensiona();requestAnimationFrame(ridimensiona);}});
 $('mTipo').addEventListener('click',function(e){var b=e.target.closest('[data-t]');if(!b)return;var t=b.dataset.t;
  Array.prototype.forEach.call(this.children,function(x){var on=x===b;x.classList.toggle('attivo',on);x.setAttribute('aria-pressed',on);});
@@ -707,9 +715,11 @@ var vS=R?Vista('st-meiosi',{th:-.2,ph:1.4,rad:8.4,rmin:1.8,rmax:15}):null;
 var modS=vS?Divisione(vS,chiaviMeiosi(),[COL.mat,COL.pat,COL.mat,COL.pat],[-1,0,0],5):null;
 /* crossing-over: le punte dei cromatidi interni delle tetradi si scambiano il colore a metà della fase 2 */
 var INTERNI=[[0,0,COL.pat],[1,1,COL.mat],[2,1,COL.pat],[3,0,COL.mat]],U_CROSS=2.5/9;
-var filmS=Film({fasi:FASI_S,fine:FINE_S,mod:modS,vista:vS,range:'sTempo',play:'sPlay',fase:'sFase',chips:null,img:'pf-meiosi',fum:'fu-meiosi',
+var filmS=Film({fasi:FASI_S,fine:FINE_S,mod:modS,vista:vS,range:'sTempo',play:'sPlay',fase:'sFase',nome:'sNome',chips:null,img:'pf-meiosi',fum:'fu-meiosi',
  fumFine:'Quattro cellule diverse con metà dei cromosomi. Da queste si formano i gameti, che si uniscono nella fecondazione.',
  dopo:function(u){if(!modS)return;INTERNI.forEach(function(x){var c=modS.cr[x[0]*2+x[1]],orig=x[0]%2?COL.pat:COL.mat;c.mX.color.set(u>=U_CROSS?x[2]:orig);});}});
+selettore('sSel','sNome',filmS);
+schermoIntero($('iMeiosi'),$('sIntero'),function(){if(R&&cur===vS){ridimensiona();requestAnimationFrame(ridimensiona);}});
 
 /* ================= 02 CICLO CELLULARE ================= */
 var vC=R?Vista('st-ciclo',{th:-.25,ph:1.35,rad:6.6,rmin:1.8,rmax:14}):null;
