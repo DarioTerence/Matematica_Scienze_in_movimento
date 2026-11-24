@@ -98,7 +98,7 @@ button{font-family:inherit}
    Verticale: pannello in basso con selettore della fase e barra del tempo. Orizzontale (telefono, desktop, LIM):
    colonna sinistra con fase e tipo di cellula, colonna destra con play e comandi della vista, barra in basso. */
 .selettore,.pannello-d{display:none}
-.layout.intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--pan:rgba(17,26,43,.92);--bordo:#2a3850;display:block}
+.layout.intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--pan:#232b3b;--bordo:#2a3850;display:block}
 .layout.intero>div,.layout.intero>aside,.layout.intero .tempo{display:contents}
 .layout.intero .stage{position:absolute;inset:0;height:auto;border:0;border-radius:0}
 .layout.intero .selettore{display:flex;align-items:center;justify-content:space-between;position:absolute;z-index:4}
@@ -136,6 +136,21 @@ button{font-family:inherit}
  .layout.intero .play{left:auto;right:calc(30px + var(--sr));bottom:auto;top:50%;margin-top:-24px}
  .layout.intero .leg{top:auto;bottom:calc(24px + var(--sb));left:calc(20px + var(--sl));width:116px;flex-direction:column;gap:6px;font-size:12px}
  .layout.intero .barra{left:calc(160px + var(--sl));right:calc(112px + var(--sr));bottom:calc(12px + var(--sb));background:var(--pan);border:1px solid var(--bordo);border-radius:14px;padding:4px 14px 6px}}
+/* schede senza barra del tempo (01 livelli, 02 ciclo): pannello più basso; 02 con l'anello come quadrante */
+.layout.intero .card.ciclo{position:absolute;z-index:4;margin:0;padding:0;background:none;border:0}
+.layout.intero .ciclo svg{max-width:none}
+.layout.intero .ciclo text{font-size:26px}
+.layout.intero .ciclo text.fuori{display:none}
+@media(orientation:portrait){
+ .layout.intero.senza-tempo .pannello-d{height:68px}
+ .layout.intero.senza-tempo .selettore{bottom:calc(24px + var(--sb))}
+ .layout.intero.con-anello .pannello-d{height:176px}
+ .layout.intero.con-anello .card.ciclo{left:calc(22px + var(--sl));bottom:calc(24px + var(--sb));width:152px}
+ .layout.intero.con-anello .selettore{left:calc(186px + var(--sl));bottom:calc(78px + var(--sb))}}
+@media(orientation:landscape){
+ .layout.intero.senza-tempo .selettore{padding-bottom:0}
+ .layout.intero.con-anello .selettore{justify-content:flex-start;padding-top:150px}
+ .layout.intero.con-anello .card.ciclo{left:calc(23px + var(--sl));top:calc(24px + var(--st));width:110px}}
 table.conf{width:100%;border-collapse:collapse;font-size:14px}
 table.conf th,table.conf td{border-top:1px solid var(--line);padding:5px 4px;text-align:left;vertical-align:top}
 table.conf th{color:var(--mut);font-weight:400}
@@ -159,43 +174,49 @@ table.conf thead th{border-top:0;color:var(--disciplina);font-weight:700}
 
 <!-- 01 dal DNA ai cromosomi -->
 <section id="p-dna">
- <div class="layout">
+ <div class="layout senza-tempo" data-intero id="iDna">
   <div>
    <div class="stage" id="st-dna">
-    <div class="cap">Modello stilizzato, non in scala, con pochi cromosomi</div>
-    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
-    <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
-    <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+    <div class="cap solo-pagina">Modello stilizzato, non in scala, con pochi cromosomi</div>
+    <button class="comando-scena" id="dIntero" style="right:8px;top:8px;z-index:3"></button>
+    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
+    <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:92px;z-index:3">+</button>
+    <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:134px;z-index:3">&minus;</button>
    </div>
-   <div class="chips" id="livelli" role="group" aria-label="Livello"></div>
-   <p class="hint">Trascina per ruotare. Tocca un livello per avvicinarti.</p>
+   <div class="selettore" id="dSel"><button class="freccia" data-d="-1" aria-label="Indietro" title="Indietro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="nome-fase" id="dNome"></span><button class="freccia" data-d="1" aria-label="Avanti" title="Avanti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+   <div class="pannello-d" aria-hidden="true"></div>
+   <div class="chips solo-pagina" id="livelli" role="group" aria-label="Livello"></div>
+   <p class="hint solo-pagina">Trascina per ruotare. Tocca un livello per avvicinarti.</p>
   </div>
   <aside>
-   <div class="proft"><img id="pf-dna" src="../immagini/prof_t/prof_t_biologo_dna.webp" alt="Prof. T biologo"><div class="fumetto" id="fu-dna">Tocca i livelli uno dopo l'altro, da Cellula fino a RNA, e guarda come ci avviciniamo al DNA.</div></div>
-   <div class="card" aria-live="polite"><h2 id="dnaT"></h2><p id="dnaD" style="margin:0"></p></div>
-   <div class="card"><div class="sect">Le basi</div><div class="basi" id="basi"></div></div>
-   <div class="anchor">Il DNA contiene le istruzioni della cellula. Nella cellula umana è diviso in 46 cromosomi, 23 coppie.</div>
+   <div class="proft solo-pagina"><img id="pf-dna" src="../immagini/prof_t/prof_t_biologo_dna.webp" alt="Prof. T biologo"><div class="fumetto" id="fu-dna">Tocca i livelli uno dopo l'altro, da Cellula fino a RNA, e guarda come ci avviciniamo al DNA. Prova anche la modalità console, in alto a destra nella scena.</div></div>
+   <div class="card solo-pagina" aria-live="polite"><h2 id="dnaT"></h2><p id="dnaD" style="margin:0"></p></div>
+   <div class="card solo-pagina"><div class="sect">Le basi</div><div class="basi" id="basi"></div></div>
+   <div class="anchor solo-pagina">Il DNA contiene le istruzioni della cellula. Nella cellula umana è diviso in 46 cromosomi, 23 coppie.</div>
   </aside>
  </div>
 </section>
 
 <!-- 02 il ciclo cellulare -->
 <section id="p-ciclo" class="hide">
- <div class="layout">
+ <div class="layout senza-tempo con-anello" data-intero id="iCiclo">
   <div>
    <div class="stage" id="st-ciclo">
-    <div class="cap">Modello stilizzato con 4 cromosomi</div>
-    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
-    <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
-    <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+    <div class="cap solo-pagina">Modello stilizzato con 4 cromosomi</div>
+    <button class="comando-scena" id="cIntero" style="right:8px;top:8px;z-index:3"></button>
+    <button class="comando-scena" data-v="reset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
+    <button class="comando-scena" data-v="piu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:92px;z-index:3">+</button>
+    <button class="comando-scena" data-v="meno" aria-label="Allontana" title="Allontana" style="right:8px;top:134px;z-index:3">&minus;</button>
    </div>
-   <div class="azioni"><button class="azione primaria" id="cAvanti">Fase successiva ›</button><button class="azione link hide" id="cMitosi">Guarda la mitosi ›</button></div>
+   <div class="selettore" id="cSel"><button class="freccia" data-d="-1" aria-label="Indietro" title="Indietro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="nome-fase" id="cNome"></span><button class="freccia" data-d="1" aria-label="Avanti" title="Avanti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+   <div class="pannello-d" aria-hidden="true"></div>
+   <div class="azioni solo-pagina"><button class="azione primaria" id="cAvanti">Fase successiva ›</button><button class="azione link hide" id="cMitosi">Guarda la mitosi ›</button></div>
   </div>
   <aside>
-   <div class="proft"><img id="pf-ciclo" src="../immagini/prof_t/prof_t_biologo_microscopio.webp" alt="Prof. T biologo"><div class="fumetto">Tocca una fase nel cerchio oppure Fase successiva.</div></div>
+   <div class="proft solo-pagina"><img id="pf-ciclo" src="../immagini/prof_t/prof_t_biologo_microscopio.webp" alt="Prof. T biologo"><div class="fumetto">Tocca una fase nel cerchio oppure Fase successiva. Prova anche la modalità console, in alto a destra nella scena.</div></div>
    <div class="card ciclo"><svg id="anello" viewBox="0 0 240 240" role="group" aria-label="Fasi del ciclo cellulare"></svg></div>
-   <div class="card" aria-live="polite"><h2 id="cicT"></h2><p id="cicD" style="margin:0"></p></div>
-   <div class="anchor">L'interfase (G1, S, G2) è la parte più lunga del ciclo. La divisione (fase M) è breve. Proporzioni del cerchio indicative.</div>
+   <div class="card solo-pagina" aria-live="polite"><h2 id="cicT"></h2><p id="cicD" style="margin:0"></p></div>
+   <div class="anchor solo-pagina">L'interfase (G1, S, G2) è la parte più lunga del ciclo. La divisione (fase M) è breve. Proporzioni del cerchio indicative.</div>
   </aside>
  </div>
 </section>
@@ -594,7 +615,7 @@ if(R)(function(){
 })();
 function livello(i,auto){
  D.liv=i;Array.prototype.forEach.call($('livelli').children,function(b){b.classList.toggle('attivo',+b.dataset.l===i);});
- $('dnaT').textContent=LIV[i].t;$('dnaD').textContent=LIV[i].d;
+ $('dnaT').textContent=LIV[i].t;$('dnaD').textContent=LIV[i].d;$('dNome').textContent=LIV[i].n;
  if(!auto){$('pf-dna').src=IMG.spiega;$('fu-dna').textContent=i<4?'Tocca il livello successivo per avvicinarti ancora.':'Il DNA resta nel nucleo, l\'RNA messaggero porta fuori le istruzioni.';}
  if(vDNA){vDNA.vai(i);vDNA.dirty=true;}}
 
@@ -746,7 +767,7 @@ function uCiclo(u){if(u>=1/6)return u;var t=u*6;return clamp((t-.3)/.5,0,1)/6;}
  $('anello').addEventListener('keydown',function(e){var g=e.target.closest('.arco');if(g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();fase(+g.dataset.i);}});})();
 function fase(i){CS.i=i;
  if(CIC[i].u<CS.u-.001)CS.u=i===0?0:CIC[i].u;     /* all'indietro si salta, in avanti si anima */
- $('cicT').textContent=CIC[i].t;$('cicD').textContent=CIC[i].d;
+ $('cicT').textContent=CIC[i].t;$('cicD').textContent=CIC[i].d;$('cNome').textContent=CIC[i].t;
  Array.prototype.forEach.call(document.querySelectorAll('#anello .arco'),function(g){g.querySelector('.bordo').setAttribute('opacity',+g.dataset.i===i?1:0);});
  $('cMitosi').classList.toggle('hide',i!==3);
  if(vC)vC.dirty=true;mostraCiclo();}
@@ -754,6 +775,11 @@ function mostraCiclo(){if(modC)modC.mostra(uCiclo(CS.u));}
 if(vC)vC.tick=function(dt){var b=CIC[CS.i].u;if(CS.u>=b)return false;CS.u=Math.min(b,CS.u+(reduce?1:dt/(T_FASE*6)));mostraCiclo();return true;};
 $('cAvanti').onclick=function(){fase((CS.i+1)%4);};
 $('cMitosi').onclick=function(){vaiScheda('mitosi');};
+/* modalità console delle schede 01 e 02: frecce sui livelli e sulle fasi del ciclo (che ricomincia da G1) */
+$('dSel').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;var i=D.liv+(+b.dataset.d);if(i>=0&&i<LIV.length)livello(i);});
+$('cSel').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(b)fase((CS.i+(+b.dataset.d)+4)%4);});
+schermoIntero($('iDna'),$('dIntero'),function(){if(R&&cur===vDNA){ridimensiona();requestAnimationFrame(ridimensiona);}});
+schermoIntero($('iCiclo'),$('cIntero'),function(){if(R&&cur===vC){ridimensiona();requestAnimationFrame(ridimensiona);}});
 fase(0);
 
 /* ================= SCHEDE ================= */
