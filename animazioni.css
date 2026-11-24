@@ -367,6 +367,42 @@ html.in-intero .torna-sito { display: none !important; }
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 [data-intero].intero .solo-pagina { display: none !important; }
+/* Modalità console: pillola dorata finché non è mai stata usata, invito quando si gira il telefono.
+   L'oro indica una funzione in più (stesso stile dell'etichetta "console" nelle card, style.css) */
+.comando-scena.pillola {
+  width: auto;
+  gap: 6px;
+  padding: 0 11px 0 8px;
+  border-color: #e8c15a;
+  color: #f3d47e;
+  background: rgba(17, 26, 43, .92);
+  box-shadow: 0 0 0 3px rgba(232, 193, 90, .14), 0 0 12px rgba(232, 193, 90, .35);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.comando-scena.pillola:hover { color: #ffe39a; border-color: #f3d47e; }
+.invito-console {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px 9px 12px;
+  border-radius: 999px;
+  border: 1px solid #e8c15a;
+  background: rgba(17, 26, 43, .94);
+  color: #f3d47e;
+  font: inherit;
+  font-size: 15px;
+  box-shadow: 0 0 0 3px rgba(232, 193, 90, .14), 0 0 14px rgba(232, 193, 90, .4);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.invito-console[hidden] { display: none; }
+.invito-console svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 [data-intero]:not(.intero) .solo-intero { display: none !important; }
 
 @media (prefers-reduced-motion: reduce) {

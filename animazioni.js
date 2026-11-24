@@ -108,19 +108,29 @@ function tastierinaCollega(pad, campo, op) {
   };
 }
 
-/* ---------- Schermo intero di una scheda (dal 24 nov 2026) ----------
+/* ---------- Modalità console: schermo intero di una scheda (dal 24 nov 2026) ----------
    schermoIntero(blocco, pulsante, alCambio) porta a schermo intero il blocco (con data-intero)
-   e fa funzionare il pulsante nell'angolo della scena (entra ed esce, cambia l'icona).
-   Dove il browser lo permette usa lo schermo intero vero, che nasconde anche le barre del browser;
-   altrimenti (iPhone) il blocco riempie solo la finestra. Si esce con il pulsante, con Esc
-   e con il tasto o il gesto indietro del telefono. alCambio(dentro) avvisa l'animazione,
-   che ridimensiona la scena. Stile in animazioni.css. */
+   e fa funzionare il pulsante nell'angolo della scena (icona del controller per entrare, angoli verso
+   l'interno per uscire). Dove il browser lo permette usa lo schermo intero vero, che nasconde anche
+   le barre del browser; altrimenti (iPhone) il blocco riempie solo la finestra. Si esce con il pulsante,
+   con Esc e con il tasto o il gesto indietro del telefono. alCambio(dentro) avvisa l'animazione,
+   che ridimensiona la scena. Per farla scoprire senza docenti:
+   - finché non è mai stata usata su quel dispositivo il pulsante è una pillola dorata "Modalità console";
+   - sul telefono, girandolo in orizzontale compare per qualche secondo l'invito "Modalità console?";
+   - all'ingresso il telefono resta nell'orientamento in cui si trova (solo dove il browser lo permette);
+   - ogni ingresso è contato da GoatCounter come evento "console-<pagina>", senza dati personali.
+   Stile in animazioni.css. */
+var CONSOLE_INVITO_MS = 4000;   /* durata dell'invito quando si gira il telefono */
 function schermoIntero(blocco, pulsante, alCambio) {
-  var APRI = '<svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>',
+  var APRI = '<svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 7h9a5 5 0 0 1 4.7 6.7l-1.2 3.4a2.3 2.3 0 0 1-3.9.7L14.5 16h-5l-1.6 1.8a2.3 2.3 0 0 1-3.9-.7l-1.2-3.4A5 5 0 0 1 7.5 7z"/><path d="M8 10v3.4M6.3 11.7h3.4"/><circle cx="15.6" cy="10.6" r=".5"/><circle cx="17.6" cy="12.6" r=".5"/></svg>',
       CHIUDI = '<svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
-  var dentro = false, storia = false;
+  var CHIAVE = 'sim_console_usata';
+  var dentro = false, storia = false, invitato = false;
   var vero = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
   function elementoVero() { return document.fullscreenElement || document.webkitFullscreenElement; }
+  function usata() { try { return localStorage.getItem(CHIAVE) === '1'; } catch (e) { return false; } }
+  function segnaUsata() { try { localStorage.setItem(CHIAVE, '1'); } catch (e) {} }
+  pulsante.classList.add('comando-console');
   /* a schermo intero la pagina dichiara viewport-fit=cover: così il telefono comunica lo spazio di tacca e fotocamera */
   var vp = document.querySelector('meta[name=viewport]'), vpBase = vp ? vp.getAttribute('content') : '';
   function aggiorna(on) {
@@ -128,25 +138,45 @@ function schermoIntero(blocco, pulsante, alCambio) {
     if (vp) vp.setAttribute('content', on ? vpBase + ', viewport-fit=cover' : vpBase);
     blocco.classList.toggle('intero', on);
     document.documentElement.classList.toggle('in-intero', on);
-    var t = on ? 'Esci dallo schermo intero' : 'Schermo intero';
-    pulsante.innerHTML = on ? CHIUDI : APRI;
+    var pillola = !on && !usata();
+    pulsante.classList.toggle('pillola', pillola);
+    pulsante.innerHTML = on ? CHIUDI : APRI + (pillola ? '<span>Modalità console</span>' : '');
+    var t = on ? 'Esci dalla modalità console' : 'Modalità console';
     pulsante.title = t;
     pulsante.setAttribute('aria-label', t);
+    if (on) nascondiInvito();
     if (alCambio) alCambio(on);
   }
   /* nello schermo intero simulato una voce nella cronologia: il gesto indietro chiude solo lo schermo intero */
   function segnaStoria() { history.pushState({ intero: 1 }, ''); storia = true; }
+  function bloccaOrientamento() {
+    try {
+      var o = screen.orientation;
+      if (TOUCH && o && o.lock) { var p = o.lock(o.type.indexOf('landscape') === 0 ? 'landscape' : 'portrait'); if (p && p.catch) p.catch(function () {}); }
+    } catch (e) {}
+  }
+  function conta() {
+    try {
+      if (window.goatcounter && goatcounter.count) {
+        var nome = location.pathname.replace(/^\//, '').replace(/\.html$/, '').replace(/\//g, '-') || 'home';
+        goatcounter.count({ path: 'console-' + nome, title: 'Modalità console', event: true });
+      }
+    } catch (e) {}
+  }
   function entra() {
+    segnaUsata();
     aggiorna(true);
+    conta();
     var chiedi = blocco.requestFullscreen || blocco.webkitRequestFullscreen;
     if (vero && chiedi) {
       try {
         var p = chiedi.call(blocco);
-        if (p && p.catch) p.catch(segnaStoria);
+        if (p && p.then) p.then(bloccaOrientamento, segnaStoria);
       } catch (e) { segnaStoria(); }
     } else segnaStoria();
   }
   function esci() {
+    try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
     if (elementoVero()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
     if (storia) { storia = false; history.back(); return; }   /* popstate chiude */
     aggiorna(false);
@@ -160,6 +190,35 @@ function schermoIntero(blocco, pulsante, alCambio) {
   document.addEventListener('webkitfullscreenchange', cambioVero);
   window.addEventListener('popstate', function () { if (dentro && !elementoVero()) { storia = false; aggiorna(false); } });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && dentro && !elementoVero()) esci(); });
+
+  /* invito quando si gira il telefono in orizzontale: una volta per pagina, solo se la scena si vede */
+  var invito = document.createElement('button');
+  invito.className = 'invito-console';
+  invito.type = 'button';
+  invito.innerHTML = APRI + '<span>Modalità console?</span>';
+  invito.hidden = true;
+  document.body.appendChild(invito);
+  var tInvito = 0;
+  function nascondiInvito() { invito.hidden = true; clearTimeout(tInvito); }
+  invito.addEventListener('click', function () { nascondiInvito(); entra(); });
+  function sceltaVisibile() {
+    if (!blocco.offsetParent) return false;
+    var r = blocco.getBoundingClientRect();
+    return r.bottom > 80 && r.top < window.innerHeight - 80;
+  }
+  if (TOUCH && window.matchMedia) {
+    var mq = matchMedia('(orientation: landscape)');
+    var suCambio = function () {
+      if (!mq.matches || dentro || invitato) return;
+      setTimeout(function () {
+        if (dentro || !sceltaVisibile()) return;
+        invitato = true;
+        invito.hidden = false;
+        tInvito = setTimeout(nascondiInvito, CONSOLE_INVITO_MS);
+      }, 400);
+    };
+    if (mq.addEventListener) mq.addEventListener('change', suCambio); else if (mq.addListener) mq.addListener(suCambio);
+  }
   aggiorna(false);
   return { esci: esci, dentro: function () { return dentro; } };
 }

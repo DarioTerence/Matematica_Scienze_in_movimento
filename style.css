@@ -393,6 +393,27 @@ a.card:focus-visible {
 .astronomia { --colore: var(--astronomia); }
 
 /* Discipline senza animazioni: spente, bordo tratteggiato */
+/* etichetta dorata "console" nelle card delle animazioni che hanno la modalità console (dal 24 nov 2026):
+   l'oro indica una funzione in più; stesso stile della pillola nella scena (animazioni.css) */
+.etichetta-console {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 7px 1px 5px;
+  border-radius: 999px;
+  border: 1px solid #e8c15a;
+  background: rgba(232, 193, 90, .10);
+  color: #f3d47e;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  box-shadow: 0 0 8px rgba(232, 193, 90, .3);
+}
+.etichetta-console svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
 .card.in-arrivo {
   background: var(--pannello-off);
   border: 1px dashed var(--linea-off);
