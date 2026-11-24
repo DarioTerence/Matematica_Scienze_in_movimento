@@ -56,6 +56,72 @@ header p{margin:2px 0 10px;color:var(--mute)}
 .bars .on.v,.bars .nm.on{color:var(--ink)}
 .note{font-size:.88rem;color:var(--mute);margin:6px 0 0}
 .eyebrow{color:#ffd08a;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+
+/* ---- modalità console (24 nov 2026). 01: croce dei corpi celesti, massa, peso e formula, tasto tondo Salta!.
+   02: croce del liquido in alto, croce degli oggetti e scheda dell'oggetto. Orizzontale a due colonne. ---- */
+.csel,.cpan{display:none}
+.csel .freccia{width:44px;height:44px;border:0;color:#e6ecf5;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.csel .freccia svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.cnome{flex:1;text-align:center;font-size:15px;font-weight:700;color:var(--disciplina);line-height:1.2}
+.cons.intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);display:block}
+.cons.intero .side,.cons.intero .panel,.cons.intero .panel>div:not(.big):not(.formula):not(.chips){display:contents}
+.cons.intero .stage{position:absolute!important;inset:0;border:0;border-radius:0;aspect-ratio:auto;overflow:visible}
+.cons.intero .stage>svg{width:100%;height:100%}
+.cons.intero .cpan{display:block;position:absolute;z-index:2;background:#232b3b;border:1px solid #2a3850;border-radius:16px}
+.cons.intero .csel{display:flex;align-items:center;position:absolute;z-index:4}
+.cons.intero .chips{display:none}
+.cons.intero .criga .cnome{color:#e6ecf5;font-size:14px}
+.cons.intero .criga>.freccia{width:40px!important;height:40px!important}
+.cons.intero .criga>span{flex:1!important;min-height:40px;display:flex;align-items:center;justify-content:center;border:0!important;border-top:1px solid #34476b!important;border-bottom:1px solid #34476b!important}
+.cons.intero .criga>.freccia:first-child{border-radius:12px 4px 4px 12px!important}
+.cons.intero .criga>.freccia:last-child{border-radius:4px 12px 12px 4px!important}
+.cons.intero #jump{position:absolute;z-index:4;width:70px!important;height:70px;border-radius:50%;padding:0;font-size:15px;box-shadow:0 0 0 4px rgba(255,255,255,.08),inset 0 -4px 0 rgba(0,0,0,.25)}
+.cons.intero #jump:active{transform:scale(.94)}
+.cons.intero #iD,.cons.intero #finfo{display:block!important;position:absolute;z-index:4;font-size:13px;line-height:1.4;color:#c8d3e3;overflow:auto;background:none;border:0;padding:0;margin:0}
+.cons.intero #iD .note{margin:4px 0 0}
+.cons.intero #finfo table{font-size:13px}
+.cons.intero .big{position:absolute;z-index:4;margin:0;font-size:26px}
+.cons.intero .big .etq{font-size:13px;color:#8fa0b8;font-weight:400}
+.cons.intero .formula{position:absolute;z-index:4;margin:0;font-size:12px}
+.cons.intero .ans .azione{border-radius:999px}
+@media(orientation:portrait){
+ .cons.intero .cpan.sx,.cons.intero .cpan.dx{display:none}
+ .cons.intero .console-m{top:calc(12px + var(--st))!important;right:calc(12px + var(--sr))!important}
+ .cons.intero #frv{top:calc(54px + var(--st))!important;right:calc(12px + var(--sr))!important}
+ #tab1.intero .stage{bottom:calc(214px + var(--sb))}
+ #tab1.intero .cpan.basso{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));height:194px}
+ #tab1.intero .cprinc{left:calc(20px + var(--sl));right:calc(20px + var(--sr));bottom:calc(150px + var(--sb))}
+ #tab1.intero #iD{display:none!important}
+ #tab1.intero #mass{left:calc(26px + var(--sl));bottom:calc(70px + var(--sb))}
+ #tab1.intero #wt{left:calc(26px + var(--sl));bottom:calc(26px + var(--sb))}
+ #tab1.intero .formula{left:calc(26px + var(--sl));right:calc(110px + var(--sr));bottom:calc(114px + var(--sb))}
+ #tab1.intero #jump{right:calc(26px + var(--sr));bottom:calc(30px + var(--sb))}
+ #tab2 .cons.intero .stage{top:calc(60px + var(--st));bottom:calc(196px + var(--sb))}
+ #tab2 .cons.intero .criga{top:calc(12px + var(--st));left:calc(12px + var(--sl));right:calc(60px + var(--sr))}
+ #tab2 .cons.intero #frv{top:-6px!important}
+ #tab2 .cons.intero .console-m{top:-48px!important}
+ #tab2 .cons.intero .cpan.basso{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));height:176px}
+ #tab2 .cons.intero .cprinc{left:calc(20px + var(--sl));right:calc(20px + var(--sr));bottom:calc(132px + var(--sb))}
+ #tab2 .cons.intero #finfo{left:calc(26px + var(--sl));right:calc(26px + var(--sr));bottom:calc(20px + var(--sb));height:106px}}
+@media(orientation:landscape){
+ .cons.intero .stage{left:calc(236px + var(--sl));right:calc(164px + var(--sr))}
+ .cons.intero .cpan.sx{left:calc(12px + var(--sl));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:220px}
+ .cons.intero .cpan.dx{right:calc(12px + var(--sr));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:148px}
+ .cons.intero .cpan.basso{display:none}
+ .cons.intero .cprinc{flex-direction:column;left:calc(24px + var(--sl));width:196px;top:calc(22px + var(--st))}
+ #tab2 .cons.intero .cprinc{top:calc(78px + var(--st))}
+ .cons.intero .cprinc .freccia svg{transform:rotate(90deg)}
+ .cons.intero .cprinc .cnome{flex:none;width:100%}
+ .cons.intero .criga{left:calc(24px + var(--sl));width:196px;top:calc(22px + var(--st))}
+ #tab1.intero #iD{left:calc(26px + var(--sl));width:192px;top:calc(148px + var(--st));bottom:calc(150px + var(--sb))}
+ #tab1.intero #mass{left:calc(26px + var(--sl));bottom:calc(98px + var(--sb))}
+ #tab1.intero #wt{left:calc(26px + var(--sl));bottom:calc(56px + var(--sb))}
+ #tab1.intero .formula{left:calc(26px + var(--sl));width:192px;bottom:calc(22px + var(--sb))}
+ .cons.intero .console-m{right:auto!important;left:calc(100% + 94px);top:calc(22px + var(--st))!important}
+ .cons.intero #frv{right:auto!important;left:calc(100% + 42px);top:calc(22px + var(--st))!important}
+ #tab1.intero #jump{right:calc(51px + var(--sr));top:calc(84px + var(--st))}
+ #tab2 .cons.intero #finfo{left:calc(26px + var(--sl));width:192px;top:calc(204px + var(--st));bottom:calc(22px + var(--sb))}}
+@media(orientation:landscape) and (max-height:520px){#tab1.intero #iD{display:none!important}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
@@ -71,22 +137,24 @@ header p{margin:2px 0 10px;color:var(--mute)}
  <button class="scheda" role="tab" aria-selected="false" id="b2" data-tab="2"><span class="num">02</span>Densità e galleggiamento</button>
 </div>
 
-<section id="tab1" class="grid" aria-label="Massa e peso">
- <div class="stage"><svg id="sv" viewBox="0 0 900 520" role="img" aria-label="Prof. T su un corpo celeste"></svg></div>
+<section id="tab1" class="grid cons" aria-label="Massa e peso" data-intero>
+ <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+ <div class="csel cprinc" data-c="bodies"><button class="freccia" data-d="-1" aria-label="Corpo celeste precedente" title="Corpo celeste precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Corpo celeste successivo" title="Corpo celeste successivo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+ <div class="stage"><button class="comando-scena console-m" style="right:8px;top:8px;z-index:3"></button><svg id="sv" viewBox="0 0 900 520" role="img" aria-label="Prof. T su un corpo celeste"></svg></div>
  <div class="side">
   <div class="panel">
-   <h3>Dove atterra Prof. T?</h3>
+   <h3 class="solo-pagina">Dove atterra Prof. T?</h3>
    <div class="chips" id="bodies" style="margin:0"></div>
-   <div style="margin-top:10px"><button class="azione primaria" id="jump" style="width:100%">Fai saltare il Prof!</button></div>
+   <div style="margin-top:10px"><button class="azione primaria" id="jump" style="width:100%"><span class="solo-pagina">Fai saltare il Prof!</span><span class="solo-intero">Salta!</span></button></div>
   </div>
   <div class="panel">
-   <h2 id="iT">Terra</h2>
+   <h2 id="iT" class="solo-pagina">Terra</h2>
    <div id="iD"></div>
-   <div class="anchor">La massa è la quantità di materia e non cambia. Il peso è la forza con cui il corpo celeste attira Prof. T: cambia con g.</div>
+   <div class="anchor solo-pagina">La massa è la quantità di materia e non cambia. Il peso è la forza con cui il corpo celeste attira Prof. T: cambia con g.</div>
   </div>
   <div class="panel">
-   <h3>Massa: bilancia a bilico</h3>
-   <svg viewBox="0 0 240 118" width="100%" style="max-width:300px;display:block" aria-label="Bilancia a due piatti in equilibrio">
+   <h3 class="solo-pagina">Massa: bilancia a bilico</h3>
+   <svg class="solo-pagina" viewBox="0 0 240 118" width="100%" style="max-width:300px;display:block" aria-label="Bilancia a due piatti in equilibrio">
     <line x1="120" y1="22" x2="120" y2="100" stroke="#8fa0b8" stroke-width="3"/>
     <line x1="92" y1="100" x2="148" y2="100" stroke="#8fa0b8" stroke-width="5" stroke-linecap="round"/>
     <line x1="28" y1="22" x2="212" y2="22" stroke="#e6ecf5" stroke-width="4" stroke-linecap="round"/>
@@ -96,15 +164,15 @@ header p{margin:2px 0 10px;color:var(--mute)}
     <rect x="14" y="44" width="28" height="18" rx="2" fill="#449678"/><text x="28" y="57" text-anchor="middle" font-size="9" fill="#0a0f1a" font-weight="700">Prof. T</text>
     <rect x="198" y="48" width="28" height="14" rx="2" fill="#ffd08a"/><text x="212" y="59" text-anchor="middle" font-size="9" fill="#0a0f1a" font-weight="700">75 kg</text>
    </svg>
-   <div class="big" id="mass">75 <small>kg</small></div>
-   <p class="note">La bilancia confronta masse: resta in equilibrio su qualsiasi corpo celeste.</p>
+   <div class="big" id="mass"><span class="solo-intero etq">massa </span>75 <small>kg</small></div>
+   <p class="note solo-pagina">La bilancia confronta masse: resta in equilibrio su qualsiasi corpo celeste.</p>
   </div>
   <div class="panel">
-   <h3>Peso: dinamometro (bilancia a molla)</h3>
+   <h3 class="solo-pagina">Peso: dinamometro (bilancia a molla)</h3>
    <div class="big" id="wt">735 <small>N</small></div>
    <div class="formula" id="fx"></div>
-   <div class="bars" id="bars"></div>
-   <p class="note">Scala lineare. Sul Sole la barra è interrotta: il peso supera di molto il resto.</p>
+   <div class="bars solo-pagina" id="bars"></div>
+   <p class="note solo-pagina">Scala lineare. Sul Sole la barra è interrotta: il peso supera di molto il resto.</p>
   </div>
  </div>
 </section>
@@ -209,19 +277,23 @@ const IMG_R="../immagini/prof_t/prof_t_massa_in_piedi.webp", IMG_L="../immagini/
 .good{border-left-color:#8ee0a6!important}.bad{border-left-color:#FF8A80!important}
 </style>
 <section id="tab2" hidden aria-label="Densità e galleggiamento">
- <div class="grid">
+ <div class="grid cons" data-intero>
+ <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+ <div class="csel criga" data-c="fliq"><button class="freccia" data-d="-1" aria-label="Liquido precedente" title="Liquido precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Liquido successivo" title="Liquido successivo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+ <div class="csel cprinc" data-c="fobj"><button class="freccia" data-d="-1" aria-label="Oggetto precedente" title="Oggetto precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Oggetto successivo" title="Oggetto successivo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
   <div class="stage fl-stage" id="fst">
    <canvas id="fcv" aria-label="Scena 3D: Prof. T lancia un oggetto in acqua"></canvas>
    <div class="etichetta" id="fchip"></div>
    <div class="bub" id="fbub" style="opacity:0"></div>
    <div class="ans" id="fans" hidden><button class="azione" data-a="g">Galleggia</button><button class="azione" data-a="a">Affonda</button></div>
-   <button class="comando-scena" id="frv" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+   <button class="comando-scena" id="frv" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
+   <button class="comando-scena console-m" style="right:8px;top:8px;z-index:3"></button>
   </div>
   <div class="side">
-   <div class="panel"><h3>Scegli l'oggetto che Prof. T lancerà</h3><div class="chips objs" id="fobj" style="margin:0"></div></div>
-   <div class="panel"><h3>Liquido</h3><div class="chips" id="fliq" style="margin:0"></div><p class="note" id="fliqd"></p></div>
+   <div class="panel"><h3 class="solo-pagina">Scegli l'oggetto che Prof. T lancerà</h3><div class="chips objs" id="fobj" style="margin:0"></div></div>
+   <div class="panel"><h3 class="solo-pagina">Liquido</h3><div class="chips" id="fliq" style="margin:0"></div><p class="note solo-pagina" id="fliqd"></p></div>
    <div class="panel" id="finfo"></div>
-   <div class="panel"><p class="note" style="margin:0">Trascina per ruotare, rotella o pizzico per ingrandire. Le figure non sono in scala; i valori di densità sono indicativi.</p></div>
+   <div class="panel solo-pagina"><p class="note" style="margin:0">Trascina per ruotare, rotella o pizzico per ingrandire. Le figure non sono in scala; i valori di densità sono indicativi.</p></div>
   </div>
  </div>
 </section>
@@ -470,6 +542,23 @@ const IMG_R="../immagini/prof_t/prof_t_massa_in_piedi.webp", IMG_L="../immagini/
   if(n==='2'&&window.floatInit) window.floatInit();
   if(n==='1'&&window.profT1) window.profT1.replay();
  }));
+})();
+</script>
+<script>
+/* modalità console: le croci toccano il chip vicino (corpi celesti, oggetti, liquidi) */
+(function(){
+ document.querySelectorAll('.cons[data-intero]').forEach(function(blk){
+  blk.querySelectorAll('.csel').forEach(function(c){
+   var box=document.getElementById(c.dataset.c),nome=c.querySelector('.cnome');
+   function k(){return Array.prototype.slice.call(box.querySelectorAll('.chip'));}
+   function agg(){var a=box.querySelector('.chip.attivo');nome.textContent=a?a.textContent:'';
+    if(a&&!c.classList.contains('criga'))nome.style.color=a.style.getPropertyValue('--chip')?'color-mix(in srgb,'+a.style.getPropertyValue('--chip')+' 60%,#fff)':'';}
+   c.addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;var l=k(),n=l.length,i=l.findIndex(function(x){return x.classList.contains('attivo');});
+    l[i<0?0:(i+(+b.dataset.d)+n)%n].click();setTimeout(agg,0);});
+   new MutationObserver(agg).observe(box,{attributes:true,subtree:true,childList:true,attributeFilter:['class']});agg();
+  });
+  schermoIntero(blk,blk.querySelector('.console-m'));
+ });
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Due simulazioni: nella prima si confrontano massa e peso al variare del luogo, nella seconda densità e galleggiamento in una scena 3D.</p>
