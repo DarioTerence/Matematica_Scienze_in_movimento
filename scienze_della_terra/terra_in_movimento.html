@@ -115,6 +115,77 @@ button{font-family:inherit}
  #p-globo.intero .strati .levetta:first-child{border-top:0}
  #p-globo.intero .csel{top:calc(196px + var(--st))}
  #p-globo.intero .cdesc{top:calc(306px + var(--st))}}
+/* ---- modalità console della scheda 04 Terremoti: comandi stile controller ----
+   Attività sempre in vista (in alto, in orizzontale in cima alla colonna sinistra). 1 La faglia: croce ◀ ▶ per la faglia,
+   barra dell'energia tra il tasto tondo piccolo (ricomincia) e il tasto tondo grande (spingi). 2 Magnitudo: levetta e risultato
+   a sinistra, cursori grossi in basso. 3 Epicentro: carta al centro, sismogrammi a sinistra, tasto tondo Nuovo a destra. */
+.fsel{display:none}
+#p-terremoti.intero #tA1:not(.hide),#p-terremoti.intero #tA2:not(.hide),#p-terremoti.intero #tA3:not(.hide),#p-terremoti.intero .epi,#p-terremoti.intero .azioni,#p-terremoti.intero .cursori{display:contents}
+#p-terremoti.intero .stage.piano{background:#05070d}
+#p-terremoti.intero .stage.piano svg{width:100%;height:100%}
+#p-terremoti.intero #attT,#p-terremoti.intero .carica,#p-terremoti.intero #tSpingi,#p-terremoti.intero #tDaCapo,#p-terremoti.intero #eNuovo,#p-terremoti.intero .cursori label,#p-terremoti.intero #mAnti,#p-terremoti.intero #sismi,#p-terremoti.intero .fase,#p-terremoti.intero .fsel{position:absolute;z-index:4;margin:0}
+#p-terremoti.intero .fase{min-height:0;font-size:13px;line-height:1.35;color:#c8d3e3;overflow:auto}
+#p-terremoti.intero .fsel{display:flex;align-items:center;gap:0}
+#p-terremoti.intero .dpad{width:48px;height:44px;border:1px solid #34476b;background:#1a2333;color:#e6ecf5;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+#p-terremoti.intero .dpad:first-child{border-radius:12px 4px 4px 12px}
+#p-terremoti.intero .dpad:last-child{border-radius:4px 12px 12px 4px}
+#p-terremoti.intero .dpad svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+#p-terremoti.intero #fNome{flex:1;height:44px;display:flex;align-items:center;justify-content:center;background:#141c2b;border-top:1px solid #34476b;border-bottom:1px solid #34476b;font-weight:700;color:#d2bcff;font-size:15px}
+#p-terremoti.intero #tSpingi,#p-terremoti.intero #eNuovo{width:66px;height:66px;border-radius:50%;padding:4px;border:0;font-size:12px;line-height:1.1;font-weight:700;background:var(--disciplina);color:#0a0f1a;box-shadow:0 0 0 4px rgba(154,111,232,.25),inset 0 -4px 0 rgba(0,0,0,.25);white-space:normal}
+#p-terremoti.intero #tSpingi:active,#p-terremoti.intero #eNuovo:active{transform:scale(.94)}
+#p-terremoti.intero #tDaCapo{width:46px;height:46px;border-radius:50%;padding:0;border:1px solid #34476b;background:#1a2333;color:#e6ecf5;font-size:0;box-shadow:inset 0 -3px 0 rgba(0,0,0,.3)}
+#p-terremoti.intero #tDaCapo::before{content:"\21BB";font-size:22px;line-height:1}
+#p-terremoti.intero #tDaCapo.primaria{background:var(--disciplina);color:#0a0f1a;border-color:transparent}
+#p-terremoti.intero .carica{font-size:12px;color:#c8d3e3;flex-direction:column;align-items:stretch;gap:6px}
+#p-terremoti.intero .carica div{flex:none;height:14px;border-radius:7px}
+#p-terremoti.intero .cursori label{font-size:13px;color:#c8d3e3;padding:0}
+#p-terremoti.intero .cursori input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;height:30px;margin-top:2px}
+#p-terremoti.intero .cursori input[type=range]::-webkit-slider-runnable-track{height:12px;border-radius:6px;background:#16233a;border:1px solid #34476b}
+#p-terremoti.intero .cursori input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-9px;border-radius:50%;background:var(--disciplina);box-shadow:0 0 0 4px rgba(154,111,232,.25)}
+#p-terremoti.intero .cursori input[type=range]::-moz-range-track{height:12px;border-radius:6px;background:#16233a;border:1px solid #34476b}
+#p-terremoti.intero .cursori input[type=range]::-moz-range-thumb{width:24px;height:24px;border:0;border-radius:50%;background:var(--disciplina)}
+#p-terremoti.intero #mAnti{background:var(--pan);border:1px solid var(--bordo);border-radius:12px}
+#p-terremoti.intero #sismi{overflow:auto}
+#p-terremoti.intero .sismo{background:#1a2333;border-color:#34476b;font-size:13px}
+@media(orientation:portrait){
+ #p-terremoti.intero #attT{top:calc(12px + var(--st));left:calc(12px + var(--sl));right:calc(60px + var(--sr))}
+ #p-terremoti.intero .stage{top:calc(60px + var(--st));bottom:calc(232px + var(--sb));overflow:visible}
+ #p-terremoti.intero .comando-console{top:-48px!important}
+ #p-terremoti.intero #tReset{top:12px!important}
+ #p-terremoti.intero .cpan.basso{height:208px}
+ #p-terremoti.intero .fsel{left:calc(22px + var(--sl));right:calc(22px + var(--sr));bottom:calc(164px + var(--sb))}
+ #p-terremoti.intero #faseT{left:calc(26px + var(--sl));right:calc(26px + var(--sr));bottom:calc(92px + var(--sb));max-height:62px}
+ #p-terremoti.intero #tDaCapo{left:calc(26px + var(--sl));bottom:calc(32px + var(--sb))}
+ #p-terremoti.intero .carica{left:calc(86px + var(--sl));right:calc(106px + var(--sr));bottom:calc(36px + var(--sb))}
+ #p-terremoti.intero #tSpingi{right:calc(26px + var(--sr));bottom:calc(22px + var(--sb))}
+ #p-terremoti.intero #faseM{left:calc(26px + var(--sl));right:calc(26px + var(--sr));bottom:calc(168px + var(--sb));max-height:44px}
+ #p-terremoti.intero #mAnti{left:calc(22px + var(--sl));right:calc(22px + var(--sr));width:auto;bottom:calc(118px + var(--sb))}
+ #p-terremoti.intero .cursori label:nth-of-type(1){left:calc(26px + var(--sl));right:calc(26px + var(--sr));bottom:calc(64px + var(--sb))}
+ #p-terremoti.intero .cursori label:nth-of-type(2){left:calc(26px + var(--sl));right:calc(26px + var(--sr));bottom:calc(20px + var(--sb))}
+ #p-terremoti.intero #sismi{left:calc(22px + var(--sl));right:calc(22px + var(--sr));bottom:calc(100px + var(--sb));max-height:118px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+ #p-terremoti.intero .sismo{margin:0;padding:4px 6px;font-size:12px}
+ #p-terremoti.intero #faseE{left:calc(26px + var(--sl));right:calc(108px + var(--sr));bottom:calc(22px + var(--sb));max-height:66px}
+ #p-terremoti.intero #eNuovo{right:calc(26px + var(--sr));bottom:calc(22px + var(--sb))}}
+@media(orientation:landscape){
+ #p-terremoti.intero #attT{left:calc(24px + var(--sl));width:196px;top:calc(22px + var(--st));flex-direction:column;gap:4px;overflow:visible}
+ #p-terremoti.intero #attT .chip{white-space:normal;text-align:left}
+ #p-terremoti.intero #attT .chip small{display:none}
+ #p-terremoti.intero[data-att="1"] .stage{bottom:calc(104px + var(--sb))}
+ #p-terremoti.intero[data-att="2"] .stage{bottom:calc(142px + var(--sb))}
+ #p-terremoti.intero[data-att="1"] .cpan.basso{height:84px}
+ #p-terremoti.intero[data-att="2"] .cpan.basso{height:122px}
+ #p-terremoti.intero[data-att="3"] .cpan.basso{display:none}
+ #p-terremoti.intero .fsel{left:calc(24px + var(--sl));width:196px;top:calc(160px + var(--st))}
+ #p-terremoti.intero #faseT,#p-terremoti.intero #faseM{left:calc(26px + var(--sl));width:192px;top:calc(216px + var(--st));bottom:calc(22px + var(--sb))}
+ #p-terremoti.intero #tDaCapo{left:calc(258px + var(--sl));bottom:calc(30px + var(--sb))}
+ #p-terremoti.intero .carica{left:calc(318px + var(--sl));right:calc(270px + var(--sr));bottom:calc(34px + var(--sb))}
+ #p-terremoti.intero #tSpingi{right:calc(190px + var(--sr));bottom:calc(21px + var(--sb))}
+ #p-terremoti.intero #mAnti{left:calc(24px + var(--sl));width:196px;top:calc(160px + var(--st))}
+ #p-terremoti.intero .cursori label:nth-of-type(1){left:calc(262px + var(--sl));right:calc(190px + var(--sr));bottom:calc(74px + var(--sb))}
+ #p-terremoti.intero .cursori label:nth-of-type(2){left:calc(262px + var(--sl));right:calc(190px + var(--sr));bottom:calc(22px + var(--sb))}
+ #p-terremoti.intero #sismi{left:calc(24px + var(--sl));width:196px;top:calc(160px + var(--st));bottom:calc(22px + var(--sb))}
+ #p-terremoti.intero #eNuovo{right:calc(53px + var(--sr));top:calc(112px + var(--st))}
+ #p-terremoti.intero #faseE{right:calc(24px + var(--sr));width:124px;top:calc(196px + var(--st));bottom:calc(22px + var(--sb))}}
 .margini{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:10px 0 10px;padding-bottom:2px}
 .margini::-webkit-scrollbar{display:none}
 .margini .chip{flex:none;white-space:nowrap}
@@ -324,23 +395,26 @@ button{font-family:inherit}
  </div>
 </section>
 
-<section id="p-terremoti" class="hide">
+<section id="p-terremoti" class="hide" data-intero data-att="1">
  <div class="margini" id="attT" role="group" aria-label="Attività"></div>
  <div class="layout">
   <div>
+   <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
    <!-- attività 1, la faglia -->
    <div id="tA1">
     <div class="stage" id="stageT">
-     <div class="cap">Blocco di crosta tagliato lungo la faglia. Modello non in scala</div>
-     <button class="comando-scena" id="tReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
+     <div class="cap solo-pagina">Blocco di crosta tagliato lungo la faglia. Modello non in scala</div>
+     <button class="comando-scena console-t" style="right:8px;top:8px;z-index:3"></button>
+     <button class="comando-scena" id="tReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
     </div>
+    <div class="fsel"><button class="dpad" data-d="-1" aria-label="Faglia precedente" title="Faglia precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span id="fNome"></span><button class="dpad" data-d="1" aria-label="Faglia successiva" title="Faglia successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
     <div class="carica" aria-hidden="true"><span>energia accumulata</span><div><i id="tBar"></i></div></div>
     <div class="azioni"><button class="azione primaria" id="tSpingi">Spingi</button><button class="azione link" id="tDaCapo">Ricomincia</button></div>
     <p class="fase" id="faseT" aria-live="polite"></p>
    </div>
    <!-- attività 2, magnitudo e intensità -->
    <div id="tA2" class="hide">
-    <div class="stage piano"><svg id="svgM" viewBox="0 0 640 380" role="img" aria-label="Un terremoto e un paese a una certa distanza"></svg></div>
+    <div class="stage piano"><button class="comando-scena console-t" style="right:8px;top:8px;z-index:3"></button><svg id="svgM" viewBox="0 0 640 380" role="img" aria-label="Un terremoto e un paese a una certa distanza"></svg></div>
     <div class="cursori">
      <label>Energia liberata dal terremoto<input type="range" id="mMag" min="40" max="80" value="60"></label>
      <label>Distanza del paese dall'epicentro<input type="range" id="mDis" min="0" max="300" value="40"></label>
@@ -351,14 +425,14 @@ button{font-family:inherit}
    <!-- attività 3, trova l'epicentro -->
    <div id="tA3" class="hide">
     <div class="epi">
-     <div class="stage piano carta"><svg id="svgE" viewBox="0 0 483 580" role="img" aria-label="Carta dell'Italia con tre stazioni sismiche"></svg></div>
+     <div class="stage piano carta"><button class="comando-scena console-t" style="right:8px;top:8px;z-index:3"></button><svg id="svgE" viewBox="0 0 483 580" role="img" aria-label="Carta dell'Italia con tre stazioni sismiche"></svg></div>
      <div id="sismi"></div>
     </div>
     <div class="azioni"><button class="azione primaria" id="eNuovo">Nuovo terremoto</button></div>
     <p class="fase" id="faseE" aria-live="polite"></p>
    </div>
   </div>
-  <aside>
+  <aside class="solo-pagina">
    <div class="card" aria-live="polite"><h2 id="tT"></h2><p id="tD" style="margin:0"></p></div>
    <div class="card" id="tTipi"><div class="sect">Tipo di faglia</div><div class="chips" id="faglie" style="margin:0"></div></div>
    <div class="anchor" id="ancoraT"></div>
@@ -1659,20 +1733,24 @@ $('attT').innerHTML=ATT.map(function(a){return '<button class="chip" data-a="'+a
 $('attT').addEventListener('click',function(e){var k=e.target.closest('[data-a]');if(k&&TS.att!==+k.dataset.a)apriAtt(+k.dataset.a);});
 $('faglie').innerHTML=FAGLIE.map(function(f){return '<button class="chip" data-f="'+f.id+'" style="--chip:'+f.c+'">'+f.n+'</button>';}).join('');
 $('faglie').addEventListener('click',function(e){var k=e.target.closest('[data-f]');if(k)apriFaglia(k.dataset.f);});
-function apriAtt(a){TS.att=a;
+function apriAtt(a){TS.att=a;$('p-terremoti').dataset.att=a;
  Array.prototype.forEach.call($('attT').children,function(k){k.classList.toggle('attivo',+k.dataset.a===a);});
  [1,2,3].forEach(function(k){$('tA'+k).classList.toggle('hide',k!==a);});$('tTipi').classList.toggle('hide',a!==1);
  if(a===1){$('sub').textContent='Un terremoto nasce quando le rocce, lungo una faglia, cedono di colpo. Prova tu a far scattare la faglia.';$('ancoraT').innerHTML='<b>Terremoto</b><br>Le rocce accumulano energia lentamente, per anni, e la liberano in pochi secondi quando la faglia scatta.';
-  $('fumT').textContent='Tocca più volte il pulsante e guarda che cosa succede lungo la faglia.';if(!faglia)faglia=Faglia($('stageT'));apriFaglia(TS.f.id);}
+  $('fumT').textContent='Tocca più volte il pulsante e guarda che cosa succede lungo la faglia. Prova anche la modalità console, in alto a destra nella scena.';if(!faglia)faglia=Faglia($('stageT'));apriFaglia(TS.f.id);}
  else{var x=TESTI_T[a];$('sub').textContent=x.sub;$('tT').textContent=x.t;$('tD').innerHTML=x.d;$('ancoraT').innerHTML=x.a;$('fumT').textContent=x.f;if(a===2)disegnaM();else if(!EP.q)nuovoE();else disegnaE();}}
 function apriFaglia(id){var f=FAGLIE.filter(function(x){return x.id===id;})[0];TS.f=f;TS.en=TS.meta=0;TS.n=0;TS.fase='fermo';
  Array.prototype.forEach.call($('faglie').children,function(k){k.classList.toggle('attivo',k.dataset.f===id);});
- $('tT').textContent=f.t;$('tD').textContent=f.d;$('tSpingi').textContent=f.verbo;faseT();if(faglia)faglia.carica(id);}
+ $('tT').textContent=f.t;$('tD').textContent=f.d;$('tSpingi').textContent=f.verbo;$('fNome').textContent=f.n;faseT();if(faglia)faglia.carica(id);}
 function faseT(){var fine=TS.n>=N_SCOSSE&&TS.fase!=='scossa';
  $('faseT').textContent=TS.fase==='scossa'?'La roccia cede di colpo. Dall\'ipocentro partono le onde sismiche. Il punto in superficie sopra l\'ipocentro è l\'epicentro.':TS.fase==='carica'?'Le rocce si deformano e accumulano energia, come una molla. L\'attrito le tiene ancora incastrate.':TS.fase==='dopo'?'Il terremoto è finito. I due blocchi sono rimasti spostati e l\'energia ricomincia ad accumularsi.':'Le rocce sono ferme. L\'attrito le tiene incastrate lungo la faglia.';
  $('tSpingi').classList.toggle('hide',fine);$('tSpingi').disabled=TS.fase==='scossa';$('tDaCapo').className='azione '+(fine?'primaria':'link');}
 $('tSpingi').onclick=function(){if(TS.fase==='scossa')return;TS.meta=Math.min(1,TS.meta+.25);TS.fase='carica';faseT();};
 $('tDaCapo').onclick=function(){apriFaglia(TS.f.id);};
+/* modalità console: le frecce a croce cambiano faglia (toccano il chip vicino) */
+document.querySelector('#p-terremoti .fsel').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;
+ var k=$('faglie').children,n=k.length,i=FAGLIE.indexOf(TS.f);k[(i+(+b.dataset.d)+n)%n].click();});
+schermoIntero($('p-terremoti'),document.querySelectorAll('.console-t'));
 $('tReset').onclick=function(){if(faglia)faglia.reset();};
 
 function Faglia(el){
