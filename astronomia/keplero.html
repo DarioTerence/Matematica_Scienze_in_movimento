@@ -86,6 +86,88 @@ svg .muted{fill:var(--st-muted)}
   h1{font-size:1.2rem}
 }
 .eyebrow{color:#c9aaff;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+/* ---- modalità console (24 nov 2026), schede 01-04: la scena occupa tutto. Orizzontale: a sinistra modalità,
+   croce (orbita, pianeta o prova rapida) e valori; a destra uscita, Riavvia, Avvia/Pausa tondo grande, Opzioni;
+   in basso le barre. Verticale: modalità in alto, pannello in basso con croce, barre e tasti. ---- */
+.csel,.cpan{display:none}
+.csel .freccia{width:44px;height:44px;border:0;color:#e6ecf5;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.csel .freccia svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.cnome{flex:1;text-align:center;font-size:15px;font-weight:700;color:var(--accent);line-height:1.2}
+.view.intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);display:block;margin:0}
+.view.intero .stickycol,.view.intero .panel,.view.intero .group{display:contents}
+.view.intero .stage{position:absolute;inset:0;border:0;border-radius:0;padding:0;overflow:visible;background:var(--st-bg)}
+.view.intero .stage>svg{width:100%;height:100%}
+.view.intero .formula{position:absolute;left:0;right:0;top:4px;z-index:2;pointer-events:none}
+.view.intero .formula+svg{padding-top:46px}
+.view.intero .caption,.view.intero .panel>h2,.view.intero .panel>p,.view.intero .group>h3,.view.intero .group>p,.view.intero .group>.azioni,.view.intero .group>.chips,.view.intero .tbl,.view.intero .readout .note{display:none}
+.view.intero .cpan{display:block;position:absolute;z-index:2;background:#232b3b;border:1px solid #2a3850;border-radius:16px}
+.view.intero .csel{display:flex;align-items:center;position:absolute;z-index:4}
+.view.intero .modalita{position:absolute;z-index:4;margin:0}
+.view.intero .readout{position:absolute;z-index:4;margin:0;border:0;padding:0;overflow:auto;font-size:13px}
+.view.intero .readout .row{padding:1px 0}
+.view.intero .cbarre{display:block;position:absolute;z-index:4;margin:0}
+.view.intero .cbarre .slider{margin:0}
+.view.intero .slider label{min-width:2.4em;font-size:14px}
+.view.intero .slider input{-webkit-appearance:none;appearance:none;background:transparent;height:30px;min-height:30px}
+.view.intero .slider input::-webkit-slider-runnable-track{height:12px;border-radius:6px;background:#16233a;border:1px solid #34476b}
+.view.intero .slider input::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(255,255,255,.12)}
+.view.intero .slider input::-moz-range-track{height:12px;border-radius:6px;background:#16233a;border:1px solid #34476b}
+.view.intero .slider input::-moz-range-thumb{width:24px;height:24px;border:0;border-radius:50%;background:var(--accent)}
+.view.intero .panel>.azioni{display:block;position:absolute;inset:0;margin:0;pointer-events:none}
+.view.intero .panel>.azioni .azione{position:absolute;z-index:4;pointer-events:auto;margin:0;border-radius:50%;padding:0}
+.view.intero .panel>.azioni .azione.primaria{width:66px;height:66px;font-size:13px;box-shadow:0 0 0 4px rgba(255,255,255,.08),inset 0 -4px 0 rgba(0,0,0,.25)}
+.view.intero .panel>.azioni .azione.link{width:46px;height:46px;font-size:0;text-decoration:none;background:#1a2333;border:1px solid #34476b;color:#e6ecf5;box-shadow:inset 0 -3px 0 rgba(0,0,0,.35)}
+.view.intero .panel>.azioni .azione.link::before{content:"\21BB";font-size:22px}
+.view.intero .panel>.azioni .azione:active{transform:translateY(1px)}
+.view.intero .panel>.azioni[hidden]{display:none}
+.view.intero .opzioni{position:absolute;z-index:5;margin:0;background:#232b3b;border-color:#2a3850}
+.view.intero .opzioni summary{padding:10px 14px}
+.view.intero .opzioni[open] summary::after{content:"\2715"}
+@media(orientation:portrait){
+ .view.intero .cpan.sx,.view.intero .cpan.dx{display:none}
+ .view.intero .console-k{top:calc(12px + var(--st))!important;right:calc(12px + var(--sr))!important}
+ .view.intero .modalita{top:calc(12px + var(--st));left:calc(12px + var(--sl));right:calc(60px + var(--sr))}
+ .view.intero .opzioni{top:calc(62px + var(--st));left:calc(12px + var(--sl));width:150px}
+ #view0.intero .opzioni{top:calc(12px + var(--st))}
+ .view.intero .formula{top:calc(60px + var(--st))}
+ .view.intero .formula+svg{padding-top:calc(104px + var(--st))}
+ .view.intero .opzioni[open]{width:auto;right:calc(60px + var(--sr))}
+ .view.intero .readout{display:none}
+ .view.intero .cpan.basso{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));height:176px}
+ .view.intero .stage{bottom:calc(196px + var(--sb))}
+ .view.intero .csel{left:calc(20px + var(--sl));right:calc(20px + var(--sr));bottom:calc(132px + var(--sb))}
+ .view.intero .panel>.azioni .azione.primaria{left:calc(24px + var(--sl));bottom:calc(24px + var(--sb))}
+ .view.intero .panel>.azioni .azione.link{left:calc(98px + var(--sl));bottom:calc(34px + var(--sb))}
+ .view.intero .cbarre{left:calc(156px + var(--sl));right:calc(24px + var(--sr));bottom:calc(40px + var(--sb))}
+ .view.intero .cbarre label{display:none}
+ #view3.intero .cpan.basso{height:200px}
+ #view3.intero .stage{bottom:calc(220px + var(--sb))}
+ #view3.intero .csel{bottom:calc(156px + var(--sb))}
+ #view3.intero .cbarre{left:calc(24px + var(--sl));bottom:calc(20px + var(--sb))}
+ #view3.intero .cbarre label{display:block}}
+@media(orientation:landscape){
+ .view.intero .cpan.sx{left:calc(12px + var(--sl));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:220px}
+ .view.intero .cpan.dx{right:calc(12px + var(--sr));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:148px}
+ .view.intero .cpan.basso{left:calc(240px + var(--sl));right:calc(168px + var(--sr));bottom:calc(12px + var(--sb));height:60px}
+ .view.intero .stage{left:calc(236px + var(--sl));right:calc(164px + var(--sr));bottom:calc(80px + var(--sb))}
+ .view.intero .cbarre{left:calc(256px + var(--sl));right:calc(184px + var(--sr));bottom:calc(24px + var(--sb))}
+ #view3.intero .cpan.basso{height:132px}
+ #view3.intero .stage{bottom:calc(152px + var(--sb))}
+ .view.intero .modalita{left:calc(24px + var(--sl));width:196px;top:calc(22px + var(--st));flex-direction:column;border-radius:14px}
+ .view.intero .modalita button{padding:6px 8px;font-size:14px}
+ .view.intero .csel{flex-direction:column;left:calc(24px + var(--sl));width:196px;top:calc(22px + var(--st))}
+ #view1.intero .csel,#view3.intero .csel{top:calc(146px + var(--st))}
+ #view2.intero .csel{top:calc(108px + var(--st))}
+ .view.intero .csel .freccia svg{transform:rotate(90deg)}
+ .view.intero .cnome{flex:none;width:100%}
+ .view.intero .readout{left:calc(26px + var(--sl));width:192px;top:calc(148px + var(--st));bottom:calc(22px + var(--sb))}
+ #view1.intero .readout,#view3.intero .readout{top:calc(272px + var(--st))}
+ #view2.intero .readout{top:calc(234px + var(--st))}
+ .view.intero .console-k{right:auto!important;left:calc(100% + 94px);top:calc(22px + var(--st))!important}
+ .view.intero .panel>.azioni .azione.link{right:calc(106px + var(--sr));top:calc(20px + var(--st))}
+ .view.intero .panel>.azioni .azione.primaria{right:calc(53px + var(--sr));top:calc(84px + var(--st))}
+ .view.intero .opzioni{right:calc(20px + var(--sr));bottom:calc(20px + var(--sb));width:132px}
+ .view.intero .opzioni[open]{width:260px}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
@@ -103,9 +185,11 @@ svg .muted{fill:var(--st-muted)}
   </nav>
 
   <!-- ============ Scheda 1: prima legge ============ -->
-  <section class="view" id="view0">
+  <section class="view" id="view0" data-intero>
+    <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+    <div class="csel" data-chips="presets"><button class="freccia" data-d="-1" aria-label="Orbita precedente" title="Orbita precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Orbita successiva" title="Orbita successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
     <div class="stickycol">
-      <div class="stage">
+      <div class="stage"><button class="comando-scena console-k" style="right:10px;top:10px;z-index:3"></button>
         <svg id="svg0" viewBox="0 0 600 480" role="img" aria-label="Orbita ellittica di un pianeta con il Sole in un fuoco">
           <g id="stars"></g>
           <ellipse id="orbit" fill="none" stroke="var(--st-orbit)" stroke-width="2.5"/>
@@ -172,7 +256,7 @@ svg .muted{fill:var(--st-muted)}
           <button class="chip" type="button" data-e="0.206">Mercurio</button>
           <button class="chip" type="button" data-e="0.967">Cometa di Halley</button>
         </div>
-        <div class="slider">
+        <div class="slider cbarre">
           <label for="eSlider">Eccentricità</label>
           <input id="eSlider" type="range" min="0" max="0.97" step="0.001" value="0.5">
           <output id="eOut" for="eSlider"></output>
@@ -198,14 +282,16 @@ svg .muted{fill:var(--st-muted)}
   </section>
 
   <!-- ============ Scheda 2: seconda legge ============ -->
-  <section class="view" id="view1" hidden>
+  <section class="view" id="view1" hidden data-intero>
+    <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+    <div class="csel" data-chips="presetsB"><button class="freccia" data-d="-1" aria-label="Orbita precedente" title="Orbita precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Orbita successiva" title="Orbita successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
     <div class="modalita" id="modeBtnsB" role="group" aria-label="Cosa mostrare">
       <button type="button" data-mode="live" aria-pressed="true">Un settore</button>
       <button type="button" data-mode="all" aria-pressed="false">Tutti i settori</button>
       <button type="button" data-mode="cmp" aria-pressed="false">Perielio e afelio</button>
     </div>
     <div class="stickycol">
-      <div class="stage">
+      <div class="stage"><button class="comando-scena console-k" style="right:10px;top:10px;z-index:3"></button>
         <svg id="svgB" viewBox="0 0 600 480" role="img" aria-label="Orbita con settori di area uguale percorsi in tempi uguali">
           <g id="starsB"></g>
           <g id="secB"></g>
@@ -266,7 +352,7 @@ svg .muted{fill:var(--st-muted)}
           <button class="chip" type="button" data-e="0.206">Mercurio</button>
           <button class="chip" type="button" data-e="0.967">Cometa di Halley</button>
         </div>
-        <div class="slider">
+        <div class="slider cbarre">
           <label for="eSliderB">Eccentricità</label>
           <input id="eSliderB" type="range" min="0" max="0.97" step="0.001" value="0.6">
           <output id="eOutB" for="eSliderB"></output>
@@ -288,13 +374,15 @@ svg .muted{fill:var(--st-muted)}
   </section>
 
   <!-- ============ Scheda 3: terza legge ============ -->
-  <section class="view" id="view2" hidden>
+  <section class="view" id="view2" hidden data-intero>
+    <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+    <div class="csel" data-chips="plBtnsC"><button class="freccia" data-d="-1" aria-label="Pianeta precedente" title="Pianeta precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Pianeta successiva" title="Pianeta successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
     <div class="modalita" id="viewBtnsC" role="group" aria-label="Vista">
       <button type="button" data-view="orbit" aria-pressed="true">Orbite</button>
       <button type="button" data-view="graph" aria-pressed="false">Grafico T² e a³</button>
     </div>
     <div class="stickycol">
-      <div class="stage">
+      <div class="stage"><button class="comando-scena console-k" style="right:10px;top:10px;z-index:3"></button>
         <svg id="svgC" viewBox="0 0 600 480" role="img" aria-label="Orbite dei pianeti in tempo accelerato">
           <g id="starsC"></g>
           <g id="orbC"></g>
@@ -327,7 +415,7 @@ svg .muted{fill:var(--st-muted)}
       <div class="group">
         <h3>Pianeta</h3>
         <div class="chips" id="plBtnsC"></div>
-        <div class="slider">
+        <div class="slider cbarre">
           <label for="xSliderC">Pianeta X</label>
           <input id="xSliderC" type="range" min="0.3" max="31" step="0.1" value="4">
           <output id="xOutC" for="xSliderC"></output>
@@ -362,14 +450,16 @@ svg .muted{fill:var(--st-muted)}
   </section>
 
   <!-- ============ Scheda 4: gravitazione universale ============ -->
-  <section class="view" id="view3" hidden>
+  <section class="view" id="view3" hidden data-intero>
+    <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+    <div class="csel" data-chips="quickD"><button class="freccia" data-d="-1" aria-label="Prova precedente" title="Prova precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Prova successiva" title="Prova successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
     <div class="modalita" id="viewBtnsD" role="group" aria-label="Vista">
       <button type="button" data-view="scene" aria-pressed="true">Scena</button>
       <button type="button" data-view="graph" aria-pressed="false">Grafici</button>
       <button type="button" data-view="why" aria-pressed="false">Perché il quadrato</button>
     </div>
     <div class="stickycol">
-      <div class="stage">
+      <div class="stage"><button class="comando-scena console-k" style="right:10px;top:10px;z-index:3"></button>
         <div class="formula" id="formulaD">F = G · <span class="fm fm1" id="fm1">m<sub>1</sub></span> · <span class="fm fm2" id="fm2">m<sub>2</sub></span> / <span class="fm fmd" id="fmd">d<sup>2</sup></span></div>
         <svg id="svgD" viewBox="0 0 600 480" role="img" aria-label="Forza di gravità tra due corpi">
           <g id="sceneD">
@@ -427,7 +517,7 @@ svg .muted{fill:var(--st-muted)}
         </div>
       </div>
 
-      <div class="group">
+      <div class="group cbarre">
         <h3>Valori</h3>
         <div class="slider"><label for="sM1D">m<sub>1</sub></label><input id="sM1D" type="range" min="1" max="4" step="1" value="1"><output id="oM1D"></output></div>
         <div class="slider"><label for="sM2D">m<sub>2</sub></label><input id="sM2D" type="range" min="1" max="4" step="1" value="1"><output id="oM2D"></output></div>
@@ -1027,6 +1117,23 @@ svg .muted{fill:var(--st-muted)}
   updateButtonsC();updateInfoC();updateReadC();updateTableC();drawC();
   updateViewD();updateD();
   requestAnimationFrame(frame);
+})();
+/* modalità console: un pulsante per scheda; la croce tocca il chip vicino (orbite, pianeti, prove rapide) */
+(function(){
+  document.querySelectorAll('.view[data-intero]').forEach(function(v){
+    var cs=v.querySelector('.csel'),box=document.getElementById(cs.dataset.chips),nome=cs.querySelector('.cnome'),ult=-1;
+    var VUOTO={presets:'Orbita libera',presetsB:'Orbita libera',plBtnsC:'Scegli un pianeta',quickD:'Prove rapide'}[cs.dataset.chips];
+    function chips(){return Array.prototype.slice.call(box.querySelectorAll('.chip'));}
+    function agg(){var k=chips(),i=k.findIndex(function(c){return c.getAttribute('aria-pressed')==='true';});if(i<0&&box.id==='quickD')i=ult;
+      nome.textContent=i<0?VUOTO:k[i].textContent;}
+    cs.addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;var k=chips(),n=k.length,d=+b.dataset.d,
+      i=k.findIndex(function(c){return c.getAttribute('aria-pressed')==='true';});if(i<0)i=ult;var j=i<0?(d>0?0:n-1):(i+d+n)%n;ult=j;k[j].click();agg();});
+    box.addEventListener('click',function(e){var c=e.target.closest('.chip');if(c)ult=chips().indexOf(c);setTimeout(agg,0);});
+    new MutationObserver(agg).observe(box,{attributes:true,subtree:true,childList:true,attributeFilter:['aria-pressed']});
+    v.addEventListener('input',function(){setTimeout(agg,0);});
+    agg();
+    schermoIntero(v,v.querySelector('.console-k'));
+  });
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Orbite interattive per capire le tre leggi di Keplero e la gravitazione: si sceglie tra Terra, Marte, Mercurio e la cometa di Halley, si segue il settore percorso dal pianeta e si confrontano le distanze dai fuochi. Una scheda collega le leggi alla forza di gravità, con la velocità maggiore al perielio.</p>
