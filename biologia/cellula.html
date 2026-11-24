@@ -100,7 +100,7 @@ button{font-family:inherit;cursor:pointer}
 /* ---- 02 L'osmosi: modalità console (24 nov 2026) ----
    Le due vasche occupano lo schermo (in verticale una alla volta, con Animali e Piante in alto);
    concentrazione, Ipotonica, Isotonica, Ipertonica e Reset su pannelli; legenda e testi solo nella pagina.
-   Il pulsante della modalità sta in ogni vasca (in orizzontale si vede solo quello della vasca di destra). */
+   Il pulsante della modalità sta nel riquadro dei comandi, accanto a Reset: vale per tutte e due le vasche. */
 .pannello-o{display:none}
 #p-osmosi.intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--pan:#232b3b;--bordo:#2a3850}
 #p-osmosi.intero .pannello-o{display:block;position:absolute;z-index:2;background:var(--pan);border:1px solid var(--bordo);border-radius:16px}
@@ -112,12 +112,13 @@ button{font-family:inherit;cursor:pointer}
 #p-osmosi.intero .view{flex:1;height:auto;min-height:0;border-radius:12px}
 #p-osmosi.intero .status{min-height:0;margin:6px 4px 0;font-size:13px;color:#c8d3e3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 #p-osmosi.intero #tipoA{margin:0 0 8px!important}
-/* vasche affiancate (schermi larghi): un solo pulsante della modalità, nella vasca di destra */
-@media(min-width:761px){#vA .console-osmosi{display:none}#vA .resetvista{top:8px!important}}
-#p-osmosi.intero .comando-console{top:8px!important}
+/* il pulsante della modalità sta nel riquadro dei comandi, che vale per tutte e due le vasche */
+#oIntero{position:static}
+#p-osmosi.intero #oIntero{position:absolute;z-index:5}
 /* verticale: una vasca alla volta */
 @media(orientation:portrait){
- #p-osmosi.intero #seg{display:flex;position:absolute;z-index:4;margin:0;top:calc(12px + var(--st));left:calc(12px + var(--sl));right:calc(12px + var(--sr));max-width:none}
+ #p-osmosi.intero #seg{display:flex;position:absolute;z-index:4;margin:0;top:calc(12px + var(--st));left:calc(12px + var(--sl));right:calc(60px + var(--sr));max-width:none}
+ #p-osmosi.intero #oIntero{top:calc(14px + var(--st));right:calc(12px + var(--sr))}
  #p-osmosi.intero .duo{top:calc(62px + var(--st));left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(166px + var(--sb));display:block}
  #p-osmosi.intero .duo>.card{height:100%}
  #p-osmosi.intero .duo[data-show="A"] #cardP,#p-osmosi.intero .duo[data-show="P"] #cardA{display:none}
@@ -133,13 +134,12 @@ button{font-family:inherit;cursor:pointer}
  #p-osmosi.intero #seg{display:none}
  #p-osmosi.intero .duo{top:calc(12px + var(--st));left:calc(220px + var(--sl));right:calc(12px + var(--sr));bottom:calc(80px + var(--sb));display:grid;grid-template-columns:1fr 1fr;gap:12px}
  #p-osmosi.intero #cardA,#p-osmosi.intero #cardP{display:flex}
- #p-osmosi.intero #vA .comando-console{display:none}
- #p-osmosi.intero #vA .resetvista{top:8px!important}
  #p-osmosi.intero .pannello-o{left:calc(12px + var(--sl));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:196px}
  #p-osmosi.intero .pannello-o.barra-o{left:calc(220px + var(--sl));right:calc(12px + var(--sr));top:auto;width:auto;height:56px}
  #p-osmosi.intero #zoneLbl{left:calc(24px + var(--sl));top:calc(26px + var(--st));width:172px}
  #p-osmosi.intero .ctrl .chips{left:calc(22px + var(--sl));top:calc(80px + var(--st));width:176px;flex-direction:column;align-items:stretch}
  #p-osmosi.intero #resetBtn{left:calc(26px + var(--sl));top:calc(226px + var(--st))}
+ #p-osmosi.intero #oIntero{left:calc(24px + var(--sl));bottom:calc(24px + var(--sb))}
  #p-osmosi.intero .bar{left:calc(244px + var(--sl));right:calc(36px + var(--sr));bottom:calc(32px + var(--sb))}}
 /* ---- 01 La cellula ---- */
 .row{display:flex;gap:8px;flex-wrap:wrap}
@@ -263,6 +263,7 @@ button{font-family:inherit;cursor:pointer}
           <button class="chip" data-c="85" style="--chip:#F5D6D6">Ipertonica</button>
         </div>
         <button class="azione link" id="resetBtn">↻ Reset</button>
+        <button class="comando-scena" id="oIntero"></button>
       </div>
     </div>
     <div class="bar"><input type="range" id="conc" min="0" max="100" value="50" aria-label="Concentrazione di soluto nella soluzione esterna"></div>
@@ -279,8 +280,8 @@ button{font-family:inherit;cursor:pointer}
     <button data-v="P" aria-pressed="false"><span class="pt" style="background:#E2F0D9"></span>Piante</button>
   </div>
   <div class="duo" id="duo" data-show="A">
-    <div class="card" id="cardA"><h3>Animali</h3><div class="chips" id="tipoA" role="group" aria-label="Cellula animale da osservare" style="margin:0 0 10px"><button class="chip attivo" data-a="cell" aria-pressed="true" style="--chip:#FCE4D6">Cellula animale</button><button class="chip" data-a="rbc" aria-pressed="false" style="--chip:#C0392B">Globulo rosso</button></div><div class="view" id="vA"><div class="tint"></div><button class="comando-scena console-osmosi" style="right:8px;top:8px;z-index:3"></button><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button></div><div class="status" id="stA"></div></div>
-    <div class="card" id="cardP"><h3>Piante</h3><div class="chips spaziatore" aria-hidden="true" style="margin:0 0 10px;visibility:hidden"><button class="chip" tabindex="-1" disabled>Cellula vegetale</button></div><div class="view" id="vP"><div class="tint"></div><button class="comando-scena console-osmosi" style="right:8px;top:8px;z-index:3"></button><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button></div><div class="status" id="stP"></div></div>
+    <div class="card" id="cardA"><h3>Animali</h3><div class="chips" id="tipoA" role="group" aria-label="Cellula animale da osservare" style="margin:0 0 10px"><button class="chip attivo" data-a="cell" aria-pressed="true" style="--chip:#FCE4D6">Cellula animale</button><button class="chip" data-a="rbc" aria-pressed="false" style="--chip:#C0392B">Globulo rosso</button></div><div class="view" id="vA"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button></div><div class="status" id="stA"></div></div>
+    <div class="card" id="cardP"><h3>Piante</h3><div class="chips spaziatore" aria-hidden="true" style="margin:0 0 10px;visibility:hidden"><button class="chip" tabindex="-1" disabled>Cellula vegetale</button></div><div class="view" id="vP"><div class="tint"></div><button class="comando-scena resetvista" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button></div><div class="status" id="stP"></div></div>
   </div>
   <div class="small solo-pagina">Trascina sulla vasca per ruotarla (animale e pianta ruotano insieme); pizzica o usa la rotella per ingrandire.</div>
   <div class="proft solo-pagina"><img src="../immagini/prof_t/prof_t_biologo_microscopio.webp" alt="Prof. T biologo"><div class="fumetto">Sposta il cursore o tocca Ipotonica e Ipertonica, poi guarda da che parte vanno le gocce d'acqua. Prova anche la modalità console, in alto a destra nella vasca.</div></div>
@@ -914,7 +915,7 @@ function attachControls(cv){
  cv.addEventListener('wheel',e=>{e.preventDefault();CAM.rad=clamp(CAM.rad*(1+e.deltaY*.001),6.5,15);dirty=1;},{passive:false});
 }
 document.querySelectorAll('.resetvista').forEach(b=>b.onclick=()=>{CAM.th=-.65;CAM.ph=1.2;CAM.rad=10.5;dirty=1;});
-schermoIntero(document.getElementById('p-osmosi'),document.querySelectorAll('.console-osmosi'),()=>{dirty=1;});
+schermoIntero(document.getElementById('p-osmosi'),document.getElementById('oIntero'),()=>{dirty=1;});
 
 // ---------- stato e animazione (le cellule inseguono la barra con un po' di ritardo) ----------
 if(!R3){document.querySelectorAll('.view').forEach(v=>v.innerHTML='<p style="padding:16px;color:#5c6572">'+MSG_3D+'</p>');return;}
