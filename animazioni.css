@@ -402,6 +402,41 @@ html.in-intero .torna-sito { display: none !important; }
   -webkit-tap-highlight-color: transparent;
 }
 .invito-console[hidden] { display: none; }
+
+/* Comandi stile controller dentro la modalità console (dal 24 nov 2026), uguali in tutte le pagine:
+   - frecce dei selettori unite in una croce direzionale con il nome al centro (.selettore, .csel);
+   - comandi della scena e play come tasti tondi che si abbassano al tocco;
+   - barre del tempo con binario spesso e pomello tondo grande.
+   Gli elementi restano quelli della pagina: cambia solo l'aspetto. */
+[data-intero].intero .selettore, [data-intero].intero .csel { gap: 0 !important; }
+[data-intero].intero .selettore > .freccia, [data-intero].intero .csel > .freccia {
+  background: #1a2333; border: 1px solid #34476b; border-radius: 4px; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .3);
+}
+[data-intero].intero .selettore > .freccia:active, [data-intero].intero .csel > .freccia:active { transform: translateY(1px); box-shadow: none; }
+[data-intero].intero .selettore > span, [data-intero].intero .csel > span {
+  align-self: stretch; display: flex; align-items: center; justify-content: center;
+  background: #141c2b; border-top: 1px solid #34476b; border-bottom: 1px solid #34476b; min-height: 44px; padding: 0 6px;
+}
+/* croce in riga: bracci a sinistra e a destra */
+[data-intero].intero .selettore > .freccia:first-child, [data-intero].intero .csel > .freccia:first-child { border-radius: 12px 4px 4px 12px; }
+[data-intero].intero .selettore > .freccia:last-child, [data-intero].intero .csel > .freccia:last-child { border-radius: 4px 12px 12px 4px; }
+@media (orientation: landscape) {
+  /* in orizzontale il selettore sta nella colonna sinistra: croce in colonna, bracci sopra e sotto */
+  [data-intero].intero .selettore > .freccia, [data-intero].intero .csel > .freccia { width: 100%; height: 38px; }
+  [data-intero].intero .selettore > span, [data-intero].intero .csel > span { flex: none; border: 0; border-left: 1px solid #34476b; border-right: 1px solid #34476b; min-height: 38px; }
+  [data-intero].intero .selettore > .freccia:first-child, [data-intero].intero .csel > .freccia:first-child { border-radius: 12px 12px 4px 4px; }
+  [data-intero].intero .selettore > .freccia:last-child, [data-intero].intero .csel > .freccia:last-child { border-radius: 4px 4px 12px 12px; }
+}
+
+[data-intero].intero .comando-scena { border-radius: 999px; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .35); }
+[data-intero].intero .comando-scena:active { transform: translateY(1px); box-shadow: none; }
+[data-intero].intero .play { box-shadow: 0 0 0 4px rgba(255, 255, 255, .08), inset 0 -4px 0 rgba(0, 0, 0, .25); }
+[data-intero].intero .play:active { transform: scale(.94); }
+[data-intero].intero .barra input[type=range] { -webkit-appearance: none; appearance: none; background: transparent; height: 30px; }
+[data-intero].intero .barra input[type=range]::-webkit-slider-runnable-track { height: 12px; border-radius: 6px; background: #16233a; border: 1px solid #34476b; }
+[data-intero].intero .barra input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -9px; border-radius: 50%; background: var(--disciplina); box-shadow: 0 0 0 4px rgba(255, 255, 255, .12); }
+[data-intero].intero .barra input[type=range]::-moz-range-track { height: 12px; border-radius: 6px; background: #16233a; border: 1px solid #34476b; }
+[data-intero].intero .barra input[type=range]::-moz-range-thumb { width: 24px; height: 24px; border: 0; border-radius: 50%; background: var(--disciplina); }
 .invito-console svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 [data-intero]:not(.intero) .solo-intero { display: none !important; }
 
