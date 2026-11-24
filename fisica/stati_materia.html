@@ -145,6 +145,113 @@ button,input{font-family:inherit}
 .opt:hover{border-color:#3a4d70}
 .vetri figure{margin:0;flex:1;text-align:center;font-size:13px;color:var(--mut)}
 .vetri svg{width:100%;max-width:120px;height:auto;display:block;margin:0 auto 2px}
+/* ---- modalità console (24 nov 2026), schede 01-03: scena a tutto schermo; croce della scheda in alto;
+   01 croce della sostanza, stato e cursore della temperatura (pannello in basso); 02 croce dei passaggi e scheda del passaggio;
+   03 grafico, gettoni, termometro, ponti e tasti del fornello. In orizzontale colonna sinistra e colonna destra. ---- */
+.csel,.cpan{display:none}
+.csel .freccia{width:44px;height:44px;border:0;color:#e6ecf5;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.csel .freccia svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.cnome{flex:1;text-align:center;font-size:15px;font-weight:700;color:var(--disciplina);line-height:1.2}
+.layout.intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);margin:0;gap:0}
+.layout.intero>section,.layout.intero>aside,.layout.intero #panel,.layout.intero #panel3,.layout.intero #panel3>.card,.layout.intero #panel2{display:contents}
+.layout.intero .stage{position:absolute;inset:0;height:auto!important;border:0;border-radius:0;overflow:visible;order:0}
+.layout.intero .cpan{display:block;position:absolute;z-index:2;background:#232b3b;border:1px solid #2a3850;border-radius:16px}
+.layout.intero .csel{display:flex;align-items:center;position:absolute;z-index:4}
+.layout.intero #sSel .cnome{color:#e6ecf5;font-size:14px}
+.layout.intero #sSel>.freccia{width:40px;height:40px}
+.layout.intero #sSel>span{flex:1;min-height:40px;display:flex;align-items:center;justify-content:center;border:0;border-top:1px solid #34476b;border-bottom:1px solid #34476b}
+.layout.intero #sSel>.freccia:first-child{border-radius:12px 4px 4px 12px}
+.layout.intero #sSel>.freccia:last-child{border-radius:4px 12px 12px 4px}
+.layout.intero .card{position:absolute;z-index:4;margin:0;background:none;border:0;padding:0;order:0}
+.layout.intero .opzioni{position:absolute;z-index:5;margin:0;background:#232b3b;border-color:#2a3850;order:0}
+.layout.intero .opzioni summary{padding:10px 14px}
+.layout.intero .opzioni[open] summary::after{content:"\2715"}
+.layout.intero .legenda{z-index:3}
+.layout.intero #tcard .tval{font-size:22px}
+.layout.intero #tcard .tstato{font-size:16px}
+.layout.intero #sCard .stato-nome{font-size:19px}
+.layout.intero #sCard .stato-sost{font-size:13px;margin:0}
+.layout.intero #pInfo{overflow:auto;font-size:13px}
+.layout.intero #pInfo .ptit{font-size:18px}
+.layout.intero #pInfo .pes{font-size:13px}
+.layout.intero #pInfo .azione{border-radius:999px}
+.layout.intero .frow{position:absolute;z-index:4;margin:0;grid-template-columns:56px 1fr 1fr;gap:8px}
+.layout.intero #forn{width:56px;height:56px}
+.layout.intero .gnum{font-size:22px}
+.layout.intero .prow{position:absolute;z-index:4;margin:0}
+.layout.intero #gAz{position:absolute;z-index:4;overflow:auto}
+.layout.intero #gAz .azioni{gap:8px;margin:0}
+.layout.intero #gAz .azione{border-radius:999px;min-height:46px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.35)}
+.layout.intero #gAz .azione:active{transform:translateY(1px);box-shadow:none}
+.layout.intero #gAz .qq{font-size:14px;margin:0 0 8px}
+.layout.intero #gAz .opts{grid-template-columns:1fr;gap:6px}
+.layout.intero #gAz .opt{padding:8px;font-size:14px;border-radius:999px}
+.layout.intero #gcard{display:flex;align-items:center;justify-content:center}
+.layout.intero #grafico{width:100%;height:100%}
+.layout.intero.forn #mSel,.layout.intero.all #mSel{display:none}
+.layout.intero #schemaCard,.layout.intero #panel4{display:none!important}
+.layout.all #bIntero{display:none}
+@media(orientation:portrait){
+ .layout.intero .cpan.sx,.layout.intero .cpan.dx{display:none}
+ .layout.intero #sSel{top:calc(12px + var(--st));left:calc(12px + var(--sl));right:calc(60px + var(--sr))}
+ .layout.intero #bIntero{top:calc(12px + var(--st))!important;right:calc(12px + var(--sr))!important}
+ .layout.intero .comando-scena:not(#bIntero){right:calc(12px + var(--sr))!important;margin-top:calc(16px + var(--st))}
+ .layout.intero .opzioni{top:calc(62px + var(--st));left:calc(12px + var(--sl));width:150px}
+ .layout.intero .opzioni[open]{width:auto;right:calc(60px + var(--sr))}
+ .layout.intero .legenda{top:auto;bottom:10px;left:12px;right:12px}
+ .layout.intero .cpan.basso{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb))}
+ .layout.intero #mSel{left:calc(20px + var(--sl));right:calc(20px + var(--sr))}
+ .layout.intero #sCard{display:none}
+ /* 01 */
+ .layout.intero:not(.forn):not(.pass) .stage{bottom:calc(196px + var(--sb))}
+ .layout.intero:not(.forn):not(.pass) .cpan.basso{height:176px}
+ .layout.intero:not(.forn):not(.pass) #mSel{bottom:calc(132px + var(--sb))}
+ .layout.intero #tcard{left:calc(26px + var(--sl));right:calc(26px + var(--sr));bottom:calc(18px + var(--sb))}
+ /* 02 */
+ .layout.intero.pass .stage{bottom:calc(236px + var(--sb))}
+ .layout.intero.pass .cpan.basso{height:216px}
+ .layout.intero.pass #mSel{bottom:calc(172px + var(--sb))}
+ .layout.intero #pInfo{left:calc(26px + var(--sl));right:calc(26px + var(--sr));bottom:calc(20px + var(--sb));height:146px}
+ /* 03 */
+ .layout.intero.forn .stage{top:calc(250px + var(--st));bottom:calc(228px + var(--sb))}
+ .layout.intero.forn #bIntero{top:-238px!important}
+ .layout.intero.forn .comando-scena:not(#bIntero){margin-top:-234px}
+ .layout.intero #gcard{top:calc(108px + var(--st));left:calc(12px + var(--sl));right:calc(60px + var(--sr));height:138px}
+ .layout.intero.forn .cpan.basso{height:208px}
+ .layout.intero .frow{left:calc(24px + var(--sl));right:calc(24px + var(--sr));bottom:calc(150px + var(--sb))}
+ .layout.intero .prow{left:calc(24px + var(--sl));right:calc(24px + var(--sr));bottom:calc(126px + var(--sb))}
+ .layout.intero #gAz{left:calc(24px + var(--sl));right:calc(24px + var(--sr));bottom:calc(20px + var(--sb));height:100px}}
+@media(orientation:landscape){
+ .layout.intero .stage{left:calc(236px + var(--sl));right:calc(164px + var(--sr))}
+ .layout.intero .cpan.sx{left:calc(12px + var(--sl));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:220px}
+ .layout.intero .cpan.dx{right:calc(12px + var(--sr));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:148px}
+ .layout.intero .cpan.basso{display:none}
+ .layout.intero .legenda{top:10px;left:10px;right:10px}
+ .layout.intero #sSel{left:calc(24px + var(--sl));width:196px;top:calc(22px + var(--st))}
+ .layout.intero #mSel{flex-direction:column;left:calc(24px + var(--sl));width:196px;top:calc(78px + var(--st))}
+ .layout.intero #mSel .freccia svg{transform:rotate(90deg)}
+ .layout.intero #mSel .cnome{flex:none;width:100%}
+ .layout.intero #bIntero{right:auto!important;left:calc(100% + 42px);top:calc(22px + var(--st))!important}
+ .layout.intero #bReset{right:auto!important;left:calc(100% + 94px);top:calc(22px + var(--st))!important}
+ .layout.intero #bPiu{right:auto!important;left:calc(100% + 42px);top:calc(74px + var(--st))!important}
+ .layout.intero #bMeno{right:auto!important;left:calc(100% + 94px);top:calc(74px + var(--st))!important}
+ .layout.intero .opzioni{right:calc(20px + var(--sr));bottom:calc(20px + var(--sb));width:132px}
+ .layout.intero .opzioni[open]{width:240px}
+ /* 01: stato a sinistra, temperatura su un pannello in basso */
+ .layout.intero:not(.forn):not(.pass) .stage{bottom:calc(132px + var(--sb))}
+ .layout.intero:not(.forn):not(.pass) .cpan.basso{display:block;left:calc(240px + var(--sl));right:calc(168px + var(--sr));bottom:calc(12px + var(--sb));height:112px}
+ .layout.intero #tcard{left:calc(256px + var(--sl));right:calc(184px + var(--sr));bottom:calc(18px + var(--sb))}
+ .layout.intero #sCard{left:calc(26px + var(--sl));width:192px;top:calc(204px + var(--st))}
+ /* 02 */
+ .layout.intero #pInfo{left:calc(26px + var(--sl));width:192px;top:calc(204px + var(--st));bottom:calc(22px + var(--sb))}
+ /* 03 */
+ .layout.intero .frow{left:calc(24px + var(--sl));width:196px;top:calc(76px + var(--st))}
+ .layout.intero .prow{left:calc(24px + var(--sl));width:196px;top:calc(170px + var(--st))}
+ .layout.intero #gcard{left:calc(22px + var(--sl));width:200px;top:calc(200px + var(--st));bottom:calc(22px + var(--sb))}
+ .layout.intero #gAz{right:calc(22px + var(--sr));width:128px;top:calc(126px + var(--st));bottom:calc(76px + var(--sb))}
+ .layout.intero #gAz .azioni{grid-template-columns:1fr}
+ .layout.intero #gAz .azione{min-height:40px;padding:6px}}
+
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
@@ -162,46 +269,50 @@ button,input{font-family:inherit}
  <button class="scheda" role="tab" aria-selected="false" data-p="allenati"><span class="num">04</span>Allenati</button>
 </nav>
 
-<div class="layout">
+<div class="layout" data-intero>
+<div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+<div class="csel" id="sSel"><button class="freccia" data-d="-1" aria-label="Scheda precedente" title="Scheda precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Scheda successivo" title="Scheda successivo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+<div class="csel" id="mSel"><button class="freccia" data-d="-1" aria-label="Elemento precedente" title="Elemento precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Elemento successivo" title="Elemento successivo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
 <section>
  <div class="stage" id="stage">
   <div class="legenda" id="legenda"></div>
-  <div class="cap">Recipiente chiuso. Particelle molto ingrandite, non in scala.</div>
-  <button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
-  <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
-  <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
+  <button class="comando-scena" id="bIntero" style="right:8px;top:8px;z-index:3"></button>
+  <div class="cap solo-pagina">Recipiente chiuso. Particelle molto ingrandite, non in scala.</div>
+  <button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
+  <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:92px;z-index:3">+</button>
+  <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:134px;z-index:3">&minus;</button>
  </div>
  <div class="card" id="tcard">
   <div class="trow"><div><div class="sect" style="margin:0">Temperatura</div><div class="tval" id="tval">20 °C</div></div><div class="tstato" id="tstato"></div></div>
   <div class="cursore"><input type="range" id="temp" min="0" max="1000" step="1" aria-label="Temperatura"></div>
   <div class="tacche" id="tacche"></div>
-  <p class="nota" style="margin:4px 0 0">Il cursore non è in scala, ogni stato ha lo stesso spazio.</p>
+  <p class="nota solo-pagina" style="margin:4px 0 0">Il cursore non è in scala, ogni stato ha lo stesso spazio.</p>
  </div>
  <div class="card hide" id="gcard">
   <svg id="grafico" viewBox="0 0 560 312" role="img" aria-label="Grafico della temperatura dell'acqua al crescere dei gettoni"></svg>
-  <p class="nota" style="margin:2px 0 0">1 g d'acqua. Un gettone vale 42 J, l'energia che scalda 1 g d'acqua di 10 °C.</p>
+  <p class="nota solo-pagina" style="margin:2px 0 0">1 g d'acqua. Un gettone vale 42 J, l'energia che scalda 1 g d'acqua di 10 °C.</p>
  </div>
  <div class="card hide" id="schemaCard">
   <svg id="schema" viewBox="0 0 660 396" role="group" aria-label="Schema dei passaggi di stato"></svg>
   <div class="leg2"><span><i style="background:#ff8a5b"></i>assorbe calore</span><span><i style="background:#6fc3ff"></i>cede calore</span></div>
  </div>
- <p class="hint">Trascina per ruotare la vista, pizzica o usa la rotella per avvicinarti.</p>
+ <p class="hint solo-pagina">Trascina per ruotare la vista, pizzica o usa la rotella per avvicinarti.</p>
  <details class="opzioni">
   <summary><b>Opzioni</b></summary>
   <button class="levetta" role="switch" id="oLento" aria-checked="false">Rallenta il movimento</button>
  </details>
 </section>
 <aside>
- <div class="prof"><img id="profImg" alt="Prof. T con il grembiule da cucina"><div class="bubble" id="bubble" aria-live="polite"></div></div>
+ <div class="prof solo-pagina"><img id="profImg" alt="Prof. T con il grembiule da cucina"><div class="bubble" id="bubble" aria-live="polite"></div></div>
  <div id="panel">
-  <div class="card"><div class="sect">Sostanza</div><div class="chips" id="sost" style="margin:0"></div></div>
-  <div class="card" aria-live="polite">
+  <div class="card solo-pagina"><div class="sect">Sostanza</div><div class="chips" id="sost" style="margin:0"></div></div>
+  <div class="card" id="sCard" aria-live="polite">
    <div class="stato-nome" id="sNome"></div>
    <div class="stato-sost" id="sSost"></div>
-   <table class="crus" id="crus"></table>
-   <div id="extra"></div>
+   <table class="crus solo-pagina" id="crus"></table>
+   <div class="solo-pagina" id="extra"></div>
   </div>
-  <div class="anchor">Scaldando, le particelle si muovono più in fretta e si allontanano. La sostanza resta la stessa, cambia solo il modo in cui le particelle stanno insieme.</div>
+  <div class="anchor solo-pagina">Scaldando, le particelle si muovono più in fretta e si allontanano. La sostanza resta la stessa, cambia solo il modo in cui le particelle stanno insieme.</div>
  </div>
  <div id="panel3" class="hide">
   <div class="card">
@@ -214,12 +325,12 @@ button,input{font-family:inherit}
    <div id="gAz"></div>
   </div>
  </div>
- <div class="anchor hide" id="anchor3">Durante la fusione e l'ebollizione i gettoni non scaldano. Servono a spezzare i ponti a idrogeno tra le molecole. Per questo si chiama calore latente, cioè nascosto.</div>
+ <div class="anchor hide solo-pagina" id="anchor3">Durante la fusione e l'ebollizione i gettoni non scaldano. Servono a spezzare i ponti a idrogeno tra le molecole. Per questo si chiama calore latente, cioè nascosto.</div>
  <div id="panel2" class="hide">
   <div class="card" aria-live="polite" id="pInfo"></div>
  </div>
  <div id="panel4" class="hide"><div class="card quiz4" id="quiz4" aria-live="polite"></div></div>
- <div class="anchor hide" id="anchor2">I passaggi verso l'aeriforme assorbono calore dall'ambiente. I passaggi al contrario lo restituiscono, nella stessa quantità.</div>
+ <div class="anchor hide solo-pagina" id="anchor2">I passaggi verso l'aeriforme assorbono calore dall'ambiente. I passaggi al contrario lo restituiscono, nella stessa quantità.</div>
 </aside>
 </div>
 </div>
@@ -730,7 +841,7 @@ function vetro(ghiaccio){
   +(ghiaccio?'il ghiaccio galleggia nell\'acqua':'la cera solida affonda nella cera fusa')+'</figure>';}
 
 var FRASI={
- start:'Ciao! Muovi il cursore della temperatura e guarda cosa fanno le particelle. Con i pulsanti Acqua, Alcol, Ferro e Ghiaccio secco cambi sostanza.',
+ start:'Ciao! Muovi il cursore della temperatura e guarda cosa fanno le particelle. Con i pulsanti Acqua, Alcol, Ferro e Ghiaccio secco cambi sostanza. Prova anche la modalità console, in alto a destra nella scena.',
  0:'Nel solido le particelle sono vicine e ordinate. Non stanno ferme, vibrano sul posto, e più è caldo più vibrano.',
  ghiaccio:'Ruota la vista e guarda il ghiaccio dall\'alto. Le molecole formano anelli a sei lati con un vuoto al centro, per questo il ghiaccio occupa più spazio dell\'acqua e galleggia.',
  1:'Nel liquido le particelle restano vicine ma scorrono le une sulle altre. Per questo il liquido prende la forma del recipiente.',
@@ -914,7 +1025,7 @@ var Passaggi=(function(){
 
  return {
   apri:function(){G.attivo=true;G.sel=null;S.t=20;S.plasmaVis=false;if(scena){scena.imposta('acqua',1);scena.ricolora();}legenda();schema();info();
-   say('Ecco i passaggi di stato dell\'acqua. Tocca una freccia dello schema.','hi');},
+   say('Ecco i passaggi di stato dell\'acqua. Tocca una freccia dello schema. Prova anche la modalità console, in alto a destra nella scena.','hi');},
   chiudi:function(){G.attivo=false;S.plasmaVis=false;}};
 })();
 
@@ -1044,7 +1155,7 @@ var Fornello=(function(){
    no:'Molti di più, ne servono 54. È più di cinque volte l\'energia per scaldarla da 0 a 100 °C. Mettili uno alla volta, oppure tocca Scalda.'}];
 
  var MSG={
-  start:'Ecco 1 g di ghiaccio a −20 °C. Le linee tratteggiate sono i ponti a idrogeno tra le molecole. Ogni gettone dà 42 J. Tocca + Metti.',
+  start:'Ecco 1 g di ghiaccio a −20 °C. Le linee tratteggiate sono i ponti a idrogeno tra le molecole. Ogni gettone dà 42 J. Tocca + Metti. Prova anche la modalità console, in alto a destra nella scena.',
   zero:'0 °C, il ghiaccio comincia a fondere.',
   fonde:'Il termometro è fermo a 0 °C. Ogni gettone spezza qualche ponte a idrogeno e stacca molecole dal reticolo.',
   fuso:'Tutto il ghiaccio è fuso, con 8 gettoni. Si è rotta solo una piccola parte dei ponti. Nell\'acqua si rompono e si riformano di continuo.',
@@ -1236,6 +1347,28 @@ var Allenati=(function(){
 
 sostanza('acqua',false);
 say(FRASI.start,'hi');
+/* =========================== MODALITÀ CONSOLE =========================== */
+(function(){
+ var sN=document.querySelector('#sSel .cnome'),mN=document.querySelector('#mSel .cnome');
+ var TABS=['stati','passaggi','fornello'];
+ function agg(){var t=document.querySelector('#tabs .scheda.attiva');sN.textContent=t?t.textContent.replace(/^\d+/,''):'';
+  if(S.tab==='stati'){var so=SOST[S.k];mN.textContent=so.n;mN.style.color='color-mix(in srgb,'+so.c+' 60%,#fff)';}
+  else if(S.tab==='passaggi'){var pt=document.querySelector('#pInfo .ptit');var sel=document.querySelector('#schema .freccia .vis[stroke-width="4.5"]');
+   mN.textContent=sel&&pt?pt.textContent:'Scegli un passaggio';mN.style.color=sel&&pt?pt.style.color:'';}}
+ document.getElementById('sSel').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;var i=TABS.indexOf(S.tab),d=+b.dataset.d;
+  apriScheda(TABS[i<0?0:(i+d+3)%3]);agg();});
+ document.getElementById('mSel').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;var d=+b.dataset.d;
+  if(S.tab==='stati'){var i=ORDINE.indexOf(S.k),n=ORDINE.length;sostanza(ORDINE[(i+d+n)%n],true);}
+  else if(S.tab==='passaggi'){var fr=Array.prototype.slice.call(document.querySelectorAll('#schema .freccia')),n2=fr.length,
+    j=fr.findIndex(function(g){return g.querySelector('.vis').getAttribute('stroke-width')==='4.5';});
+   fr[j<0?(d>0?0:n2-1):(j+d+n2)%n2].dispatchEvent(new MouseEvent('click',{bubbles:true}));}
+  agg();});
+ new MutationObserver(agg).observe(document.getElementById('pInfo'),{childList:true});
+ new MutationObserver(agg).observe(document.getElementById('sost'),{childList:true});
+ var ap0=apriScheda;apriScheda=function(p){ap0(p);agg();};
+ agg();
+ schermoIntero(document.querySelector('.layout'),document.getElementById('bIntero'),function(){if(scena)setTimeout(scena.resize,30);});
+})();
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Le particelle di acqua, alcol, ferro e ghiaccio secco in 3D, dal solido all'aeriforme fino al plasma. Forma, volume, movimento ed energia delle particelle, passaggi di stato e calore latente.</p>
