@@ -119,6 +119,8 @@ function tastierinaCollega(pad, campo, op) {
    - sul telefono, girandolo in orizzontale compare per qualche secondo l'invito "Modalità console?";
    - l'orientamento non si blocca: dentro si può girare il telefono quando si vuole;
    - ogni ingresso è contato da GoatCounter come evento "console-<pagina>", senza dati personali.
+   Le Opzioni, se ci sono, restano il <details class="opzioni"> della pagina: a schermo intero diventano
+   un pulsante sul pannello che apre il menu sopra la scena (posizione nello stile della pagina).
    Stile in animazioni.css. */
 var CONSOLE_INVITO_MS = 4000;   /* durata dell'invito quando si gira il telefono */
 function schermoIntero(blocco, pulsante, alCambio) {
@@ -190,7 +192,18 @@ function schermoIntero(blocco, pulsante, alCambio) {
   document.addEventListener('fullscreenchange', cambioVero);
   document.addEventListener('webkitfullscreenchange', cambioVero);
   window.addEventListener('popstate', function () { if (dentro && !elementoVero()) { storia = false; aggiorna(false); } });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && dentro && !elementoVero()) esci(); });
+  /* menu Opzioni (le levette della pagina, in <details class="opzioni">): si chiude toccando fuori o con Esc */
+  function menuAperti() { return blocco.querySelectorAll('details.opzioni[open]'); }
+  blocco.addEventListener('pointerdown', function (e) {
+    if (!dentro) return;
+    Array.prototype.forEach.call(menuAperti(), function (d) { if (!d.contains(e.target)) d.open = false; });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || !dentro) return;
+    var m = menuAperti();
+    if (m.length) { Array.prototype.forEach.call(m, function (d) { d.open = false; }); return; }
+    if (!elementoVero()) esci();
+  });
 
   /* invito quando si gira il telefono in orizzontale: una volta per pagina, solo se la scena si vede */
   var invito = document.createElement('button');

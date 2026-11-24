@@ -45,6 +45,54 @@ button{font-family:inherit;cursor:pointer}
 .fumetto{background:var(--panel);border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:9px 12px;line-height:1.4;font-size:15px}
 @media(max-width:760px){.proft{grid-template-columns:auto 1fr}.proft img{height:145px}}
 
+/* ---- 01 La cellula: modalità console (24 nov 2026) ----
+   La scena occupa tutto; Animali, Piante e Funghi restano sempre in vista; la struttura scelta
+   si cambia con le frecce o toccando il modello, con nome e descrizione breve; le Opzioni sono
+   le stesse levette della pagina (<details>), che diventano un pulsante e un menu sopra la scena.
+   Verticale: tipi in alto a sinistra, pannello in basso. Orizzontale: tipi nella colonna sinistra,
+   comandi e Opzioni nella colonna destra, nome e descrizione in basso. */
+.selettore,.pannello-c,.desc-console{display:none}
+#p-cellula.intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--pan:#232b3b;--bordo:#2a3850}
+#p-cellula.intero .main,#p-cellula.intero .main>div{display:contents}
+#p-cellula.intero #stage{position:absolute;inset:0;height:auto;border:0;border-radius:0}
+#p-cellula.intero .pannello-c{display:block;position:absolute;z-index:2;background:var(--pan);border:1px solid var(--bordo);border-radius:16px}
+#p-cellula.intero .selettore{display:flex;align-items:center;justify-content:space-between;gap:6px;position:absolute;z-index:4}
+#p-cellula.intero .desc-console{display:block;position:absolute;z-index:4;margin:0;color:#c8d3e3;font-size:13.5px;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.freccia{width:44px;height:44px;border:0;border-radius:12px;background:#1a2333;color:#e6ecf5;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.freccia svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.freccia:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.nome-parte{flex:1;text-align:center;font-size:16px;font-weight:700;color:var(--acc);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#p-cellula.intero #types{position:absolute;z-index:4;margin:0;max-width:none;top:calc(12px + var(--st));left:calc(12px + var(--sl))}
+#p-cellula.intero #types button{padding:7px 11px;font-size:14px}
+#p-cellula.intero #bIntero{top:calc(12px + var(--st))!important;right:calc(12px + var(--sr))!important}
+#p-cellula.intero #bReset{top:calc(54px + var(--st))!important;right:calc(12px + var(--sr))!important}
+#p-cellula.intero .legenda{position:absolute;z-index:4;margin:0;background:var(--pan);border:1px solid var(--bordo);border-radius:12px;padding:6px 10px;color:#c8d3e3}
+/* Opzioni: pulsante sul pannello, menu sopra la scena con le stesse levette */
+#p-cellula.intero .opzioni{position:absolute;z-index:5;margin:0;background:var(--pan);border-color:var(--bordo)}
+#p-cellula.intero .opzioni summary{padding:10px 14px;gap:8px}
+#p-cellula.intero .opzioni[open] summary::after{content:"\2715"}
+#p-cellula.intero:has(.opzioni[open]) #stage canvas{opacity:.55}
+/* verticale */
+#p-cellula.intero .pannello-c{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));height:118px}
+#p-cellula.intero .pannello-c.destra,#p-cellula.intero .pannello-c.basso{display:none}
+#p-cellula.intero .selettore{left:calc(20px + var(--sl));right:calc(136px + var(--sr));bottom:calc(72px + var(--sb))}
+#p-cellula.intero .desc-console{left:calc(26px + var(--sl));right:calc(26px + var(--sr));bottom:calc(22px + var(--sb))}
+#p-cellula.intero .opzioni{right:calc(22px + var(--sr));bottom:calc(76px + var(--sb))}
+#p-cellula.intero .opzioni[open]{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb))}
+#p-cellula.intero .legenda{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(140px + var(--sb))}
+@media(orientation:landscape){
+ #p-cellula.intero #types{top:50%;transform:translateY(-50%);left:calc(20px + var(--sl));width:116px;flex-direction:column;border-radius:16px;gap:4px}
+ #p-cellula.intero .pannello-c{left:calc(12px + var(--sl));right:auto;top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:132px;height:auto}
+ #p-cellula.intero .pannello-c.destra{display:block;left:auto;right:calc(12px + var(--sr));width:148px}
+ #p-cellula.intero .pannello-c.basso{display:block;top:auto;left:calc(156px + var(--sl));right:calc(172px + var(--sr));width:auto;height:96px}
+ #p-cellula.intero #bIntero{top:calc(22px + var(--st))!important;right:calc(68px + var(--sr))!important}
+ #p-cellula.intero #bReset{top:calc(22px + var(--st))!important;right:calc(26px + var(--sr))!important}
+ #p-cellula.intero .selettore{left:calc(164px + var(--sl));right:calc(180px + var(--sr));bottom:calc(58px + var(--sb))}
+ #p-cellula.intero .desc-console{left:calc(172px + var(--sl));right:calc(188px + var(--sr));bottom:calc(20px + var(--sb));-webkit-line-clamp:2;text-align:center;font-size:13px}
+ #p-cellula.intero .opzioni{left:auto;right:calc(20px + var(--sr));bottom:auto;top:calc(72px + var(--st));width:132px}
+ #p-cellula.intero .opzioni[open]{left:auto;right:calc(20px + var(--sr));bottom:auto;width:260px}
+ #p-cellula.intero .legenda{left:calc(156px + var(--sl));right:calc(172px + var(--sr));bottom:auto;top:calc(12px + var(--st));justify-content:center}
+ #p-cellula.intero:has(.opzioni[open]) #stage canvas{opacity:1}}
 /* ---- 01 La cellula ---- */
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .main{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:12px}
@@ -125,7 +173,7 @@ button{font-family:inherit;cursor:pointer}
   </nav>
 
   <!-- ================= 01 LA CELLULA ================= -->
-  <section id="p-cellula">
+  <section id="p-cellula" data-intero>
   <div class="modalita" id="types" role="group" aria-label="Tipo di cellula">
     <button data-type="animale" aria-pressed="true"><span class="pt" style="background:var(--ani-cell)"></span>Animali</button>
     <button data-type="vegetale" aria-pressed="false"><span class="pt" style="background:var(--veg-cell)"></span>Piante</button>
@@ -133,7 +181,10 @@ button{font-family:inherit;cursor:pointer}
   </div>
   <div class="main">
     <div>
-      <div id="stage"><button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button></div>
+      <div id="stage"><button class="comando-scena" id="bIntero" style="right:8px;top:8px;z-index:3"></button><button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button></div>
+      <div class="pannello-c" aria-hidden="true"></div><div class="pannello-c destra" aria-hidden="true"></div><div class="pannello-c basso" aria-hidden="true"></div>
+      <div class="selettore" id="cSel"><button class="freccia" data-d="-1" aria-label="Struttura precedente" title="Struttura precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="nome-parte" id="cNome"></span><button class="freccia" data-d="1" aria-label="Struttura successiva" title="Struttura successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+      <p class="desc-console" id="cDesc"></p>
       <div class="legenda" id="leg" hidden></div>
       <details class="opzioni">
         <summary><b>Opzioni</b></summary>
@@ -143,9 +194,9 @@ button{font-family:inherit;cursor:pointer}
       </details>
     </div>
     <div>
-      <div class="proft"><img src="../immagini/prof_t/prof_t_biologo_cellula.webp" alt="Prof. T biologo"><div class="fumetto">Scegli Animali, Piante o Funghi, poi tocca una struttura nel modello o nell'elenco.</div></div>
-      <div class="card info"><h3 id="t">Tocca una struttura</h3><p id="d" class="hint"></p><p id="d2" class="lav" hidden></p></div>
-      <div class="card"><div id="groups"></div>
+      <div class="proft solo-pagina"><img src="../immagini/prof_t/prof_t_biologo_cellula.webp" alt="Prof. T biologo"><div class="fumetto">Scegli Animali, Piante o Funghi, poi tocca una struttura nel modello o nell'elenco. Prova anche la modalità console, in alto a destra nella scena.</div></div>
+      <div class="card info solo-pagina"><h3 id="t">Tocca una struttura</h3><p id="d" class="hint"></p><p id="d2" class="lav" hidden></p></div>
+      <div class="card solo-pagina"><div id="groups"></div>
         <div class="small">Trascina per ruotare, pizzica o usa la rotella per ingrandire. Tocca di nuovo la stessa struttura per deselezionarla.</div></div>
     </div>
   </div>
@@ -389,7 +440,7 @@ function buildChips(){const box=$('#groups');box.innerHTML='';chips=[];
    b.onclick=()=>sel(cur==k?null:k);gd.lastChild.appendChild(b);chips.push(b);});
   box.appendChild(gd);});}
 function sel(k){cur=k;const o=k&&inf(k);
- $('#t').textContent=o?o.n:'Tocca una struttura';$('#d').textContent=o?o.d:HINT;$('#d').className=o?'':'hint';
+ $('#t').textContent=o?o.n:'Tocca una struttura';$('#cNome').textContent=o?o.n:'Tocca una struttura';$('#cDesc').textContent=o?o.d:'Tocca il modello o usa le frecce.';$('#d').textContent=o?o.d:HINT;$('#d').className=o?'':'hint';
  lavTesto();
  chips.forEach(c=>{const on=c.dataset.k==k;c.classList.toggle('on',on);c.setAttribute('aria-pressed',on);});
  cell.children.forEach(g=>{const on=g.userData.key==k;g.traverse(m=>{if(!m.isMesh)return;const mt=m.material,u=mt.userData,fade=k&&!on;
@@ -517,6 +568,11 @@ cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('wheel',e=>{e.preventDefault();rad=clamp(rad*(1+e.deltaY*.001),3,9);dirty=1;},{passive:false});
 $('#bOpen').onclick=()=>setOpen(!open);
 $('#bReset').onclick=reset;
+/* modalità console: le frecce scorrono le strutture del tipo di cellula scelto, nell'ordine dell'elenco */
+$('#cSel').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(!b||!chips.length)return;
+ const n=chips.length,i=chips.findIndex(c=>c.dataset.k==cur),d=+b.dataset.d;
+ sel(chips[i<0?(d>0?0:n-1):(i+d+n)%n].dataset.k);});
+schermoIntero($('#p-cellula'),$('#bIntero'),()=>{dirty=1;});
 $('#bRot').onclick=e=>{auto=!auto;e.currentTarget.setAttribute('aria-checked',auto);};
 new ResizeObserver(()=>{const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;cv.width=Math.round(w*DPR());cv.height=Math.round(h*DPR());cam.aspect=w/h;cam.updateProjectionMatrix();
  fit=Math.max(1,1.15/cam.aspect);dirty=1;}).observe(stage);
