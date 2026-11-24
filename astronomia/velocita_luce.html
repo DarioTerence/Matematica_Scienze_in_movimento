@@ -94,6 +94,78 @@ details p{margin:8px 0 0}
 @keyframes pulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(4.2);opacity:0}}
 @media (prefers-reduced-motion:reduce){.ring.pulse{animation:none}}
 .eyebrow{color:#c9aaff;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+/* ---- modalità console (24 nov 2026): un pulsante nella scena animata (schede 01-03) e uno nella scala (scheda 04);
+   dentro, la croce delle schede in alto passa dall'una all'altra. Cruscotto con tempo luce e strada fatta,
+   tasti tondi Avvia e Riavvia; nella sintesi tasti tondi ◀ e ▶. Orizzontale a due colonne. ---- */
+.csel,.cpan{display:none}
+.csel .freccia{width:44px;height:44px;border:0;color:#e6ecf5;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.csel .freccia svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.cnome{flex:1;text-align:center;font-size:14px;font-weight:700;color:#e6ecf5;line-height:1.2}
+.grid.intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);display:block}
+.grid.intero>section,.grid.intero #animBox,.grid.intero #sintBox,.grid.intero .controls,.grid.intero .nav{display:contents}
+.grid.intero #animBox[hidden],.grid.intero #sintBox[hidden]{display:none!important}
+.grid.intero .stage{position:absolute!important;inset:0;border:0;border-radius:0;overflow:visible;display:flex;align-items:center;background:#05060A}
+.grid.intero .stage>svg{width:100%;height:100%}
+.grid.intero .cpan{display:block;position:absolute;z-index:2;background:#232b3b;border:1px solid #2a3850;border-radius:16px}
+.grid.intero #tSel{display:flex;align-items:center;position:absolute;z-index:4}
+.grid.intero #tSel>.freccia{width:40px;height:40px}
+.grid.intero #tSel>span{flex:1;min-height:40px;display:flex;align-items:center;justify-content:center;border:0;border-top:1px solid #34476b;border-bottom:1px solid #34476b}
+.grid.intero #tSel>.freccia:first-child{border-radius:12px 4px 4px 12px}
+.grid.intero #tSel>.freccia:last-child{border-radius:4px 12px 12px 4px}
+.grid.intero .chrono{position:absolute;z-index:4;margin:0;gap:4px 18px}
+.grid.intero .big{font-size:32px}
+.grid.intero .mid{font-size:19px}
+.grid.intero .cmp{position:absolute;z-index:4;margin:0;padding:6px 10px}
+.grid.intero .cmp .row{grid-template-columns:86px 1fr 64px;font-size:13px}
+.grid.intero .steptxt{position:absolute;z-index:4;margin:0;font-size:13px;line-height:1.4;color:#c8d3e3;overflow:auto;min-height:0}
+.grid.intero .controls .azione,.grid.intero .nav .azione{position:absolute;z-index:4;margin:0;padding:0;border-radius:50%;min-width:0}
+.grid.intero #go,.grid.intero #next{width:66px;height:66px;font-size:13px;box-shadow:0 0 0 4px rgba(255,255,255,.08),inset 0 -4px 0 rgba(0,0,0,.25)}
+.grid.intero #rs,.grid.intero #prev{width:46px;height:46px;font-size:0;text-decoration:none;background:#1a2333;border:1px solid #34476b;color:#e6ecf5;box-shadow:inset 0 -3px 0 rgba(0,0,0,.35)}
+.grid.intero #rs::before{content:"\21BB";font-size:22px}
+.grid.intero #prev::before{content:"\25C0";font-size:18px}
+.grid.intero #next{font-size:0}
+.grid.intero #next::before{content:"\25B6";font-size:22px}
+.grid.intero .controls .azione:active,.grid.intero .nav .azione:active{transform:translateY(1px)}
+.grid.intero .opzioni{position:absolute;z-index:5;margin:0;background:#232b3b;border-color:#2a3850}
+.grid.intero .opzioni summary{padding:10px 14px}
+.grid.intero .opzioni[open] summary::after{content:"\2715"}
+@media(orientation:portrait){
+ .grid.intero .cpan.sx,.grid.intero .cpan.dx{display:none}
+ .grid.intero #tSel{top:calc(12px + var(--st));left:calc(12px + var(--sl));right:calc(60px + var(--sr))}
+ .grid.intero .console-l{top:-138px!important;right:calc(12px + var(--sr))!important}
+ .grid.intero #sintBox .console-l{top:-48px!important}
+ .grid.intero .stage{top:calc(150px + var(--st));bottom:calc(132px + var(--sb))}
+ .grid.intero .chrono{top:calc(64px + var(--st));left:calc(16px + var(--sl));right:calc(16px + var(--sr))}
+ .grid.intero .cmp{top:calc(136px + var(--st));left:calc(12px + var(--sl));right:calc(12px + var(--sr))}
+ .grid.intero .cpan.basso{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));height:100px}
+ .grid.intero #go{left:calc(24px + var(--sl));bottom:calc(29px + var(--sb))}
+ .grid.intero #rs{left:calc(100px + var(--sl));bottom:calc(39px + var(--sb))}
+ .grid.intero .opzioni{right:calc(24px + var(--sr));bottom:calc(37px + var(--sb));width:150px}
+ .grid.intero .opzioni[open]{width:auto;left:calc(24px + var(--sl))}
+ .grid.intero #sintBox .stage{top:calc(60px + var(--st));bottom:calc(232px + var(--sb))}
+ .grid.intero:has(#animBox[hidden]) .cpan.basso{height:200px}
+ .grid.intero .steptxt{left:calc(26px + var(--sl));right:calc(26px + var(--sr));bottom:calc(110px + var(--sb));height:80px}
+ .grid.intero #prev{left:calc(50% - 64px);bottom:calc(36px + var(--sb))}
+ .grid.intero #next{left:calc(50% - 6px);bottom:calc(26px + var(--sb))}}
+@media(orientation:landscape){
+ .grid.intero .stage{left:calc(236px + var(--sl));right:calc(164px + var(--sr))}
+ .grid.intero .cpan.sx{left:calc(12px + var(--sl));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:220px}
+ .grid.intero .cpan.dx{right:calc(12px + var(--sr));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:148px}
+ .grid.intero .cpan.basso{display:none}
+ .grid.intero #tSel{left:calc(24px + var(--sl));width:196px;top:calc(22px + var(--st))}
+ .grid.intero .chrono{left:calc(28px + var(--sl));width:188px;top:calc(80px + var(--st));grid-template-columns:1fr}
+ .grid.intero .cmp{left:calc(22px + var(--sl));width:200px;bottom:calc(22px + var(--sb))}
+ .grid.intero .cmp .row{grid-template-columns:1fr 56px}
+ .grid.intero .cmp .track{display:none}
+ .grid.intero .steptxt{left:calc(26px + var(--sl));width:192px;top:calc(80px + var(--st));bottom:calc(22px + var(--sb))}
+ .grid.intero .console-l{right:auto!important;left:calc(100% + 94px);top:calc(22px + var(--st))!important}
+ .grid.intero #rs,.grid.intero #prev{right:calc(106px + var(--sr));top:calc(20px + var(--st))}
+ .grid.intero #go{right:calc(53px + var(--sr));top:calc(84px + var(--st))}
+ .grid.intero #next{right:calc(53px + var(--sr));top:calc(84px + var(--st))}
+ .grid.intero #prev{top:calc(94px + var(--st));right:calc(124px + var(--sr))}
+ .grid.intero #next{right:calc(46px + var(--sr))}
+ .grid.intero .opzioni{right:calc(20px + var(--sr));bottom:calc(20px + var(--sb));width:132px}
+ .grid.intero .opzioni[open]{width:240px}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
@@ -104,19 +176,21 @@ details p{margin:8px 0 0}
   <p class="sub" id="sub"></p>
   <div class="schede" id="tabs" role="tablist" aria-label="Schede"></div>
 
-  <div class="grid">
+  <div class="grid" data-intero>
+    <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+    <div class="csel" id="tSel"><button class="freccia" data-d="-1" aria-label="Scheda precedente" title="Scheda precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Scheda successiva" title="Scheda successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
     <section>
       <div id="animBox">
         <div class="chrono">
           <div><div class="lab" id="clockLab">Tempo luce trascorso</div><div id="cron" class="big">00:00.0</div></div>
           <div><div class="lab">Strada fatta dalla luce</div><div id="dist" class="mid">0 km</div></div>
         </div>
-        <div class="stage"><svg id="svg" viewBox="0 0 1000 290" role="img" aria-label="La luce parte da una sorgente e viaggia lungo una linea verso i corpi del Sistema Solare"></svg></div>
-        <p class="small" id="note"></p>
+        <div class="stage" style="position:relative"><button class="comando-scena console-l" style="right:8px;top:8px;z-index:3"></button><svg id="svg" viewBox="0 0 1000 290" role="img" aria-label="La luce parte da una sorgente e viaggia lungo una linea verso i corpi del Sistema Solare"></svg></div>
+        <p class="small solo-pagina" id="note"></p>
         <div class="cmp" id="cmp" hidden>
           <div class="row"><span>Sole → Terra</span><div class="track"><div class="bar" style="width:100%"></div></div><b>8 min 19 s</b></div>
           <div class="row"><span>Terra → Luna</span><div class="track"><div class="bar" style="width:.26%;min-width:3px"></div></div><b>1,28 s</b></div>
-          <p class="small">Le due barre sono nella stessa scala: quella Terra-Luna è lunga circa 1/390 di quella Sole-Terra.</p>
+          <p class="small solo-pagina">Le due barre sono nella stessa scala: quella Terra-Luna è lunga circa 1/390 di quella Sole-Terra.</p>
         </div>
         <div class="controls">
           <button id="go" class="azione primaria" type="button">Avvia</button>
@@ -128,25 +202,25 @@ details p{margin:8px 0 0}
             <div id="speeds" class="chips" role="group" aria-label="Velocità dell'animazione"></div>
           </div>
         </details>
-        <p id="wait" class="wait"></p>
+        <p id="wait" class="wait solo-pagina"></p>
       </div>
 
       <div id="sintBox" hidden>
-        <div class="stage"><svg id="svg2" viewBox="0 0 1000 150" role="img" aria-label="Scala dei tempi della luce, da 1 secondo a 5 anni"></svg></div>
-        <p class="small">Scala a gradini: le distanze tra un gradino e l'altro non sono proporzionali al tempo.</p>
+        <div class="stage" style="position:relative"><button class="comando-scena console-l" style="right:8px;top:8px;z-index:3"></button><svg id="svg2" viewBox="0 0 1000 150" role="img" aria-label="Scala dei tempi della luce, da 1 secondo a 5 anni"></svg></div>
+        <p class="small solo-pagina">Scala a gradini: le distanze tra un gradino e l'altro non sono proporzionali al tempo.</p>
         <div class="azioni nav">
           <button id="prev" class="azione icona" type="button" aria-label="Indietro">‹</button>
           <button id="next" class="azione primaria" type="button">Avanti ›</button>
         </div>
-        <div id="steps" class="chips" role="group" aria-label="Tempo trascorso"></div>
+        <div id="steps" class="chips solo-pagina" role="group" aria-label="Tempo trascorso"></div>
         <div id="steptxt" class="steptxt"></div>
-        <div id="chips" class="tappe"></div>
+        <div id="chips" class="tappe solo-pagina"></div>
       </div>
 
-      <div class="anchor" id="anchor"></div>
+      <div class="anchor solo-pagina" id="anchor"></div>
     </section>
 
-    <aside class="panel">
+    <aside class="panel solo-pagina">
       <div id="tblWrap">
         <h2>Quando arriva la luce</h2>
         <table>
@@ -637,6 +711,18 @@ details p{margin:8px 0 0}
 })();
 </script>
 
+<script>
+/* modalità console: la croce tocca la linguetta vicina; i due pulsanti (scena animata e scala) aprono la stessa console */
+(function(){
+ var tabs=function(){return Array.prototype.slice.call(document.querySelectorAll('#tabs .scheda'));};
+ var nome=document.querySelector('#tSel .cnome');
+ function agg(){var k=tabs(),i=k.findIndex(function(b){return b.getAttribute('aria-selected')==='true';});nome.textContent=i<0?'':k[i].textContent.replace(/^\d+/,'');}
+ document.getElementById('tSel').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;var k=tabs(),n=k.length,i=k.findIndex(function(x){return x.getAttribute('aria-selected')==='true';});
+  k[(i+(+b.dataset.d)+n)%n].click();agg();});
+ new MutationObserver(agg).observe(document.getElementById('tabs'),{attributes:true,subtree:true,attributeFilter:['aria-selected']});agg();
+ schermoIntero(document.querySelector('.grid'),Array.prototype.slice.call(document.querySelectorAll('.console-l')));
+})();
+</script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Quanto impiega la luce a percorrere il Sistema solare? Quattro schede seguono il viaggio dal Sole ai pianeti interni e a quelli esterni, dalla Terra alla Luna, e riassumono i tempi dai secondi agli anni.</p>
 <div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Velocità della luce 299 792,458 km/s, circa 300 000 km al secondo. <a href="https://physics.nist.gov/cgi-bin/cuu/Value?c" target="_blank" rel="noopener">NIST, CODATA, speed of light</a></li><li>Un anno luce è circa 9 460 miliardi di km. <a href="https://science.nasa.gov/exoplanets/what-is-a-light-year/" target="_blank" rel="noopener">NASA, What is a light-year</a></li><li>Proxima Centauri, la stella più vicina, è a circa 4,2 anni luce (4,25). <a href="https://imagine.gsfc.nasa.gov/features/cosmic/nearest_star_info.html" target="_blank" rel="noopener">NASA, The nearest star</a></li><li>1 UA è 149 597 870,7 km, che la luce percorre in circa 499 s, cioè 8 min 19 s. <a href="https://www.bipm.org/documents/20126/41483022/SI-Brochure-9-EN.pdf" target="_blank" rel="noopener">BIPM, SI Brochure</a></li><li>Distanze dei pianeti dal Sole, da cui i tempi della luce, da 3 min 13 s per Mercurio a 4 h 10 min per Nettuno. <a href="https://ssd.jpl.nasa.gov/planets/approx_pos.html" target="_blank" rel="noopener">NASA JPL, Approximate positions of the planets</a></li><li>Terra-Luna 384 400 km, circa 1,28 s di viaggio della luce. <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html" target="_blank" rel="noopener">NASA, Moon Fact Sheet</a></li><li>In un giorno la luce percorre circa 26 miliardi di km, più o meno la distanza di Voyager 1, l'oggetto costruito dall'uomo più lontano dalla Terra. <a href="https://science.nasa.gov/mission/voyager/voyager-1/" target="_blank" rel="noopener">NASA, Voyager 1</a></li><li>Materiali. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
 
