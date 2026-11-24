@@ -82,6 +82,60 @@ button{font-family:inherit}
 .opt:disabled{cursor:default}
 .fb{margin-top:12px;line-height:1.45}
 .qnota{color:var(--mut);font-size:14px;margin:10px 0 0}
+/* ---- modalità console (24 nov 2026): scena a tutto schermo, croce della scheda, croce della molecola, descrizione;
+   in orizzontale colonna sinistra (scheda, molecola, descrizione) e colonna destra (comandi della vista, Opzioni) ---- */
+.csel,.cpan{display:none}
+.freccia{width:44px;height:44px;border:0;color:#e6ecf5;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.freccia svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.cnome{flex:1;text-align:center;font-size:15px;font-weight:700;color:var(--disciplina);line-height:1.2}
+#p-esplora.intero{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px)}
+#p-esplora.intero .layout,#p-esplora.intero .layout>div,#p-esplora.intero aside{display:contents}
+#p-esplora.intero .stage{position:absolute;inset:0;height:auto;border:0;border-radius:0;overflow:visible;order:0}
+#p-esplora.intero .cpan{display:block;position:absolute;z-index:2;background:#232b3b;border:1px solid #2a3850;border-radius:16px}
+#p-esplora.intero .csel{display:flex;align-items:center;position:absolute;z-index:4}
+#p-esplora.intero #sSel .cnome{color:#e6ecf5;font-size:14px}
+#p-esplora.intero #infoCard{position:absolute;z-index:4;margin:0;padding:0;background:none;border:0;overflow:auto;font-size:13px;color:#c8d3e3;order:0}
+#p-esplora.intero #infoCard p{margin:0 0 4px;line-height:1.35}
+#p-esplora.intero #infoCard .dati{font-size:13px}
+#p-esplora.intero .opzioni{position:absolute;z-index:5;margin:0;background:#232b3b;border-color:#2a3850;order:0}
+#p-esplora.intero .opzioni summary{padding:10px 14px}
+#p-esplora.intero .opzioni[open] summary::after{content:"\2715"}
+#p-esplora.intero .legenda{z-index:3}
+@media(orientation:portrait){
+ #p-esplora.intero .cpan.sx,#p-esplora.intero .cpan.dx{display:none}
+ #p-esplora.intero .stage{bottom:calc(176px + var(--sb))}
+ #p-esplora.intero #sSel{top:calc(12px + var(--st));left:calc(12px + var(--sl));right:calc(60px + var(--sr))}
+ #p-esplora.intero #bIntero{top:calc(12px + var(--st))!important;right:calc(12px + var(--sr))!important}
+ #p-esplora.intero .comando-scena:not(#bIntero){right:calc(12px + var(--sr))!important;margin-top:calc(16px + var(--st))}
+ #p-esplora.intero .legenda{top:calc(118px + var(--st));left:calc(12px + var(--sl))}
+ #p-esplora.intero .opzioni{top:calc(66px + var(--st));left:calc(12px + var(--sl));width:150px}
+ #p-esplora.intero .opzioni[open]{width:auto;right:calc(60px + var(--sr))}
+ #p-esplora.intero .cpan.basso{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));height:156px}
+ #p-esplora.intero #mSel{left:calc(20px + var(--sl));right:calc(20px + var(--sr));bottom:calc(112px + var(--sb))}
+ #p-esplora.intero #infoCard{left:calc(26px + var(--sl));right:calc(26px + var(--sr));bottom:calc(22px + var(--sb));height:82px}}
+@media(orientation:landscape){
+ #p-esplora.intero .stage{left:calc(236px + var(--sl));right:calc(164px + var(--sr))}
+ #p-esplora.intero .cpan.sx{left:calc(12px + var(--sl));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:220px}
+ #p-esplora.intero .cpan.dx{right:calc(12px + var(--sr));top:calc(12px + var(--st));bottom:calc(12px + var(--sb));width:148px}
+ #p-esplora.intero .cpan.basso{display:none}
+ #p-esplora.intero #sSel{left:calc(24px + var(--sl));width:196px;top:calc(22px + var(--st))}
+ #p-esplora.intero #sSel>.freccia{width:40px;height:40px}
+ #p-esplora.intero #sSel>span{flex:1;min-height:40px;display:flex;align-items:center;justify-content:center;border:0;border-top:1px solid #34476b;border-bottom:1px solid #34476b}
+ #p-esplora.intero #sSel>.freccia:first-child{border-radius:12px 4px 4px 12px}
+ #p-esplora.intero #sSel>.freccia:last-child{border-radius:4px 12px 12px 4px}
+ #p-esplora.intero #mSel{flex-direction:column;left:calc(24px + var(--sl));width:196px;top:calc(78px + var(--st))}
+ #p-esplora.intero #mSel .freccia svg{transform:rotate(90deg)}
+ #p-esplora.intero #mSel .cnome{flex:none;width:100%}
+ #p-esplora.intero #infoCard{left:calc(26px + var(--sl));width:192px;top:calc(204px + var(--st));bottom:calc(22px + var(--sb))}
+ #p-esplora.intero #bIntero{right:auto!important;left:calc(100% + 42px);top:calc(22px + var(--st))!important}
+ #p-esplora.intero #bReset{right:auto!important;left:calc(100% + 94px);top:calc(22px + var(--st))!important}
+ #p-esplora.intero #bPiu{right:auto!important;left:calc(100% + 42px);top:calc(74px + var(--st))!important}
+ #p-esplora.intero #bMeno{right:auto!important;left:calc(100% + 94px);top:calc(74px + var(--st))!important}
+ #p-esplora.intero #bRifai{right:auto!important;left:calc(100% + 42px);top:calc(126px + var(--st))!important}
+ #p-esplora.intero #bApri{right:auto!important;left:calc(100% + 94px);top:calc(126px + var(--st))!important}
+ #p-esplora.intero .opzioni{right:calc(20px + var(--sr));bottom:calc(20px + var(--sb));width:132px}
+ #p-esplora.intero .opzioni[open]{width:240px}}
+
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
@@ -101,29 +155,33 @@ button{font-family:inherit}
  <button class="scheda" role="tab" aria-selected="false" data-p="quiz"><span class="num">07</span>Allenati</button>
 </nav>
 
-<section id="p-esplora">
+<section id="p-esplora" data-intero>
+ <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
+ <div class="csel riga" id="sSel"><button class="freccia" data-d="-1" aria-label="Scheda precedente" title="Scheda precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Scheda successiva" title="Scheda successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+ <div class="csel " id="mSel"><button class="freccia" data-d="-1" aria-label="Molecola precedente" title="Molecola precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Molecola successiva" title="Molecola successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
  <div class="layout">
   <div>
    <div class="stage" id="stage">
     <div class="legenda" id="legenda"></div>
-    <div class="cap" id="cap">Modello a sfere e bastoncini, semplificato</div>
-    <button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:8px;z-index:3">&#10226;</button>
-    <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:50px;z-index:3">+</button>
-    <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:92px;z-index:3">&minus;</button>
-    <button class="comando-scena" id="bRifai" aria-label="Rifai l'animazione" title="Rifai l'animazione" style="right:8px;top:134px;z-index:3">&#8635;</button>
-    <button class="comando-scena hide" id="bApri" aria-label="Apri o chiudi la sfera" title="Apri o chiudi la sfera" style="right:8px;top:176px;z-index:3"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="display:block;margin:auto"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 4a8 8 0 0 0 0 16Z" fill="currentColor"/></svg></button>
+    <button class="comando-scena" id="bIntero" style="right:8px;top:8px;z-index:3"></button>
+    <div class="cap solo-pagina" id="cap">Modello a sfere e bastoncini, semplificato</div>
+    <button class="comando-scena" id="bReset" aria-label="Reset vista" title="Reset vista" style="right:8px;top:50px;z-index:3"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
+    <button class="comando-scena" id="bPiu" aria-label="Avvicina" title="Avvicina" style="right:8px;top:92px;z-index:3">+</button>
+    <button class="comando-scena" id="bMeno" aria-label="Allontana" title="Allontana" style="right:8px;top:134px;z-index:3">&minus;</button>
+    <button class="comando-scena" id="bRifai" aria-label="Rifai l'animazione" title="Rifai l'animazione" style="right:8px;top:176px;z-index:3">&#8635;</button>
+    <button class="comando-scena hide" id="bApri" aria-label="Apri o chiudi la sfera" title="Apri o chiudi la sfera" style="right:8px;top:218px;z-index:3"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="display:block;margin:auto"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 4a8 8 0 0 0 0 16Z" fill="currentColor"/></svg></button>
    </div>
-   <p class="hint">Trascina per ruotare. Tocca un nome per costruire la molecola, ↻ per rivederla.</p>
+   <p class="hint solo-pagina">Trascina per ruotare. Tocca un nome per costruire la molecola, ↻ per rivederla.</p>
    <details class="opzioni">
     <summary><b>Opzioni</b></summary>
     <button class="levetta" role="switch" id="oRot" aria-checked="false">Rotazione automatica</button>
    </details>
   </div>
   <aside>
-   <div class="card" id="chipCard"><div id="gruppi"></div></div>
-   <div class="card" id="infoCard" aria-live="polite"><h2 id="infoT"></h2><div id="infoD"></div></div>
-   <div class="prof"><img id="profImg" alt="Prof. T biologo"><div class="bubble" id="bubble" aria-live="polite"></div></div>
-   <div class="anchor" id="anchor"></div>
+   <div class="card solo-pagina" id="chipCard"><div id="gruppi"></div></div>
+   <div class="card" id="infoCard" aria-live="polite"><h2 id="infoT" class="solo-pagina"></h2><div id="infoD"></div></div>
+   <div class="prof solo-pagina"><img id="profImg" alt="Prof. T biologo"><div class="bubble" id="bubble" aria-live="polite"></div></div>
+   <div class="anchor solo-pagina" id="anchor"></div>
   </aside>
  </div>
 </section>
@@ -365,7 +423,7 @@ function ione(lista){var m=new Mol();lista.forEach(function(q,i){m.extra.push({t
    Ogni chip ha nome, colore del pallino, molecola (funzione), testo e, se serve, un elenco di dati. */
 var SCHEDE=[
  {sub:'Lo scheletro delle molecole della vita',anchor:'Il carbonio fa quattro legami. Per questo forma catene e anelli, lo scheletro di tutte le biomolecole.',
-  prof:'Tocca <b>Metano</b> e guarda come il carbonio si lega a quattro atomi di idrogeno.',posa:'mic',
+  prof:'Tocca <b>Metano</b> e guarda come il carbonio si lega a quattro atomi di idrogeno. Prova anche la modalità console, in alto a destra nella scena.',posa:'mic',
   gruppi:[{n:'Gli idrocarburi',c:[
    {k:'met',n:'Metano',col:'#3d434c',m:metano,d:'<p>Un carbonio e quattro idrogeni. È l\'idrocarburo più semplice, un aeriforme che si usa per cucinare e per riscaldare.</p><p><b>Idrocarburi</b>, molecole fatte solo di carbonio e idrogeno.</p>'},
    {k:'et',n:'Etano',col:'#3d434c',m:etano,d:'<p>Due carboni legati tra loro, ognuno con tre idrogeni. Il legame tra due carboni è il primo passo di una catena.</p>'},
@@ -373,7 +431,7 @@ var SCHEDE=[
    {k:'but',n:'Butano',col:'#3d434c',m:function(){return alcano(4);},d:'<p>Quattro carboni. La catena non è diritta ma a zig zag, perché i quattro legami di ogni carbonio sono rivolti in direzioni diverse.</p><p>È l\'aeriforme degli accendini, dove sta liquido sotto pressione. Nelle biomolecole le catene possono avere decine di carboni.</p>'},
    {k:'cic',n:'Anello',col:'#3d434c',m:cicloesano,d:'<p>Sei carboni che si chiudono ad anello (cicloesano). Anche gli zuccheri, come il glucosio, hanno un anello.</p>'}]}]},
  {sub:'Zuccheri semplici e catene di zuccheri',anchor:'I carboidrati sono la fonte di energia più usata dalle cellule. Le catene lunghe sono riserve da smontare quando serve.',
-  prof:'Tocca <b>Saccarosio</b> e guarda glucosio e fruttosio che si uniscono.',posa:'ali',kcal:4,
+  prof:'Tocca <b>Saccarosio</b> e guarda glucosio e fruttosio che si uniscono. Prova anche la modalità console, in alto a destra nella scena.',posa:'ali',kcal:4,
   gruppi:[{n:'Zuccheri semplici',c:[
    {k:'glu',n:'Glucosio',col:'#e0d24a',m:glucosio,d:'<p>Lo zucchero che le cellule usano come carburante, nella respirazione cellulare. Ha un anello di cinque carboni e un ossigeno.</p>',al:'frutta, miele, si forma dalla digestione dell\'amido'},
    {k:'fru',n:'Fruttosio',col:'#e0d24a',m:fruttosio,d:'<p>Stessi atomi del glucosio, disposti in modo diverso. Ha un anello più piccolo, a cinque atomi.</p>',al:'frutta, miele'}]},
@@ -384,7 +442,7 @@ var SCHEDE=[
    {k:'gli',n:'Glicogeno',col:'#d9a62e',m:function(){return mattoncini('glicogeno');},cap:'Ogni esagono è un glucosio',d:'<p>Catena di glucosio molto ramificata. È la riserva degli animali, nel <b>fegato</b> e nei <b>muscoli</b>.</p><p>Il corpo lo costruisce con il glucosio e lo smonta quando serve energia.</p>'},
    {k:'cel',n:'Cellulosa',col:'#6fd08c',m:function(){return mattoncini('cellulosa');},cap:'Ogni esagono è un glucosio, uno sì e uno no è capovolto. In azzurro i ponti a idrogeno tra le catene',d:'<p>Catene di glucosio diritte e affiancate, legate tra loro. Forma la parete delle cellule vegetali.</p><p>Il nostro corpo non la digerisce, è la <b>fibra</b> degli alimenti.</p>',al:'verdura, frutta, cereali integrali'}]}]},
  {sub:'Catene di amminoacidi',anchor:'Venti amminoacidi diversi, combinati in catene lunghe e ripiegate, formano migliaia di proteine diverse.',
-  prof:'Tocca <b>Legame peptidico</b> e guarda due amminoacidi che si uniscono.',posa:'cel',kcal:4,
+  prof:'Tocca <b>Legame peptidico</b> e guarda due amminoacidi che si uniscono. Prova anche la modalità console, in alto a destra nella scena.',posa:'cel',kcal:4,
   gruppi:[{n:'I mattoni',c:[
    {k:'aa',n:'Amminoacido',col:'#6aa5ff',m:alanina,d:'<p>Ogni amminoacido ha un <b>gruppo amminico</b> (con l\'azoto), un <b>gruppo carbossilico</b> e un <b>gruppo R</b>, diverso in ognuno. Qui l\'alanina.</p><p>Le proteine sono fatte di <b>20</b> amminoacidi diversi.</p>'},
    {k:'pep',n:'Legame peptidico',col:'#6aa5ff',m:dipeptide,unione:true,d:'<p>Il gruppo carbossilico di un amminoacido si lega al gruppo amminico del successivo e si libera una molecola d\'<b>acqua</b>.</p>'}]},
@@ -400,7 +458,7 @@ var SCHEDE=[
    {k:'dif',n:'Difesa',col:'#8ee0a6',m:function(){return speciale('anticorpo');},cap:'Schema, in blu le due catene lunghe, in giallo le due corte',d:'<p>Gli <b>anticorpi</b> hanno la forma di una Y, con quattro catene. Con le punte riconoscono un virus o un batterio e lo agganciano, così le altre difese dell\'organismo lo trovano.</p>'}]}],
   al:'carne, pesce, uova, latte e formaggi, legumi'},
  {sub:'Grassi, oli e membrane',anchor:'I lipidi non si sciolgono in acqua. Sono la riserva di energia più concentrata e formano le membrane delle cellule.',
-  prof:'Tocca <b>Trigliceride</b> e guarda il glicerolo che si lega a tre acidi grassi.',posa:'ali',kcal:9,
+  prof:'Tocca <b>Trigliceride</b> e guarda il glicerolo che si lega a tre acidi grassi. Prova anche la modalità console, in alto a destra nella scena.',posa:'ali',kcal:9,
   gruppi:[{n:'I mattoni',c:[
    {k:'gl',n:'Glicerolo',col:'#f2c94c',m:soloGlicerolo,d:'<p>Piccola molecola con tre carboni, ognuno con un gruppo OH. È la base a cui si attaccano gli acidi grassi.</p>'},
    {k:'sat',n:'Acido grasso saturo',col:'#f2c94c',m:function(){return soloAcido(false);},cap:'Catena accorciata, quelle vere sono più lunghe',d:'<p>Lunga catena di carboni con <b>soli legami semplici</b>, diritta. Le catene diritte si impacchettano bene, così i grassi saturi sono in genere <b>solidi</b> a temperatura ambiente.</p>',al:'burro, lardo, grassi della carne, formaggi'},
@@ -413,7 +471,7 @@ var SCHEDE=[
    {k:'ves',n:'Vescicola',col:'#f08a24',m:vescicola,cap:'Sfera aperta a metà, il pulsante con il mezzo cerchio la chiude e la riapre. Ogni figura è un fosfolipide',d:'<p>Il doppio strato si chiude su se stesso e forma una sfera con l\'acqua dentro e fuori. Così le code restano sempre nascoste.</p><p>Così è chiusa ogni cellula, e così sono fatte le piccole <b>vescicole</b> che portano sostanze da una parte all\'altra della cellula.</p>'},
    {k:'mic',n:'Micella del sapone',col:'#9a6fe8',m:micella,cap:'Sfera aperta a metà, il pulsante con il mezzo cerchio la chiude e la riapre. Ogni figura è una molecola di sapone',d:'<p>Le molecole del <b>sapone</b> hanno una testa che sta volentieri nell\'acqua e <b>una sola coda</b>, che la evita. In acqua formano piccole sfere, le <b>micelle</b>, con le code verso il centro.</p><p>Le code catturano il grasso, che resta chiuso dentro la micella e va via con l\'acqua del risciacquo.</p>'}]}]},
  {sub:'Non danno energia ma sono indispensabili',anchor:'Vitamine e sali minerali servono in piccole quantità, ma senza di loro il corpo non funziona. Si trovano soprattutto in frutta, verdura e alimenti vari.',
-  prof:'Tocca <b>Vitamine</b> e guarda dove va ogni lettera, nell\'acqua o nell\'olio.',posa:'pro',kcal:0,
+  prof:'Tocca <b>Vitamine</b> e guarda dove va ogni lettera, nell\'acqua o nell\'olio. Prova anche la modalità console, in alto a destra nella scena.',posa:'pro',kcal:0,
   gruppi:[{n:'Acqua',c:[
    {k:'acq',n:'Acqua',col:'#5bc8f0',m:acqua,d:'<p>Non dà energia ma è il componente più abbondante del corpo. Scioglie e trasporta le sostanze ed è il luogo delle reazioni chimiche della cellula.</p>',al:'acqua da bere, frutta, verdura, minestre'}]},
   {n:'Vitamine',c:[
@@ -425,7 +483,7 @@ var SCHEDE=[
    {k:'nak',n:'Sodio e potassio',col:'#9a6fe8',m:function(){return ione([{t:'Na⁺',c:'#ab5cf2',r:.75},{t:'K⁺',c:'#7a3fd0',r:.95}]);},cap:'Schema, gli ioni non sono in scala',d:'<p>Regolano l\'acqua dentro e fuori le cellule e fanno funzionare <b>nervi e muscoli</b>.</p>',al:'sodio nel sale da cucina, potassio in frutta e verdura'},
    {k:'iod',n:'Iodio',col:'#8a5cc0',m:function(){return ione([{t:'I⁻',c:'#8a5cc0',r:1.0}]);},cap:'Schema, lo ione non è in scala',d:'<p>La <b>tiroide</b> lo usa per produrre i suoi ormoni, importanti per la crescita e per lo sviluppo del sistema nervoso.</p>',al:'pesce di mare, latte, sale iodato'}]}]},
  {sub:'DNA e RNA, le molecole dell\'informazione',anchor:'Gli acidi nucleici sono catene di nucleotidi. L\'ordine delle basi è l\'informazione per costruire le proteine.',
-  prof:'Tocca <b>DNA</b> e guarda le basi che si incastrano a coppie.',posa:'dna',
+  prof:'Tocca <b>DNA</b> e guarda le basi che si incastrano a coppie. Prova anche la modalità console, in alto a destra nella scena.',posa:'dna',
   gruppi:[{n:'I mattoni',c:[
    {k:'nuc',n:'Nucleotide',col:'#e2d3b0',m:function(){return speciale('nucleotide',legBasi(false));},cap:'Schema, ogni parte ha una forma e un colore',d:'<p>Il mattone degli acidi nucleici. Ha tre parti, un <b>fosfato</b>, uno <b>zucchero</b> a cinque atomi di carbonio e una <b>base azotata</b>.</p><p>Nel DNA lo zucchero è il deossiribosio, nell\'RNA il ribosio.</p>'},
    {k:'bas',n:'Coppie di basi',col:'#e2d3b0',m:function(){return speciale('basi',legBasi(false));},cap:'Schema, le forme mostrano quali basi si incastrano',d:'<p>Le basi del DNA sono quattro, <b>A</b> adenina, <b>T</b> timina, <b>C</b> citosina e <b>G</b> guanina. Si incastrano solo a coppie, <b>A con T</b> e <b>C con G</b>, tenute insieme da ponti a idrogeno.</p><p>A e G sono più grandi, T e C più piccole, così ogni coppia ha la stessa lunghezza.</p>'}]},
@@ -874,6 +932,19 @@ $('bPiu').onclick=function(){if(scena)scena.zoom(.8);};
 $('bMeno').onclick=function(){if(scena)scena.zoom(1.25);};
 $('bRifai').onclick=function(){if(scena)scena.rifai();};
 $('bApri').onclick=function(){if(scena)scena.apri();};
+/* ================= modalità console ================= */
+(function(){
+ var sN=document.querySelector('#sSel .cnome'),mN=document.querySelector('#mSel .cnome');
+ function tabs(){return Array.prototype.filter.call(document.querySelectorAll('.scheda'),function(t){return t.dataset.p!=='quiz';});}
+ function agg(){var t=document.querySelector('.scheda.attiva');sN.textContent=t?t.textContent.replace(/^\d+/,''):'';
+  var c=S.sel&&chipTrova(S.sel);mN.textContent=c?c.n:'';mN.style.color=c&&c.col?'color-mix(in srgb,'+c.col+' 50%,#fff)':'';}
+ document.getElementById('sSel').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;var k=tabs(),n=k.length,i=k.findIndex(function(t){return t.classList.contains('attiva');}),d=+b.dataset.d;k[(i+d+n)%n].click();});
+ document.getElementById('mSel').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;var k=Array.prototype.slice.call($('gruppi').querySelectorAll('.chip')),n=k.length,i=k.findIndex(function(c){return c.dataset.k===S.sel;}),d=+b.dataset.d;k[i<0?0:(i+d+n)%n].click();});
+ var sc0=scegli;scegli=function(k,sub){sc0(k,sub);agg();};
+ var ap0=apriScheda;apriScheda=function(i){ap0(i);agg();};
+ agg();
+ schermoIntero(document.getElementById('p-esplora'),document.getElementById('bIntero'),function(){if(scena)setTimeout(scena.resize,30);});
+})();
 $('oRot').onclick=function(){var on=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',on);if(scena)scena.ruota(on);};
 
 /* ================= Allenati =================
