@@ -173,6 +173,8 @@ function schermoIntero(blocco, pulsante, alCambio) {
     } catch (e) {}
   }
   function entra() {
+    /* iPad: il browser mette la X di uscita in alto a sinistra, la console lascia libera quella fascia anche in verticale */
+    if (/iPad/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent))) blocco.classList.add('con-x');
     segnaUsata();
     aggiorna(true);
     conta();

@@ -444,3 +444,9 @@ html.in-intero .torna-sito { display: none !important; }
   .levetta::after { transition: none; }
   .azione:active:not(:disabled) { transform: none; }
 }
+
+/* Fascia libera in alto (25 nov 2026): su iPad il browser mette la X di uscita dallo schermo intero in alto a sinistra.
+   In orizzontale la fascia resta libera su tutti i dispositivi (Dario), in verticale solo su iPad (classe con-x da schermoIntero).
+   Le pagine posizionano i comandi con var(--st), quindi basta spostare la variabile. */
+@media (orientation: landscape) { [data-intero].intero { --st: calc(env(safe-area-inset-top, 0px) + 48px) !important; } }
+[data-intero].intero.con-x { --st: calc(env(safe-area-inset-top, 0px) + 48px) !important; }
