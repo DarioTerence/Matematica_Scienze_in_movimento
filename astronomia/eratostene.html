@@ -133,6 +133,11 @@ table.mis td{text-align:right;padding:4px;border-bottom:1px solid #1a2640;white-
  .layout.intero #bMeno{right:auto!important;left:calc(100% + 94px);top:calc(74px + var(--st))!important}
  .layout.intero .opzioni{right:calc(20px + var(--sr));bottom:calc(20px + var(--sb));width:132px}
  .layout.intero .opzioni[open]{width:260px}}
+
+/* ---- revisione 25 nov 2026 (orizzontale): fascia libera in alto a sinistra (X dello schermo intero su iPad), croce verticale nella colonna destra, descrizioni dove c'è più spazio ---- */
+@media(orientation:landscape){
+.layout.intero .csel{right:calc(24px + var(--sr))!important;left:auto!important;width:124px!important;top:calc(128px + var(--st))}
+ .layout.intero .cdesc{top:calc(24px + var(--st))}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>

@@ -139,6 +139,13 @@ h2{font-family:Cambria,Caladea,Georgia,serif;font-size:21px;margin:4px 0 6px}
  .cons.intero .opzioni[open]{width:240px}}
 @media(orientation:landscape) and (max-height:520px){#v0 .cons.intero .data{display:none}#v0 .cons.intero .forces{bottom:calc(22px + var(--sb))}#v0 .cons.intero .desc{bottom:calc(152px + var(--sb))}}
 .cons.intero .forces .flab,.cons.intero .data{font-size:12px}.cons.intero .forces .status{font-size:13px}
+
+/* ---- revisione 25 nov 2026 (orizzontale): fascia libera in alto a sinistra (X dello schermo intero su iPad), croce verticale nella colonna destra, descrizioni dove c'è più spazio ---- */
+@media(orientation:landscape){
+.cons.intero .cfase{right:calc(24px + var(--sr))!important;left:auto!important;width:124px!important;top:calc(162px + var(--st))!important}
+ .cons.intero .cfase .freccia{height:32px!important}
+ #v0 .cons.intero .desc{top:calc(24px + var(--st))}
+ #v1 .cons.intero .desc{top:calc(80px + var(--st))}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>

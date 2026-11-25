@@ -168,6 +168,14 @@ svg .muted{fill:var(--st-muted)}
  .view.intero .panel>.azioni .azione.primaria{right:calc(53px + var(--sr));top:calc(84px + var(--st))}
  .view.intero .opzioni{right:calc(20px + var(--sr));bottom:calc(20px + var(--sb));width:132px}
  .view.intero .opzioni[open]{width:260px}}
+
+/* ---- revisione 25 nov 2026 (orizzontale): fascia libera in alto a sinistra (X dello schermo intero su iPad), croce verticale nella colonna destra, descrizioni dove c'è più spazio ---- */
+@media(orientation:landscape){
+.view.intero .csel{right:calc(24px + var(--sr))!important;left:auto!important;width:124px!important;top:calc(162px + var(--st))!important}
+ .view.intero .csel .freccia{height:32px!important}
+ .view.intero .readout{top:calc(24px + var(--st))!important}
+ #view1.intero .readout,#view3.intero .readout{top:calc(146px + var(--st))!important}
+ #view2.intero .readout{top:calc(108px + var(--st))!important}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
