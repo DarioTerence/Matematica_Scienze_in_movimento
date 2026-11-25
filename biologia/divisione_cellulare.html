@@ -151,6 +151,8 @@ button{font-family:inherit}
  .layout.intero.senza-tempo .selettore{padding-bottom:0}
  .layout.intero.con-anello .selettore{justify-content:flex-start;padding-top:150px}
  .layout.intero.con-anello .card.ciclo{left:calc(23px + var(--sl));top:calc(24px + var(--st));width:110px}}
+/* la colonna sinistra (il selettore stesso) resta alta quanto lo schermo, scende solo il contenuto (25 nov) */
+@media(orientation:landscape){.layout.intero .selettore{top:calc(12px + env(safe-area-inset-top,0px))!important;padding-top:48px}.layout.intero.con-anello .selettore{padding-top:198px}}
 table.conf{width:100%;border-collapse:collapse;font-size:14px}
 table.conf th,table.conf td{border-top:1px solid var(--line);padding:5px 4px;text-align:left;vertical-align:top}
 table.conf th{color:var(--mut);font-weight:400}

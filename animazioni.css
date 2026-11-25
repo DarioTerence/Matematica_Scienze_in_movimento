@@ -450,3 +450,7 @@ html.in-intero .torna-sito { display: none !important; }
    Le pagine posizionano i comandi con var(--st), quindi basta spostare la variabile. */
 @media (orientation: landscape) { [data-intero].intero { --st: calc(env(safe-area-inset-top, 0px) + 48px) !important; } }
 [data-intero].intero.con-x { --st: calc(env(safe-area-inset-top, 0px) + 48px) !important; }
+/* I pannelli delle colonne restano alti quanto lo schermo: scendono solo i comandi (Dario, 25 nov) */
+@media (orientation: landscape) {
+  [data-intero].intero :is(.cpan.sx, .cpan.dx, .pannello-c, .pannello-d, .pannello-o:not(.barra-o)) { top: calc(12px + env(safe-area-inset-top, 0px)) !important; }
+}
