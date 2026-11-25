@@ -953,8 +953,8 @@ function buildRagno(){
 }
 /* ===== vertebrati: helper ===== */
 function E(m,sx,sy,sz,x,y,z,sg){var o=new THREE.Mesh(new THREE.SphereGeometry(1,sg||20,sg?Math.round(sg*.7):14),m);o.scale.set(sx,sy,sz);o.position.set(x,y,z);return o}
-function fishBodyGeo(L,Rm,pw,sx,top,bot){
-  var pts=[];for(var k=0;k<=36;k++){var s=k/36,r=Rm*Math.pow(Math.max(0,Math.sin(Math.PI*Math.pow(s,pw))),.9);pts.push(new THREE.Vector2((k===0||k===36)?0:Math.max(r,.02),-L/2+L*s))}
+function fishBodyGeo(L,Rm,pw,sx,top,bot,rmin){
+  var pts=[];for(var k=0;k<=36;k++){var s=k/36,r=Rm*Math.pow(Math.max(0,Math.sin(Math.PI*Math.pow(s,pw))),.9);pts.push(new THREE.Vector2(k===36?0:(k===0?(rmin||0):Math.max(r,rmin||.02)),-L/2+L*s))}
   var g=new THREE.LatheGeometry(pts,36);g.rotateX(Math.PI/2);g.scale(sx,1,1);
   var pos=g.attributes.position,cols=[],ct=new THREE.Color(top),cb=new THREE.Color(bot),c=new THREE.Color();
   for(var i=0;i<pos.count;i++){var y=pos.getY(i)/Rm,t=Math.min(1,Math.max(0,(.25-y)/.6));t=t*t*(3-2*t);c.copy(ct).lerp(cb,t);cols.push(c.r,c.g,c.b)}
@@ -972,62 +972,163 @@ function fan(c,tips,m){var pos=[];for(var i=0;i<tips.length-1;i++){[c,tips[i],ti
 function dotC(m,hex){m.userData.dot=hex;return m}
 function ring(R,tube,arc,m,rx,ry,rz,px,py,pz){var t=new THREE.Mesh(new THREE.TorusGeometry(R,tube,8,24,arc),m);t.rotation.set(rx||0,ry||0,rz||0);t.position.set(px||0,py||0,pz||0);return t}
 
+/* ---- strumenti per i pesci: sagome curve, pinne appoggiate al corpo, tubi rastremati, denti ---- */
+/* sagoma da punti [x,y,c]: c piega il lato verso il punto successivo (frazione della lunghezza, + a sinistra) */
+function curveS(pts,n,open){var out=[],N=n||8,cnt=open?pts.length-1:pts.length;
+  for(var i=0;i<cnt;i++){var p=pts[i],q=pts[(i+1)%pts.length],c=p[2]||0,dx=q[0]-p[0],dy=q[1]-p[1],cx=(p[0]+q[0])/2-dy*c,cy=(p[1]+q[1])/2+dx*c;
+    for(var k=0;k<N;k++){var t=k/N,a=(1-t)*(1-t),b=2*t*(1-t),e=t*t;out.push([a*p[0]+b*cx+e*q[0],a*p[1]+b*cy+e*q[1]])}}
+  if(open){var l=pts[pts.length-1];out.push([l[0],l[1]])}
+  return out}
+function shapeOf(arr){var sh=new THREE.Shape();arr.forEach(function(p,i){if(i)sh.lineTo(p[0],p[1]);else sh.moveTo(p[0],p[1])});sh.closePath();return sh}
+function finExtrude(arr,d){var g=new THREE.ExtrudeGeometry(shapeOf(arr),{depth:d,bevelEnabled:true,bevelThickness:d*.4,bevelSize:d*.4,bevelSegments:2,curveSegments:6});g.translate(0,0,-d/2);return g}
+function finV(arr,d){var g=finExtrude(arr,d);g.rotateY(-Math.PI/2);return g}   /* pinna verticale: x della sagoma diventa z, y resta y */
+function finH(arr,d){var g=finExtrude(arr,d);g.rotateX(Math.PI/2);return g}    /* pinna orizzontale: x resta x, y della sagoma diventa z */
+function bodySurf(L,Rm,pw,sx){return {rx:function(z){return fishR(L,Rm,pw,sx,z)},ry:function(z){return fishR(L,Rm,pw,sx,z)/sx}}}
+/* pinna impari (dorsale, anale): la base segue il profilo del corpo ed è affondata del 10%, così non resta mai staccata.
+   ctrl: punti [u,h,c], u da 0 (davanti) a 1 (dietro), h altezza sopra la base; sgn +1 sul dorso, -1 sul ventre */
+function finOnBody(S,zF,zR,sgn,ctrl,d){
+  var pts=ctrl.map(function(c){var z=zF+(zR-zF)*c[0];return [z,sgn*(S.ry(z)*.9+c[1]),c[2]||0]}),top=curveS(pts,8,true),base=[],i,z;
+  for(i=1;i<12;i++){z=zR+(zF-zR)*i/12;base.push([z,sgn*S.ry(z)*.9])}
+  return {geo:finV(top.concat(base),d),top:top,base:base}}
+/* punto di attacco sul fianco, un po' dentro il corpo; yf è la frazione dell'altezza */
+function sideAt(S,z,yf,k){var rx=S.rx(z),ry=S.ry(z);return {x:(k||.8)*rx*Math.sqrt(Math.max(0,1-yf*yf)),y:yf*ry*.95,z:z}}
+function pickN(arr,f,n){var a=arr.filter(f),o=[];if(!a.length)return o;for(var i=0;i<n;i++)o.push(a[Math.min(a.length-1,Math.round(i*(a.length-1)/Math.max(1,n-1)))]);return o}
+/* tubo che si assottiglia lungo una curva; rf(t) dà il raggio, con t da 0 a 1 */
+function taperTube(curve,rf,nS,nR,m){
+  var fr=curve.computeFrenetFrames(nS,false),pos=[],idx=[],i,j;
+  for(i=0;i<=nS;i++){var t=i/nS,p=curve.getPointAt(t),N=fr.normals[i],B=fr.binormals[i],r=rf(t);
+    for(j=0;j<=nR;j++){var a=j/nR*Math.PI*2,c=Math.cos(a)*r,s=Math.sin(a)*r;pos.push(p.x+N.x*c+B.x*s,p.y+N.y*c+B.y*s,p.z+N.z*c+B.z*s)}}
+  for(i=0;i<nS;i++)for(j=0;j<nR;j++){var a0=i*(nR+1)+j,b0=a0+nR+1;idx.push(a0,b0,a0+1,a0+1,b0,b0+1)}
+  var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
+  return new THREE.Mesh(g,m)}
+function tubeP(pts,r,m,seg){return new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),seg||24,r,6,false),m)}
+function lathe(prof,sy,m){var g=new THREE.LatheGeometry(prof.map(function(p){return new THREE.Vector2(p[0],p[1])}),28);g.rotateX(Math.PI/2);g.scale(1,sy,1);return new THREE.Mesh(g,m)}
+/* denti: lame triangolari allineate lungo una curva, con la punta nella direzione dir e un po' inclinate verso l'interno */
+function dentiLungo(curve,n,dir,len,wid,m,inward){var g=new THREE.Group(),geo=new THREE.ConeGeometry(wid,len,3,1);
+  for(var i=0;i<n;i++){var t=(i+.5)/n,p=curve.getPointAt(t),tg=curve.getTangentAt(t).normalize(),dv=dir.clone();
+    dv.x-=(p.x>0?1:-1)*(inward||0);dv.normalize();
+    var tx=tg.clone().addScaledVector(dv,-tg.dot(dv)).normalize(),tz=new THREE.Vector3().crossVectors(tx,dv),me=new THREE.Mesh(geo,m);
+    me.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(tx,dv,tz));me.scale.set(1.5,1,.45);
+    me.position.copy(p).addScaledVector(dv,len*.5);g.add(me)}
+  return g}
+/* arco branchiale: una C attorno alla faringe, con filamenti (o raggi) rivolti all'indietro */
+function gillArch(S,zc,sgn,k,mA,mF,nF,lenK){
+  var rx=S.rx(zc)*.72,ry=S.ry(zc)*k,cu=new THREE.CatmullRomCurve3([V3(sgn*.06,ry*.85,zc-.06),V3(sgn*rx*.7,ry*.6,zc-.03),V3(sgn*rx,ry*.1,zc),V3(sgn*rx*.75,-ry*.5,zc+.03),V3(sgn*.06,-ry*.8,zc+.07)]),g=new THREE.Group();
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(cu,20,.017,6,false),mA));
+  for(var i=0;i<nF;i++){var t=(i+.5)/nF,p=cu.getPoint(t);
+    [[.25,-.97],[.8,-.6]].forEach(function(dv){var d=V3(sgn*dv[0],0,dv[1]).normalize(),len=(lenK||1)*(.1+.04*Math.sin(Math.PI*t));g.add(seg(p,p.clone().addScaledVector(d,len),.01,.003,mF,4))})}
+  return g}
+/* gruppo posizionato sul fianco, per le pinne pari */
+function sideGroup(S,z,yf,k,sgn,roll,yaw){var a=sideAt(S,z,yf,k),g=new THREE.Group();g.position.set(sgn*a.x,a.y,a.z);g.rotation.z=-sgn*(roll||0);g.rotation.y=-sgn*(yaw||0);g.scale.x=sgn;return g}
+
 /* ---- pesci cartilaginei ---- */
 function buildSqualo(skel){
-  var root=new THREE.Group(),L=4.2,Rm=.55,pw=1.5,sx=.85,tail=new THREE.Group();
+  var root=new THREE.Group(),L=4.2,Rm=.55,pw=1.5,sx=.85,tail=new THREE.Group(),S=bodySurf(L,Rm,pw,sx);
   var bm=dotC(mat(0xffffff,{vertexColors:true,roughness:.5}),'#6c7c8a');
   if(skel){bm.transparent=true;bm.opacity=.16;bm.depthWrite=false}
-  var body=new THREE.Mesh(fishBodyGeo(L,Rm,pw,sx,0x6c7c8a,0xe8eef2),bm);root.add(body);
-  var em=mat(0x15151c);[-1,1].forEach(function(s){var e=E(em,.07,.07,.07,s*.3,.12,1.45);root.add(e)});
-  var fm=mat(0x65788a,{side:THREE.DoubleSide}),fg=new THREE.Group();
-  var d1=new THREE.Mesh(finGeo([[.5,0],[0,.95],[-.2,.45],[-.55,0]]),fm);d1.position.set(0,.46,.3);fg.add(d1);
-  var d2=new THREE.Mesh(finGeo([[.2,0],[-.05,.35],[-.3,0]]),fm);d2.position.set(0,.4,-1.0);fg.add(d2);
-  var pg=hFinGeo([[0,.4],[1.1,-.6],[.5,-.6],[0,-.3]]);
-  [-1,1].forEach(function(s){var p=new THREE.Mesh(pg,fm);p.position.set(s*.38,-.25,.65);p.rotation.z=-s*.25;p.scale.x=s;fg.add(p);
-    var pv=new THREE.Mesh(hFinGeo([[0,.2],[.55,-.3],[0,-.25]]),fm);pv.position.set(s*.28,-.38,-.8);pv.scale.x=s;fg.add(pv)});
-  var tg=finGeo([[0,.12],[-.7,1.25],[-.45,.1],[-.7,-.55],[0,-.1]]);tail.position.set(0,0,-1.95);tail.add(new THREE.Mesh(tg,fm));
-  var gm=mat(0x25303a),gl=new THREE.Group();
-  for(var i=0;i<5;i++){var z=.95+i*.1,x=fishR(L,Rm,pw,sx,z);[-1,1].forEach(function(s){var b=new THREE.Mesh(new THREE.BoxGeometry(.014,.3,.03),gm);b.position.set(s*(x+.003),.05,z);gl.add(b)})}
-  var tm=mat(0xf4f0e0),tt=new THREE.Group(),mp=[];
-  for(var j=0;j<=14;j++){var u=j/14,zt=1.5+.14*(1-Math.pow(2*u-1,2)),Rx=fishR(L,Rm,pw,sx,zt),Ry=Rx/sx,xx=(2*u-1)*Math.min(.22,Rx*.75),yy=-Ry*Math.sqrt(Math.max(0,1-Math.pow(xx/Rx,2)));
-    var c=new THREE.Mesh(new THREE.ConeGeometry(.034,.17,6),tm);c.rotation.x=Math.PI;c.position.set(xx,yy-.02,zt);tt.add(c);mp.push(new THREE.Vector3(xx,yy+.005,zt))}
-  tt.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(mp),12,.012,5,false),gm));
+  root.add(new THREE.Mesh(fishBodyGeo(L,Rm,pw,sx,0x6c7c8a,0xe8eef2,.075),bm));
+  var em=mat(0x15151c);[-1,1].forEach(function(s){root.add(E(em,.07,.07,.07,s*.3,.12,1.45))});
+  /* pinne: appoggiate al corpo; nel modello scheletro la pelle delle pinne diventa trasparente */
+  var fmat=function(){return skel?mat(0x6c7c8a,{side:THREE.DoubleSide,transparent:true,opacity:.2,depthWrite:false}):mat(0x65788a,{side:THREE.DoubleSide})};
+  var fmF=fmat(),fmC=fmat(),fg=new THREE.Group();
+  var D1=finOnBody(S,.62,-.2,1,[[0,0,-.08],[.45,.95,.2],[1.25,.1,0]],.045),D2=finOnBody(S,-.85,-1.2,1,[[0,0,-.1],[.4,.32,.15],[1.2,.06,0]],.035),AN=finOnBody(S,-1.25,-1.55,-1,[[0,0,0],[.4,.3,0],[1.2,.05,0]],.035);
+  [D1,D2,AN].forEach(function(f){fg.add(new THREE.Mesh(f.geo,fmF))});
+  var arrW=curveS([[0,.40,.12],[1.25,-.62,0],[.8,-.66,-.2],[0,-.30,0]],8),arrV=curveS([[0,.22,0],[.62,-.3,.1],[.25,-.32,-.15],[0,-.18,0]],6);
+  var wingG=[],pelvG=[];
+  [-1,1].forEach(function(s){
+    var w=sideGroup(S,.65,-.45,.7,s,.3,0);w.add(new THREE.Mesh(finH(arrW,.045),fmF));fg.add(w);wingG.push(w);
+    var pv=sideGroup(S,-.85,-.55,.7,s,.45,0);pv.add(new THREE.Mesh(finH(arrV,.04),fmF));fg.add(pv);pelvG.push(pv)});
+  /* coda eterocerca: il lobo superiore è più lungo */
+  var arrT=curveS([[0,.17,-.08],[-.72,1.28,.12],[-.52,.25,.12],[-.62,-.58,.1],[0,-.14,-.08]],8);
+  tail.position.set(0,0,-1.95);tail.add(new THREE.Mesh(finV(arrT,.045),fmC));
+  if(!skel)root.add(E(mat(0x6c7c8a),.06,.075,.075,0,0,-L/2+.03));
   root.add(tail);
+  /* fessure branchiali: archi leggermente incurvati sul fianco */
+  var gl=new THREE.Group(),gm=mat(0x25303a);
+  for(var i=0;i<5;i++)[-1,1].forEach(function(s){var z0=.98+i*.1,ps=[],k;
+    for(k=0;k<=8;k++){var u=k/8,y=.3-.52*u,z=z0+.025*(1-Math.pow(2*u-1,2))-.03*u,yf=y/S.ry(z),x=S.rx(z)*Math.sqrt(Math.max(0,1-yf*yf))+.004;ps.push(V3(s*x,y,z))}
+    gl.add(tubeP(ps,.011,gm,16))});
+  /* bocca sotto il muso: due labbra a mezzaluna con una fessura scura e due file di denti */
+  var mu=[],ml=[];
+  for(var j=0;j<=14;j++){var u=j/14,xx=(2*u-1)*.23,zt=1.5+.17*(1-Math.pow(2*u-1,2)),zl=zt-.1;
+    mu.push(V3(xx,-S.ry(zt)*Math.sqrt(Math.max(0,1-Math.pow(xx/S.rx(zt),2)))-.004,zt));
+    ml.push(V3(xx,-S.ry(zl)*Math.sqrt(Math.max(0,1-Math.pow(xx/S.rx(zl),2)))-.004,zl))}
+  var cuU=new THREE.CatmullRomCurve3(mu),cuL=new THREE.CatmullRomCurve3(ml),tm=mat(0xf6f2e4,{roughness:.4}),dm=mat(0x2a1f22,{side:THREE.DoubleSide});
+  var pos=[],idx=[];for(j=0;j<=14;j++){pos.push(mu[j].x,mu[j].y,mu[j].z,ml[j].x,ml[j].y,ml[j].z);if(j<14){var q=j*2;idx.push(q,q+1,q+2,q+1,q+3,q+2)}}
+  var rg=new THREE.BufferGeometry();rg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));rg.setIndex(idx);rg.computeVertexNormals();
+  var tt=new THREE.Group();tt.add(new THREE.Mesh(rg,dm));
+  tt.add(dentiLungo(cuU,17,V3(0,-1,.15),.11,.03,tm,.25));tt.add(dentiLungo(cuL,15,V3(0,1,.3),.09,.026,tm,.25));
   if(!skel){P(fg,'pinne');P(tail,'coda');P(gl,'fessure');P(tt,'denti');root.add(fg);root.add(gl);root.add(tt)}
-  else{root.add(fg);root.add(gl);root.add(tt);
-    var bn=mat(0x6f8cb3,{roughness:.5}),sk=new THREE.Group(),vm=new THREE.CylinderGeometry(.075,.075,.085,10);
-    for(var v=0;v<36;v++){var vt=new THREE.Mesh(vm,bn);vt.rotation.x=Math.PI/2;vt.position.set(0,.0,-1.95+v*.09);sk.add(vt)}
-    for(var w=0;w<8;w++){var vt2=new THREE.Mesh(vm,bn);vt2.position.set(0,.1+w*.14,-w*.09);vt2.rotation.x=Math.PI/2-.35;tail.add(vt2)}
-    P(sk,'colonna');root.add(sk);P(tail.children[tail.children.length-1],'colonna');
-    var cr=new THREE.Group();cr.add(E(bn,.28,.2,.5,0,.05,1.5));var ro=new THREE.Mesh(new THREE.ConeGeometry(.12,.5,10),bn);ro.rotation.x=Math.PI/2;ro.position.set(0,.02,1.95);cr.add(ro);
-    cr.add(ring(.24,.035,Math.PI,bn,Math.PI/2,0,0,0,-.17,1.5));cr.add(ring(.22,.035,Math.PI,bn,Math.PI/2,0,0,0,-.3,1.48));P(cr,'cranio');root.add(cr);
-    var ga=new THREE.Group();for(var a=0;a<5;a++){var r2=ring(.27,.022,Math.PI*2,bn,0,0,0,0,-.02,.92+a*.1);r2.scale.x=.8;ga.add(r2)}P(ga,'archi');root.add(ga)}
+  else{
+    root.add(fg);
+    var bone=function(){return mat(0x9dbbe0,{roughness:.5,side:THREE.DoubleSide})};
+    /* colonna: un tubo continuo con rigonfiamenti regolari (una vertebra ciascuno), che sale nel lobo superiore della coda */
+    var mC=bone(),sk=new THREE.Group();
+    var sp=new THREE.CatmullRomCurve3([V3(0,.06,1.25),V3(0,.04,.6),V3(0,.02,-.4),V3(0,0,-1.3),V3(0,0,-1.95)]);
+    sk.add(taperTube(sp,function(t){return (.09-.035*t)*(1+.1*Math.cos(Math.PI*2*36*t))},300,10,mC));
+    var tp=new THREE.CatmullRomCurve3([V3(0,0,0),V3(0,.28,-.2),V3(0,.8,-.45),V3(0,1.17,-.62)]);
+    tail.add(taperTube(tp,function(t){return (.055-.045*t)*(1+.1*Math.cos(Math.PI*2*30*t))},240,8,mC));
+    pickN(arrT,function(p){return p[0]<-.15&&p[1]>.2},8).forEach(function(p,i){tail.add(seg(tp.getPoint(.1+.09*i),V3(0,p[1],p[0]),.016,.006,mC,5))});
+    pickN(arrT,function(p){return p[0]<-.1&&p[1]<.2},6).forEach(function(p){tail.add(seg(V3(0,.04,-.05),V3(0,p[1],p[0]),.016,.006,mC,5))});
+    P(sk,'colonna');P(tail,'colonna');root.add(sk);
+    /* cranio e mascelle: condrocranio liscio con capsule nasali e otiche, due mascelle ad arco con i denti */
+    var mK=bone(),cr=new THREE.Group();
+    var sc=lathe([[0,1.0],[.16,1.05],[.23,1.2],[.25,1.4],[.22,1.6],[.15,1.8],[.07,1.95],[.02,2.08],[0,2.1]],.75,mK);sc.position.y=.08;cr.add(sc);
+    [-1,1].forEach(function(s){cr.add(E(mK,.07,.06,.09,s*.13,.08,1.88));cr.add(E(mK,.09,.08,.13,s*.17,.1,1.12))});
+    var jU=new THREE.CatmullRomCurve3([V3(-.22,-.08,1.25),V3(-.19,-.2,1.52),V3(-.1,-.26,1.78),V3(0,-.27,1.84),V3(.1,-.26,1.78),V3(.19,-.2,1.52),V3(.22,-.08,1.25)]);
+    var jL=new THREE.CatmullRomCurve3([V3(-.2,-.14,1.22),V3(-.17,-.32,1.46),V3(-.09,-.42,1.66),V3(0,-.43,1.7),V3(.09,-.42,1.66),V3(.17,-.32,1.46),V3(.2,-.14,1.22)]);
+    cr.add(new THREE.Mesh(new THREE.TubeGeometry(jU,30,.035,8,false),mK));cr.add(new THREE.Mesh(new THREE.TubeGeometry(jL,30,.04,8,false),mK));
+    cr.add(dentiLungo(jU,19,V3(0,-1,.1),.1,.026,tm,.15));cr.add(dentiLungo(jL,17,V3(0,1,.2),.09,.024,tm,.15));
+    P(cr,'cranio');root.add(cr);
+    /* archi branchiali: C di cartilagine con raggi che sostengono le lamelle */
+    var mA=bone(),ga=new THREE.Group();
+    for(var a=0;a<5;a++)[-1,1].forEach(function(s){ga.add(gillArch(S,.98+a*.1,s,.5,mA,mA,9,.9))});
+    P(ga,'archi');root.add(ga);
+    /* pinne: cinture di cartilagine e raggi (radiali) che si aprono a ventaglio dentro le pinne */
+    var mP=bone(),sp2=new THREE.Group(),a0=sideAt(S,.65,-.45,.7);
+    sp2.add(tubeP([V3(-a0.x,.16,.7),V3(-a0.x-.03,a0.y+.05,.67),V3(-.26,-.28,.64),V3(0,-.36,.62),V3(.26,-.28,.64),V3(a0.x+.03,a0.y+.05,.67),V3(a0.x,.16,.7)],.03,mP,40));
+    var a1=sideAt(S,-.85,-.55,.7);sp2.add(tubeP([V3(-a1.x,a1.y,-.85),V3(0,a1.y-.05,-.88),V3(a1.x,a1.y,-.85)],.025,mP,12));
+    wingG.forEach(function(w){var tips=pickN(arrW,function(p){return p[0]>.3},7);
+      tips.forEach(function(p,i){w.add(seg(V3(.03,0,.32-.55*i/6),V3(p[0],0,p[1]),.02,.007,mP,5))});
+      [[.3,.15],[0,-.05],[-.2,-.25]].forEach(function(b){w.add(seg(V3(0,0,b[0]),V3(.35,0,b[1]),.03,.02,mP,6))});
+      });
+    /* le radiali delle pinne pari stanno nei gruppi delle pinne stesse, così seguono la stessa posizione */
+    pelvG.forEach(function(w){pickN(arrV,function(p){return p[0]>.15},5).forEach(function(p,i){w.add(seg(V3(.02,0,.18-.34*i/4),V3(p[0],0,p[1]),.018,.007,mP,5))})});
+    [D1,D2].forEach(function(f){pickN(f.top,function(p,i){return true},9).slice(1,-1).forEach(function(p){
+      var b=f.base.reduce(function(m,q){return Math.abs(q[0]-p[0])<Math.abs(m[0]-p[0])?q:m},f.base[0]);
+      sp2.add(seg(V3(0,b[1]*.55,b[0]),V3(0,b[1]*.95,b[0]),.028,.02,mP,6));sp2.add(seg(V3(0,b[1]*.95,b[0]),V3(0,p[1]*.96,p[0]),.016,.006,mP,5))})});
+    P(sp2,'pinne');wingG.concat(pelvG).forEach(function(w){P(w,'pinne')});root.add(sp2)}
   return {root:root,
     parts:skel?[
-      {id:'colonna',name:'Colonna vertebrale',text:'Serie di vertebre di cartilagine che prosegue nel lobo superiore della coda: per questo la coda è asimmetrica.',a:[.3,.2,-.6]},
-      {id:'cranio',name:'Cranio e mascelle',text:'Cranio e mascelle sono di cartilagine, non di osso. Le mascelle sono mobili e sostengono i denti.',a:[.55,.3,1.7]},
-      {id:'archi',name:'Archi branchiali',text:'Archi di cartilagine che sostengono le branchie, collocate in fessure separate.',a:[.6,.4,1.1]}]:
-     [{id:'pinne',name:'Pinne',text:'Pinne dorsali, pettorali e pelviche: stabilizzano e dirigono il nuoto. Le pettorali sono larghe e rigide e fanno da ali.',a:[.5,.95,.4]},
+      {id:'colonna',name:'Colonna vertebrale',text:'Serie di vertebre di cartilagine, rinforzate da sali di calcio. Prosegue nel lobo superiore della coda, che per questo è più lungo (coda eterocerca).',a:[.3,.2,-.6]},
+      {id:'cranio',name:'Cranio e mascelle',text:'Cranio e mascelle sono di cartilagine, non di osso. Le mascelle sono mobili, non saldate al cranio, e portano i denti in più file.',a:[.55,.3,1.7]},
+      {id:'archi',name:'Archi branchiali',text:'Archi di cartilagine a forma di C che sostengono le branchie, collocate in fessure separate. I raggi sottili reggono le lamelle.',a:[.6,.4,1.1]},
+      {id:'pinne',name:'Pinne e cinture',text:'Le pinne sono sostenute da bacchette di cartilagine (radiali) appoggiate alle cinture pettorale e pelvica; le dorsali poggiano su cartilagini basali.',a:[1.0,-.25,.65]}]:
+     [{id:'pinne',name:'Pinne',text:'Pinne dorsali, pettorali e pelviche: stabilizzano e dirigono il nuoto. Le pettorali sono larghe e rigide e fanno da ali.',a:[.5,1.1,.4]},
       {id:'coda',name:'Coda',text:'Coda asimmetrica (eterocerca): il lobo superiore, sostenuto dalla colonna vertebrale, è più lungo di quello inferiore.',a:[.5,1.1,-2.45]},
       {id:'fessure',name:'Fessure branchiali',text:'Cinque (o più) aperture sul fianco, scoperte: non esiste l\'opercolo che copre le branchie dei pesci ossei.',a:[.7,.4,1.2]},
-      {id:'denti',name:'Bocca e denti',text:'Bocca sotto il muso, con denti disposti in più file e sostituiti di continuo.',a:[.5,-.5,1.9]}],
+      {id:'denti',name:'Bocca e denti',text:'Bocca sotto il muso, con denti a lama disposti in più file e sostituiti di continuo.',a:[.5,-.5,1.9]}],
     cam:{th:.9,ph:1.3,dist:8.2,ty:.1},
     update:function(t){tail.rotation.y=.28*Math.sin(t*3);root.position.y=.05*Math.sin(t*1.2)}
   };
 }
 /* ---- pesci ossei ---- */
 function buildPesceOsseo(inner){
-  var root=new THREE.Group(),L=3.8,Rm=.9,pw=1.55,sx=.5,tail=new THREE.Group();
+  var root=new THREE.Group(),L=3.8,Rm=.9,pw=1.55,sx=.5,tail=new THREE.Group(),S=bodySurf(L,Rm,pw,sx);
   var bm=dotC(mat(0xffffff,{vertexColors:true,roughness:.4,map:scaleTex([12,5])}),'#5a7d5a');
   if(inner){bm.transparent=true;bm.opacity=.16;bm.depthWrite=false;bm.map=null}
-  var body=new THREE.Mesh(fishBodyGeo(L,Rm,pw,sx,0x5a7d5a,0xe6d9a8),bm);if(!inner)P(body,'squame');root.add(body);
-  var fm=mat(0x7ea078,{side:THREE.DoubleSide,transparent:true,opacity:.9}),fg=new THREE.Group();
-  var dd=new THREE.Mesh(finGeo([[.7,0],[.45,.55],[0,.65],[-.5,.45],[-.7,0]]),fm);dd.position.set(0,.78,.1);fg.add(dd);
-  var an=new THREE.Mesh(finGeo([[.35,0],[0,-.4],[-.45,0]]),fm);an.position.set(0,-.7,-.8);fg.add(an);
-  var pg=hFinGeo([[0,.3],[.65,-.25],[.4,-.55],[0,-.25]]);
-  [-1,1].forEach(function(s){var p=new THREE.Mesh(pg,fm);p.position.set(s*.4,-.2,.95);p.rotation.z=-s*.3;p.scale.x=s;fg.add(p);
-    var pv=new THREE.Mesh(hFinGeo([[0,.25],[.4,-.3],[0,-.25]]),fm);pv.position.set(s*.25,-.62,.35);pv.scale.x=s;fg.add(pv)});
-  tail.position.set(0,0,-1.85);tail.add(new THREE.Mesh(finGeo([[0,.14],[-.95,.95],[-.6,0],[-.95,-.95],[0,-.14]]),fm));
+  var body=new THREE.Mesh(fishBodyGeo(L,Rm,pw,sx,0x5a7d5a,0xe6d9a8,.1),bm);if(!inner)P(body,'squame');root.add(body);
+  var fm=inner?mat(0x7ea078,{side:THREE.DoubleSide,transparent:true,opacity:.3,depthWrite:false}):mat(0x7ea078,{side:THREE.DoubleSide,transparent:true,opacity:.92}),fg=new THREE.Group();
+  /* pinne impari appoggiate al profilo del corpo; pinne pari attaccate al fianco con un po' di apertura verso l'esterno */
+  var DO=finOnBody(S,.8,-.75,1,[[0,0,-.06],[.08,.56,0],[.3,.66,.1],[.42,.4,0],[.58,.52,.1],[.88,.34,.1],[1,0,0]],.04),AN=finOnBody(S,-.45,-1.15,-1,[[0,0,0],[.15,.4,0],[.6,.32,0],[1,0,0]],.04);
+  fg.add(new THREE.Mesh(DO.geo,fm));fg.add(new THREE.Mesh(AN.geo,fm));
+  var arrP=curveS([[0,.12,0],[-.12,.2,0],[-.45,.12,.1],[-.58,-.05,.1],[-.42,-.2,.05],[-.1,-.2,0],[0,-.1,0]],5),arrV=curveS([[.05,0,0],[-.05,-.2,0],[-.35,-.38,.05],[-.32,-.1,-.1]],5);
+  var pecG=[],pelG=[];
+  [-1,1].forEach(function(s){
+    var p=sideGroup(S,.93,-.2,.85,s,0,.45);p.add(new THREE.Mesh(finV(arrP,.035),fm));fg.add(p);pecG.push(p);
+    var v=sideGroup(S,.4,-.85,.7,s,0,.35);v.add(new THREE.Mesh(finV(arrV,.035),fm));fg.add(v);pelG.push(v)});
+  var arrT=curveS([[0,.1,-.08],[-.95,.95,.12],[-.6,0,.12],[-.95,-.95,.12],[0,-.1,-.08]],8);
+  tail.position.set(0,0,-1.85);tail.add(new THREE.Mesh(finV(arrT,.04),fm));
   var eyem=mat(0x15151c),rg=mat(0xd8dde0),eg=new THREE.Group();
   [-1,1].forEach(function(s){eg.add(E(rg,.13,.13,.13,s*.2,.2,1.5));eg.add(E(eyem,.08,.08,.08,s*.27,.21,1.52))});
   root.add(eg);
@@ -1045,18 +1146,41 @@ function buildPesceOsseo(inner){
   root.add(tail);
   if(!inner){P(fg,'pinne');P(tail,'pinne');P(oc,'opercolo');P(ll,'linea');root.add(fg);root.add(oc);root.add(ll)}
   else{root.add(fg);
-    var bn=mat(0x8f7a48),sk=new THREE.Group(),vm=new THREE.CylinderGeometry(.06,.06,.075,8);
-    for(var v=0;v<28;v++){var z=-1.7+v*.1,vt=new THREE.Mesh(vm,bn);vt.rotation.x=Math.PI/2;vt.position.set(0,.06,z);sk.add(vt);
-      sk.add(seg(V3(0,.1,z),V3(0,.45*(1-Math.abs(z)/2.4)+.1,z-.08),.014,.008,bn,5));
-      if(z>-.5&&z<1.0)[-1,1].forEach(function(s){sk.add(seg(V3(0,.0,z),V3(s*.3,-.42*(1-Math.abs(z-.3)/1.3),z),.014,.01,bn,5))})}
-    sk.add(E(bn,.2,.2,.45,0,.12,1.45));P(sk,'scheletro');root.add(sk);
+    var bn=mat(0x8f7a48,{roughness:.55,side:THREE.DoubleSide}),sk=new THREE.Group();
+    /* colonna: tubo continuo con una vertebra dopo l'altra, archi neurali sopra, costole curve nella parte addominale */
+    var sp=new THREE.CatmullRomCurve3([V3(0,.08,1.15),V3(0,.06,0),V3(0,.08,-1.0),V3(0,.1,-1.85)]);
+    sk.add(taperTube(sp,function(t){return (.065-.04*t)*(1+.1*Math.cos(Math.PI*2*30*t))},260,10,bn));
+    for(var v=0;v<28;v++){var z=-1.7+v*.1;
+      sk.add(seg(V3(0,.1,z),V3(0,.45*(1-Math.abs(z)/2.4)+.1,z-.08),.014,.006,bn,5));
+      if(z<-.6)sk.add(seg(V3(0,.06,z),V3(0,-.35*(1-Math.abs(z)/2.4)-.02,z-.06),.012,.005,bn,5))}
+    for(var r=0;r<9;r++){var zr=-.45+r*.15,f=1-Math.abs(zr-.3)/1.4;
+      [-1,1].forEach(function(s){sk.add(tubeP([V3(0,.0,zr),V3(s*.14,-.12*f,zr+.02),V3(s*.26*f,-.36*f,zr+.05),V3(s*.22*f,-.6*f,zr+.08)],.012,bn,12))})}
+    /* cranio, mandibola e mascella con piccoli denti, anelli attorno agli occhi */
+    var sc=lathe([[0,.95],[.12,1.0],[.2,1.15],[.23,1.35],[.2,1.55],[.12,1.75],[.05,1.86],[0,1.9]],1.3,bn);sc.position.y=.1;sk.add(sc);
+    var jU=new THREE.CatmullRomCurve3([V3(-.14,.05,1.3),V3(-.1,-.1,1.7),V3(0,-.12,1.86),V3(.1,-.1,1.7),V3(.14,.05,1.3)]),jL=new THREE.CatmullRomCurve3([V3(-.14,-.05,1.2),V3(-.1,-.3,1.6),V3(0,-.32,1.82),V3(.1,-.3,1.6),V3(.14,-.05,1.2)]);
+    sk.add(new THREE.Mesh(new THREE.TubeGeometry(jU,24,.03,6,false),bn));sk.add(new THREE.Mesh(new THREE.TubeGeometry(jL,24,.035,6,false),bn));
+    sk.add(dentiLungo(jU,12,V3(0,-1,.1),.06,.014,mat(0xefe6c8),.1));sk.add(dentiLungo(jL,12,V3(0,1,.2),.06,.014,mat(0xefe6c8),.1));
+    [-1,1].forEach(function(s){sk.add(ring(.14,.014,Math.PI*2,bn,0,Math.PI/2,0,s*.2,.2,1.5))});
+    /* raggi delle pinne e supporti alla base: le pinne restano collegate al corpo */
+    [DO,AN].forEach(function(f,fi){var sg=fi?-1:1;
+      pickN(f.top,function(){return true},12).slice(1,-1).forEach(function(p){
+        var b=f.base.reduce(function(m,q){return Math.abs(q[0]-p[0])<Math.abs(m[0]-p[0])?q:m},f.base[0]);
+        sk.add(seg(V3(0,b[1]*.6,b[0]),V3(0,b[1]*.95,b[0]),.022,.016,bn,5));sk.add(seg(V3(0,b[1]*.95,b[0]),V3(0,p[1]*.97,p[0]),.012,.004,bn,4))})});
+    pecG.forEach(function(w){pickN(arrP,function(p){return p[0]<-.2},7).forEach(function(p,i){w.add(seg(V3(0,.1-.2*i/6,0),V3(0,p[1],p[0]),.012,.004,bn,4))});P(w,'scheletro')});
+    pelG.forEach(function(w){pickN(arrV,function(p){return p[0]<-.15},4).forEach(function(p,i){w.add(seg(V3(0,-.02*i,.0),V3(0,p[1],p[0]),.012,.004,bn,4))});P(w,'scheletro')});
+    pickN(arrT,function(p){return p[0]<-.2},13).forEach(function(p,i){tail.add(seg(V3(0,.08-.16*i/12,0),V3(0,p[1],p[0]),.012,.004,bn,4))});
+    P(tail,'scheletro');
+    P(sk,'scheletro');root.add(sk);
     var vb=P(E(mat(0xb8e0f4,{transparent:true,opacity:.6,roughness:.2}),.19,.2,.8,0,.0,.0),'vescica');root.add(vb);
-    var gb=new THREE.Group(),gr=mat(0xd24a4a);[-1,1].forEach(function(s){for(var i=0;i<4;i++)gb.add(E(gr,.015,.3,.08,s*.22,.0,1.0+i*.1))});P(gb,'branchie');root.add(gb)}
+    /* branchie: quattro archi per lato, a C, con due file di filamenti rossi rivolti all'indietro */
+    var gb=new THREE.Group(),ga=mat(0xe38a8a),gf=mat(0xd24a4a);
+    for(var i=0;i<4;i++)[-1,1].forEach(function(s){gb.add(gillArch(S,1.05+i*.1,s,.5,ga,gf,14,1))});
+    P(gb,'branchie');root.add(gb)}
   return {root:root,
     parts:inner?[
-      {id:'scheletro',name:'Scheletro osseo',text:'Cranio, colonna vertebrale, costole e spine sono di tessuto osseo: più rigido della cartilagine.',a:[.5,.55,-.5]},
+      {id:'scheletro',name:'Scheletro osseo',text:'Cranio, colonna vertebrale, costole, spine e raggi delle pinne sono di tessuto osseo: più rigido della cartilagine.',a:[.5,.55,-.5]},
       {id:'vescica',name:'Vescica natatoria',text:'Sacca piena di gas che regola il galleggiamento: il pesce può restare a una certa profondità senza consumare energia.',a:[.45,-.35,.3]},
-      {id:'branchie',name:'Branchie',text:'Filamenti rossi ricchi di vasi sanguigni: scambiano gas con l\'acqua. Sono protette dall\'opercolo.',a:[.6,-.1,1.15]}]:
+      {id:'branchie',name:'Branchie',text:'Archi sottili con filamenti rossi ricchi di vasi sanguigni: scambiano gas con l\'acqua. Sono protette dall\'opercolo.',a:[.6,-.1,1.15]}]:
      [{id:'squame',name:'Squame',text:'Placche sottili e sovrapposte come tegole, ricoperte di muco: proteggono la pelle e riducono l\'attrito con l\'acqua.',a:[.45,.3,-.6]},
       {id:'opercolo',name:'Opercolo',text:'Placca ossea che copre le branchie: aprendosi e chiudendosi aiuta a far passare l\'acqua.',a:[.55,.55,1.2]},
       {id:'pinne',name:'Pinne',text:'Pinne dorsale, anale, pettorali, pelviche e caudale, sostenute da raggi ossei. La caudale è simmetrica.',a:[.2,1.1,.1]},
@@ -1709,7 +1833,7 @@ MODELS.cefalopodi={name:'Cefalopodi',note:'Esempio: un polpo.',variants:[{label:
 MODELS.miriapodi={name:'Miriapodi',note:'Esempio: un millepiedi.',variants:[{label:'Millepiedi',build:buildMillepiedi}]};
 MODELS.crostacei={name:'Crostacei',note:'Esempio: un gambero.',variants:[{label:'Gambero',build:buildGambero}]};
 MODELS.aracnidi={name:'Aracnidi',note:'Esempio: un ragno.',variants:[{label:'Ragno',build:buildRagno}]};
-MODELS.cartilaginei={name:'Pesci cartilaginei',note:'Esempio: uno squalo.',variants:[{label:'Esterno',build:function(){return buildSqualo(false)}},{label:'Scheletro',build:function(){return buildSqualo(true)},note:'Lo scheletro è di cartilagine, più leggera e flessibile dell\'osso (nello scheletro sono evidenziati solo cranio, colonna e archi branchiali).'}]};
+MODELS.cartilaginei={name:'Pesci cartilaginei',note:'Esempio: uno squalo.',variants:[{label:'Esterno',build:function(){return buildSqualo(false)}},{label:'Scheletro cartilagineo',build:function(){return buildSqualo(true)},note:'Lo scheletro è tutto di cartilagine, più leggera e flessibile dell\'osso, in parte irrigidita da sali di calcio. Non c\'è tessuto osseo.'}]};
 MODELS.ossei={name:'Pesci ossei',note:'Esempio: un pesce osseo generico.',variants:[{label:'Esterno',build:function(){return buildPesceOsseo(false)}},{label:'Interno',build:function(){return buildPesceOsseo(true)},note:'Corpo reso trasparente per vedere scheletro osseo, vescica natatoria e branchie.'}]};
 MODELS.anfibi={name:'Anfibi',note:'Le uova degli anfibi sono deposte in acqua e non hanno guscio; da ciascuna nasce un girino che subisce la metamorfosi.',variants:[{label:'Rana',build:buildRana},{label:'Girino',build:buildGirino}]};
 MODELS.rettili={name:'Rettili',note:'I rettili sono ectotermi: ricavano calore dall\'ambiente e per questo si scaldano al sole.',variants:[{label:'Lucertola',build:buildLucertola},{label:'Uovo',build:buildUovo,note:'Uovo con guscio e annessi embrionali (amnios, tuorlo): ha reso possibile la vita lontano dall\'acqua.'}]};
