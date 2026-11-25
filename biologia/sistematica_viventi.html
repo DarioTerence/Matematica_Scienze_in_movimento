@@ -1033,7 +1033,7 @@ function buildSqualo(skel){
   var fmF=fmat(),fmC=fmat(),fg=new THREE.Group();
   var D1=finOnBody(S,.62,-.2,1,[[0,0,-.08],[.45,.95,.2],[1.25,.1,0]],.045),D2=finOnBody(S,-.85,-1.2,1,[[0,0,-.1],[.4,.32,.15],[1.2,.06,0]],.035),AN=finOnBody(S,-1.25,-1.55,-1,[[0,0,0],[.4,.3,0],[1.2,.05,0]],.035);
   [D1,D2,AN].forEach(function(f){fg.add(new THREE.Mesh(f.geo,fmF))});
-  var arrW=curveS([[0,.40,.12],[1.25,-.62,0],[.8,-.66,-.2],[0,-.30,0]],8),arrV=curveS([[0,.22,0],[.62,-.3,.1],[.25,-.32,-.15],[0,-.18,0]],6);
+  var arrW=curveS([[0,.40,.12],[1.25,-.62,0],[.8,-.66,-.2],[0,-.30,0]],8).map(function(p){return [p[0]*.75,p[1]*.75]}),arrV=curveS([[0,.22,0],[.62,-.3,.1],[.25,-.32,-.15],[0,-.18,0]],6);
   var wingG=[],pelvG=[];
   [-1,1].forEach(function(s){
     var w=sideGroup(S,.65,-.45,.7,s,.3,0);w.add(new THREE.Mesh(finH(arrW,.045),fmF));fg.add(w);wingG.push(w);
@@ -1043,11 +1043,15 @@ function buildSqualo(skel){
   tail.position.set(0,0,-1.95);tail.add(new THREE.Mesh(finV(arrT,.045),fmC));
   if(!skel)root.add(E(mat(0x6c7c8a),.06,.075,.075,0,0,-L/2+.03));
   root.add(tail);
-  /* fessure branchiali: archi leggermente incurvati sul fianco */
-  var gl=new THREE.Group(),gm=mat(0x25303a);
-  for(var i=0;i<5;i++)[-1,1].forEach(function(s){var z0=.98+i*.1,ps=[],k;
-    for(k=0;k<=8;k++){var u=k/8,y=.3-.52*u,z=z0+.025*(1-Math.pow(2*u-1,2))-.03*u,yf=y/S.ry(z),x=S.rx(z)*Math.sqrt(Math.max(0,1-yf*yf))+.004;ps.push(V3(s*x,y,z))}
-    gl.add(tubeP(ps,.011,gm,16))});
+  /* fessure branchiali: aperture a mandorla (strette alle estremità) che seguono il fianco, con un bordo di pelle più chiaro sul davanti */
+  var gl=new THREE.Group(),gm=mat(0x1d252d,{side:THREE.DoubleSide}),gz=mat(0x8b9aa8,{roughness:.5});
+  var sp=function(sd,y,z){var yf=Math.max(-.98,Math.min(.98,y/S.ry(z)));return V3(sd*(S.rx(z)*Math.sqrt(1-yf*yf)+.004),y,z)};
+  for(var i=0;i<5;i++)[-1,1].forEach(function(sd){var z0=.98+i*.1,k,pa=[],ce=[],pos=[],idx=[],ln=.3-.05*i;
+    for(k=0;k<=10;k++){var u=k/10,y=.3-.55*u,zc=z0+.03*(1-Math.pow(2*u-1,2))-.035*u,w=.017*Math.pow(Math.sin(Math.PI*u),.6);
+      pos.push.apply(pos,sp(sd,y,zc+w).toArray());pos.push.apply(pos,sp(sd,y,zc-w).toArray());ce.push(sp(sd,y,zc+w+.004));
+      if(k<10){var q=k*2;idx.push(q,q+1,q+2,q+1,q+3,q+2)}}
+    var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
+    gl.add(new THREE.Mesh(g,gm));gl.add(tubeP(ce.slice(1,-1),.005,gz,16))});
   /* bocca sotto il muso: due labbra a mezzaluna con una fessura scura e due file di denti */
   var mu=[],ml=[];
   for(var j=0;j<=14;j++){var u=j/14,xx=(2*u-1)*.23,zt=1.5+.17*(1-Math.pow(2*u-1,2)),zl=zt-.1;
@@ -1082,15 +1086,15 @@ function buildSqualo(skel){
     P(cr,'cranio');root.add(cr);
     /* archi branchiali: C di cartilagine con raggi che sostengono le lamelle */
     var mA=bone(),ga=new THREE.Group();
-    for(var a=0;a<5;a++)[-1,1].forEach(function(s){ga.add(gillArch(S,.98+a*.1,s,.5,mA,mA,9,.9))});
+    for(var a=0;a<5;a++)[-1,1].forEach(function(s){ga.add(gillArch(S,.98+a*.1,s,.5,mA,mA,5,.6))});
     P(ga,'archi');root.add(ga);
     /* pinne: cinture di cartilagine e raggi (radiali) che si aprono a ventaglio dentro le pinne */
     var mP=bone(),sp2=new THREE.Group(),a0=sideAt(S,.65,-.45,.7);
     sp2.add(tubeP([V3(-a0.x,.16,.7),V3(-a0.x-.03,a0.y+.05,.67),V3(-.26,-.28,.64),V3(0,-.36,.62),V3(.26,-.28,.64),V3(a0.x+.03,a0.y+.05,.67),V3(a0.x,.16,.7)],.03,mP,40));
     var a1=sideAt(S,-.85,-.55,.7);sp2.add(tubeP([V3(-a1.x,a1.y,-.85),V3(0,a1.y-.05,-.88),V3(a1.x,a1.y,-.85)],.025,mP,12));
-    wingG.forEach(function(w){var tips=pickN(arrW,function(p){return p[0]>.3},7);
-      tips.forEach(function(p,i){w.add(seg(V3(.03,0,.32-.55*i/6),V3(p[0],0,p[1]),.02,.007,mP,5))});
-      [[.3,.15],[0,-.05],[-.2,-.25]].forEach(function(b){w.add(seg(V3(0,0,b[0]),V3(.35,0,b[1]),.03,.02,mP,6))});
+    wingG.forEach(function(w){var tips=pickN(arrW,function(p){return p[0]>.22},7);
+      tips.forEach(function(p,i){w.add(seg(V3(.03,0,.24-.41*i/6),V3(p[0],0,p[1]),.02,.007,mP,5))});
+      [[.23,.11],[0,-.04],[-.15,-.19]].forEach(function(b){w.add(seg(V3(0,0,b[0]),V3(.27,0,b[1]),.03,.02,mP,6))});
       });
     /* le radiali delle pinne pari stanno nei gruppi delle pinne stesse, così seguono la stessa posizione */
     pelvG.forEach(function(w){pickN(arrV,function(p){return p[0]>.15},5).forEach(function(p,i){w.add(seg(V3(.02,0,.18-.34*i/4),V3(p[0],0,p[1]),.018,.007,mP,5))})});
