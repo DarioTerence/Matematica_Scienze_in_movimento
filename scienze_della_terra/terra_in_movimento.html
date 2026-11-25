@@ -267,6 +267,18 @@ button{font-family:inherit}
  #p-globo.intero .opzioni{bottom:calc(20px + var(--sb))}
  #p-globo.intero #gPlan{right:auto!important;left:-212px!important;width:196px!important;bottom:calc(20px + var(--sb))}
  #p-terremoti.intero #faseT,#p-terremoti.intero #faseM{left:auto;right:calc(24px + var(--sr));width:124px;top:calc(80px + var(--st));bottom:calc(22px + var(--sb))}}
+
+/* croce delle parti nelle schede 02 e 03 (25 nov 2026): in orizzontale in cima alla colonna sinistra, in verticale sotto Opzioni */
+[data-intero].intero .cparti .cnome{font-size:14px}
+[data-intero].intero .cparti>.freccia{width:40px!important;height:40px!important;background:#1a2333!important;border:1px solid #34476b!important;color:#e6ecf5}
+[data-intero].intero .cparti>span{background:#1a2333!important}
+[data-intero].intero .cparti>span{flex:1!important;min-height:40px;display:flex;align-items:center;justify-content:center;border:0!important;border-top:1px solid #34476b!important;border-bottom:1px solid #34476b!important;width:auto!important}
+[data-intero].intero .cparti>.freccia:first-child{border-radius:12px 4px 4px 12px!important}
+[data-intero].intero .cparti>.freccia:last-child{border-radius:4px 12px 12px 4px!important}
+@media(orientation:portrait){#p-margini.intero[data-intero] .csel.cparti,#p-vulcani.intero[data-intero] .csel.cparti{top:calc(60px + var(--st));bottom:auto;left:calc(12px + var(--sl));right:calc(60px + var(--sr))}}
+@media(orientation:landscape){#p-margini.intero[data-intero] .csel.cparti,#p-vulcani.intero[data-intero] .csel.cparti{flex-direction:row!important;top:calc(24px + var(--st))!important;bottom:auto!important;left:calc(24px + var(--sl))!important;right:auto!important;width:196px!important}
+ [data-intero].intero .cparti .freccia svg{transform:none!important}
+ #p-margini.intero[data-intero] .cdesc,#p-vulcani.intero[data-intero] .cdesc{top:calc(80px + var(--st))}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
@@ -331,6 +343,7 @@ button{font-family:inherit}
 </section>
 
 <section id="p-margini" data-intero class="hide">
+  <div class="csel cparti" id="pSel"><button class="freccia" data-d="-1" aria-label="Parte precedente" title="Parte precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Parte successiva" title="Parte successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
  <div class="margini solo-pagina" id="margini" role="group" aria-label="Tipo di margine"></div>
  <div class="layout">
   <div>
@@ -370,6 +383,7 @@ button{font-family:inherit}
 </section>
 
 <section id="p-vulcani" data-intero class="hide">
+  <div class="csel cparti" id="pvSel"><button class="freccia" data-d="-1" aria-label="Parte precedente" title="Parte precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Parte successiva" title="Parte successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
  <div class="margini solo-pagina" id="tipiV" role="group" aria-label="Tipo di vulcano"></div>
  <div class="layout">
   <div>
@@ -1978,6 +1992,15 @@ function selConsole(sel,chips,nome,desc,t,d,vuoto){
 selConsole('gSel','luoghi','gNome','gDesc','gT','gD','Scegli un luogo');
 selConsole('bSel','margini','bNome','bDesc','infoT','infoD','');
 selConsole('vSel','tipiV','vNome','vDesc','vT','vD','');
+/* croce delle parti (schede 02 e 03): tocca il chip della parte vicina */
+function selParti(sel,chips){
+ var C=$(chips),nome=$(sel).querySelector('.cnome');
+ function agg(){var a=C.querySelector('.attivo');nome.textContent=a?a.textContent:'Scegli una parte';}
+ $(sel).addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;var k=Array.prototype.slice.call(C.children),n=k.length;if(!n)return;
+  var i=k.indexOf(C.querySelector('.attivo')),d=+b.dataset.d;k[i<0?(d>0?0:n-1):(i+d+n)%n].click();});
+ new MutationObserver(agg).observe(C,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});agg();}
+selParti('pSel','parti');selParti('pvSel','partiV');
+
 schermoIntero($('p-globo'),$('gIntero'));
 schermoIntero($('p-margini'),$('bIntero'));
 schermoIntero($('p-vulcani'),$('vIntero'));
