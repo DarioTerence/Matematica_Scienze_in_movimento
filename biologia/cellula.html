@@ -216,6 +216,12 @@ button{font-family:inherit;cursor:pointer}
 .opt.ko{background:rgba(255,138,128,.16);border-color:var(--warn)}
 .opt:disabled{cursor:default}
 .fb{margin-top:12px;line-height:1.45}
+
+/* ---- revisione 25 nov 2026 (orizzontale): fascia libera in alto a sinistra (X dello schermo intero su iPad), croce verticale nella colonna destra, descrizioni dove c'è più spazio ---- */
+@media(orientation:landscape){
+#p-cellula.intero .selettore{right:calc(24px + var(--sr))!important;left:auto!important;width:124px!important;top:calc(80px + var(--st))}
+ #p-cellula.intero .desc-console{top:calc(150px + var(--st))}
+ #p-cellula.intero .opzioni{top:auto;bottom:calc(20px + var(--sb))}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
