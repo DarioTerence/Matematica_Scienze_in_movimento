@@ -104,10 +104,9 @@ h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px}
 /* ---- modalità console della scheda 02 (24 nov 2026): modello 3D a tutto schermo; in alto il selettore del gruppo
    (‹ nome ›, il nome apre l'elenco dei gruppi), croce delle strutture con descrizione; orizzontale a due colonne ---- */
 .csel,.cpan,.cdesc,.cforme{display:none}
-#p-3d.intero .cforme{display:flex;flex-wrap:wrap;gap:6px;position:absolute;z-index:4;margin:0}
+#p-3d.intero .cforme{display:flex;position:absolute;z-index:4;margin:0}
+#p-3d.intero .cforme>button{font-size:12px;padding:4px 3px}
 #p-3d.intero .cforme:empty{display:none}
-#p-3d.intero .cforme .chip{margin:0;border-radius:999px;background:#1a2333;color:#e6ecf5;border-color:#34476b}
-#p-3d.intero .cforme .chip.attivo{background:#1a2333;color:#8ee0a6;border-color:#8ee0a6}
 .csel .freccia{width:44px;height:44px;border:0;color:#e6ecf5;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .csel .freccia svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 .cnome{flex:1;text-align:center;font-size:15px;font-weight:700;color:var(--disciplina);line-height:1.2}
@@ -159,7 +158,7 @@ h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px}
 #p-3d.intero .csel{right:calc(24px + var(--sr))!important;left:auto!important;width:124px!important;top:calc(128px + var(--st))}
  #p-3d.intero .cforme{left:calc(24px + var(--sl));width:196px;top:calc(80px + var(--st))}
  #p-3d.intero .cdesc{top:calc(80px + var(--st))}
- #p-3d.intero.con-forme .cdesc{top:calc(166px + var(--st))}}
+ #p-3d.intero.con-forme .cdesc{top:calc(132px + var(--st))}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
@@ -194,7 +193,7 @@ h1{font:700 clamp(24px,4vw,34px)/1.15 Cambria,Georgia,serif;margin:2px 0 4px}
  <section id="p-3d" role="tabpanel" aria-labelledby="t-3d" class="hide" data-intero>
   <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
   <div class="csel" id="pSel"><button class="freccia" data-d="-1" aria-label="Struttura precedente" title="Struttura precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Struttura successiva" title="Struttura successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
-  <div class="chips cforme" id="pForme" role="group" aria-label="Forma"></div>
+  <div class="leva cforme" id="pForme" role="group" aria-label="Forma" style="--leva:#8ee0a6"></div>
   <p class="cdesc" id="pDesc"></p>
   <div id="groups3d" class="pick"></div>
   <div class="grid">
@@ -2076,7 +2075,7 @@ startQuiz('gruppi');
  function agg(){var a=card.querySelector('[data-part].attivo'),pd=card.querySelector('.pdesc');
   nome.textContent=a?a.textContent:'Scegli una struttura';nome.style.color=a?'color-mix(in srgb,'+a.style.getPropertyValue('--chip')+' 55%,#fff)':'';
   var fo=document.getElementById('pForme'),vb=card.querySelectorAll('[data-var]');fo.innerHTML='';
-  Array.prototype.forEach.call(vb,function(v){var c=document.createElement('button');c.className=v.className;c.textContent=v.textContent;c.onclick=function(){v.click();};fo.appendChild(c);});
+  Array.prototype.forEach.call(vb,function(v){var c=document.createElement('button');c.className=v.classList.contains('attivo')?'attivo':'';c.textContent=v.textContent;c.onclick=function(){v.click();};fo.appendChild(c);});
   document.getElementById('p-3d').classList.toggle('con-forme',vb.length>0);
   desc.innerHTML=pd?pd.innerHTML.replace(/^<b>[^<]*<\/b><br>/,''):'Tocca una struttura nel modello o usa le frecce.';}
  document.getElementById('pSel').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;var k=parti(),n=k.length;if(!n)return;
