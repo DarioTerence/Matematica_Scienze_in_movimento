@@ -190,6 +190,7 @@ button,input{font-family:inherit}
 .layout.intero #grafico{width:100%;height:100%}
 .layout.intero.forn #mSel,.layout.intero.all #mSel{display:none}
 .layout.intero #schemaCard,.layout.intero #panel4{display:none!important}
+.layout.intero .hide{display:none!important}
 .layout.all #bIntero{display:none}
 @media(orientation:portrait){
  .layout.intero .cpan.sx,.layout.intero .cpan.dx{display:none}
@@ -252,6 +253,14 @@ button,input{font-family:inherit}
  .layout.intero #gAz .azioni{grid-template-columns:1fr}
  .layout.intero #gAz .azione{min-height:40px;padding:6px}}
 
+
+/* ---- revisione 25 nov 2026 (orizzontale): fascia libera in alto a sinistra (X dello schermo intero su iPad), croce verticale nella colonna destra, descrizioni dove c'è più spazio ---- */
+@media(orientation:landscape){
+.layout.intero #mSel{right:calc(24px + var(--sr))!important;left:auto!important;width:124px!important;top:calc(128px + var(--st))}
+ .layout.intero #sCard,.layout.intero #pInfo{top:calc(80px + var(--st))}
+ .layout.intero .frow{top:calc(80px + var(--st))}
+ .layout.intero .prow{top:calc(150px + var(--st))}
+ .layout.intero #gcard{top:calc(176px + var(--st))}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
