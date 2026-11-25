@@ -179,6 +179,8 @@ svg .muted{fill:var(--st-muted)}
 
 /* leva Evidenzia della scheda 01 (Sole, Secondo fuoco, Pianeta, Perielio, Afelio), 25 nov 2026 */
 .csel-sel{display:none}
+/* il pulsante console sta nell'angolo della scena, non della pagina */
+.view:not(.intero) .stage{position:relative}
 #view0.intero .csel-sel{display:grid;position:absolute;z-index:4;margin:0}
 #view0.intero .csel-sel>button{font-size:12px}
 @media(orientation:portrait){#view0.intero .csel-sel{grid-template-columns:repeat(3,1fr);top:calc(62px + var(--st));left:calc(12px + var(--sl));right:calc(60px + var(--sr))}}
