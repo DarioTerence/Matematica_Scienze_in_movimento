@@ -176,6 +176,13 @@ svg .muted{fill:var(--st-muted)}
  .view.intero .readout{top:calc(24px + var(--st))!important}
  #view1.intero .readout,#view3.intero .readout{top:calc(146px + var(--st))!important}
  #view2.intero .readout{top:calc(108px + var(--st))!important}}
+
+/* leva Evidenzia della scheda 01 (Sole, Secondo fuoco, Pianeta, Perielio, Afelio), 25 nov 2026 */
+.csel-sel{display:none}
+#view0.intero .csel-sel{display:grid;position:absolute;z-index:4;margin:0}
+#view0.intero .csel-sel>button{font-size:12px}
+@media(orientation:portrait){#view0.intero .csel-sel{grid-template-columns:repeat(3,1fr);top:calc(62px + var(--st));left:calc(12px + var(--sl));right:calc(60px + var(--sr))}}
+@media(orientation:landscape){#view0.intero .csel-sel{left:calc(24px + var(--sl));width:196px;top:calc(24px + var(--st))}#view0.intero .readout{top:calc(142px + var(--st))!important}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
@@ -194,6 +201,7 @@ svg .muted{fill:var(--st-muted)}
 
   <!-- ============ Scheda 1: prima legge ============ -->
   <section class="view" id="view0" data-intero>
+    <div class="leva griglia csel-sel" id="selLeva" role="group" aria-label="Evidenzia" style="--leva:#c9aaff"></div>
     <div class="cpan sx" aria-hidden="true"></div><div class="cpan dx" aria-hidden="true"></div><div class="cpan basso" aria-hidden="true"></div>
     <div class="csel" data-chips="presets"><button class="freccia" data-d="-1" aria-label="Orbita precedente" title="Orbita precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="cnome"></span><button class="freccia" data-d="1" aria-label="Orbita successiva" title="Orbita successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
     <div class="stickycol">
@@ -1126,6 +1134,13 @@ svg .muted{fill:var(--st-muted)}
   updateViewD();updateD();
   requestAnimationFrame(frame);
 })();
+/* leva Evidenzia: copia i pulsanti di Selezione; tocco = tocco sul pulsante della pagina */
+(function(){
+  var lv=document.getElementById('selLeva'),src=document.querySelectorAll('#selBtns .chip');
+  Array.prototype.forEach.call(src,function(b){var c=document.createElement('button');c.textContent=b.textContent;c.onclick=function(){b.click();};lv.appendChild(c);});
+  function agg(){Array.prototype.forEach.call(src,function(b,i){lv.children[i].classList.toggle('attivo',b.getAttribute('aria-pressed')==='true');});}
+  new MutationObserver(agg).observe(document.getElementById('selBtns'),{attributes:true,subtree:true,attributeFilter:['aria-pressed']});agg();
+})();
 /* modalità console: un pulsante per scheda; la croce tocca il chip vicino (orbite, pianeti, prove rapide) */
 (function(){
   document.querySelectorAll('.view[data-intero]').forEach(function(v){
@@ -1149,6 +1164,7 @@ svg .muted{fill:var(--st-muted)}
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#b38cff!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(179,140,255,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Astronomia
 </a>
-<script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js">
+</script>
 </body>
 </html>
