@@ -122,6 +122,16 @@ header p{margin:2px 0 10px;color:var(--mute)}
  #tab1.intero #jump{right:calc(51px + var(--sr));top:calc(84px + var(--st))}
  #tab2 .cons.intero #finfo{left:calc(26px + var(--sl));width:192px;top:calc(204px + var(--st));bottom:calc(22px + var(--sb))}}
 @media(orientation:landscape) and (max-height:520px){#tab1.intero #iD{display:none!important}}
+
+/* ---- revisione 25 nov 2026 (orizzontale): fascia libera in alto a sinistra (X dello schermo intero su iPad), croce verticale nella colonna destra, descrizioni dove c'è più spazio ---- */
+@media(orientation:landscape){
+.cons.intero .cprinc{right:calc(24px + var(--sr))!important;left:auto!important;width:124px!important;top:calc(176px + var(--st))!important}
+ #tab1.intero .cprinc{top:calc(162px + var(--st))!important}
+ #tab1.intero #iD{top:calc(24px + var(--st))}
+ #tab2 .cons.intero .cprinc{top:calc(176px + var(--st))!important}
+ #tab2 .cons.intero #finfo{top:calc(80px + var(--st))}
+ #tab2 .cons.intero #fans{left:calc(100% + 18px);right:auto;bottom:auto;top:calc(76px + var(--st));width:124px;flex-direction:column;gap:8px;z-index:4}
+ #tab2 .cons.intero #fans .azione{padding:10px 8px}}
 </style>
 <link rel="stylesheet" href="../animazioni.css">
 </head>
