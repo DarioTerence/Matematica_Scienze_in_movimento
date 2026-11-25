@@ -995,7 +995,7 @@ function buildSqualo(skel){
   root.add(tail);
   if(!skel){P(fg,'pinne');P(tail,'coda');P(gl,'fessure');P(tt,'denti');root.add(fg);root.add(gl);root.add(tt)}
   else{root.add(fg);root.add(gl);root.add(tt);
-    var bn=mat(0xdbe6f2,{roughness:.5}),sk=new THREE.Group(),vm=new THREE.CylinderGeometry(.075,.075,.085,10);
+    var bn=mat(0x6f8cb3,{roughness:.5}),sk=new THREE.Group(),vm=new THREE.CylinderGeometry(.075,.075,.085,10);
     for(var v=0;v<36;v++){var vt=new THREE.Mesh(vm,bn);vt.rotation.x=Math.PI/2;vt.position.set(0,.0,-1.95+v*.09);sk.add(vt)}
     for(var w=0;w<8;w++){var vt2=new THREE.Mesh(vm,bn);vt2.position.set(0,.1+w*.14,-w*.09);vt2.rotation.x=Math.PI/2-.35;tail.add(vt2)}
     P(sk,'colonna');root.add(sk);P(tail.children[tail.children.length-1],'colonna');
@@ -1045,7 +1045,7 @@ function buildPesceOsseo(inner){
   root.add(tail);
   if(!inner){P(fg,'pinne');P(tail,'pinne');P(oc,'opercolo');P(ll,'linea');root.add(fg);root.add(oc);root.add(ll)}
   else{root.add(fg);
-    var bn=mat(0xf0e8d0),sk=new THREE.Group(),vm=new THREE.CylinderGeometry(.06,.06,.075,8);
+    var bn=mat(0x8f7a48),sk=new THREE.Group(),vm=new THREE.CylinderGeometry(.06,.06,.075,8);
     for(var v=0;v<28;v++){var z=-1.7+v*.1,vt=new THREE.Mesh(vm,bn);vt.rotation.x=Math.PI/2;vt.position.set(0,.06,z);sk.add(vt);
       sk.add(seg(V3(0,.1,z),V3(0,.45*(1-Math.abs(z)/2.4)+.1,z-.08),.014,.008,bn,5));
       if(z>-.5&&z<1.0)[-1,1].forEach(function(s){sk.add(seg(V3(0,.0,z),V3(s*.3,-.42*(1-Math.abs(z-.3)/1.3),z),.014,.01,bn,5))})}
@@ -1199,12 +1199,12 @@ function buildUccello(skel){
     for(var j=0;j<8;j++){var ang=(.15+j*.1)*1.0;flight.push({p:wr.clone(),d:V3(s*Math.cos(ang),0,-Math.sin(ang)),len:1.3-.05*j,w:.085})}
     for(var k=0;k<10;k++){var t2=k/9;cov.push({p:V3(wr.x*t2,wr.y*t2+.02,wr.z*t2+.05),d:V3(s*.1,0,-1),len:.4,w:.075})}
     if(!skel){var fm=featherMesh(flight,fl),cm=featherMesh(cov,cv);P(fm,'ali');P(cm,'ali');g.add(fm);g.add(cm);g.add(P(seg(V3(0,0,0),wr,.07,.05,bl,6),'ali'))}
-    else{var bn=mat(0xb9a373),sk=new THREE.Group(),el=V3(s*.8,.2,.0);
+    else{var bn=mat(0x8a7440),sk=new THREE.Group(),el=V3(s*.8,.2,.0);
       sk.add(seg(V3(0,0,0),el,.05,.04,bn,6));sk.add(seg(el,wr,.04,.03,bn,6));sk.add(seg(el.clone().add(V3(0,0,-.06)),wr.clone().add(V3(0,0,-.06)),.025,.02,bn,6));
       sk.add(seg(wr,V3(s*2.0,.0,-.5),.025,.012,bn,6));sk.add(seg(wr,V3(s*1.8,.0,-.2),.02,.01,bn,6));P(sk,'ossa');g.add(sk)}
     root.add(g);wings.push({g:g,s:s})});
   if(skel){
-    var bn2=mat(0xb9a373),sk2=new THREE.Group();
+    var bn2=mat(0x8a7440),sk2=new THREE.Group();
     sk2.add(E(bn2,.22,.2,.3,0,.28,1.05));var bk2=new THREE.Mesh(new THREE.ConeGeometry(.06,.3,8),bn2);bk2.rotation.x=Math.PI/2;bk2.position.set(0,.24,1.45);sk2.add(bk2);
     for(var v=0;v<9;v++){var tt=v/8;sk2.add(E(bn2,.07,.07,.07,0,.12+(1-tt)*.18+.1*Math.sin(tt*Math.PI)*0,.85-tt*.5))}
     for(var w=0;w<8;w++)sk2.add(E(bn2,.08,.08,.08,0,.05,.35-w*.12));
@@ -1215,7 +1215,7 @@ function buildUccello(skel){
     P(sk2,'ossa');root.add(sk2);
     var kl=new THREE.Group();kl.add(E(bn2,.35,.04,.6,0,-.25,.3));kl.add(E(bn2,.03,.28,.55,0,-.45,.3));P(kl,'carena');root.add(kl);
     var hb=new THREE.Group(),ou=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,1.4,20,1,true),mat(0xb9a373,{side:THREE.DoubleSide,transparent:true,opacity:.35,depthWrite:false}));ou.rotation.z=Math.PI/2;hb.add(ou);
-    var strm=mat(0xb9a373);for(var q=0;q<16;q++){var xx=-.6+1.2*q/15,a1=q*1.7;hb.add(seg(V3(xx,Math.cos(a1)*.2,Math.sin(a1)*.2),V3(xx+.1,-Math.cos(a1)*.2,-Math.sin(a1)*.2),.012,.012,strm,5))}
+    var strm=mat(0x8a7440);for(var q=0;q<16;q++){var xx=-.6+1.2*q/15,a1=q*1.7;hb.add(seg(V3(xx,Math.cos(a1)*.2,Math.sin(a1)*.2),V3(xx+.1,-Math.cos(a1)*.2,-Math.sin(a1)*.2),.012,.012,strm,5))}
     hb.position.set(0,-1.5,.2);P(hb,'osso');root.add(hb)}
   return {root:root,
     parts:skel?[
@@ -1271,7 +1271,7 @@ function buildCane(){
   };
 }
 function buildCranio(){
-  var root=new THREE.Group(),bn=mat(0xe6dcc5,{roughness:.6}),tm=mat(0xfaf6ea,{roughness:.35});
+  var root=new THREE.Group(),bn=mat(0x9c8a5e,{roughness:.6}),tm=mat(0xd6c79c,{roughness:.35});
   var up=new THREE.Group();up.add(E(bn,.7,.55,.9,0,.7,-.4,26));up.add(E(bn,.38,.3,.9,0,.45,.75,24));
   [-1,1].forEach(function(s){up.add(E(mat(0x3a3028),.12,.12,.1,s*.55,.8,.25));var za=ring(.4,.03,Math.PI,bn,0,Math.PI/2,0,s*.62,.55,-.15);up.add(za)});
   P(up,'cranio');root.add(up);

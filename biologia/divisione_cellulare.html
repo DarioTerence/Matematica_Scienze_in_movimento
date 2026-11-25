@@ -517,7 +517,7 @@ function Divisione(v,K,colori,cellePadre,nNuclei){
   ves.forEach(function(s,k){var f=k*2*Math.PI/ves.length,cs=Math.cos(f),sn=Math.sin(f),rr=1/Math.pow(Math.pow(Math.abs(cs),p)+Math.pow(Math.abs(sn),p),1/p);
    s.position.set(0,ry*rr*cs*1.04,rz*rr*sn*1.04);s.visible=pl>.01&&pl<.97;});}
  /* centrioli ai poli */
- var poli=[];
+ var poli=[],II=cellePadre.length===3;   /* II: modello della meiosi, con tre membrane */
  for(i=0;i<4;i++){var pc=Centrioli();root.add(pc);poli.push(pc);}
  /* fibre del fuso */
  var fp=new Float32Array(16*6),fg=new THREE.BufferGeometry();fg.setAttribute('position',new THREE.BufferAttribute(fp,3));
@@ -535,7 +535,10 @@ function Divisione(v,K,colori,cellePadre,nNuclei){
    if(chiave!==m.k){m.k=chiave;formaLobo(m.l[0],c);m.l[1].geometry=m.l[0].geometry;}});
   par.visible=veg;if(veg)formaPiastra(S.pl||0);
   S.nuc.forEach(function(c,i){var m=nuc[i];m.position.set(c.p[0],c.p[1],c.p[2]);m.scale.setScalar(c.r);m.material.opacity=.22*c.o;m.visible=c.o>.02;});
-  poli.forEach(function(g,i){var p=S.poli[i];g.visible=!!p&&!veg;if(p)g.position.set(p[0],p[1],p[2]);});
+  /* meiosi II: le coppie ai poli alto e basso restano dentro la membrana, un po' spostate verso il centro, e quella in basso è capovolta così guarda verso l'interno */
+  poli.forEach(function(g,i){var p=S.poli[i];g.visible=!!p&&!veg;if(!p)return;
+   var dy=II?clamp((Math.abs(p[1])-.1)/.7,0,1)*.1*(p[1]<0?-1:1):0;
+   g.position.set(p[0],p[1]-dy,p[2]);g.scale.setScalar(II?.8:1.15);g.rotation.x=II?Math.PI*clamp((-p[1]-.2)/.6,0,1):0;});
   /* fibre dal polo al centromero di ogni cromatidio */
   S.cr.forEach(function(x,i){fp.set(x.q,i*6);fp.set(x.p,i*6+3);k++;});
   fg.attributes.position.needsUpdate=true;fg.setDrawRange(0,k*2);fm.opacity=.85*S.fib;fl.visible=S.fib>.02;
