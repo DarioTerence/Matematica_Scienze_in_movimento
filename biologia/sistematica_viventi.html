@@ -1702,19 +1702,38 @@ function buildBatterio(){
   };
 }
 function buildScissione(){
-  var root=new THREE.Group(),R=.7,cm=mat(0x8ac08a,{transparent:true,opacity:.4,depthWrite:false});
-  var A=capsule(R,0,cm),B=capsule(R,0,cm);P(A,'parete');P(B,'parete');root.add(A);root.add(B);
+  /* Un solo corpo che si strozza al centro, come il solco della citodieresi: due metà speculari, ricalcolate a ogni fotogramma.
+     Fasi del ciclo (p da 0 a 1): riposo, copia del DNA, allungamento con separazione delle copie, strozzatura,
+     separazione delle due cellule figlie, ritorno alla cellula di partenza (la figlia di sinistra va al centro, l'altra si allontana). */
+  var root=new THREE.Group(),R=.7,W=.5,NA=28,NC=44,NK=14,NR=NK+NC+1,idx=[],i;
+  var cm=mat(0x8ac08a,{transparent:true,opacity:.4,depthWrite:false,side:THREE.DoubleSide});
+  for(i=0;i<NR-1;i++)for(var j=0;j<NA;j++){var a=i*(NA+1)+j,b=a+NA+1;idx.push(a,b,a+1,a+1,b,b+1)}
+  var idxB=[];for(i=0;i<idx.length;i+=3)idxB.push(idx[i],idx[i+2],idx[i+1]);
+  function mk(ix){var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(NR*(NA+1)*3),3));g.setIndex(ix);return g}
+  var gH=mk(idx),gB=mk(idxB),A=new THREE.Mesh(gH,cm),B=new THREE.Mesh(gB,cm);P(A,'parete');P(B,'parete');root.add(A);root.add(B);
+  /* metà sinistra: dalla punta esterna (x=-Lh) al centro (x=0). k = strozzatura, m = chiusura rotonda dell'estremità interna */
+  function fill(Lh,k,m){var pos=gH.attributes.position.array,pb=gB.attributes.position.array,n=0,i,j;
+    function ring(x,r){for(var j=0;j<=NA;j++){var an=j/NA*Math.PI*2,y=Math.cos(an)*r,z=Math.sin(an)*r;pb[n]=-x;pos[n++]=x;pb[n]=y;pos[n++]=y;pb[n]=z;pos[n++]=z}}
+    for(i=0;i<NK;i++){var ph=i/NK*Math.PI/2;ring(-Lh+R-R*Math.cos(ph),R*Math.sin(ph))}
+    for(j=0;j<=NC;j++){var sd=(Lh-R)*Math.pow(1-j/NC,1.6),r1=R*(1-k*Math.exp(-(sd/W)*(sd/W))),r2=sd<R?Math.sqrt(Math.max(0,2*sd*R-sd*sd)):R;ring(-sd,(1-m)*r1+m*r2)}
+    gH.attributes.position.needsUpdate=true;gB.attributes.position.needsUpdate=true;gH.computeVertexNormals();gB.computeVertexNormals()}
   var dm=mat(0x3a5fa0),dA=coil(36,.4,dm,0,9,.04),dB=coil(36,.4,dm,0,10,.04);P(dA,'dna');P(dB,'dna');root.add(dA);root.add(dB);
-  var sep=new THREE.Mesh(new THREE.CylinderGeometry(R*.9,R*.9,.1,24),mat(0xb8d89a,{transparent:true,opacity:.8}));sep.rotation.z=Math.PI/2;P(sep,'setto');root.add(sep);
+  var ring=new THREE.Mesh(new THREE.TorusGeometry(1,.09,8,32),mat(0xb8d89a));ring.rotation.y=Math.PI/2;P(ring,'setto');root.add(ring);
+  var ss=function(x){x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
+  fill(1.2,0,0);
   return {root:root,
     parts:[
-      {id:'parete',name:'Cellula',text:'Il batterio si riproduce per scissione binaria: la cellula si allunga, forma un setto trasversale e si divide in due cellule figlie identiche (riproduzione asessuata).',a:[0,1.4,.5]},
+      {id:'parete',name:'Cellula',text:'Il batterio si riproduce per scissione binaria: la cellula si allunga, si strozza al centro e si divide in due cellule figlie identiche (riproduzione asessuata).',a:[0,1.4,.5]},
       {id:'dna',name:'DNA',text:'Prima della divisione il cromosoma circolare viene copiato; le due copie si separano verso i poli opposti.',a:[-1.2,-.9,.6]},
-      {id:'setto',name:'Setto',text:'Nuova parete che si forma al centro e separa le due cellule. In condizioni ideali alcuni batteri si dividono ogni 20 minuti circa.',a:[0,-1.2,.5]}],
-    cam:{th:.5,ph:1.35,dist:10,ty:0},
-    update:function(t){var p=(t*.12)%1,Lc,gap=0;
-      if(p<.5){Lc=1.0+p/.5*1.8;A.visible=true;B.visible=false;setCap(A,Lc,R);A.position.x=0;dA.position.x=-Lc*.28;dB.position.x=Lc*.28;dA.scale.setScalar(.8);dB.scale.setScalar(.8);sep.visible=p>.35;sep.scale.set(1,1,Math.max(.01,(p-.35)/.15));sep.position.x=0;dB.visible=p>.2;dA.visible=true;if(p<.2)dA.position.x=0}
-      else{var q=(p-.5)/.5;A.visible=B.visible=true;sep.visible=false;var Ld=1.4;setCap(A,Ld,R);setCap(B,Ld,R);var d=(Ld+R)*.5+.5+q*.9;A.position.x=-d+.0;B.position.x=d;dA.position.x=-d;dB.position.x=d;dA.scale.setScalar(.8);dB.scale.setScalar(.8);dA.visible=dB.visible=true}
+      {id:'setto',name:'Anello di divisione',text:'Al centro si forma una strozzatura, come il solco della citodieresi, e la nuova parete separa le due cellule. In condizioni ideali alcuni batteri si dividono ogni 20 minuti circa.',a:[0,-1.2,.5]}],
+    cam:{th:.5,ph:1.35,dist:10.5,ty:0},
+    update:function(t){var p=(t*.07)%1,Lh=1.2+1.2*ss((p-.1)/.5),k=ss((p-.5)/.3),sd=ss((p-.8)/.12),e=ss((p-.93)/.07),sg=ss((p-.25)/.35),d=.55*sd,rep=ss((p-.12)/.15),sc=1-.9*e;
+      fill(Lh,k,sd);
+      A.position.x=-d*(1-e)+1.2*e;
+      B.position.set(d+1.8*e,0,-3*e);B.scale.set(sc,sc,sc);B.visible=e<.98;
+      dA.scale.setScalar(.8);dA.position.set(A.position.x-sg*Lh*.5,0,0);
+      dB.scale.setScalar(Math.max(.001,.8*rep*sc));dB.position.set(B.position.x+sg*Lh*.5,0,B.position.z+.15*(1-sg));dB.visible=rep>.01&&e<.98;
+      var rn=Math.max(.05,R*(1-k))*.97;ring.scale.setScalar(rn);ring.visible=p>.5&&k<.985;
     }
   };
 }
@@ -1828,7 +1847,7 @@ MODELS.anellidi={name:'Anellidi',note:'',variants:[{label:'Lombrico',build:funct
 MODELS.echinodermi={name:'Echinodermi',note:'',variants:[{label:'Stella marina',build:function(){return buildStella(false)},note:'Faccia superiore (aborale).'},{label:'Faccia inferiore',build:function(){return buildStella(true)},note:'Faccia orale, con bocca e piedini ambulacrali.'}]};
 MODELS.tunicati={name:'Tunicati e cefalocordati',note:'',variants:[{label:'Ascidia adulta',build:buildAscidia,note:'Gli adulti sono fissi; i puntini azzurri indicano il flusso d\'acqua. I cefalocordati (anfiosso) non hanno modello: sono piccoli vertebrati-simili marini con notocorda per tutta la vita.'},{label:'Larva',build:buildLarvaAscidia,note:'La larva nuotatrice ha tutti i caratteri dei cordati.'}]};
 MODELS.archei={name:'Archei',note:'Schema di una cellula di archeo (non in scala, ingrandita molte migliaia di volte).',variants:[{label:'Cellula',build:buildArcheo}]};
-MODELS.batteri={name:'Batteri',note:'Schema di un batterio a bastoncino (non in scala).',variants:[{label:'Bacillo',build:buildBatterio},{label:'Scissione',build:buildScissione,note:'Riproduzione per scissione binaria (ciclo in animazione).'}]};
+MODELS.batteri={name:'Batteri',note:'Schema di un batterio a bastoncino (non in scala).',variants:[{label:'Bacillo',build:buildBatterio},{label:'Scissione',build:buildScissione,note:'Riproduzione per scissione binaria (ciclo in animazione): il DNA si copia, le copie si separano, la cellula si strozza e si divide.'}]};
 MODELS.virus={name:'Virus',note:'Schemi non in scala: i virus sono molto più piccoli di una cellula.',variants:[{label:'Batteriofago',build:buildFago,note:'Virus che infetta i batteri.'},{label:'Con involucro',build:buildVirusEnv,note:'Schema generico di virus con involucro.'}]};
 MODELS.protisti={name:'Protisti',note:'',variants:[{label:'Ameba',build:buildAmeba,note:'Protozoo che si muove con pseudopodi.'},{label:'Paramecio',build:buildParamecio,note:'Protozoo ciliato.'},{label:'Euglena',build:buildEuglena,note:'Alga unicellulare con flagello (protofita).'}]};
 MODELS.funghi={name:'Fungo',note:'Esempio: un fungo con carpoforo (cappello e gambo) e il micelio nel terreno.',variants:[{label:'Fungo',build:buildFungo}]};
