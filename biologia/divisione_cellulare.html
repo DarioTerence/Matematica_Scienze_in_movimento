@@ -313,7 +313,7 @@ var T_VOLO=2.4;    /* secondi per spostare la vista da un livello all'altro (sch
 /* ---- colori fissi ---- */
 var COL={mat:'#D94F6A',pat:'#3F7FD9',memb:'#E8935A',nuc:'#9C7CC9',fuso:'#6FA89A',centr:'#D4A62A',cro:'#56677D',
  A:'#E8574E',T:'#F2C14E',C:'#4F86D9',G:'#4FB35A',U:'#B36AE2',zuc:'#e2d3b0',zucR:'#f0e4c4',fos:'#f08a24',asta:'#a9b2bd',
- parete:'#5E9E4A',piastra:'#9BD17F'};
+ parete:'#5E9E4A',piastra:'#9BD17F',actina:'#ff7a9c',miosina:'#ffd23f'};
 /* colori di basi, zuccheri e fosfati uguali a quelli della scheda sugli acidi nucleici di Le biomolecole */
 var BASI=[['A','adenina'],['T','timina'],['C','citosina'],['G','guanina'],['U','uracile, solo nell\'RNA']];
 $('basi').innerHTML=BASI.map(function(b){return '<span><i style="background:'+COL[b[0]]+'"></i><b style="color:#e6ecf5">'+b[0]+'</b> '+b[1]+'</span>';}).join('')
@@ -477,6 +477,29 @@ function interp(a,b,t){
  var o={};for(var k in a)o[k]=interp(a[k],b[k],t);return o;}
 
 /* ---- modello di cellula che si divide: chiavi (stati) e fasi tra una chiave e la successiva ---- */
+/* anello contrattile della citodieresi (solo cellula animale): filamenti di actina di lunghezza fissa, disposti su due file che si alternano,
+   con aggregati di miosina tra uno e l'altro. Quando il collo si stringe la circonferenza diminuisce e i filamenti scorrono uno sull'altro:
+   la sovrapposizione cresce. Nell'anello la prima fila ruota in un verso e la seconda nel verso opposto. */
+var NF=16,NS2=10,NT=5;
+function Anello(matA,matM){
+ var g=new THREE.Group(),geo=new THREE.BufferGeometry(),idx=[],f,s,t;
+ geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(NF*(NS2+1)*NT*3),3));
+ for(f=0;f<NF;f++){var b0=f*(NS2+1)*NT;for(s=0;s<NS2;s++)for(t=0;t<NT;t++){var a=b0+s*NT+t,a2=b0+s*NT+(t+1)%NT,b=a+NT,b2=a2+NT;idx.push(a,b,a2,a2,b,b2);}}
+ geo.setIndex(idx);var me=new THREE.Mesh(geo,matA);me.renderOrder=5;me.frustumCulled=false;g.add(me);
+ var mio=[];for(f=0;f<NF;f++){var m=new THREE.Mesh(GSF,matM);m.renderOrder=6;g.add(m);mio.push(m);}
+ return {g:g,geo:geo,mio:mio};}
+/* rn raggio del collo, pr avanzamento della strozzatura (0-1), r0 raggio di riferimento della cellula, vis comparsa (0-1) */
+function formaAnello(an,rn,pr,r0,vis){
+ var A=an.geo.attributes.position.array,k=0,D=2*Math.PI/NF,Lf=1.9*2*Math.PI*r0/NF,rr0=Math.max(.02,rn-.045),span=Math.min(2.6,Lf/rr0),tr=Math.min(.03,rr0*.25)*vis,f,s,t,th=[];
+ for(f=0;f<=NF;f++)th.push(f*D+((f&1)?-1:1)*pr*.25*D);
+ for(f=0;f<NF;f++){var ly=f&1,rr=rr0-(ly?.05:0),yo=ly?.022:-.022;
+  for(s=0;s<=NS2;s++){var a=th[f]+(s/NS2-.5)*span,ca=Math.cos(a),sa=Math.sin(a),rt=tr*(.55+.45*Math.sin(Math.PI*s/NS2));
+   for(t=0;t<NT;t++){var q=t*2*Math.PI/NT,cr=Math.cos(q)*rt,cy=Math.sin(q)*rt;
+    A[k++]=ca*(rr+cr);A[k++]=yo+cy;A[k++]=sa*(rr+cr);}}}
+ an.geo.attributes.position.needsUpdate=true;an.geo.computeVertexNormals();
+ for(f=0;f<NF;f++){var tm=(th[f]+th[f+1])/2,rm=rr0-.025,m=an.mio[f];
+  m.position.set(Math.cos(tm)*rm,0,Math.sin(tm)*rm);m.rotation.y=-tm-Math.PI/2;m.scale.set(.085,.045,.05).multiplyScalar(Math.max(.001,vis)*Math.min(1,rr0*4));}}
+function colloCella(st){var e1=liscio(st.d/.3),e2=liscio((st.d-.3)/.45),e3=liscio((st.d-.75)/.25),ra=st.r0*.9,rb=st.r0*.8,r=st.r0+(ra-st.r0)*e1+(rb-ra)*e2+(st.R-rb)*e3;return {n:r*(1-e2),e2:e2};}
 /* cellePadre: per ogni membrana la membrana da cui nasce (-1 se nessuna); una membrana figlia compare quando la madre ha finito di dividersi */
 function Divisione(v,K,colori,cellePadre,nNuclei){
  var root=new THREE.Group();v.scene.add(root);
@@ -484,7 +507,8 @@ function Divisione(v,K,colori,cellePadre,nNuclei){
  for(var j=0;j<4;j++)for(var s=0;s<2;s++){var c=Cromatidio(L[j>>1],colori[j],s===1,j*2+s+1);root.add(c.g);cr.push(c);}
  var gm=new THREE.SphereGeometry(1,40,28),cel=[],haFigli=cellePadre.map(function(p,i){return cellePadre.indexOf(i)>=0;});
  var mMemb=new THREE.MeshStandardMaterial({color:COL.memb,transparent:true,opacity:.42,depthWrite:false,roughness:.75});
- for(var i=0;i<cellePadre.length;i++){var gr=new THREE.Group(),l1=Lobo(mMemb),l2=Lobo(mMemb);l2.rotation.z=Math.PI;gr.add(l1,l2);root.add(gr);cel.push({g:gr,l:[l1,l2],k:''});}
+ var mAct=new THREE.MeshStandardMaterial({color:COL.actina,roughness:.5,side:THREE.DoubleSide}),mMio=new THREE.MeshStandardMaterial({color:COL.miosina,roughness:.45});
+ for(var i=0;i<cellePadre.length;i++){var gr=new THREE.Group(),l1=Lobo(mMemb),l2=Lobo(mMemb);l2.rotation.z=Math.PI;var an=Anello(mAct,mMio);gr.add(an.g);gr.add(l1,l2);root.add(gr);cel.push({g:gr,l:[l1,l2],k:'',an:an});}
  var nuc=[];
  for(i=0;i<nNuclei;i++){var n=new THREE.Mesh(gm,new THREE.MeshStandardMaterial({color:COL.nuc,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide,roughness:.8}));n.renderOrder=2;root.add(n);nuc.push(n);}
  /* cellula vegetale (solo mitosi): parete a scatola e piastra cellulare che cresce dal centro verso la parete */
@@ -532,7 +556,8 @@ function Divisione(v,K,colori,cellePadre,nNuclei){
    m.g.visible=!veg&&(p<0||S.cel[p].d>=.999)&&!(haFigli[i]&&c.d>=.999);if(!m.g.visible)return;
    m.g.position.set(c.p[0],c.p[1],c.p[2]);m.g.rotation.z=c.a-Math.PI/2;
    var chiave=[c.d,c.r0].map(function(x){return x.toFixed(4);}).join();
-   if(chiave!==m.k){m.k=chiave;formaLobo(m.l[0],c);m.l[1].geometry=m.l[0].geometry;}});
+   if(chiave!==m.k){m.k=chiave;formaLobo(m.l[0],c);m.l[1].geometry=m.l[0].geometry;
+    var co=colloCella(c),vis=liscio((c.d-.03)/.12)*liscio((co.n-.06)/.12);m.an.g.visible=vis>.01;if(m.an.g.visible)formaAnello(m.an,co.n,co.e2,c.r0,vis);}});
   par.visible=veg;if(veg)formaPiastra(S.pl||0);
   S.nuc.forEach(function(c,i){var m=nuc[i];m.position.set(c.p[0],c.p[1],c.p[2]);m.scale.setScalar(c.r);m.material.opacity=.22*c.o;m.visible=c.o>.02;});
   /* meiosi II: le coppie ai poli alto e basso restano dentro la membrana, un po' spostate verso il centro, e quella in basso è capovolta così guarda verso l'interno */
@@ -651,7 +676,7 @@ var FASI_M=[
  {n:'Anafase',d:'I cromatidi fratelli si separano e sono tirati verso i poli opposti.'},
  {n:'Telofase',d:'Ai due poli si formano due nuovi nuclei e i cromosomi tornano a distendersi in cromatina.'},
  {n:'Citodieresi',d:''}];
-var TESTI_M={ani:{pro:'La cromatina si condensa in cromosomi a X, due cromatidi fratelli uniti nel centromero. La membrana del nucleo scompare e si forma il fuso. I centrioli vanno ai poli.',cit:'La membrana si allunga e si stringe al centro, sempre di più, finché la cellula si separa in due.'},
+var TESTI_M={ani:{pro:'La cromatina si condensa in cromosomi a X, due cromatidi fratelli uniti nel centromero. La membrana del nucleo scompare e si forma il fuso. I centrioli vanno ai poli.',cit:'La membrana si allunga e un anello di actina e miosina si stringe al centro: i filamenti scorrono uno sull\'altro e la cellula si strozza, finché si separa in due.'},
  veg:{pro:'La cromatina si condensa in cromosomi a X, due cromatidi fratelli uniti nel centromero. La membrana del nucleo scompare e si forma il fuso, senza centrioli.',cit:'La parete rigida non si può stringere. Al centro si forma la piastra cellulare, che cresce verso l\'esterno e diventa la nuova parete.'}};
 FASI_M[1].d=TESTI_M.ani.pro;FASI_M[5].d=TESTI_M.ani.cit;
 var FINE_M='<b>Fine.</b> Due cellule figlie identiche, ciascuna con 4 cromosomi come la cellula madre. Nell\'uomo sono 46.';
@@ -690,10 +715,10 @@ var FASI_S=[
  {n:'Profase I, crossing-over',d:'Ancora nella profase I gli omologhi appaiati si scambiano tratti di DNA. Compaiono cromatidi in parte rossi e in parte blu.'},
  {n:'Metafase I',d:'Le coppie di omologhi si allineano al centro della cellula.'},
  {n:'Anafase I',d:'Gli omologhi si separano e vanno ai poli opposti. I cromatidi fratelli restano uniti.'},
- {n:'Telofase I',d:'La cellula si divide in due. Ogni cellula ha un solo cromosoma per coppia.'},
+ {n:'Telofase I',d:'La cellula si divide in due, strozzata da un anello di actina e miosina. Ogni cellula ha un solo cromosoma per coppia.'},
  {n:'Metafase II',d:'Senza duplicare il DNA, in ciascuna cellula i cromosomi si allineano al centro.'},
  {n:'Anafase II',d:'I cromatidi fratelli si separano e vanno ai poli.'},
- {n:'Telofase II',d:'Si formano quattro nuclei e le due cellule si dividono ancora.'}];
+ {n:'Telofase II',d:'Si formano quattro nuclei e le due cellule si dividono ancora, di nuovo con un anello di actina e miosina.'}];
 var FINE_S='<b>Fine.</b> Quattro cellule, ciascuna con metà dei cromosomi, 2 invece di 4. In genere sono diverse tra loro.';
 
 /* ---- barra del tempo condivisa da mitosi e meiosi ---- */
