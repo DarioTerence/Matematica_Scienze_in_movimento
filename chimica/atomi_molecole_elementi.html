@@ -88,7 +88,7 @@ button{font-family:inherit}
 #tav .el.prev b{font-size:calc(var(--cs)*.5)}
 #tav .seg{font-size:calc(var(--cs)*.24);color:#7d8ba3;display:flex;align-items:center;justify-content:center;border:1px dashed #2c3a55;border-radius:calc(var(--cs)*.14);text-align:center;line-height:1}
 .mx{display:none}
-#tav.mendel{--carta:#e9dbb2;background:radial-gradient(ellipse at 20% 15%,rgba(160,110,40,.22),transparent 40%),radial-gradient(ellipse at 85% 80%,rgba(140,90,30,.28),transparent 45%),radial-gradient(circle at 70% 25%,rgba(150,100,40,.16) 0 6%,transparent 7%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .2 0 0 0 0 .08 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),var(--carta);padding:calc(var(--cs)*.35);border-radius:4px;box-shadow:inset 0 0 calc(var(--cs)*1.6) rgba(110,70,20,.55),0 6px 18px rgba(0,0,0,.45);transform:rotate(-.4deg);clip-path:polygon(0 1%,4% 0,11% .8%,19% 0,27% .6%,36% 0,45% .9%,55% .2%,63% .8%,72% 0,81% .7%,90% 0,100% .9%,99.4% 9%,100% 18%,99.2% 28%,100% 39%,99.5% 50%,100% 61%,99.3% 72%,100% 83%,99.5% 92%,100% 99%,92% 100%,83% 99.2%,74% 100%,64% 99.4%,54% 100%,44% 99.1%,33% 100%,23% 99.3%,12% 100%,4% 99.2%,0 100%,.6% 90%,0 79%,.7% 68%,0 57%,.5% 46%,0 35%,.8% 24%,0 13%)}
+#tav.mendel{--carta:#e9dbb2;background:radial-gradient(ellipse 22% 16% at 14% 22%,rgba(150,100,35,.13),transparent),radial-gradient(ellipse 16% 22% at 88% 78%,rgba(140,90,30,.15),transparent),radial-gradient(circle at 66% 30%,rgba(150,100,40,.09) 0 4%,rgba(150,100,40,.13) 4.6%,transparent 5.4%),radial-gradient(ellipse 12% 9% at 38% 84%,rgba(130,85,25,.11),transparent),radial-gradient(circle at 24% 62%,rgba(150,100,40,.07) 0 2.6%,rgba(150,100,40,.11) 3%,transparent 3.6%),radial-gradient(ellipse 10% 14% at 79% 12%,rgba(140,95,30,.1),transparent),radial-gradient(ellipse 18% 10% at 52% 55%,rgba(150,105,40,.06),transparent),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .2 0 0 0 0 .08 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),var(--carta);padding:calc(var(--cs)*.35);border-radius:4px;box-shadow:inset 0 0 calc(var(--cs)*1.6) rgba(110,70,20,.55),0 6px 18px rgba(0,0,0,.45);transform:rotate(-.4deg);clip-path:polygon(0 1%,4% 0,11% .8%,19% 0,27% .6%,36% 0,45% .9%,55% .2%,63% .8%,72% 0,81% .7%,90% 0,100% .9%,99.4% 9%,100% 18%,99.2% 28%,100% 39%,99.5% 50%,100% 61%,99.3% 72%,100% 83%,99.5% 92%,100% 99%,92% 100%,83% 99.2%,74% 100%,64% 99.4%,54% 100%,44% 99.1%,33% 100%,23% 99.3%,12% 100%,4% 99.2%,0 100%,.6% 90%,0 79%,.7% 68%,0 57%,.5% 46%,0 35%,.8% 24%,0 13%)}
 #tav.mendel .gr,#tav.mendel .seg,#tav.mendel .spz{display:none}
 #tav.mendel .mx{display:flex;align-items:center;justify-content:center;color:#4a3519;font:italic calc(var(--cs)*.3)/1 Georgia,"Times New Roman",serif}
 #tav.mendel .mgr{border-bottom:1px solid rgba(74,53,25,.55)}
@@ -100,8 +100,10 @@ button{font-family:inherit}
 #tav.mendel .el.scelto{outline:2px solid #8a5a1a}
 #tav .el.m-out{opacity:0!important;pointer-events:none;transition:opacity .6s!important}
 #tav.mendel .mgap{position:relative;border:1px dashed #8a5a1a;background:rgba(232,193,90,.25);cursor:pointer;padding:0;color:#3b2a17;font:calc(var(--cs)*.36)/1 Georgia,serif}
-#tav.mendel .mgap em{position:absolute;right:2px;top:1px;font:700 calc(var(--cs)*.3)/1 Calibri,Carlito,sans-serif;color:#a0601a}
-#tav.mendel .mrip{color:#7a6040}
+#tav.mendel .mgap b{font:italic calc(var(--cs)*.3)/1 Georgia,serif;white-space:nowrap}
+#tav.mendel .mnum{font-size:calc(var(--cs)*.26);color:#7a6040;border-top:1px solid rgba(74,53,25,.45);margin:calc(var(--cs)*.32) calc(var(--cs)*.12) 0;align-items:flex-start;padding-top:1px}
+#tav.mendel .mtit{font-size:calc(var(--cs)*.34);letter-spacing:.12em;text-transform:uppercase;font-style:normal}
+#tav.mendel .mrip{color:#3b2a17;font-style:normal;font-size:calc(var(--cs)*.3)}
 #tav .el.n-m{--c:#8fb3e8}#tav .el.n-n{--c:#ffd08a}#tav .el.n-s{--c:#b4bfcd}#tav .el.n-g{--c:#c9aaff}
 #tav[data-v="0"] .el{background:#1f2b40;color:#e6ecf5}
 #tav[data-v="1"] .el{background:var(--c)}
@@ -208,6 +210,8 @@ button{font-family:inherit}
  #b3d.intero .opzioni{top:auto;bottom:calc(24px + var(--sb));left:auto;right:calc(24px + var(--sr));width:116px}
  #b3d.intero .opzioni[open]{width:220px}
 }
+/* nomi lunghi nelle croci: su due righe invece che tagliati */
+.intero .csel>span{white-space:normal!important;overflow:hidden;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.15;align-content:center;align-items:center;justify-content:center;padding:0 4px}
 /* croci orizzontali anche in orizzontale (regola del 25 nov: a sinistra la croce in riga) */
 @media(orientation:landscape){
  .intero .csel>.freccia{width:40px!important;height:40px!important}
@@ -297,7 +301,6 @@ button{font-family:inherit}
    <summary><b>Opzioni</b></summary>
    <button class="levetta" role="switch" id="oRot" aria-checked="false">Rotazione automatica</button>
    <button class="levetta hide" role="switch" id="oSim" aria-checked="true">Simboli degli atomi</button>
-   <button class="levetta hide" role="switch" id="oEti" aria-checked="true">Etichette e⁻ sugli elettroni</button>
   </details>
  </div>
  <aside>
@@ -466,7 +469,7 @@ var VISTE=[
  {n:'Le famiglie',nota:'Gli elementi di una colonna sono una famiglia, perché si comportano in modo simile. I metalli alcalini reagiscono con l\'acqua, i gas nobili non reagiscono quasi con niente.',leg:[['#ff8a80','alcalini'],['#ffb454','alcalino-terrosi'],['#8fb3e8','di transizione'],['#8ee0a6','alogeni'],['#c9aaff','gas nobili'],['#f0a6c8','lantanidi'],['#d98aa8','attinidi']]},
  {n:'Dove li trovi',nota:''},
  {n:'Raggio atomico',nota:'Il cerchio mostra quanto è grande l\'atomo. Il più grande è il francio (valore stimato). Lungo una riga gli atomi si restringono, perché il nucleo ha più protoni e tira di più gli elettroni. Scendendo lungo una colonna crescono, perché hanno un guscio di elettroni in più.'},
- {n:'La tavola di Mendeleev',nota:'Nel 1871 Mendeleev ordinò gli elementi conosciuti per peso atomico, il numero scritto accanto al simbolo, e li divise in otto gruppi. Lasciò posti vuoti (–) per elementi non ancora scoperti e ne previde le proprietà. Tocca le caselle con il punto di domanda. I gas nobili mancano, furono scoperti più tardi. È una ricostruzione semplificata.'}];
+ {n:'La tavola di Mendeleev',nota:'Nel 1871 Mendeleev ordinò gli elementi conosciuti per peso atomico, il numero scritto accanto al simbolo, e li divise in otto gruppi. Lasciò posti vuoti (–) per elementi non ancora scoperti e ne previde le proprietà. Tocca le caselle con il punto di domanda. I numeri senza simbolo sono i posti per elementi che si aspettava ancora. I gas nobili mancano, furono scoperti più tardi. Ricostruzione della tavola originale in russo, tradotta e senza le formule dei composti.'}];
 /* tavola di Mendeleev del 1871, ricostruzione semplificata: [riga (Reihe), colonna (gruppi I-VII, poi le quattro caselle del gruppo VIII), peso atomico, simbolo di allora] */
 var MEND={H:[1,1,'1'],Li:[2,1,'7'],Be:[2,2,'9,4'],B:[2,3,'11'],C:[2,4,'12'],N:[2,5,'14'],O:[2,6,'16'],F:[2,7,'19'],
  Na:[3,1,'23'],Mg:[3,2,'24'],Al:[3,3,'27,3'],Si:[3,4,'28'],P:[3,5,'31'],S:[3,6,'32'],Cl:[3,7,'35,5'],
@@ -474,9 +477,12 @@ var MEND={H:[1,1,'1'],Li:[2,1,'7'],Be:[2,2,'9,4'],B:[2,3,'11'],C:[2,4,'12'],N:[2
  Zn:[5,2,'65'],As:[5,5,'75'],Se:[5,6,'78'],Br:[5,7,'80'],
  Rb:[6,1,'85'],Sr:[6,2,'87'],Y:[6,3,'88','?Yt'],Zr:[6,4,'90'],Nb:[6,5,'94'],Mo:[6,6,'96'],Ru:[6,8,'104'],Rh:[6,9,'104'],Pd:[6,10,'106'],Ag:[6,11,'108'],
  Cd:[7,2,'112'],In:[7,3,'113'],Sn:[7,4,'118'],Sb:[7,5,'122'],Te:[7,6,'125'],I:[7,7,'127','J'],
- Cs:[8,1,'133'],Ba:[8,2,'137'],Ta:[10,5,'182'],W:[10,6,'184'],Os:[10,8,'195'],Ir:[10,9,'197'],Pt:[10,10,'198'],Au:[10,11,'199'],
+ Cs:[8,1,'133'],Ba:[8,2,'137'],Ce:[8,4,'140'],Ta:[10,5,'182'],W:[10,6,'184'],Os:[10,8,'193'],Ir:[10,9,'195'],Pt:[10,10,'197'],Au:[10,11,'197'],
  Hg:[11,2,'200'],Tl:[11,3,'204'],Pb:[11,4,'207'],Bi:[11,5,'208'],Th:[12,4,'231'],U:[12,6,'240']};
-var MGAP=[[4,3,'44','Sc','eka-boro'],[5,3,'68','Ga','eka-alluminio'],[5,4,'72','Ge','eka-silicio'],[6,7,'100','Tc','eka-manganese']];
+var MGAP=[[4,3,'?44 = Eb?','Sc','eka-boro'],[5,3,'?68 = El?','Ga','eka-alluminio'],[5,4,'?72 = Es?','Ge','eka-silicio'],[6,7,'100','Tc','eka-manganese']];
+/* pesi senza simbolo: posti per elementi che Mendeleev si aspettava ancora */
+var MNUM=[[8,3,'?138'],[8,5,'142'],[8,6,'146'],[8,7,'148'],[8,8,'150'],[8,9,'151'],[8,10,'152'],[8,11,'153'],[9,1,'153'],[9,2,'158'],[9,3,'160'],[9,4,'162'],[9,5,'164'],[9,6,'166'],[9,7,'168'],[10,1,'175'],[10,2,'177'],[10,3,'?'],[10,4,'?180'],[10,7,'190'],[11,6,'210'],[11,7,'212'],[12,1,'220'],[12,2,'225'],[12,3,'227'],[12,5,'235'],[12,7,'245'],[12,8,'246'],[12,9,'248'],[12,10,'249'],[12,11,'250']];
+var MRIGHE=['','tipica','1','2','3','4','5','6','7','8','9','10'];
 var MRIP=[[5,1,'Cu'],[7,1,'Ag'],[11,1,'Au']];
 /* tappe della storia delle scoperte (anno, testo) */
 var STORIA=[
@@ -520,8 +526,6 @@ var V=function(x,y,z){return new THREE.Vector3(x,y,z);};
 var COLA={H:'#f4f4f4',C:'#3d434c',N:'#3b6fe0',O:'#e0393e',Na:'#ab5cf2',Cl:'#3fbf5a',Fe:'#e08a3a',Ar:'#6fd0c9'};
 var RA={H:.2,C:.3,N:.29,O:.29,Na:.36,Cl:.36,Fe:.32,Ar:.3};
 var C_P='#4f86e8',C_N='#c3cad6',C_E='#e2504a';   /* protoni blu (positivi), neutroni grigio chiaro, elettroni rossi (negativi) */
-var ETI={on:true,lista:[]};   /* etichette p⁺ n⁰ e⁻ sulle particelle */
-function etichetta(m,t,col){var s=testo(t,col,.17);s.material.depthTest=true;s.renderOrder=2;s.scale.multiplyScalar(1/m.scale.x);s.position.set(0,1.55,0);s.visible=ETI.on;m.add(s);ETI.lista.push(s);return s;}
 function Scena(el){
  if(typeof THREE==='undefined'){el.insertAdjacentHTML('beforeend','<div class="fail">Il modello 3D richiede la connessione a internet. Riprova più tardi.</div>');return null;}
  var R;try{R=new THREE.WebGLRenderer({antialias:true,alpha:true});}catch(e){el.insertAdjacentHTML('beforeend','<div class="fail">Questo browser non supporta il 3D (WebGL).</div>');return null;}
@@ -575,7 +579,7 @@ function fibo(i,n){var y=1-2*(i+.5)/n,r=Math.sqrt(1-y*y),a=i*2.39996;return V(r*
 var NEUTRONI=[0,0,2,4,5,6,6,7,8,10,10,12,12,14,14,16,16,18,22,20,20];   /* isotopo più comune, da H (1) a Ca (20) */
 function gusci(z){if(z<=20){var g=[],r=z,cap=[2,8,8,2];for(var k=0;k<4&&r>0;k++){var q=Math.min(cap[k],r);g.push(q);r-=q;}return g;}
  return z===26?[2,8,14,2]:[2,8,18,8];}
-function posNucleo(n){var o=[];for(var i=0;i<n;i++){var r=.13*Math.cbrt(n)*Math.cbrt((i+.5)/n)*1.25;o.push(fibo(i,n).multiplyScalar(r));}return o;}
+function posNucleo(n){var o=[];for(var i=0;i<n;i++){var r=.16*Math.cbrt(n)*Math.cbrt((i+.5)/n)*1.25;o.push(fibo(i,n).multiplyScalar(r));}return o;}
 function tipiNucleo(p,nn){var t=[],a=0,b=0,n=p+nn;for(var i=0;i<n;i++){if(a*nn<=b*p&&a<p||b>=nn){t.push('p');a++;}else{t.push('n');b++;}}return t;}
 function RG(k){return 1+.5*k;}
 function Atomo(z,nn,eti){
@@ -588,7 +592,7 @@ function Atomo(z,nn,eti){
   A.part.forEach(function(q){usati[q.t].push(q);});
   var nuovo=[];
   for(var i=0;i<pos.length;i++){var t=tip[i],q=usati[t].shift();
-   if(!q){q={t:t,m:palla(t==='p'?C_P:C_N,.1)};nuc.add(q.m);q.da=anima?fibo(Math.floor(Math.random()*40),40).multiplyScalar(RG(3)+1.2):pos[i].clone();q.m.position.copy(q.da);q.u=anima?0:1;}
+   if(!q){q={t:t,m:palla(t==='p'?C_P:C_N,.125)};nuc.add(q.m);q.da=anima?fibo(Math.floor(Math.random()*40),40).multiplyScalar(RG(3)+1.2):pos[i].clone();q.m.position.copy(q.da);q.u=anima?0:1;}
    else{q.da=q.m.position.clone();q.u=anima?0:1;}
    q.a=pos[i];q.via=false;nuovo.push(q);}
   ['p','n'].forEach(function(t){usati[t].forEach(function(q){q.da=q.m.position.clone();q.a=q.da.clone().normalize().multiplyScalar(RG(3)+1.5);q.u=anima?0:1;q.via=true;if(!anima)nuc.remove(q.m);else nuovo.push(q);});});
@@ -598,17 +602,17 @@ function Atomo(z,nn,eti){
   while(A.anelli.length>gs.length){elg.remove(A.anelli.pop());}
   var vecchi=A.el;A.el=[];
   gs.forEach(function(q,k){for(var j=0;j<q;j++){var e=vecchi.filter(function(x){return x.k===k&&!x.preso;})[0];
-   if(e){e.preso=true;e.cresce=e.cresce===undefined?1:e.cresce;}else{e={k:k,m:palla(C_E,.055),cresce:anima?0:1};if(A.eti)etichetta(e.m,'e⁻','#ff9b94');elg.add(e.m);}
+   if(e){e.preso=true;e.cresce=e.cresce===undefined?1:e.cresce;}else{e={k:k,m:palla(C_E,.05),cresce:anima?0:1};elg.add(e.m);}
    e.j=j;e.n=q;A.el.push(e);}});
   vecchi.forEach(function(e){if(!e.preso)elg.remove(e.m);e.preso=false;});
   A.el.forEach(function(e){e.preso=false;});
   A.z=z;A.nn=nn;};
  A.agg=function(dt){A.tempo+=dt;
   A.part=A.part.filter(function(q){if(q.u<1){q.u=Math.min(1,q.u+dt/T_VOLO);var s=q.u*q.u*(3-2*q.u);q.m.position.lerpVectors(q.da,q.a,s);
-    if(q.via){q.m.scale.setScalar(.1*(1-s));if(q.u>=1){nuc.remove(q.m);return false;}}}return true;});
+    if(q.via){q.m.scale.setScalar(.125*(1-s));if(q.u>=1){nuc.remove(q.m);return false;}}}return true;});
   A.el.forEach(function(e){var an=A.anelli[e.k];if(!an)return;var w=.9/(e.k+1),ang=e.j/e.n*Math.PI*2+A.tempo*w;
    var p=V(Math.cos(ang)*RG(e.k),Math.sin(ang)*RG(e.k),0).applyEuler(an.rotation);e.m.position.copy(p);
-   if(e.cresce<1){e.cresce=Math.min(1,e.cresce+dt/T_VOLO);}e.m.scale.setScalar(.055*e.cresce);});
+   if(e.cresce<1){e.cresce=Math.min(1,e.cresce+dt/T_VOLO);}e.m.scale.setScalar(.05*e.cresce);});
   if(!reduce)nuc.rotation.y+=dt*.3;};
  A.imposta(z,nn,false);
  return A;}
@@ -775,7 +779,6 @@ function molecola(i){S3.m=i;var M=MOL[i];S3.tipo=M.tipo;Array.prototype.forEach.
  $('infoD').textContent=M.d;}
 $('bSmonta').onclick=function(){if(!S3.O)return;S3.O.sm=S3.O.sm?0:1;this.textContent=S3.O.sm?'Ricomponi':'Smonta';
  if(S3.O.sm&&visto[3]!=='a'){visto[3]='a';dici('img3d','bub3d','Ecco gli atomi da cui è fatta. Contali, sono proprio quelli scritti nella formula.','ok');}};
-$('oEti').onclick=function(){var on=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',on);ETI.on=on;ETI.lista.forEach(function(s){s.visible=on;});};
 $('oSim').onclick=function(){var on=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',on);if(S3.O)S3.O.simboli(on);};
 
 /* ---- selettore della voce: sostanza, elemento o molecola secondo la scheda ---- */
@@ -791,7 +794,7 @@ function mostra3d(p){
  ['chips1','barra1'].forEach(function(id){$(id).classList.toggle('hide',p!==1);});
  $('chips3').classList.toggle('hide',p!==3);$('modi3').classList.toggle('hide',p!==3);$('az3').classList.toggle('hide',p!==3);
  $('az2').classList.toggle('hide',p!==2);$('conti').classList.toggle('hide',p!==2);$('molAtomi').classList.toggle('hide',p!==3);
- $('oSim').classList.toggle('hide',p!==3);$('oEti').classList.toggle('hide',p!==2);
+ $('oSim').classList.toggle('hide',p!==3);
  $('selVoce').classList.toggle('solo-intero',p!==2);
  $('selScheda').querySelector('span').textContent=NOMI_S[p];
  $('anc3d').textContent=ANC[p];
@@ -816,12 +819,14 @@ function tavHTML(){var h='';mendel=false;
  EL.forEach(function(e){
   h+='<button class="el n-'+e.c+' st-'+e.st+' f-'+fam(e)+'" data-z="'+e.z+'" style="grid-column:'+e.x+';grid-row:'+(e.y+1)+'" aria-label="'+e.n+'"><i>'+e.z+'</i><b>'+e.s+'</b><span class="cerchio"></span></button>';});
  h+='<div class="spz" style="grid-column:1/19;grid-row:9;height:calc(var(--cs)*.3)"></div>';
- h+='<div class="mx mre" style="grid-column:1;grid-row:1">Reihen</div>';
- ['I','II','III','IV','V','VI','VII'].forEach(function(r,i){h+='<div class="mx mgr" style="grid-column:'+(i+2)+';grid-row:1">Gruppe '+r+'</div>';});
- h+='<div class="mx mgr" style="grid-column:9/13;grid-row:1">Gruppe VIII</div>';
- for(var r=1;r<=12;r++)h+='<div class="mx mre" style="grid-column:1;grid-row:'+(r+1)+'">'+r+'</div>';
- MGAP.forEach(function(g){h+='<button class="mx mgap" data-z="'+BYS[g[3]].z+'" data-eka="'+g[4]+'" style="grid-column:'+(g[1]+1)+';grid-row:'+(g[0]+1)+'" aria-label="posto vuoto previsto da Mendeleev"><b>–</b><small>= '+g[2]+'</small><em>?</em></button>';});
- MRIP.forEach(function(g){h+='<div class="mx mrip" style="grid-column:'+(g[1]+1)+';grid-row:'+(g[0]+1)+'">('+g[2]+')</div>';});
+ h+='<div class="mx mtit" style="grid-column:1/13;grid-row:1">Sistema naturale degli elementi di D. Mendeleev</div>';
+ h+='<div class="mx mre" style="grid-column:1;grid-row:2">Serie</div>';
+ ['I','II','III','IV','V','VI','VII'].forEach(function(r,i){h+='<div class="mx mgr" style="grid-column:'+(i+2)+';grid-row:2">Gruppo '+r+'</div>';});
+ h+='<div class="mx mgr" style="grid-column:9/13;grid-row:2">Gruppo VIII</div>';
+ MRIGHE.forEach(function(t,r){h+='<div class="mx mre" style="grid-column:1;grid-row:'+(r+3)+'">'+t+'</div>';});
+ MGAP.forEach(function(g){h+='<button class="mx mgap" data-z="'+BYS[g[3]].z+'" data-eka="'+g[4]+'" style="grid-column:'+(g[1]+1)+';grid-row:'+(g[0]+2)+'" aria-label="posto vuoto previsto da Mendeleev"><b>'+g[2]+'</b></button>';});
+ MNUM.forEach(function(g){h+='<div class="mx mnum" style="grid-column:'+(g[1]+1)+';grid-row:'+(g[0]+2)+'">'+g[2]+'</div>';});
+ MRIP.forEach(function(g){h+='<div class="mx mrip" style="grid-column:'+(g[1]+1)+';grid-row:'+(g[0]+2)+'">'+g[2]+' = '+MEND[g[2]][2]+'</div>';});
  $('tav').innerHTML=h;$('tav').style.gridTemplateRows='calc(var(--cs)*.55) repeat(7,var(--cs)) calc(var(--cs)*.3) repeat(2,var(--cs))';}
 function gruppi(){var rom=$('oRom').getAttribute('aria-checked')==='true';
  Array.prototype.forEach.call($('tav').querySelectorAll('.gr'),function(d){var g=+d.dataset.g;d.textContent=rom?(ROM[g]||''):g;d.classList.toggle('sp',rom&&!ROM[g]);});}
@@ -833,10 +838,10 @@ function setMendel(on){
  mendel=on;t.classList.toggle('mendel',on);
  els.forEach(function(b){var e=EL[b.dataset.z-1],m=MEND[e.s];b.style.transition='none';b.style.transform='';
   b.classList.remove('m-out');b.style.position='';b.style.left=b.style.top=b.style.width=b.style.height='';
-  if(on&&m){b.style.gridColumn=m[1]+1;b.style.gridRow=m[0]+1;b.querySelector('b').innerHTML=(m[3]||e.s)+'<small>= '+m[2]+'</small>';}
+  if(on&&m){b.style.gridColumn=m[1]+1;b.style.gridRow=m[0]+2;b.querySelector('b').innerHTML=(m[3]||e.s)+'<small>= '+m[2]+'</small>';}
   else{var q=posModerna(b);b.style.gridColumn=q[0];b.style.gridRow=q[1];b.querySelector('b').textContent=e.s;}});
  t.style.gridTemplateColumns=on?'calc(var(--cs)*1.05) repeat(7,calc(var(--cs)*1.6)) repeat(4,calc(var(--cs)*1.3))':'repeat(18,var(--cs))';
- t.style.gridTemplateRows=on?'calc(var(--cs)*.75) repeat(12,calc(var(--cs)*.86))':'calc(var(--cs)*.55) repeat(7,var(--cs)) calc(var(--cs)*.3) repeat(2,var(--cs))';
+ t.style.gridTemplateRows=on?'calc(var(--cs)*.6) calc(var(--cs)*.7) repeat(12,calc(var(--cs)*.86))':'calc(var(--cs)*.55) repeat(7,var(--cs)) calc(var(--cs)*.3) repeat(2,var(--cs))';
  dimTav();
  var r1=t.getBoundingClientRect();
  els.forEach(function(b){var e=EL[b.dataset.z-1],a=prima[b.dataset.z];
@@ -898,7 +903,7 @@ $('playT').onclick=function(){if(S4.play){fermaT();aggTav();return;}
 $('anno').oninput=function(){if(S4.play)fermaT();S4.mossa=true;S4.anno=+this.value>=1000?2026:annoDa(+this.value);aggTav();};
 function dimTav(){var t=$('tav'),box=$('tavBox');if(!box.offsetParent&&!box.closest('.intero'))return;
  var w=box.clientWidth-20,h=box.clientHeight-16,cs;
- if($('btav').classList.contains('intero')){var cst=getComputedStyle(box);w=box.clientWidth-parseFloat(cst.paddingLeft)-parseFloat(cst.paddingRight);h=box.clientHeight-parseFloat(cst.paddingTop)-parseFloat(cst.paddingBottom);cs=mendel?Math.floor(Math.min((w-40)/17.45,(h-40)/11.1)):Math.floor(Math.min((w-34)/18,(h-22)/10.1));}
+ if($('btav').classList.contains('intero')){var cst=getComputedStyle(box);w=box.clientWidth-parseFloat(cst.paddingLeft)-parseFloat(cst.paddingRight);h=box.clientHeight-parseFloat(cst.paddingTop)-parseFloat(cst.paddingBottom);cs=mendel?Math.floor(Math.min((w-40)/17.45,(h-40)/11.7)):Math.floor(Math.min((w-34)/18,(h-22)/10.1));}
  else cs=mendel?Math.floor((w-40)/17.45):Math.floor((w-34)/18);
  cs=Math.max(14,Math.min(58,cs));t.style.setProperty('--cs',cs+'px');t.classList.toggle('piccola',cs<24);}
 window.addEventListener('resize',function(){if(scheda===4)dimTav();});
@@ -967,7 +972,7 @@ apri(1);
 })();
 </script>
 <p class="di-cosa-parla" style="max-width:640px;margin:32px auto 0;padding:0 16px;text-align:center;font:13px/1.55 Calibri,Carlito,'Segoe UI',sans-serif;color:#8fa0b8">Dalla goccia d'acqua, dal chiodo e dall'aria fino all'atomo; protoni, neutroni ed elettroni nel modello a gusci; molecole, sostanze semplici e composte; la tavola degli elementi con metalli e non metalli, stati, famiglie, raggio atomico e la storia delle scoperte, da Mendeleev a Marie Curie.</p>
-<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Neutroni dell'atomo nella scheda 02 (isotopo più abbondante, dall'idrogeno al calcio). <a href="https://www.ciaaw.org/isotopic-abundances.htm" target="_blank" rel="noopener">CIAAW, Isotopic abundances</a></li><li>Tavola degli elementi, stato a 20 °C, metalli e non metalli, anni di scoperta (per alluminio, calcio e fluoro l'anno in cui furono isolati, dalla Royal Society of Chemistry). <a href="https://pubchem.ncbi.nlm.nih.gov/periodic-table/" target="_blank" rel="noopener">PubChem, Periodic Table of Elements</a></li><li>Numerazione dei gruppi da 1 a 18. <a href="https://iupac.org/what-we-do/periodic-table-of-elements/" target="_blank" rel="noopener">IUPAC, Periodic Table of Elements</a></li><li>Raggio atomico, raggio covalente in picometri (Pyykkö e Atsumi). <a href="https://en.wikipedia.org/wiki/Atomic_radii_of_the_elements_(data_page)" target="_blank" rel="noopener">Wikipedia, Atomic radii of the elements</a></li><li>Carte degli elementi, dove si incontrano e origine dei nomi; gallio che fonde in mano; fosforo, primo elemento con uno scopritore noto (Brand, 1669). <a href="https://www.rsc.org/periodic-table" target="_blank" rel="noopener">Royal Society of Chemistry, Periodic Table</a></li><li>Mendeleev nel 1869, 63 elementi conosciuti, previsioni di gallio, scandio e germanio. <a href="https://en.wikipedia.org/wiki/Mendeleev%27s_predicted_elements" target="_blank" rel="noopener">Wikipedia, Mendeleev's predicted elements</a></li><li>Davy isola sodio, potassio, calcio e magnesio con la corrente elettrica (1807-1808). <a href="https://en.wikipedia.org/wiki/Humphry_Davy" target="_blank" rel="noopener">Wikipedia, Humphry Davy</a></li><li>Ramsay e la scoperta dei gas nobili (1894-1898). <a href="https://en.wikipedia.org/wiki/William_Ramsay" target="_blank" rel="noopener">Wikipedia, William Ramsay</a></li><li>Marie e Pierre Curie scoprono polonio e radio (1898). <a href="https://en.wikipedia.org/wiki/Marie_Curie" target="_blank" rel="noopener">Wikipedia, Marie Curie</a></li><li>Tecnezio, primo elemento ottenuto in laboratorio (1937), usato negli esami medici. <a href="https://en.wikipedia.org/wiki/Technetium" target="_blank" rel="noopener">Wikipedia, Technetium</a></li><li>Francio, scoperto da Marguerite Perey nel 1939, ultimo elemento trovato in natura, poche decine di grammi nella crosta terrestre, raggio covalente stimato 260 pm. <a href="https://en.wikipedia.org/wiki/Francium" target="_blank" rel="noopener">Wikipedia, Francium</a></li><li>Meitnerio, in onore di Lise Meitner. <a href="https://en.wikipedia.org/wiki/Meitnerium" target="_blank" rel="noopener">Wikipedia, Meitnerium</a></li><li>Oganesson, atomi che durano meno di un millesimo di secondo. <a href="https://en.wikipedia.org/wiki/Oganesson" target="_blank" rel="noopener">Wikipedia, Oganesson</a></li><li>Nomi degli elementi 113, 115, 117 e 118 approvati nel 2016. <a href="https://iupac.org/iupac-announces-the-names-of-the-elements-113-115-117-and-118/" target="_blank" rel="noopener">IUPAC, annuncio dei nomi</a></li><li>Corpo umano, ossigeno 65%, carbonio 18,5%, idrogeno 9,5%, azoto 2,6%, calcio 1,3%, fosforo 0,6% della massa. <a href="https://en.wikipedia.org/wiki/Composition_of_the_human_body" target="_blank" rel="noopener">Wikipedia, Composition of the human body</a></li><li>Aria, azoto 78%, ossigeno 21%, argon 0,9% del volume (quasi quattro quinti di azoto). <a href="https://en.wikipedia.org/wiki/Atmosphere_of_Earth" target="_blank" rel="noopener">Wikipedia, Atmosphere of Earth</a></li><li>Crosta terrestre, ossigeno 46%, silicio 28%, alluminio 8,2%, ferro 5,6%, calcio 4,2%, sodio 2,4%, magnesio 2,3%, potassio 2,1% della massa. <a href="https://en.wikipedia.org/wiki/Abundance_of_elements_in_Earth%27s_crust" target="_blank" rel="noopener">Wikipedia, Abundance of elements in Earth's crust</a></li><li>Tavola di Mendeleev del 1871, posizioni, pesi atomici e posti vuoti (ricostruzione semplificata). <a href="https://digital.sciencehistory.org/works/9c67wp122" target="_blank" rel="noopener">Science History Institute, Mendeleyev's Periodic Table of the Elements (1871)</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
+<div style="text-align:center;padding:4px 0 56px"><a class="firma-home" href="../index.html" aria-label="Vai alla home di Scienza in Movimento" title="Scienza in Movimento" style="display:inline-block;line-height:0"><img src="../firma.svg" alt="Prof. T" style="height:3rem;width:auto"></a><div style="margin-top:2px;font:12px Calibri,Carlito,'Segoe UI',sans-serif;color:#6f819c">© 2026 Prof. T · <details class="fonti"><summary>Fonti</summary><ul><li>Neutroni dell'atomo nella scheda 02 (isotopo più abbondante, dall'idrogeno al calcio). <a href="https://www.ciaaw.org/isotopic-abundances.htm" target="_blank" rel="noopener">CIAAW, Isotopic abundances</a></li><li>Tavola degli elementi, stato a 20 °C, metalli e non metalli, anni di scoperta (per alluminio, calcio e fluoro l'anno in cui furono isolati, dalla Royal Society of Chemistry). <a href="https://pubchem.ncbi.nlm.nih.gov/periodic-table/" target="_blank" rel="noopener">PubChem, Periodic Table of Elements</a></li><li>Numerazione dei gruppi da 1 a 18. <a href="https://iupac.org/what-we-do/periodic-table-of-elements/" target="_blank" rel="noopener">IUPAC, Periodic Table of Elements</a></li><li>Raggio atomico, raggio covalente in picometri (Pyykkö e Atsumi). <a href="https://en.wikipedia.org/wiki/Atomic_radii_of_the_elements_(data_page)" target="_blank" rel="noopener">Wikipedia, Atomic radii of the elements</a></li><li>Carte degli elementi, dove si incontrano e origine dei nomi; gallio che fonde in mano; fosforo, primo elemento con uno scopritore noto (Brand, 1669). <a href="https://www.rsc.org/periodic-table" target="_blank" rel="noopener">Royal Society of Chemistry, Periodic Table</a></li><li>Mendeleev nel 1869, 63 elementi conosciuti, previsioni di gallio, scandio e germanio. <a href="https://en.wikipedia.org/wiki/Mendeleev%27s_predicted_elements" target="_blank" rel="noopener">Wikipedia, Mendeleev's predicted elements</a></li><li>Davy isola sodio, potassio, calcio e magnesio con la corrente elettrica (1807-1808). <a href="https://en.wikipedia.org/wiki/Humphry_Davy" target="_blank" rel="noopener">Wikipedia, Humphry Davy</a></li><li>Ramsay e la scoperta dei gas nobili (1894-1898). <a href="https://en.wikipedia.org/wiki/William_Ramsay" target="_blank" rel="noopener">Wikipedia, William Ramsay</a></li><li>Marie e Pierre Curie scoprono polonio e radio (1898). <a href="https://en.wikipedia.org/wiki/Marie_Curie" target="_blank" rel="noopener">Wikipedia, Marie Curie</a></li><li>Tecnezio, primo elemento ottenuto in laboratorio (1937), usato negli esami medici. <a href="https://en.wikipedia.org/wiki/Technetium" target="_blank" rel="noopener">Wikipedia, Technetium</a></li><li>Francio, scoperto da Marguerite Perey nel 1939, ultimo elemento trovato in natura, poche decine di grammi nella crosta terrestre, raggio covalente stimato 260 pm. <a href="https://en.wikipedia.org/wiki/Francium" target="_blank" rel="noopener">Wikipedia, Francium</a></li><li>Meitnerio, in onore di Lise Meitner. <a href="https://en.wikipedia.org/wiki/Meitnerium" target="_blank" rel="noopener">Wikipedia, Meitnerium</a></li><li>Oganesson, atomi che durano meno di un millesimo di secondo. <a href="https://en.wikipedia.org/wiki/Oganesson" target="_blank" rel="noopener">Wikipedia, Oganesson</a></li><li>Nomi degli elementi 113, 115, 117 e 118 approvati nel 2016. <a href="https://iupac.org/iupac-announces-the-names-of-the-elements-113-115-117-and-118/" target="_blank" rel="noopener">IUPAC, annuncio dei nomi</a></li><li>Corpo umano, ossigeno 65%, carbonio 18,5%, idrogeno 9,5%, azoto 2,6%, calcio 1,3%, fosforo 0,6% della massa. <a href="https://en.wikipedia.org/wiki/Composition_of_the_human_body" target="_blank" rel="noopener">Wikipedia, Composition of the human body</a></li><li>Aria, azoto 78%, ossigeno 21%, argon 0,9% del volume (quasi quattro quinti di azoto). <a href="https://en.wikipedia.org/wiki/Atmosphere_of_Earth" target="_blank" rel="noopener">Wikipedia, Atmosphere of Earth</a></li><li>Crosta terrestre, ossigeno 46%, silicio 28%, alluminio 8,2%, ferro 5,6%, calcio 4,2%, sodio 2,4%, magnesio 2,3%, potassio 2,1% della massa. <a href="https://en.wikipedia.org/wiki/Abundance_of_elements_in_Earth%27s_crust" target="_blank" rel="noopener">Wikipedia, Abundance of elements in Earth's crust</a></li><li>Tavola di Mendeleev del 1871, posizioni, pesi atomici, posti vuoti e titolo tradotto (ricostruzione senza le formule dei composti). <a href="https://digital.sciencehistory.org/works/9c67wp122" target="_blank" rel="noopener">Science History Institute, Mendeleyev's Periodic Table of the Elements (1871)</a></li><li>Materiali. <a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a>, licenza MIT. Firma ricavata dal font Nothing You Could Do di Kimberly Geswein, SIL Open Font License 1.1.</li></ul></details></div></div>
 <style>.torna-sito{transition:box-shadow .2s,border-color .2s,color .2s}.torna-sito:hover,.torna-sito:focus-visible{border-color:#ffb454!important;color:#fff!important;box-shadow:0 0 14px 1px rgba(255,180,84,.55)!important;animation:torna-vibra .35s ease-in-out}@keyframes torna-vibra{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}@media (prefers-reduced-motion:reduce){.torna-sito:hover,.torna-sito:focus-visible{animation:none}}.firma-home img{transition:filter .2s}.firma-home:hover img,.firma-home:focus-visible img{filter:drop-shadow(0 0 8px rgba(106,165,255,.75))}</style>
 <a class="torna-sito" href="index.html" style="position:fixed;bottom:10px;left:10px;z-index:9999;padding:5px 12px;background:rgba(17,26,43,.95);color:#e6ecf5;border:1px solid #3a4d70;border-radius:999px;font:italic 700 15px Cambria,Georgia,serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4)">&larr; Chimica</a>
 <script data-goatcounter="https://scienzainmovimento.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
