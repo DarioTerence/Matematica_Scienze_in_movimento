@@ -1,4 +1,4 @@
-/* Temi stagionali e ricorrenze della home (Prof. T).
+/* Temi stagionali e ricorrenze della home (Prof. T); nelle pagine delle discipline solo la neve di Natale.
    Legge la data del dispositivo e, se cade nel periodo di un tema, segna la pagina con
    data-tema="nome" sull'elemento <html>: le regole di temi.css valgono solo con quel segno.
    Nessun intervento per accendere o spegnere un tema: torna da solo ogni anno.
@@ -31,6 +31,10 @@
   }
   if ((m = /[?&]tema=([a-z]+)/.exec(cerca))) tema = m[1];
   if (!tema) return;
+  // Le pagine delle discipline caricano questo file solo per la neve di Natale: gli altri temi restano in home.
+  // Fuori dalla home le parti legate a caricatura, titolo e fumetto (cappello, musica, Prof. T rock) si saltano da sole.
+  var home = !!document.querySelector('.hero .persona');
+  if (!home && tema !== 'natale') return;
   document.documentElement.setAttribute('data-tema', tema);
 
   if (tema === 'compleanno') compleanno();

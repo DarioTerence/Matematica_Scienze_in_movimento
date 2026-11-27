@@ -79,7 +79,7 @@ Numerazione: sezioni della home "Sezione 01…04", card delle discipline in home
 
 ## Attivare una nuova disciplina
 1. In `index.html`, sostituire la card spenta (`<div class="card fisica in-arrivo">`) con il link (`<a class="card fisica" href="fisica/">`) e scrivere la descrizione con le animazioni.
-2. Creare `<disciplina>/index.html` copiando una pagina di disciplina esistente: cambiare classe di colore, titolo, description, canonical e Open Graph; restano favicon (`../favicon.svg`), footer con "© 2026 Prof. T", bottone "← Scienza in Movimento" con la classe dell'area e GoatCounter.
+2. Creare `<disciplina>/index.html` copiando una pagina di disciplina esistente: cambiare classe di colore, titolo, description, canonical e Open Graph; restano favicon (`../favicon.svg`), le righe di `../temi.css` e `../temi.js` (neve di Natale), footer con "© 2026 Prof. T", bottone "← Scienza in Movimento" con la classe dell'area e GoatCounter.
 3. Aggiungere la pagina a `sitemap.xml` (con barra finale).
 
 ## Frasi della home
@@ -96,7 +96,7 @@ Frasi con data (anniversari, ricorrenze): aggiungere al `<li>` gli attributi `da
 Frasi con data presenti: 3-5 ottobre Sputnik e compleanno del sito, 13-15 ottobre Programma 101, 20-22 novembre Rømer. La frase di compleanno ha la classe `frase-eta`: il testo nell'HTML è solo un segnaposto, quello vero lo scrive `temi.js` con l'età del sito in binario, in base dieci e in numeri romani. La classe `informatica` (grigio neutro, `--informatica` in `style.css`) colora le frasi di informatica, che non ha ancora una disciplina.
 
 ## Temi stagionali della home
-`temi.js` e `temi.css` (radice) accendono e spengono da soli i temi della home secondo la data del dispositivo; le animazioni e le pagine di disciplina non li hanno. Lo script legge il calendario `TEMI` all'inizio del file (nome, `dal` e `al` come "MM-GG", estremi compresi, anche a cavallo di Capodanno) e, se oggi cade in un periodo, scrive `data-tema="nome"` sull'elemento `<html>`; le regole di `temi.css` cominciano tutte con `[data-tema="nome"]`, quindi negli altri giorni non cambiano nulla. Movimenti sempre fermi con `prefers-reduced-motion`.
+`temi.js` e `temi.css` (radice) accendono e spengono da soli i temi della home secondo la data del dispositivo. Le pagine delle discipline (`index.html` di ogni cartella) li caricano solo per la neve di Natale (cristalli su tutta la pagina e neve posata sulle card, senza cappello né musica); le animazioni non li hanno. Una nuova disciplina deve avere le due righe di `temi.css` e `temi.js` dopo `style.css`, come le altre. Lo script legge il calendario `TEMI` all'inizio del file (nome, `dal` e `al` come "MM-GG", estremi compresi, anche a cavallo di Capodanno) e, se oggi cade in un periodo, scrive `data-tema="nome"` sull'elemento `<html>`; le regole di `temi.css` cominciano tutte con `[data-tema="nome"]`, quindi negli altri giorni non cambiano nulla. Movimenti sempre fermi con `prefers-reduced-motion`.
 
 Temi presenti:
 - `compleanno` (3-5 ottobre): cappellino SVG sulla caricatura, coriandoli nella zona del titolo, età del sito nella frase `frase-eta`, melodia di "Tanti auguri a te" (pubblico dominio).
