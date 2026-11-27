@@ -740,7 +740,8 @@ var ultimaT=-1;
 function mostraTappa(){var k=tappaCorrente(),so=SOST[S1.s];$('tappa1').textContent=TAPPE[k];
  if(k===ultimaT)return;ultimaT=k;
  $('infoT').textContent=so.t[k];$('infoD').textContent=so.d[k];$('selNome').textContent=so.n+', '+TAPPE[k];
- if(k===3&&visto[1]!=='a'){visto[1]='a';dici('img3d','bub3d','Siamo arrivati all\'atomo! Nella scheda 02 puoi costruirne uno tu, protone dopo protone.','atomo');}}
+
+ if(k===3&&scheda===1){dici('img3d','bub3d','Siamo arrivati all\'atomo! Nella scheda 02 puoi costruirne uno tu, protone dopo protone.','atomo');}}
 var PLAY='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>',PAUSA='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>',RIVEDI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 1-6.6 4.6l1.9.7A5 5 0 1 0 12 7v3L7.5 6 12 2z"/></svg>';
 function fermo1(){$('play1').innerHTML=S1.u>=3?RIVEDI:PLAY;$('play1').setAttribute('aria-label',S1.u>=3?'Rivedi':'Avvia');}
 $('play1').onclick=function(){
@@ -750,7 +751,8 @@ $('play1').onclick=function(){
 $('zoom1').oninput=function(){S1.a=null;S1.u=this.value/100;fermo1();mostraTappa();};
 function chips1(){$('chips1').innerHTML=SOST.map(function(o,i){return '<button class="chip'+(i===S1.s?' attivo':'')+'" data-k="'+i+'" style="--chip:'+o.c+'">'+o.n+'</button>';}).join('');}
 $('chips1').addEventListener('click',function(e){var b=e.target.closest('[data-k]');if(b)sostanza(+b.dataset.k);});
-function sostanza(i){S1.s=i;S1.u=0;S1.a=null;$('zoom1').value=0;fermo1();chips1();if(scena){var W=costruisci1();scena.usa(W,7.2,agg1);}ultimaT=-1;mostraTappa();}
+var BUB1=['Una goccia d\'acqua. Tocca ▶ e scendi fino alle sue molecole e ai suoi atomi.','Un chiodo di ferro. Tocca ▶ e guarda come sono ordinati i suoi atomi.','Un palloncino pieno d\'aria. Tocca ▶ e scopri che l\'aria è fatta di molecole che corrono.'];
+function sostanza(i){S1.s=i;S1.u=0;S1.a=null;$('zoom1').value=0;fermo1();chips1();if(scena){var W=costruisci1();scena.usa(W,7.2,agg1);}ultimaT=-1;mostraTappa();dici('img3d','bub3d',BUB1[i],'hi');}
 
 /* ================= SCHEDA 02, l'atomo ================= */
 var S2={z:6,A:null};
@@ -770,7 +772,7 @@ function chips3(){$('chips3').innerHTML=MOL.map(function(o,i){if(o.tipo!==S3.tip
 $('chips3').addEventListener('click',function(e){var b=e.target.closest('[data-k]');if(b)molecola(+b.dataset.k);});
 $('modi3').addEventListener('click',function(e){var b=e.target.closest('[data-m]');if(!b)return;S3.tipo=+b.dataset.m;
  Array.prototype.forEach.call(this.children,function(x){x.setAttribute('aria-pressed',x===b);});molecola(MOL.findIndex(function(o){return o.tipo===S3.tipo;}));});
-function molecola(i){S3.m=i;var M=MOL[i];S3.tipo=M.tipo;Array.prototype.forEach.call($('modi3').children,function(x){x.setAttribute('aria-pressed',+x.dataset.m===S3.tipo);});
+function molecola(i){S3.m=i;var M=MOL[i];if(scheda===3)dici('img3d','bub3d','Tocca Smonta per separare gli atomi di questa sostanza.','ok');S3.tipo=M.tipo;Array.prototype.forEach.call($('modi3').children,function(x){x.setAttribute('aria-pressed',+x.dataset.m===S3.tipo);});
  chips3();
  if(scena){S3.O=Molecola(M);S3.O.simboli($('oSim').getAttribute('aria-checked')==='true');var W=new THREE.Group();W.add(S3.O.g);scena.usa(W,Math.max(4.2,S3.O.raggio*3.6),function(dt){S3.O.agg(dt);});}
  $('bSmonta').textContent='Smonta';
@@ -778,7 +780,7 @@ function molecola(i){S3.m=i;var M=MOL[i];S3.tipo=M.tipo;Array.prototype.forEach.
  var c=contaAtomi(M.at||reticolo(M.ret));
  $('molAtomi').innerHTML=(M.ret?'Un pezzetto di reticolo. ':'')+Object.keys(c).map(function(k){return '<span style="white-space:nowrap"><i style="display:inline-block;width:11px;height:11px;border-radius:50%;background:'+COLA[k]+';margin-right:5px;vertical-align:-1px"></i>'+NOME_EL[k]+'</span>';}).join(', ')+(M.tipo?'. Sostanza composta':'. Sostanza semplice');
  $('infoD').textContent=M.d;}
-$('bSmonta').onclick=function(){if(!S3.O)return;S3.O.sm=S3.O.sm?0:1;this.textContent=S3.O.sm?'Ricomponi':'Smonta';
+$('bSmonta').onclick=function(){if(!S3.O)return;S3.O.sm=S3.O.sm?0:1;this.textContent=S3.O.sm?'Ricomponi':'Smonta';if(!S3.O.sm)dici('img3d','bub3d','Gli atomi si legano di nuovo. Prova con un\'altra sostanza.','idle');
  if(S3.O.sm){var M=MOL[S3.m];
   dici('img3d','bub3d',M.k==='Fe'?'Tutti gli atomi sono uguali, di ferro. Per questo la formula è solo Fe.':
    (M.ret?'Nel reticolo gli atomi sono tantissimi. La formula NaCl dice quali elementi ci sono e che sodio e cloro sono in numero uguale.':
@@ -808,7 +810,7 @@ function mostra3d(p){
  if(p===1){scena.usa(S1.W||costruisci1(),7.2,agg1);ultimaT=-1;mostraTappa();}
  else if(p===2){if(!S2.A)S2.A=Atomo(S2.z,NEUTRONI[S2.z],true);var W=new THREE.Group();W.add(S2.A.g);scena.usa(W,7,function(dt){S2.A.agg(dt);});atomo2(S2.z,false);}
  else molecola(S3.m);
- if(!visto['b'+p]){visto['b'+p]=1;dici('img3d','bub3d',BUB[p],p===2?'atomo':(p===3?'ok':'hi'));}
+ dici('img3d','bub3d',visto['b'+p]?BUB[p].replace(CONSOLE,''):BUB[p],p===2?'atomo':(p===3?'ok':'hi'));visto['b'+p]=1;
  setTimeout(function(){if(scena)scena.resize();},30);}
 $('bReset').onclick=function(){if(scena)scena.reset();};
 $('bPiu').onclick=function(){if(scena)scena.zoom(.8);};
