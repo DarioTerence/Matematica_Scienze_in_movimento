@@ -290,7 +290,7 @@
   function musica(brani, conRock) {
     var VOLUME = 0.045;           // volume generale, basso (1 = massimo)
     var VOLUME_ROCK = 0.7;        // il rock e' piu' pieno: lo si abbassa ancora perche' suoni forte come il carillon
-    var PAUSA = 20;               // secondi di silenzio tra un brano e il successivo
+    var PAUSA = 4;                // secondi di silenzio tra un brano e il successivo
     var ANTICIPO = 0.4;           // secondi di suoni programmati in anticipo
     var NOMI = { C: 'Do', D: 'Re', E: 'Mi', F: 'Fa', G: 'Sol', A: 'La', B: 'Si' };
     var SEMITONI = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
