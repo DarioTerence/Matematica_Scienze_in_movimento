@@ -119,16 +119,32 @@
       cappello.className = 'cappello-natale';
       cappello.setAttribute('aria-hidden', 'true');
       cappello.innerHTML =
-        '<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">' +
-          // corpo rosso con la punta che ricade a destra
-          '<path d="M22 108 C30 60 78 22 132 20 C162 19 184 34 192 60 C176 48 158 46 150 52 C164 70 174 90 178 108 Z" fill="#b8352f" stroke="#0a0f1a" stroke-width="3" stroke-linejoin="round"/>' +
-          // ombra della piega
-          '<path d="M150 52 C164 70 174 90 178 108 L160 108 C158 88 152 68 142 56 Z" fill="#8e2622"/>' +
-          // bordo di pelliccia
-          '<rect x="10" y="96" width="180" height="30" rx="15" fill="#eef2f7" stroke="#0a0f1a" stroke-width="3"/>' +
-          '<path d="M30 104 Q34 110 30 116 M62 103 Q66 110 62 117 M96 103 Q100 110 96 117 M130 103 Q134 110 130 117 M162 104 Q166 110 162 116" fill="none" stroke="#c9d3e0" stroke-width="2" stroke-linecap="round"/>' +
-          // pompon
-          '<circle cx="190" cy="64" r="12" fill="#eef2f7" stroke="#0a0f1a" stroke-width="3"/>' +
+        '<svg viewBox="0 40 160 160" xmlns="http://www.w3.org/2000/svg">' +
+          '<defs>' +
+            '<linearGradient id="natRosso" x1="0" y1="0" x2="1" y2="0">' +
+              '<stop offset="0" stop-color="#d4473f"/><stop offset=".45" stop-color="#b8322c"/><stop offset="1" stop-color="#7f1f1c"/>' +
+            '</linearGradient>' +
+            '<linearGradient id="natPelo" x1="0" y1="0" x2="0" y2="1">' +
+              '<stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#cfd8e4"/>' +
+            '</linearGradient>' +
+            '<radialGradient id="natPompon" cx=".38" cy=".35" r=".7">' +
+              '<stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#c7d1de"/>' +
+            '</radialGradient>' +
+          '</defs>' +
+          // corpo: sale stretto e alto, poi la punta si piega e ricade a destra
+          '<path d="M24 178 C26 140 40 96 66 70 C84 52 108 44 126 50 C142 56 150 74 148 96 C140 84 128 80 118 84 C122 116 130 148 138 178 Z" fill="url(#natRosso)" stroke="#0a0f1a" stroke-width="3" stroke-linejoin="round"/>' +
+          // piega dove la punta ricade e ombra sul fianco
+          '<path d="M118 84 C122 116 130 148 138 178 L122 178 C116 146 110 114 106 92 Z" fill="#6e1b18" opacity=".55"/>' +
+          '<path d="M66 70 C86 58 106 60 118 84" fill="none" stroke="#e5675e" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>' +
+          // pieghe morbide del tessuto
+          '<path d="M46 156 C52 128 60 104 78 86 M78 168 C80 140 86 116 98 96" fill="none" stroke="#7f1f1c" stroke-width="2" stroke-linecap="round" opacity=".45"/>' +
+          '<path d="M34 164 C38 132 48 104 64 84" fill="none" stroke="#ec8077" stroke-width="2" stroke-linecap="round" opacity=".5"/>' +
+          // bordo di pelliccia, con il contorno a ciuffi
+          '<path d="M12 174 Q10 164 20 162 Q26 155 36 160 Q44 153 54 159 Q63 152 72 158 Q81 151 90 158 Q99 151 108 158 Q117 152 126 159 Q136 154 142 161 Q152 162 150 172 Q154 184 144 188 Q138 196 128 191 Q119 197 110 191 Q100 198 90 191 Q80 198 70 191 Q60 197 50 191 Q40 197 31 190 Q18 194 16 184 Q8 180 12 174 Z" fill="url(#natPelo)" stroke="#0a0f1a" stroke-width="3" stroke-linejoin="round"/>' +
+          '<path d="M30 172 q4 4 0 9 M50 170 q4 5 0 10 M72 170 q4 5 0 10 M94 170 q4 5 0 10 M116 170 q4 5 0 10 M134 172 q4 4 0 9" fill="none" stroke="#b9c4d3" stroke-width="2" stroke-linecap="round"/>' +
+          // pompon che pende dalla punta
+          '<circle cx="146" cy="106" r="13" fill="url(#natPompon)" stroke="#0a0f1a" stroke-width="3"/>' +
+          '<path d="M140 100 q3 -2 6 0 M149 110 q3 -1 5 1" fill="none" stroke="#b9c4d3" stroke-width="1.6" stroke-linecap="round"/>' +
         '</svg>';
       link.appendChild(cappello);
     }

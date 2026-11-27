@@ -52,10 +52,10 @@
 [data-tema="natale"] .mascotte-link { position: relative; }
 [data-tema="natale"] .cappello-natale {
   position: absolute;
-  left: 15%;
-  top: -15%;
-  width: 72%;
-  transform: rotate(-5deg);
+  left: 19%;
+  top: -20%;
+  width: 58%;
+  transform: rotate(14deg);
   transform-origin: 50% 100%;
   pointer-events: none;
   transition: transform 0.2s ease;
@@ -63,7 +63,7 @@
 [data-tema="natale"] .cappello-natale svg { display: block; width: 100%; height: auto; }
 /* si solleva insieme alla caricatura al passaggio del mouse */
 [data-tema="natale"] .mascotte-link:hover .cappello-natale,
-[data-tema="natale"] .mascotte-link:focus-visible .cappello-natale { transform: translateY(-4px) rotate(-5deg); }
+[data-tema="natale"] .mascotte-link:focus-visible .cappello-natale { transform: translateY(-4px) rotate(14deg); }
 
 /* Cristalli di neve: pochi, lenti e trasparenti, solo nella zona del titolo, dietro al testo */
 [data-tema="natale"] .hero { position: relative; }
@@ -142,5 +142,5 @@
   [data-tema="natale"] .neve span { animation: none; top: var(--y); transform: rotate(var(--giro)); }
   [data-tema="natale"] .cappello-natale { transition: none; }
   [data-tema="natale"] .mascotte-link:hover .cappello-natale,
-  [data-tema="natale"] .mascotte-link:focus-visible .cappello-natale { transform: rotate(-5deg); }
+  [data-tema="natale"] .mascotte-link:focus-visible .cappello-natale { transform: rotate(14deg); }
 }
