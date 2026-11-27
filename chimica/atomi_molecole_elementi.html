@@ -222,11 +222,16 @@ button{font-family:inherit}
  #btav.intero #selVista>span{font-size:13px}
 }
 /* blocco della tavola */
-#btav.intero .tavbox{position:absolute;z-index:1;border:0;border-radius:0;background:none;inset:0;padding:calc(108px + var(--st)) calc(12px + var(--sr)) calc(var(--h) + 24px + var(--sb)) calc(12px + var(--sl));display:flex;align-items:center;justify-content:center}
+#btav.intero .tavbox{position:absolute;z-index:1;border:0;border-radius:0;background:none;inset:0;padding:0}
+#btav.intero #tavClip{position:absolute;overflow:hidden;display:flex;align-items:center;justify-content:center;left:calc(12px + var(--sl));right:calc(12px + var(--sr));top:calc(108px + var(--st));bottom:calc(var(--h) + 24px + var(--sb))}
 #btav.intero{--h:196px}
 #btav.intero[data-dove="1"]{--h:236px}
 #btav.intero #bIntero2{position:absolute;top:calc(12px + var(--st))!important;right:calc(12px + var(--sr))!important;z-index:5}
 #btav.intero .opzioni{top:calc(12px + var(--st));left:calc(12px + var(--sl));width:130px}
+#btav.intero .tavbox{touch-action:none}
+#btav.intero .zt{position:absolute;z-index:5;right:calc(12px + var(--sr))}
+#btav.intero #bResetT{top:calc(58px + var(--st))}#btav.intero #bPiuT{top:calc(104px + var(--st))}#btav.intero #bMenoT{top:calc(150px + var(--st))}
+#tav{transition:transform .25s ease-out}#tav.trascina{transition:none}
 #btav.intero .opzioni[open]{width:auto;right:calc(64px + var(--sr))}
 #btav.intero .cpan.basso{left:calc(12px + var(--sl));right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));height:var(--h)}
 #btav.intero #selVista{left:calc(24px + var(--sl));right:calc(24px + var(--sr));bottom:calc(var(--h) - 44px + var(--sb))}
@@ -247,8 +252,9 @@ button{font-family:inherit}
  #btav.intero .cpan.basso{display:none}
  #btav.intero .cpan.sx{left:calc(12px + var(--sl));top:calc(12px + env(safe-area-inset-top,0px));bottom:calc(12px + var(--sb));width:210px}
  #btav.intero .cpan.dx{right:calc(12px + var(--sr));top:calc(12px + env(safe-area-inset-top,0px));bottom:calc(12px + var(--sb));width:108px}
- #btav.intero .tavbox{padding:calc(6px + var(--st)) calc(126px + var(--sr)) calc(82px + var(--sb)) calc(232px + var(--sl))}
+ #btav.intero #tavClip{left:calc(232px + var(--sl));right:calc(126px + var(--sr));top:calc(6px + var(--st));bottom:calc(82px + var(--sb))}
  #btav.intero #bIntero2{right:calc(46px + var(--sr))!important;top:calc(12px + var(--st))!important}
+ #btav.intero .zt{right:calc(46px + var(--sr))}
  #btav.intero #selVista{left:calc(22px + var(--sl));right:auto;width:190px;top:calc(12px + var(--st));bottom:auto}
  #btav.intero #doveSel{left:calc(22px + var(--sl));right:auto;width:190px;top:calc(62px + var(--st));bottom:auto}
  #btav.intero .info{left:calc(22px + var(--sl));width:190px;top:calc(66px + var(--st));bottom:calc(24px + var(--sb));overflow:auto}
@@ -341,8 +347,11 @@ button{font-family:inherit}
   <div class="chips hide" id="doveSel" style="margin:0 0 8px"></div>
   <div class="tavbox" id="tavBox">
    <button class="comando-scena" id="bIntero2" style="right:8px;top:8px;z-index:3"></button>
-   <div id="tav" data-v="1"></div>
-   <div class="gira" id="gira" role="button" tabindex="0"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="28" rx="3"/><path d="M8 30a16 16 0 0 0 26 10M34 40l1-5-5-1"/></svg>La tavola si vede meglio con il telefono in orizzontale.<small style="color:#8fa0b8">Tocca per chiudere</small></div>
+   <button class="comando-scena solo-intero zt" id="bResetT" aria-label="Riporta la tavola intera" title="Tavola intera"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></svg></button>
+   <button class="comando-scena solo-intero zt" id="bPiuT" aria-label="Ingrandisci la tavola" title="Ingrandisci">+</button>
+   <button class="comando-scena solo-intero zt" id="bMenoT" aria-label="Rimpicciolisci la tavola" title="Rimpicciolisci">&minus;</button>
+   <div id="tavClip"><div id="tav" data-v="1"></div></div>
+   <div class="gira" id="gira" role="button" tabindex="0"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="28" rx="3"/><path d="M8 30a16 16 0 0 0 26 10M34 40l1-5-5-1"/></svg>La tavola si vede meglio con il telefono in orizzontale. Puoi anche ingrandirla con due dita o con +.<small style="color:#8fa0b8">Tocca per chiudere</small></div>
   </div>
   <div class="legenda-t" id="legT"></div>
   <p class="nota-v" id="notaV"></p>
@@ -839,7 +848,7 @@ function gruppi(){var rom=$('oRom').getAttribute('aria-checked')==='true';
 var mendel=false;
 function posModerna(b){var e=EL[b.dataset.z-1];return [e.x,e.y+1];}
 function setMendel(on){
- if(on===mendel)return;var t=$('tav'),els=Array.prototype.slice.call(t.querySelectorAll('.el')),r0=t.getBoundingClientRect(),prima={};
+ if(on===mendel)return;Z.s=1;$('tav').style.transition='none';applicaZ();$('tav').style.transition='';var t=$('tav'),els=Array.prototype.slice.call(t.querySelectorAll('.el')),r0=t.getBoundingClientRect(),prima={};
  els.forEach(function(b){var r=b.getBoundingClientRect();prima[b.dataset.z]={x:r.left-r0.left,y:r.top-r0.top,w:r.width,h:r.height};b._out=b.classList.contains('m-out');});
  mendel=on;t.classList.toggle('mendel',on);
  els.forEach(function(b){var e=EL[b.dataset.z-1],m=MEND[e.s];b.style.transition='none';b.style.transform='';
@@ -884,7 +893,7 @@ function carta(z){S4.sel=z;var e=EL[z-1],C=CARTE[e.s],f=fam(e),g=e.y<=7?e.x:null
  $('carta').innerHTML=h;
  if($('vaiAtomo'))$('vaiAtomo').onclick=function(){S2.z=e.z;apri(2);};
  Array.prototype.forEach.call($('tav').querySelectorAll('.el'),function(b){b.classList.toggle('scelto',+b.dataset.z===z);});}
-$('tav').addEventListener('click',function(e){var g=e.target.closest('.mgap');
+$('tav').addEventListener('click',function(e){if(Z.mosso){Z.mosso=false;return;}var g=e.target.closest('.mgap');
  if(g){var z=+g.dataset.z,el=EL[z-1];carta(z);$('carta').insertAdjacentHTML('beforeend','<p class="curio"><b>Previsto.</b> Mendeleev lasciò qui un posto vuoto e chiamò l\'elemento mancante '+g.dataset.eka+'. '+(el.s==='Tc'?'Fu ottenuto solo nel 1937, in laboratorio. È il tecnezio.':'Fu scoperto nel '+el.a+', è il '+el.n+'.')+'</p>');
   dici('imgTav','bubTav','Mendeleev aveva previsto anche quanto avrebbe pesato e come si sarebbe comportato. Quando fu scoperto, i dati tornavano!','ok');return;}
  var b=e.target.closest('.el');if(!b||b.classList.contains('m-out'))return;carta(+b.dataset.z);
@@ -909,16 +918,39 @@ $('playT').onclick=function(){if(S4.play){fermaT();aggTav();return;}
 $('anno').oninput=function(){if(S4.play)fermaT();S4.mossa=true;S4.anno=+this.value>=1000?2026:annoDa(+this.value);aggTav();};
 function dimTav(){var t=$('tav'),box=$('tavBox');if(!box.offsetParent&&!box.closest('.intero'))return;
  var w=box.clientWidth-20,h=box.clientHeight-16,cs;
- if($('btav').classList.contains('intero')){var cst=getComputedStyle(box);w=box.clientWidth-parseFloat(cst.paddingLeft)-parseFloat(cst.paddingRight);h=box.clientHeight-parseFloat(cst.paddingTop)-parseFloat(cst.paddingBottom);cs=mendel?Math.floor(Math.min((w-40)/17.45,(h-40)/11.7)):Math.floor(Math.min((w-34)/18,(h-22)/10.1));}
+ if($('btav').classList.contains('intero')){var cl=$('tavClip');w=cl.clientWidth;h=cl.clientHeight;cs=mendel?Math.floor(Math.min((w-40)/17.45,(h-40)/11.7)):Math.floor(Math.min((w-34)/18,(h-22)/10.1));}
  else cs=mendel?Math.floor((w-40)/17.45):Math.floor((w-34)/18);
  cs=Math.max(14,Math.min(58,cs));t.style.setProperty('--cs',cs+'px');t.classList.toggle('piccola',cs<24);}
 window.addEventListener('resize',function(){if(scheda===4)dimTav();});
 $('gira').onclick=function(){this.classList.add('chiuso');};
 tavHTML();aggTav();carta(26);fermaT();
 
+/* ---- zoom della tavola in modalità console: pizzico, trascinamento, rotella, + e − ---- */
+var Z={s:1,x:0,y:0,mosso:false};
+var Z_MAX=3.5;
+function applicaZ(){var t=$('tav');if(Z.s<=1.001){Z.s=1;Z.x=0;Z.y=0;}
+ var mx=(Z.s-1)*t.offsetWidth/2,my=(Z.s-1)*t.offsetHeight/2;Z.x=clamp(Z.x,-mx,mx);Z.y=clamp(Z.y,-my,my);
+ t.style.transform=Z.s===1?'':'translate('+Z.x+'px,'+Z.y+'px) scale('+Z.s+')';}
+function zoomT(f,px,py){var t=$('tav'),r=t.getBoundingClientRect();
+ var cx=r.left+r.width/2-Z.x,cy=r.top+r.height/2-Z.y;if(px===undefined){px=r.left+r.width/2;py=r.top+r.height/2;}
+ var s2=clamp(Z.s*f,1,Z_MAX);Z.x=px-cx-s2*(px-cx-Z.x)/Z.s;Z.y=py-cy-s2*(py-cy-Z.y)/Z.s;Z.s=s2;applicaZ();}
+function azzeraZ(){Z.s=1;applicaZ();}
+(function(){var box=$('tavBox'),pt=new Map(),pd=0,pm=null,inizio=null;
+ var attivo=function(){return $('btav').classList.contains('intero');};
+ box.addEventListener('pointerdown',function(e){if(!attivo()||e.target.closest('.comando-scena,.gira'))return;pt.set(e.pointerId,[e.clientX,e.clientY]);inizio=[e.clientX,e.clientY];Z.mosso=false;$('tav').classList.add('trascina');});
+ box.addEventListener('pointermove',function(e){if(!pt.has(e.pointerId))return;var o=pt.get(e.pointerId),n=[e.clientX,e.clientY];pt.set(e.pointerId,n);
+  if(pt.size===2){var a=Array.from(pt.values()),d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]),m=[(a[0][0]+a[1][0])/2,(a[0][1]+a[1][1])/2];
+   if(pd)zoomT(d/pd,m[0],m[1]);if(pm&&Z.s>1){Z.x+=m[0]-pm[0];Z.y+=m[1]-pm[1];applicaZ();}pd=d;pm=m;Z.mosso=true;return;}
+  if(Math.hypot(n[0]-inizio[0],n[1]-inizio[1])>6)Z.mosso=true;
+  if(Z.mosso&&Z.s>1){Z.x+=n[0]-o[0];Z.y+=n[1]-o[1];applicaZ();}});
+ var fine=function(e){pt.delete(e.pointerId);if(pt.size<2){pd=0;pm=null;}if(!pt.size)$('tav').classList.remove('trascina');};
+ box.addEventListener('pointerup',fine);box.addEventListener('pointercancel',fine);
+ box.addEventListener('wheel',function(e){if(!attivo())return;e.preventDefault();zoomT(e.deltaY<0?1.15:1/1.15,e.clientX,e.clientY);},{passive:false});
+ $('bPiuT').onclick=function(){zoomT(1.4);};$('bMenoT').onclick=function(){zoomT(1/1.4);};$('bResetT').onclick=azzeraZ;})();
+
 /* ================= modalità console ================= */
 schermoIntero($('b3d'),$('bIntero'),function(on){setTimeout(function(){if(scena)scena.resize();},30);});
-schermoIntero($('btav'),$('bIntero2'),function(on){setTimeout(dimTav,40);setTimeout(dimTav,300);});
+schermoIntero($('btav'),$('bIntero2'),function(on){if(!on)azzeraZ();setTimeout(dimTav,40);setTimeout(dimTav,300);});
 
 /* ================= SCHEDA 05, Allenati ================= */
 /* q domanda, o risposte (la prima è giusta), d diagnosi per ogni risposta sbagliata, l livello, i indizi (indovina l'elemento) */
