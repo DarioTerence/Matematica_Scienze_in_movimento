@@ -52,10 +52,10 @@
 [data-tema="natale"] .mascotte-link { position: relative; }
 [data-tema="natale"] .cappello-natale {
   position: absolute;
-  left: 19%;
-  top: -20%;
-  width: 58%;
-  transform: rotate(14deg);
+  left: 12%;
+  top: -21%;
+  width: 76%;
+  transform: rotate(8deg);
   transform-origin: 50% 100%;
   pointer-events: none;
   transition: transform 0.2s ease;
@@ -63,7 +63,7 @@
 [data-tema="natale"] .cappello-natale svg { display: block; width: 100%; height: auto; }
 /* si solleva insieme alla caricatura al passaggio del mouse */
 [data-tema="natale"] .mascotte-link:hover .cappello-natale,
-[data-tema="natale"] .mascotte-link:focus-visible .cappello-natale { transform: translateY(-4px) rotate(14deg); }
+[data-tema="natale"] .mascotte-link:focus-visible .cappello-natale { transform: translateY(-4px) rotate(8deg); }
 
 /* Cristalli di neve: pochi, lenti e trasparenti, solo nella zona del titolo, dietro al testo */
 [data-tema="natale"] .hero { position: relative; }
@@ -87,6 +87,50 @@
   to   { top: 100%; transform: translateX(0) rotate(calc(var(--giro) + 60deg)); }
 }
 
+/* Neve posata sul bordo alto delle card e del fumetto */
+[data-tema="natale"] .griglia .card,
+[data-tema="natale"] .fumetto { position: relative; }
+[data-tema="natale"] .neve-posata {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: -10px;
+  height: 13px;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+[data-tema="natale"] .neve-posata svg { display: block; width: 100%; height: 100%; }
+[data-tema="natale"] .neve-posata path { fill: #e6ecf5; }
+[data-tema="natale"] .in-arrivo .neve-posata { opacity: 0.55; }
+
+/* Pochi cristalli su tutta la pagina, sopra le card, molto trasparenti */
+[data-tema="natale"] .neve-pagina {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+}
+[data-tema="natale"] .neve-pagina span { animation-name: fiocco-pagina; }
+@keyframes fiocco-pagina {
+  from { top: -20px; transform: translateX(0) rotate(var(--giro)); }
+  50%  { transform: translateX(20px) rotate(calc(var(--giro) + 30deg)); }
+  to   { top: 100%; transform: translateX(0) rotate(calc(var(--giro) + 60deg)); }
+}
+
+/* Prof. T rock (tasto con la chitarra): occhiali da sole e giubbotto di pelle sopra la caricatura */
+[data-tema="natale"] .look-rock {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+[data-tema="natale"] .look-rock svg { display: block; width: 100%; height: 100%; }
+[data-tema="natale"][data-stile="rock"] .look-rock { opacity: 1; }
+/* con gli occhiali da sole l'occhiolino non si vedrebbe: resta solo il bagliore sulla lente */
+[data-tema="natale"][data-stile="rock"] .mascotte .occhiolino { visibility: hidden; }
+
 /* ---------- Musica dei temi (qualunque tema che la usi) ---------- */
 /* Altoparlante discreto in basso a sinistra della caricatura; accanto, la nota che sta suonando */
 [data-tema] .musica {
@@ -98,7 +142,8 @@
   align-items: center;
   gap: 8px;
 }
-[data-tema] .musica-tasto {
+[data-tema] .musica-tasto,
+[data-tema] .musica-stile {
   width: 34px;
   height: 34px;
   padding: 7px;
@@ -110,9 +155,16 @@
   transition: color 0.2s ease, border-color 0.2s ease;
 }
 [data-tema] .musica-tasto:hover,
-[data-tema] .musica-tasto:focus-visible { color: var(--testo-soft); border-color: var(--testo-dim); outline: none; }
-[data-tema] .musica-tasto svg { display: block; width: 100%; height: 100%; }
-[data-tema] .musica-tasto path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+[data-tema] .musica-tasto:focus-visible,
+[data-tema] .musica-stile:hover,
+[data-tema] .musica-stile:focus-visible { color: var(--testo-soft); border-color: var(--testo-dim); outline: none; }
+[data-tema] .musica-tasto svg,
+[data-tema] .musica-stile svg { display: block; width: 100%; height: 100%; }
+[data-tema] .musica-tasto path,
+[data-tema] .musica-stile path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+[data-tema] .musica-stile .corpo { fill: currentColor; fill-opacity: 0.25; }
+/* versione rock accesa: chitarra dorata (l'oro indica una funzione in piu', come la modalita' console) */
+[data-tema] .musica-stile[aria-pressed="true"] { color: #f3d47e; border-color: #e8c15a; }
 [data-tema] .musica-tasto .cassa { fill: currentColor; fill-opacity: 0.25; }
 [data-tema] .musica .acceso { display: none; }
 [data-tema] .musica.acceso .acceso { display: inline; }
@@ -139,8 +191,9 @@
   [data-tema] .musica-nota { transition: none; }
   [data-tema="compleanno"] .mascotte-link:hover .cappellino,
   [data-tema="compleanno"] .mascotte-link:focus-visible .cappellino { transform: rotate(16deg); }
+  [data-tema="natale"] .look-rock { transition: none; }
   [data-tema="natale"] .neve span { animation: none; top: var(--y); transform: rotate(var(--giro)); }
   [data-tema="natale"] .cappello-natale { transition: none; }
   [data-tema="natale"] .mascotte-link:hover .cappello-natale,
-  [data-tema="natale"] .mascotte-link:focus-visible .cappello-natale { transform: rotate(14deg); }
+  [data-tema="natale"] .mascotte-link:focus-visible .cappello-natale { transform: rotate(8deg); }
 }
