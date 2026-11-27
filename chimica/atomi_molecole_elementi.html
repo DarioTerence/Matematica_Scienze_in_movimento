@@ -90,6 +90,11 @@ button{font-family:inherit}
 .mx{display:none}
 #tav.mendel{--carta:#e9dbb2;background:radial-gradient(ellipse 22% 16% at 14% 22%,rgba(150,100,35,.13),transparent),radial-gradient(ellipse 16% 22% at 88% 78%,rgba(140,90,30,.15),transparent),radial-gradient(circle at 66% 30%,rgba(150,100,40,.09) 0 4%,rgba(150,100,40,.13) 4.6%,transparent 5.4%),radial-gradient(ellipse 12% 9% at 38% 84%,rgba(130,85,25,.11),transparent),radial-gradient(circle at 24% 62%,rgba(150,100,40,.07) 0 2.6%,rgba(150,100,40,.11) 3%,transparent 3.6%),radial-gradient(ellipse 10% 14% at 79% 12%,rgba(140,95,30,.1),transparent),radial-gradient(ellipse 18% 10% at 52% 55%,rgba(150,105,40,.06),transparent),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .2 0 0 0 0 .08 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),var(--carta);padding:calc(var(--cs)*.35);border-radius:4px;box-shadow:inset 0 0 calc(var(--cs)*1.6) rgba(110,70,20,.55),0 6px 18px rgba(0,0,0,.45);transform:rotate(-.4deg);clip-path:polygon(0 1%,4% 0,11% .8%,19% 0,27% .6%,36% 0,45% .9%,55% .2%,63% .8%,72% 0,81% .7%,90% 0,100% .9%,99.4% 9%,100% 18%,99.2% 28%,100% 39%,99.5% 50%,100% 61%,99.3% 72%,100% 83%,99.5% 92%,100% 99%,92% 100%,83% 99.2%,74% 100%,64% 99.4%,54% 100%,44% 99.1%,33% 100%,23% 99.3%,12% 100%,4% 99.2%,0 100%,.6% 90%,0 79%,.7% 68%,0 57%,.5% 46%,0 35%,.8% 24%,0 13%)}
 #tav.mendel .gr,#tav.mendel .seg,#tav.mendel .spz{display:none}
+#tav .legx{display:none}
+#btav.intero #tav:not(.mendel) .legx:not(:empty){display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:max(3px,calc(var(--cs)*.12)) max(9px,calc(var(--cs)*.4));padding:0 calc(var(--cs)*.2);font:max(10.5px,calc(var(--cs)*.34))/1.15 Calibri,Carlito,sans-serif;color:#c3cdda;pointer-events:none}
+#tav .legx span{white-space:nowrap}
+#tav .legx i{display:inline-block;width:max(10px,calc(var(--cs)*.34));height:max(10px,calc(var(--cs)*.34));border-radius:max(2px,calc(var(--cs)*.08));margin-right:max(4px,calc(var(--cs)*.12));vertical-align:-.1em}
+#tav .legx i.tondo{border-radius:50%;background:#e0902a}
 #tav.mendel .mx{display:flex;align-items:center;justify-content:center;color:#4a3519;font:italic calc(var(--cs)*.3)/1 Georgia,"Times New Roman",serif}
 #tav.mendel .mgr{border-bottom:1px solid rgba(74,53,25,.55)}
 #tav.mendel .mre{border-right:1px solid rgba(74,53,25,.55)}
@@ -834,6 +839,7 @@ function tavHTML(){var h='';mendel=false;
  EL.forEach(function(e){
   h+='<button class="el n-'+e.c+' st-'+e.st+' f-'+fam(e)+'" data-z="'+e.z+'" style="grid-column:'+e.x+';grid-row:'+(e.y+1)+'" aria-label="'+e.n+'"><i>'+e.z+'</i><b>'+e.s+'</b><span class="cerchio"></span></button>';});
  h+='<div class="spz" style="grid-column:1/19;grid-row:9;height:calc(var(--cs)*.3)"></div>';
+ h+='<div class="legx" id="legX" style="grid-column:3/13;grid-row:2/5"></div>';
  h+='<div class="mx mtit" style="grid-column:1/13;grid-row:1">Sistema naturale degli elementi di D. Mendeleev</div>';
  h+='<div class="mx mre" style="grid-column:1;grid-row:2">Serie</div>';
  ['I','II','III','IV','V','VI','VII'].forEach(function(r,i){h+='<div class="mx mgr" style="grid-column:'+(i+2)+';grid-row:2">Gruppo '+r+'</div>';});
@@ -877,7 +883,9 @@ function aggTav(){var t=$('tav');t.dataset.v=S4.v;var D=DOVE[S4.dove];if(S4.v===
   var c=b.querySelector('.cerchio'),d=e.r?e.r/260*.94:0;c.style.width=c.style.height=(d*100)+'%';
   b.classList.toggle('scelto',e.z===S4.sel);});
  var V_=VISTE[S4.v];$('selVista').querySelector('span').textContent=V_.n;
- $('legT').innerHTML=(S4.v===4?[['#ffd08a','i più abbondanti'],['#7a6748','presenti in piccole quantità']]:(V_.leg||[])).map(function(l){return '<span><i style="background:'+l[0]+'"></i>'+l[1]+'</span>';}).join('');
+ var leg=(S4.v===4?[['#ffd08a','i più abbondanti'],['#7a6748','presenti in piccole quantità']]:(V_.leg||[])).map(function(l){return '<span><i style="background:'+l[0]+'"></i>'+l[1]+'</span>';}).join('');
+ $('legT').innerHTML=leg;
+ $('legX').innerHTML=S4.v===5?'<span><i class="tondo"></i>il cerchio è grande come l\'atomo</span>':leg;
  $('notaV').innerHTML=S4.v===4?D.n+', '+D.sotto+'. '+Object.keys(D.el).map(function(k){return BYS[k].n+' '+String(D.el[k]).replace('.',',')+'%';}).join(', ')+'.':V_.nota;
  $('doveSel').classList.toggle('hide',S4.v!==4);$('btav').dataset.dove=S4.v===4?1:0;
  $('doveSel').innerHTML=DOVE.map(function(o,i){return '<button class="chip'+(i===S4.dove?' attivo':'')+'" data-k="'+i+'" style="--chip:#ffd08a">'+o.n+'</button>';}).join('');
