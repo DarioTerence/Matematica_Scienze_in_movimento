@@ -252,7 +252,8 @@ button{font-family:inherit}
  #btav.intero #selVista{left:calc(22px + var(--sl));right:auto;width:190px;top:calc(12px + var(--st));bottom:auto}
  #btav.intero #doveSel{left:calc(22px + var(--sl));right:auto;width:190px;top:calc(62px + var(--st));bottom:auto}
  #btav.intero .info{left:calc(22px + var(--sl));width:190px;top:calc(66px + var(--st));bottom:calc(24px + var(--sb));overflow:auto}
- #btav.intero[data-dove="1"] .info{top:calc(110px + var(--st))}
+ #btav.intero[data-dove="1"] .info{top:calc(156px + var(--st))}
+ #btav.intero #doveSel .chip{margin:0 4px 6px 0}
  #btav.intero .carta .curio,#btav.intero .carta dl{display:block}
  #btav.intero .carta dl{display:grid;font-size:13px}
  #btav.intero .carta .curio{font-size:13px}
@@ -778,7 +779,10 @@ function molecola(i){S3.m=i;var M=MOL[i];S3.tipo=M.tipo;Array.prototype.forEach.
  $('molAtomi').innerHTML=(M.ret?'Un pezzetto di reticolo. ':'')+Object.keys(c).map(function(k){return '<span style="white-space:nowrap"><i style="display:inline-block;width:11px;height:11px;border-radius:50%;background:'+COLA[k]+';margin-right:5px;vertical-align:-1px"></i>'+NOME_EL[k]+'</span>';}).join(', ')+(M.tipo?'. Sostanza composta':'. Sostanza semplice');
  $('infoD').textContent=M.d;}
 $('bSmonta').onclick=function(){if(!S3.O)return;S3.O.sm=S3.O.sm?0:1;this.textContent=S3.O.sm?'Ricomponi':'Smonta';
- if(S3.O.sm&&visto[3]!=='a'){visto[3]='a';dici('img3d','bub3d','Ecco gli atomi da cui è fatta. Contali, sono proprio quelli scritti nella formula.','ok');}};
+ if(S3.O.sm){var M=MOL[S3.m];
+  dici('img3d','bub3d',M.k==='Fe'?'Tutti gli atomi sono uguali, di ferro. Per questo la formula è solo Fe.':
+   (M.ret?'Nel reticolo gli atomi sono tantissimi. La formula NaCl dice quali elementi ci sono e che sodio e cloro sono in numero uguale.':
+   'Ecco gli atomi separati. Contali e confrontali con la formula '+M.f+', il numero piccolo dice quanti atomi ci sono di ogni elemento.'),'ok');}};
 $('oSim').onclick=function(){var on=this.getAttribute('aria-checked')!=='true';this.setAttribute('aria-checked',on);if(S3.O)S3.O.simboli(on);};
 
 /* ---- selettore della voce: sostanza, elemento o molecola secondo la scheda ---- */
