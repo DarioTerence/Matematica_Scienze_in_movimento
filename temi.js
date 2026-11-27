@@ -8,7 +8,8 @@
 (function () {
   // Calendario: nome del tema e periodo "MM-GG", estremi compresi (anche a cavallo di Capodanno)
   var TEMI = [
-    { nome: 'compleanno', dal: '10-03', al: '10-05' }   // nascita del progetto, 4 ottobre 2026
+    { nome: 'compleanno', dal: '10-03', al: '10-05' },  // nascita del progetto, 4 ottobre 2026
+    { nome: 'natale',     dal: '12-08', al: '01-06' }   // dall'Immacolata all'Epifania
   ];
   var ANNO_NASCITA = 2026;
 
@@ -33,6 +34,7 @@
   document.documentElement.setAttribute('data-tema', tema);
 
   if (tema === 'compleanno') compleanno();
+  if (tema === 'natale') natale();
 
   /* ---------- Compleanno del sito ---------- */
   function compleanno() {
@@ -106,6 +108,96 @@
         ['F5', .75], ['F5', .25], ['E5', 1], ['C5', 1], ['D5', 1], ['C5', 3]
       ]
     }]);
+  }
+
+  /* ---------- Natale (8 dicembre - 6 gennaio) ---------- */
+  function natale() {
+    // Cappello natalizio sulla caricatura: dentro il link, cosi' si solleva con lei al passaggio del mouse
+    var link = document.querySelector('.mascotte-link');
+    if (link) {
+      var cappello = document.createElement('span');
+      cappello.className = 'cappello-natale';
+      cappello.setAttribute('aria-hidden', 'true');
+      cappello.innerHTML =
+        '<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">' +
+          // corpo rosso con la punta che ricade a destra
+          '<path d="M22 108 C30 60 78 22 132 20 C162 19 184 34 192 60 C176 48 158 46 150 52 C164 70 174 90 178 108 Z" fill="#b8352f" stroke="#0a0f1a" stroke-width="3" stroke-linejoin="round"/>' +
+          // ombra della piega
+          '<path d="M150 52 C164 70 174 90 178 108 L160 108 C158 88 152 68 142 56 Z" fill="#8e2622"/>' +
+          // bordo di pelliccia
+          '<rect x="10" y="96" width="180" height="30" rx="15" fill="#eef2f7" stroke="#0a0f1a" stroke-width="3"/>' +
+          '<path d="M30 104 Q34 110 30 116 M62 103 Q66 110 62 117 M96 103 Q100 110 96 117 M130 103 Q134 110 130 117 M162 104 Q166 110 162 116" fill="none" stroke="#c9d3e0" stroke-width="2" stroke-linecap="round"/>' +
+          // pompon
+          '<circle cx="190" cy="64" r="12" fill="#eef2f7" stroke="#0a0f1a" stroke-width="3"/>' +
+        '</svg>';
+      link.appendChild(cappello);
+    }
+
+    // Cristalli di neve nella zona del titolo: pochi, lenti, trasparenti, tutti a sei bracci.
+    // Posizione, grandezza, ritardo e durata casuali; con prefers-reduced-motion restano fermi (temi.css).
+    var hero = document.querySelector('.hero');
+    if (hero) {
+      var NUMERO = 18;
+      // un braccio con due rametti, ripetuto sei volte ruotando di 60 gradi
+      var braccio = '<path d="M0 0 V-9 M0 -5 L-2.6 -7.4 M0 -5 L2.6 -7.4"/>';
+      var bracci = '';
+      for (var a = 0; a < 6; a++) bracci += '<g transform="rotate(' + (a * 60) + ')">' + braccio + '</g>';
+      var cristallo = '<svg viewBox="-10 -10 20 20" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#e6ecf5" stroke-width="1.3" stroke-linecap="round">' + bracci + '</g></svg>';
+      var box = document.createElement('div');
+      box.className = 'neve';
+      box.setAttribute('aria-hidden', 'true');
+      for (var k = 0; k < NUMERO; k++) {
+        var c = document.createElement('span');
+        var lato = 8 + Math.random() * 9;
+        c.innerHTML = cristallo;
+        c.style.left = (Math.random() * 100).toFixed(1) + '%';
+        c.style.width = c.style.height = lato.toFixed(1) + 'px';
+        c.style.opacity = (0.25 + Math.random() * 0.3).toFixed(2);
+        c.style.setProperty('--y', (Math.random() * 90).toFixed(1) + '%');
+        c.style.setProperty('--ritardo', (-Math.random() * 20).toFixed(1) + 's');
+        c.style.setProperty('--durata', (14 + Math.random() * 8).toFixed(1) + 's');
+        c.style.setProperty('--giro', Math.round(Math.random() * 60) + 'deg');
+        box.appendChild(c);
+      }
+      hero.insertBefore(box, hero.firstChild);
+    }
+
+    // Tre melodie di pubblico dominio, in ciclo con 20 s di pausa tra una e l'altra.
+    musica([
+      // Jingle Bells, ritornello (James Lord Pierpont, 1857); durate in quarti
+      { bpm: 132, note: [
+        ['B4', .5], ['B4', .5], ['B4', 1], ['B4', .5], ['B4', .5], ['B4', 1],
+        ['B4', .5], ['D5', .5], ['G4', .75], ['A4', .25], ['B4', 2],
+        ['C5', .5], ['C5', .5], ['C5', .75], ['C5', .25], ['C5', .5], ['B4', .5], ['B4', .5], ['B4', .25], ['B4', .25],
+        ['B4', .5], ['A4', .5], ['A4', .5], ['B4', .5], ['A4', 1], ['D5', 1],
+        ['B4', .5], ['B4', .5], ['B4', 1], ['B4', .5], ['B4', .5], ['B4', 1],
+        ['B4', .5], ['D5', .5], ['G4', .75], ['A4', .25], ['B4', 2],
+        ['C5', .5], ['C5', .5], ['C5', .75], ['C5', .25], ['C5', .5], ['B4', .5], ['B4', .5], ['B4', .25], ['B4', .25],
+        ['D5', .5], ['D5', .5], ['C5', .5], ['A4', .5], ['G4', 2]
+      ] },
+      // Stille Nacht (Franz Xaver Gruber, 1818); 6/8, durate in ottavi
+      { bpm: 150, note: [
+        ['G4', 1.5], ['A4', .5], ['G4', 1], ['E4', 3],
+        ['G4', 1.5], ['A4', .5], ['G4', 1], ['E4', 3],
+        ['D5', 2], ['D5', 1], ['B4', 3], ['C5', 2], ['C5', 1], ['G4', 3],
+        ['A4', 2], ['A4', 1], ['C5', 1.5], ['B4', .5], ['A4', 1], ['G4', 1.5], ['A4', .5], ['G4', 1], ['E4', 3],
+        ['A4', 2], ['A4', 1], ['C5', 1.5], ['B4', .5], ['A4', 1], ['G4', 1.5], ['A4', .5], ['G4', 1], ['E4', 3],
+        ['D5', 2], ['D5', 1], ['F5', 1.5], ['D5', .5], ['B4', 1], ['C5', 3], ['E5', 3],
+        ['C5', 1.5], ['G4', .5], ['E4', 1], ['G4', 1.5], ['F4', .5], ['D4', 1], ['C4', 6]
+      ] },
+      // Tu scendi dalle stelle (sant'Alfonso Maria de' Liguori, XVIII secolo); 6/8, durate in ottavi
+      { bpm: 160, note: [
+        ['G4', 1], ['G4', 2], ['A4', 1], ['G4', 2], ['F4', 1], ['F4', 1], ['E4', 3],
+        ['D4', 1], ['E4', 1], ['F4', 1], ['G4', 1], ['G4', 1], ['F4', 1], ['E4', 1], ['D4', 3],
+        ['E4', 1], ['D4', 2], ['E4', 1], ['F4', 2], ['E4', 1], ['D4', 2], ['A4', 2], ['G4', 1], ['A4', 1], ['G4', 1], ['F4', 1], ['E4', 1], ['D4', 1], ['E4', 3],
+        ['E4', 1], ['D4', 2], ['E4', 1], ['F4', 2], ['E4', 1], ['D4', 2], ['A4', 2], ['G4', 1], ['A4', 1], ['G4', 1], ['F4', 1], ['E4', 1], ['D4', 1], ['C4', 3],
+        ['E4', 1], ['F4', 1], ['G4', 1], ['F4', 2], ['F4', 1], ['D4', 1], ['E4', 1], ['F4', 1], ['E4', 2],
+        ['E4', 1], ['E4', 1], ['F4', 1], ['G4', 1], ['F4', 2], ['F4', 1], ['D4', 1], ['E4', 1], ['F4', 1], ['E4', 3],
+        ['D4', 1], ['E4', 1], ['F4', 1], ['G4', 1], ['G4', 1], ['F4', 1], ['E4', 1], ['D4', 3],
+        ['E4', 1], ['D4', 2], ['E4', 1], ['F4', 2], ['E4', 1], ['D4', 2], ['A4', 2], ['G4', 1], ['A4', 1], ['G4', 1], ['F4', 1], ['E4', 1], ['D4', 1], ['E4', 3],
+        ['E4', 1], ['D4', 2], ['E4', 1], ['F4', 2], ['E4', 1], ['D4', 2], ['A4', 2], ['G4', 1], ['A4', 1], ['G4', 1], ['F4', 1], ['E4', 1], ['D4', 1], ['C4', 4]
+      ] }
+    ]);
   }
 
   /* ---------- Musica dei temi ----------

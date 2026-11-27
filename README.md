@@ -8,7 +8,7 @@ Sito: https://scienzainmovimento.it/
 - `index.html`: home con le quattro aree (Numeri e forme, Materia ed energia, Viventi, Terra e cosmo) e il fumetto con le frasi
 - `style.css`: stile condiviso, tema scuro
 - `frasi.js`: rotazione casuale delle frasi nel fumetto della home
-- `temi.js` e `temi.css`: temi stagionali e ricorrenze della home (compleanno del sito)
+- `temi.js` e `temi.css`: temi stagionali e ricorrenze della home (compleanno del sito, Natale)
 - `animazioni.css`, `animazioni.js`: componenti condivisi dei comandi delle animazioni (vedi "Comandi delle animazioni")
 - `modello/`: pagine di partenza per le nuove animazioni (non collegate e non indicizzate): `modello_passi.html` (procedure a passi con Esplora e Allenati) e `modello_scena.html` (scena 3D o 2D da esplorare, parti da scegliere, Opzioni, quiz)
 - `favicon.svg`: icona del sito
@@ -98,7 +98,9 @@ Frasi con data presenti: 3-5 ottobre Sputnik e compleanno del sito, 13-15 ottobr
 ## Temi stagionali della home
 `temi.js` e `temi.css` (radice) accendono e spengono da soli i temi della home secondo la data del dispositivo; le animazioni e le pagine di disciplina non li hanno. Lo script legge il calendario `TEMI` all'inizio del file (nome, `dal` e `al` come "MM-GG", estremi compresi, anche a cavallo di Capodanno) e, se oggi cade in un periodo, scrive `data-tema="nome"` sull'elemento `<html>`; le regole di `temi.css` cominciano tutte con `[data-tema="nome"]`, quindi negli altri giorni non cambiano nulla. Movimenti sempre fermi con `prefers-reduced-motion`.
 
-Temi presenti: `compleanno` (3-5 ottobre): cappellino SVG sulla caricatura, coriandoli nella zona del titolo, età del sito nella frase `frase-eta`, melodia di "Tanti auguri a te" (pubblico dominio).
+Temi presenti:
+- `compleanno` (3-5 ottobre): cappellino SVG sulla caricatura, coriandoli nella zona del titolo, età del sito nella frase `frase-eta`, melodia di "Tanti auguri a te" (pubblico dominio).
+- `natale` (8 dicembre - 6 gennaio): cappello natalizio SVG sulla caricatura, 18 cristalli di neve a sei bracci nella zona del titolo, tre melodie di pubblico dominio in ciclo (Jingle Bells, ritornello, 1857; Stille Nacht, 1818; Tu scendi dalle stelle, XVIII secolo), frasi con data nel fumetto (tre per tutto il periodo, solstizio 20-22 dicembre, Keplero 28 dicembre - 6 gennaio, perielio 2-5 gennaio, auguri di Prof. T 23 dicembre - 6 gennaio).
 
 Musica dei temi: la funzione `musica(brani)` di `temi.js` mette accanto alla caricatura un altoparlante, spento all'apertura (i browser non lasciano partire suoni senza un tocco). Al tocco suona i brani dell'elenco uno dopo l'altro, con `PAUSA` secondi (20) tra un brano e l'altro, poi ricomincia; un altro tocco ferma tutto, e la musica si ferma anche se si cambia scheda. Volume in `VOLUME`. Le melodie sono scritte nel codice nota per nota (`['G4', 0.75]`, nome della nota con l'ottava e durata in battiti, più `bpm`) e suonate con la Web Audio API con un timbro da carillon: niente file audio, solo melodie di pubblico dominio. Mentre suona, accanto all'altoparlante compaiono la nota e la sua frequenza (La4 = 440 Hz, ogni semitono moltiplica per la radice dodicesima di 2).
 

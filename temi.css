@@ -46,6 +46,47 @@
   to   { top: 100%; transform: rotate(calc(var(--giro) + 360deg)) translateX(0); }
 }
 
+/* ---------- Natale (8 dicembre - 6 gennaio) ---------- */
+
+/* Cappello natalizio sulla caricatura */
+[data-tema="natale"] .mascotte-link { position: relative; }
+[data-tema="natale"] .cappello-natale {
+  position: absolute;
+  left: 15%;
+  top: -15%;
+  width: 72%;
+  transform: rotate(-5deg);
+  transform-origin: 50% 100%;
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+[data-tema="natale"] .cappello-natale svg { display: block; width: 100%; height: auto; }
+/* si solleva insieme alla caricatura al passaggio del mouse */
+[data-tema="natale"] .mascotte-link:hover .cappello-natale,
+[data-tema="natale"] .mascotte-link:focus-visible .cappello-natale { transform: translateY(-4px) rotate(-5deg); }
+
+/* Cristalli di neve: pochi, lenti e trasparenti, solo nella zona del titolo, dietro al testo */
+[data-tema="natale"] .hero { position: relative; }
+[data-tema="natale"] .hero > * { position: relative; z-index: 1; }
+[data-tema="natale"] .hero > .neve {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+[data-tema="natale"] .neve span {
+  position: absolute;
+  top: -20px;
+  animation: fiocco var(--durata) linear var(--ritardo) infinite;
+}
+[data-tema="natale"] .neve svg { display: block; width: 100%; height: 100%; }
+@keyframes fiocco {
+  from { top: -20px; transform: translateX(0) rotate(var(--giro)); }
+  50%  { transform: translateX(16px) rotate(calc(var(--giro) + 30deg)); }
+  to   { top: 100%; transform: translateX(0) rotate(calc(var(--giro) + 60deg)); }
+}
+
 /* ---------- Musica dei temi (qualunque tema che la usi) ---------- */
 /* Altoparlante discreto in basso a sinistra della caricatura; accanto, la nota che sta suonando */
 [data-tema] .musica {
@@ -91,11 +132,15 @@
 }
 [data-tema] .musica-nota.visibile { opacity: 1; }
 
-/* Chi preferisce meno movimento vede i coriandoli fermi, sparsi nella zona del titolo */
+/* Chi preferisce meno movimento vede coriandoli e cristalli fermi, sparsi nella zona del titolo */
 @media (prefers-reduced-motion: reduce) {
   [data-tema="compleanno"] .coriandoli span { animation: none; top: var(--y); transform: rotate(var(--giro)); }
   [data-tema="compleanno"] .cappellino { transition: none; }
   [data-tema] .musica-nota { transition: none; }
   [data-tema="compleanno"] .mascotte-link:hover .cappellino,
   [data-tema="compleanno"] .mascotte-link:focus-visible .cappellino { transform: rotate(16deg); }
+  [data-tema="natale"] .neve span { animation: none; top: var(--y); transform: rotate(var(--giro)); }
+  [data-tema="natale"] .cappello-natale { transition: none; }
+  [data-tema="natale"] .mascotte-link:hover .cappello-natale,
+  [data-tema="natale"] .mascotte-link:focus-visible .cappello-natale { transform: rotate(-5deg); }
 }
